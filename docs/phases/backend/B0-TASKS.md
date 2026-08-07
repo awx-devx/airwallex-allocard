@@ -76,7 +76,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test` green with a sample test using every helper. A test making a real `fetch` fails.
   - **Notes:** The network guard is what keeps B5 and B8 honest.
 
-- [ ] **B0.12** — Seed script
+- [x] **B0.12** — Seed script
   - **Files:** `scripts/seed.ts`
   - **Do:** `pnpm seed` creating one org and one owner. Idempotent — safe to re-run. Structured so each later phase appends its own section.
   - **Accept:** `pnpm seed && pnpm seed` succeeds twice with no duplicates.

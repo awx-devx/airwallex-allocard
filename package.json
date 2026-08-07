@@ -10,6 +10,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "seed": "tsx scripts/seed.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "prepare": "husky"
   },
@@ -33,6 +34,7 @@
     "lint-staged": "^17.3.0",
     "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.9.6",
+    "tsx": "^4.23.11",
     "typescript": "^5",
     "vitest": "^4.1.10"
   },

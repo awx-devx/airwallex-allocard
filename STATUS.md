@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.12 — Seed script
-**Last green `pnpm verify`:** 2026-08-07 (B0.11)
+**Active task:** B0.13 — Health endpoint and `pnpm verify`
+**Last green `pnpm verify`:** 2026-08-07 (B0.12)
 **Blocked on:** nothing
 
 ---
@@ -13,7 +13,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
-| B     | B0 Foundation           | **in progress** | 11 / 13 |
+| B     | B0 Foundation           | **in progress** | 12 / 13 |
 | B     | B1 Auth & organisations | not started     | 0 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.11 test harness is in (unit/integration projects, helpers, network guard). Next is B0.12 — idempotent seed script (one org + one owner), structured for later phases to append.
+B0.12 seed script is in (idempotent org + owner; B1 appends). Next is B0.13 — `GET /api/health` and confirm `verify` script. Last task of B0.
 
 ---
 
