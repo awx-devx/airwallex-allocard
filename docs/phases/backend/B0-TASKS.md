@@ -22,7 +22,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** A temporary file importing `@/server/x` from `src/shared/` **fails** lint. Delete it after proving the rule works.
   - **Notes:**
 
-- [ ] **B0.3** — Environment validation
+- [x] **B0.3** — Environment validation
   - **Files:** `src/server/env.ts`
   - **Do:** Zod schema over `process.env`, parsed once at module load, throwing on failure. Separate `serverEnv` and `publicEnv`. Variables per `docs/ARCHITECTURE.md` §12. Add `.env.example`.
   - **Accept:** `pnpm test env` — missing required var throws with the var named.
