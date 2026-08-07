@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.6 — Shared layer skeleton
-**Last green `pnpm verify`:** 2026-08-07 (B0.5)
+**Active task:** B0.7 — Error taxonomy
+**Last green `pnpm verify`:** 2026-08-07 (B0.6)
 **Blocked on:** nothing
 
 ---
@@ -13,7 +13,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 | Track | Phase                   | Status          | Tasks  |
 | ----- | ----------------------- | --------------- | ------ |
-| B     | B0 Foundation           | **in progress** | 5 / 13 |
+| B     | B0 Foundation           | **in progress** | 6 / 13 |
 | B     | B1 Auth & organisations | not started     | 0 / 15 |
 | B     | B2 Projects             | not started     | —      |
 | B     | B3 Access control       | not started     | —      |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.5 model base is in (`tenantScoped`, `baseOptions`, `toDomain`). Next is B0.6 — shared schemas, contracts, and ErrorCode enum.
+B0.6 shared layer skeleton is in. Next is B0.7 — AppError + serializeError mapping ErrorCode to HTTP status.
 
 ---
 

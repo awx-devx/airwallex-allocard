@@ -40,7 +40,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test models/base` — plugin throws without `orgId`, permits with it, permits with `allowCrossTenant`; transform emits `id` and drops `_id`.
   - **Notes:** The most important file in B0. Everything else copies it.
 
-- [ ] **B0.6** — Shared layer skeleton
+- [x] **B0.6** — Shared layer skeleton
   - **Files:** `src/shared/schemas/base.ts`, `src/shared/types/index.ts`, `src/shared/contracts/types.ts`, `src/shared/enums/errors.ts`
   - **Do:** `moneySchema` (`amount: z.number().int()`, `currency: z.string().length(3)`), `isoDateSchema`, `idSchema`, `paginationSchema` (cursor-based: `cursor?`, `limit`), `cursorPageSchema<T>` for responses. The `Contract` type and a `defineContract` helper. The `ErrorCode` enum from the spec.
   - **Accept:** `pnpm typecheck`
