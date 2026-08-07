@@ -7,12 +7,8 @@ export const organizationSettingsSchema = z.object({
   notifications: z.record(z.string(), z.boolean()),
 })
 
-/**
- * Public organisation.
- * `airwallexAccountId` is the connected-account seam (null under D1); kept on the
- * wire so a later migration never has to add the field.
- */
-export const organizationSchema = z.object({
+/** Minimal org for populated memberships (org switcher, lists). */
+export const organizationSummarySchema = z.object({
   id: idSchema,
   name: z.string().min(1).max(120),
   slug: z
@@ -20,6 +16,14 @@ export const organizationSchema = z.object({
     .min(1)
     .max(64)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens'),
+})
+
+/**
+ * Public organisation.
+ * `airwallexAccountId` is the connected-account seam (null under D1); kept on the
+ * wire so a later migration never has to add the field.
+ */
+export const organizationSchema = organizationSummarySchema.extend({
   country: z.string().length(2),
   baseCurrency: z.string().length(3),
   costCentres: z.array(z.string().min(1)),

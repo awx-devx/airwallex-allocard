@@ -1,12 +1,16 @@
 import { z } from 'zod'
 import { idSchema, isoDateSchema } from '@/shared/schemas/base'
 
-/** Public user — never includes `passwordHash`. */
-export const userSchema = z.object({
+/** Minimal user for populated membership rows (members list UI). */
+export const userSummarySchema = z.object({
   id: idSchema,
   email: z.email(),
   name: z.string().min(1).max(120),
   image: z.string().min(1).optional(),
+})
+
+/** Public user — never includes `passwordHash`. */
+export const userSchema = userSummarySchema.extend({
   defaultOrgId: idSchema.optional(),
   createdAt: isoDateSchema,
 })

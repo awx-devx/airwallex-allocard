@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { invitePreviewSchema } from '@/shared/schemas/invite'
-import { membershipSchema } from '@/shared/schemas/membership'
+import { membershipWithOrgSchema } from '@/shared/schemas/membership'
 import { organizationSchema } from '@/shared/schemas/organization'
 import { userSchema } from '@/shared/schemas/user'
 
@@ -9,12 +9,11 @@ import { userSchema } from '@/shared/schemas/user'
  *
  * - `onboarded` is derived (has ≥1 ACTIVE membership), never stored.
  * - `activeOrg` is absent when the user is not onboarded.
- * - `memberships` are the raw membership records; org names for a switcher
- *   come from a follow-up or from enriching this shape (review open).
+ * - `memberships` include a populated org summary (`id`, `name`, `slug`) for the switcher.
  */
 export const meResponseSchema = z.object({
   user: userSchema,
-  memberships: z.array(membershipSchema),
+  memberships: z.array(membershipWithOrgSchema),
   activeOrg: organizationSchema.optional(),
   onboarded: z.boolean(),
 })

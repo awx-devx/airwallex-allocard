@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { defineContract } from '@/shared/contracts/types'
-import { membershipSchema, updateMemberInput } from '@/shared/schemas/membership'
+import { membershipWithUserSchema, updateMemberInput } from '@/shared/schemas/membership'
 import {
   createOrganizationInput,
   organizationSchema,
@@ -30,13 +30,13 @@ export const organizationContracts = {
     method: 'GET',
     path: '/api/organizations/:id/members',
     input: z.void(),
-    output: z.array(membershipSchema),
+    output: z.array(membershipWithUserSchema),
   }),
   updateMember: defineContract({
     method: 'PATCH',
     path: '/api/organizations/:id/members/:userId',
     input: updateMemberInput,
-    output: membershipSchema,
+    output: membershipWithUserSchema,
   }),
   removeMember: defineContract({
     method: 'DELETE',

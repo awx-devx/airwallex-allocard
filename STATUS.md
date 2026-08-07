@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.1 — Models (blocked on B1.0 `meResponse` review)
-**Last green `pnpm verify`:** 2026-08-08 (B1.0)
-**Blocked on:** B1.0 contract review — especially `meResponse`
+**Active task:** B1.1 — Models (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.0 enrichment)
+**Blocked on:** user confirmation before starting B1.1
 
 ---
 
@@ -54,21 +54,19 @@ _None yet._
 
 ## Decisions pending user review
 
-### B1.0 — `meResponse` and contracts
-
-Written contracts are in `src/shared/contracts/{auth,organization,invite}.ts`. **Do not start B1.1 until reviewed.**
-
-Open questions for review:
-
-1. **`meResponse.memberships`** are raw memberships (`orgId`, no org name/slug). Org switcher in F0 may need a second round trip — enrich memberships, or add `organizations[]`?
-2. **`organization.airwallexAccountId`** added beyond the B1.0 field list (nullable D1 seam from the phase model table). Keep on the wire?
-3. **`listMembers` output** is bare `membership[]` (no user name/email). Enrich for B1.8 UI, or leave for later?
+_None yet._
 
 ---
 
 ## Notes for the next session
 
-B1.0 schemas/contracts committed. **Waiting on `meResponse` review** before B1.1 Models. After approval: implement User/Organization/Membership/Invite models per B1.1.
+B1.0 complete (including enrichment review):
+
+- `meResponse.memberships`: `membershipWithOrg` — `{ …membership, org: { id, name, slug } }`
+- `listMembers` / `updateMember`: `membershipWithUser` — `{ …membership, user: { id, email, name, image? } }`
+- `organization.airwallexAccountId`: on the wire
+
+**Do not start B1.1 until the user confirms.**
 
 ---
 

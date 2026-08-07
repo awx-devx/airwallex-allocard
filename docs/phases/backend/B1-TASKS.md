@@ -20,7 +20,7 @@
     - `onboardingStatus`: `{ onboarded, pendingInvites: invitePreview[] }`
   - **STOP and get reviewed before implementing.** `meResponse` in particular — the app shell and every guard depend on it, and it's the shape most likely to need a second round trip if it's wrong.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** Also added `airwallexAccountId: string | null` on organization (D1 seam). Auth.js catch-all has no contract. STOP — awaiting `meResponse` review before B1.1.
+  - **Notes:** `airwallexAccountId` on org (D1 seam). `meResponse.memberships` are `membershipWithOrg` (`org: { id, name, slug }`). `listMembers`/`updateMember` return `membershipWithUser` (`user: { id, email, name, image? }`). Auth.js catch-all has no contract. Review decisions applied.
 
 ---
 
