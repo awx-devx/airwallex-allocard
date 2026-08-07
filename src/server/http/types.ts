@@ -1,4 +1,6 @@
-export type OrgRole = 'OWNER' | 'ADMIN' | 'MEMBER'
+import type { OrgRole } from '@/shared/enums/orgRole'
+
+export type { OrgRole } from '@/shared/enums/orgRole'
 
 export type OrgContext = {
   orgId: string

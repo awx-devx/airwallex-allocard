@@ -8,7 +8,7 @@
 
 ## Contracts first
 
-- [ ] **B1.0** — Schemas and contracts
+- [x] **B1.0** — Schemas and contracts
   - **Files:** `src/shared/schemas/{user,organization,membership,invite}.ts`, `src/shared/types/*`, `src/shared/contracts/{auth,organization,invite}.ts`, `src/shared/enums/orgRole.ts`
   - **Do:** Every endpoint in the spec's table gets a contract entry. Shapes:
     - `user`: `id, email, name, image?, defaultOrgId?, createdAt` — **never** `passwordHash`
@@ -20,7 +20,7 @@
     - `onboardingStatus`: `{ onboarded, pendingInvites: invitePreview[] }`
   - **STOP and get reviewed before implementing.** `meResponse` in particular — the app shell and every guard depend on it, and it's the shape most likely to need a second round trip if it's wrong.
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** Also added `airwallexAccountId: string | null` on organization (D1 seam). Auth.js catch-all has no contract. STOP — awaiting `meResponse` review before B1.1.
 
 ---
 

@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.0 — Schemas and contracts
-**Last green `pnpm verify`:** 2026-08-08 (B0.13)
-**Blocked on:** nothing
+**Active task:** B1.1 — Models (blocked on B1.0 `meResponse` review)
+**Last green `pnpm verify`:** 2026-08-08 (B1.0)
+**Blocked on:** B1.0 contract review — especially `meResponse`
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 0 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 1 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -54,13 +54,21 @@ _None yet._
 
 ## Decisions pending user review
 
-_None yet._
+### B1.0 — `meResponse` and contracts
+
+Written contracts are in `src/shared/contracts/{auth,organization,invite}.ts`. **Do not start B1.1 until reviewed.**
+
+Open questions for review:
+
+1. **`meResponse.memberships`** are raw memberships (`orgId`, no org name/slug). Org switcher in F0 may need a second round trip — enrich memberships, or add `organizations[]`?
+2. **`organization.airwallexAccountId`** added beyond the B1.0 field list (nullable D1 seam from the phase model table). Keep on the wire?
+3. **`listMembers` output** is bare `membership[]` (no user name/email). Enrich for B1.8 UI, or leave for later?
 
 ---
 
 ## Notes for the next session
 
-B0 Foundation is complete (13/13). Next is **B1.0 — Schemas and contracts** — STOP for review after writing contracts (especially `meResponse`) before implementing further B1 tasks. B1-TASKS.md already exists. Run B0 phase exit checklist when convenient.
+B1.0 schemas/contracts committed. **Waiting on `meResponse` review** before B1.1 Models. After approval: implement User/Organization/Membership/Invite models per B1.1.
 
 ---
 
