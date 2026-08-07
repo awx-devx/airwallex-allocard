@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.5 — Model base: options, tenancy plugin, domain mapping
-**Last green `pnpm verify`:** 2026-08-07 (B0.4)
+**Active task:** B0.6 — Shared layer skeleton
+**Last green `pnpm verify`:** 2026-08-07 (B0.5)
 **Blocked on:** nothing
 
 ---
@@ -13,7 +13,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 | Track | Phase                   | Status          | Tasks  |
 | ----- | ----------------------- | --------------- | ------ |
-| B     | B0 Foundation           | **in progress** | 4 / 13 |
+| B     | B0 Foundation           | **in progress** | 5 / 13 |
 | B     | B1 Auth & organisations | not started     | 0 / 15 |
 | B     | B2 Projects             | not started     | —      |
 | B     | B3 Access control       | not started     | —      |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.4 connectDb is in. Next is B0.5 — `models/base.ts` (tenantScoped plugin, toJSON transform, toDomain). Most important file in B0.
+B0.5 model base is in (`tenantScoped`, `baseOptions`, `toDomain`). Next is B0.6 — shared schemas, contracts, and ErrorCode enum.
 
 ---
 

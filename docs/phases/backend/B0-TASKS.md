@@ -34,7 +34,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test db/connect` — calling twice yields one connection.
   - **Notes:**
 
-- [ ] **B0.5** — Model base: options, tenancy plugin, domain mapping
+- [x] **B0.5** — Model base: options, tenancy plugin, domain mapping
   - **Files:** `src/server/models/base.ts`
   - **Do:** Export `baseOptions` (`timestamps: true`, `strict: 'throw'`, `toJSON` transform mapping `_id` → `id: string` and dropping `_id`/`__v`), the `tenantScoped` plugin (see `docs/ARCHITECTURE.md` §6 — throws when a guarded query lacks `orgId`, with an `allowCrossTenant` option), and a generic `toDomain` helper.
   - **Accept:** `pnpm test models/base` — plugin throws without `orgId`, permits with it, permits with `allowCrossTenant`; transform emits `id` and drops `_id`.
