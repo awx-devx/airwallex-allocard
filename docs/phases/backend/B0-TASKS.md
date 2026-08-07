@@ -64,7 +64,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test audit`
   - **Notes:** Every mutation from B1 onward calls this.
 
-- [ ] **B0.10** — Redis client with fallback
+- [x] **B0.10** — Redis client with fallback
   - **Files:** `src/server/redis.ts`
   - **Do:** Lazy connection. When `REDIS_URL` is unset, export an in-memory implementation of the subset used (`get`, `set` with NX/PX, `del`, `incr`) so B1–B4 run without Redis. Key helpers per `docs/ARCHITECTURE.md` §10.
   - **Accept:** `pnpm test redis` — both implementations satisfy the same interface tests.

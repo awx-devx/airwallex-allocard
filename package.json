@@ -14,6 +14,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "ioredis": "^6.0.0",
     "mongoose": "^9.9.1",
     "next": "16.3.0",
     "react": "19.2.8",
@@ -21,12 +22,14 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/ioredis-mock": "^8.2.8",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "husky": "^9.1.7",
+    "ioredis-mock": "^8.13.1",
     "lint-staged": "^17.3.0",
     "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.9.6",
