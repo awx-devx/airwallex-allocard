@@ -46,7 +46,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm typecheck`
   - **Notes:**
 
-- [ ] **B0.7** — Error taxonomy
+- [x] **B0.7** — Error taxonomy
   - **Files:** `src/server/http/errors.ts`
   - **Do:** `AppError` carrying `code`, `message`, `details?`, plus constructors (`unauthenticated()`, `permissionDenied(permission)`, `notFound()`, `conflict()`, `validationFailed(fieldErrors)`, `upstreamError()`). A `serializeError` mapping each code to its status and the envelope `{ error: { code, message, details? } }`.
   - **Accept:** `pnpm test http/errors` — every code maps to the right status; unknown errors become `INTERNAL` without leaking a stack.
