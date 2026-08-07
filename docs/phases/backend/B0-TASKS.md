@@ -28,7 +28,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test env` — missing required var throws with the var named.
   - **Notes:** This must be the only file referencing `process.env`.
 
-- [ ] **B0.4** — Mongoose connection
+- [x] **B0.4** — Mongoose connection
   - **Files:** `src/server/db/connect.ts`
   - **Do:** Connection cached on `globalThis` to survive HMR. Idempotent `connectDb()`. Handle concurrent calls with a shared promise.
   - **Accept:** `pnpm test db/connect` — calling twice yields one connection.
