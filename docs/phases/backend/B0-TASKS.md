@@ -70,7 +70,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test redis` — both implementations satisfy the same interface tests.
   - **Notes:**
 
-- [ ] **B0.11** — Test harness
+- [x] **B0.11** — Test harness
   - **Files:** `vitest.config.ts`, `test/setup.ts`, `test/helpers/db.ts`, `test/helpers/request.ts`, `test/helpers/contract.ts`, `test/helpers/factories/index.ts`
   - **Do:** Vitest with `unit` and `integration` projects. `db.ts` uses `mongodb-memory-server`, fresh DB per file, collections cleared between tests. `request.ts` exposes `buildRequest({ session, body, query, params })` returning a `Request`, plus a typed body reader. `contract.ts` exposes `expectMatchesContract(res, schema)`. Factories: `makeUser`, `makeOrg`, `makeMember` with partial overrides. **A network guard in `setup.ts` that fails any test attempting an outbound HTTP call.**
   - **Accept:** `pnpm test` green with a sample test using every helper. A test making a real `fetch` fails.

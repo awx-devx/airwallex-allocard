@@ -1,17 +1,52 @@
 import path from 'node:path'
 import { defineConfig } from 'vitest/config'
 
-export default defineConfig({
-  test: {
-    environment: 'node',
-    include: ['src/**/*.test.ts', 'test/**/*.test.ts'],
-    env: {
-      MONGOMS_DOWNLOAD_DIR: path.resolve(import.meta.dirname, './node_modules/.cache/mongodb-binaries'),
-    },
-  },
+const shared = {
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
     },
+  },
+  test: {
+    environment: 'node' as const,
+    env: {
+      MONGOMS_DOWNLOAD_DIR: path.resolve(
+        import.meta.dirname,
+        './node_modules/.cache/mongodb-binaries',
+      ),
+    },
+    setupFiles: ['./test/setup.ts'],
+  },
+}
+
+export default defineConfig({
+  test: {
+    projects: [
+      {
+        ...shared,
+        test: {
+          ...shared.test,
+          name: 'unit',
+          include: [
+            'src/server/env.test.ts',
+            'src/server/db/**/*.test.ts',
+            'src/server/http/**/*.test.ts',
+            'src/server/redis.test.ts',
+          ],
+        },
+      },
+      {
+        ...shared,
+        test: {
+          ...shared.test,
+          name: 'integration',
+          include: [
+            'src/server/models/**/*.test.ts',
+            'src/server/services/**/*.test.ts',
+            'test/**/*.test.ts',
+          ],
+        },
+      },
+    ],
   },
 })

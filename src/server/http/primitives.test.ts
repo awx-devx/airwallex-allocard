@@ -3,9 +3,10 @@ import { z } from 'zod'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ok } from '@/server/http/respond'
 import { requirePermission } from '@/server/http/requirePermission'
-import { resetSessionResolver, setSessionResolver, withAuth } from '@/server/http/withAuth'
+import { setSessionResolver, withAuth } from '@/server/http/withAuth'
 import { withValidation } from '@/server/http/withValidation'
 import type { AuthSession, OrgContext } from '@/server/http/types'
+import { installTestSessionResolver } from '../../../test/helpers/request'
 
 const createInput = z.object({
   name: z.string().min(1),
@@ -21,7 +22,7 @@ function session(partial: Partial<AuthSession> & Pick<AuthSession, 'userId'>): A
 }
 
 afterEach(() => {
-  resetSessionResolver()
+  installTestSessionResolver()
 })
 
 describe('withAuth', () => {
