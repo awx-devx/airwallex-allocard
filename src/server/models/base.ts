@@ -61,6 +61,32 @@ export const baseOptions: SchemaOptions = {
   },
 }
 
+/**
+ * Like `baseOptions`, but deletes the listed fields in `toJSON` / `toObject`
+ * (belt-and-braces with `select: false` for secrets like `passwordHash`).
+ */
+export function baseOptionsOmitting(fields: readonly string[]): SchemaOptions {
+  const transform = (_doc: unknown, ret: Record<string, unknown>) => {
+    for (const field of fields) {
+      delete ret[field]
+    }
+    return applyIdTransform(ret)
+  }
+  return {
+    ...baseOptions,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform,
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform,
+    },
+  }
+}
+
 const GUARDED_OPS = [
   'find',
   'findOne',

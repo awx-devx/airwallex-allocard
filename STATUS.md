@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.1 — Models (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.0 enrichment)
-**Blocked on:** user confirmation before starting B1.1
+**Active task:** B1.2 — Repositories (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.1)
+**Blocked on:** user confirmation before starting B1.2
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 1 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 2 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,13 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.0 complete (including enrichment review):
+B1.1 Models complete:
 
-- `meResponse.memberships`: `membershipWithOrg` — `{ …membership, org: { id, name, slug } }`
-- `listMembers` / `updateMember`: `membershipWithUser` — `{ …membership, user: { id, email, name, image? } }`
-- `organization.airwallexAccountId`: on the wire
+- `User`, `Organization` — not tenant-scoped
+- `Membership`, `Invite` — `tenantScoped`
+- Secrets: `passwordHash` / `tokenHash` use `select: false` + `baseOptionsOmitting`
+- Org stores `createdBy` (model-only; not on public contract)
 
-**Do not start B1.1 until the user confirms.**
+**Do not start B1.2 until the user confirms.**
 
 ---
 

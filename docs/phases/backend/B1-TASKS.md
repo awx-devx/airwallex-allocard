@@ -26,11 +26,11 @@
 
 ## Tasks
 
-- [ ] **B1.1** — Models
+- [x] **B1.1** — Models
   - **Files:** `src/server/models/{User,Organization,Membership,Invite}.ts`
   - **Do:** Follow `docs/ARCHITECTURE.md` §5 and the `base.ts` pattern from B0.5. `User` and `Organization` are **not** tenant-scoped (no plugin); `Membership` and `Invite` are. Indexes: `User.email` unique lowercased; `Organization.slug` unique; `Membership {orgId, userId}` unique; `Invite.tokenHash` unique, plus `{orgId, email, status}`.
   - **Accept:** `pnpm test models/` — unique constraints enforced, `toJSON` drops `passwordHash` and `tokenHash`
-  - **Notes:** `passwordHash` and `tokenHash` must be `select: false` **and** stripped in the transform — belt and braces.
+  - **Notes:** `passwordHash` / `tokenHash`: `select: false` + `baseOptionsOmitting`. Org `createdBy` is model-only (not on public contract).
 
 - [ ] **B1.2** — Repositories
   - **Files:** `src/server/repositories/{users,organizations,memberships,invites}.ts`
