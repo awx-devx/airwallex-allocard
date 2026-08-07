@@ -58,7 +58,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test http/` — 401 without session, 403 without org, 422 on bad payload, envelope shape correct.
   - **Notes:** Session resolution is stubbed until B1; make the seam obvious.
 
-- [ ] **B0.9** — Audit primitive
+- [x] **B0.9** — Audit primitive
   - **Files:** `src/server/models/AuditLog.ts`, `src/server/services/audit/log.ts`
   - **Do:** Model per the spec (`actorType: USER|RULE|SYSTEM|AIRWALLEX`, `actorId`, `action`, `subjectType`, `subjectId`, `before?`, `after?`, `metadata`, `at`). `audit(ctx, entry)` service. Indexes `{ orgId, at: -1 }` and `{ orgId, subjectType, subjectId }`.
   - **Accept:** `pnpm test audit`
