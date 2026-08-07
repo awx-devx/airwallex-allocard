@@ -1,0 +1,36 @@
+---
+description: Next.js route handler conventions — auth, validation, permissions, audit
+globs: src/app/api/**/route.ts
+alwaysApply: false
+---
+
+# Route Handler Pattern
+
+Handlers do auth, validation, permission, orchestration, and response. **No business logic.**
+
+```ts
+export const POST = withAuth(
+  withValidation(createProjectInput, async (ctx, input) => {
+    await requirePermission(ctx, 'project.create')
+    const project = await projectService.create(ctx, input)
+    return created(project)
+  })
+)
+```
+
+## Rules
+
+- **Compose `withAuth` + `withValidation`.** Never read the session or parse a body by hand.
+- **`requirePermission` on every mutation**, with the subject: `requirePermission(ctx, 'card.manage', { projectId, cardId })`. A permission check without a subject is only half an authorization.
+- **Input and output shapes come from `src/shared/contracts`.** Do not define request or response types inline.
+- **Cross-tenant access returns `404`.** Never `403` — that confirms the resource exists.
+- **Errors are thrown, not returned.** Throw `AppError`; the wrapper serialises it to the standard envelope.
+- Business logic lives in `src/server/services` and must be callable without a `Request`.
+- Webhook handlers are the exception to `withAuth`: verify the HMAC on the **raw body** (`await req.text()`) *before* parsing, and return `200` immediately.
+
+## Never
+
+- Return a bare object — use `ok()` / `created()` / `noContent()`.
+- Return a hand-built error shape. One envelope: `{ error: { code, message, details? } }`.
+- Call Airwallex directly from a handler. Go through a service.
+- Do slow work inline in a webhook handler. Persist, enqueue, respond `200`.

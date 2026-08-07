@@ -1,0 +1,46 @@
+---
+description: Shared schemas, types and contracts — the single source of truth
+globs: src/shared/**/*.ts
+alwaysApply: false
+---
+
+# Shared Layer
+
+Every shape is declared here exactly once. Server and client both derive from it, so they cannot disagree.
+
+```ts
+// schemas/project.ts
+export const projectSchema = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  name: z.string().min(1).max(120),
+  status: z.nativeEnum(ProjectStatus),
+  startDate: z.string().datetime(),
+  budget: moneySchema,
+})
+export const createProjectInput = projectSchema.pick({ name: true, startDate: true })
+
+// types/project.ts
+export type Project = z.infer<typeof projectSchema>
+
+// contracts/project.ts
+export const projectContracts = {
+  create: { method: 'POST', path: '/api/projects', input: createProjectInput, output: projectSchema },
+} as const
+```
+
+## Rules
+
+- **Zod first, then `z.infer`.** Never hand-write a domain interface and hope the schema matches.
+- **IDs are `z.string()`.** No `ObjectId` anywhere in this directory.
+- **Dates are `z.string().datetime()`** — ISO 8601 on the wire.
+- **Money is `moneySchema`**: `{ amount: z.number().int(), currency: z.string().length(3) }`. Integer minor units, always.
+- **Every endpoint has a contract entry** with `method`, `path`, `input`, `output`. The handler and the query hook both consume it.
+- Derive inputs from the domain schema with `.pick()` / `.omit()` / `.partial()` rather than redeclaring fields.
+- Enums live in `enums/` and are imported, not inlined as string unions.
+
+## Never
+
+- Import from `src/server` or `src/client`. This directory is a leaf — the ESLint boundary rule enforces it, and violating it drags server code into the client bundle.
+- Reference `process.env`, a database, or any Node-only API.
+- Change a field name without updating every consumer in the same commit.

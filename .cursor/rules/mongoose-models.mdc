@@ -1,0 +1,41 @@
+---
+description: Mongoose model conventions for Allocard
+globs: src/server/models/**/*.ts
+alwaysApply: false
+---
+
+# Model Pattern
+
+Every model file: schema typed against the shared domain type, indexes beside it, plugins, HMR-safe export.
+
+```ts
+import { Schema, model, models, type Model, type HydratedDocument } from 'mongoose'
+import type { Project } from '@/shared/types/project'
+import { baseOptions, tenantScoped } from './base'
+
+const projectSchema = new Schema<Project, Model<Project>>({
+  orgId: { type: String, required: true, index: true },
+  name:  { type: String, required: true, trim: true },
+}, baseOptions)
+
+projectSchema.plugin(tenantScoped)
+projectSchema.index({ orgId: 1, code: 1 }, { unique: true })
+
+export type ProjectDoc = HydratedDocument<Project>
+export const ProjectModel = (models.Project ?? model<Project>('Project', projectSchema)) as Model<Project>
+```
+
+## Rules
+
+- **`models.X ?? model(...)` is mandatory.** Next.js HMR re-executes modules; a bare `model()` throws `OverwriteModelError`.
+- **Type the schema `Schema<T>`** against the type inferred from `src/shared/schemas`. Divergence must be a compile error — never redefine the shape here.
+- **`baseOptions` on every schema** — supplies `timestamps`, the `toJSON` transform (`_id` → `id: string`), and `strict: 'throw'`.
+- **`tenantScoped` on every tenant-owned schema.** It throws when a query reaches the driver without `orgId` in its filter.
+- **Indexes live in this file**, next to the schema, so the access pattern and its index are reviewed together.
+- Money fields are `{ amount: Number, currency: String }` where `amount` is **integer minor units**. Never a float.
+- Dates are `Date` in Mongo; the `toJSON` transform emits ISO strings.
+
+## Never
+
+- Export a raw `HydratedDocument` for use outside `src/server/repositories`.
+- Add business logic here. Models declare shape and indexes only.

@@ -1,0 +1,41 @@
+---
+description: TanStack Query hook conventions
+globs: src/client/hooks/**/*.ts
+alwaysApply: false
+---
+
+# Query Hooks
+
+Exactly one hook per endpoint. Screens never fetch; they call hooks.
+
+```ts
+export function useProjects(filter?: ProjectFilter) {
+  return useQuery({
+    queryKey: qk.projects(filter),
+    queryFn: () => call(projectContracts.list, { input: filter }),
+  })
+}
+
+export function useCreateProject() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (input: CreateProjectInput) => call(projectContracts.create, { input }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: qk.projects() }) },
+  })
+}
+```
+
+## Rules
+
+- **Keys come from `qk` in `src/client/queryKeys.ts`.** Never inline a key array — ad-hoc keys are how invalidation quietly stops working.
+- **Types are inferred from the contract.** No manual generic annotations; if you need one, the contract is wrong.
+- Naming is fixed: `useThings()` / `useThing(id)` for queries, `useCreateThing()` / `useUpdateThing()` for mutations.
+- **Every mutation invalidates**, per the map in `docs/phases/frontend/F1-data-layer.md`. Be liberal with `qk.cards()` — almost any change can move a card limit.
+- Never retry a `4xx`. Retry `5xx` at most twice.
+- Infinite queries for activity, transactions, audit, and rule runs — the backend uses cursor pagination.
+- Simulation is a **mutation**, not a query: it takes overrides and must never be cached.
+
+## Never
+
+- Call `call()` or `fetch` from a component.
+- Add optimistic updates to anything touching money or permissions. Only freeze/unfreeze and receipt attach are safe — an optimistic limit the server then rejects is worse than a spinner.

@@ -1,0 +1,47 @@
+---
+description: Test conventions — the standard endpoint matrix and fixtures
+globs: **/*.test.ts
+alwaysApply: false
+---
+
+# Testing
+
+Route handlers are plain functions taking a `Request` — call them directly, don't boot a server.
+
+```ts
+const org = await makeOrg()
+const admin = await makeMember(org, { orgRole: 'OWNER' })
+
+const res = await POST(buildRequest({ session: admin, body: { name: 'APAC Launch' } }))
+expect(res.status).toBe(201)
+expectMatchesContract(res, projectContracts.create.output)
+```
+
+## The standard endpoint matrix
+
+Every endpoint needs all ten, or an explicit justified N/A:
+
+1. Unauthenticated → `401`
+2. Authenticated, no organisation → `403 ONBOARDING_INCOMPLETE`
+3. **Member of a different org requests this resource → `404`** (never `403`)
+4. Lacks the required permission → `403` naming the permission
+5. Access scope excludes the subject → `403`
+6. Invalid payload → `422` with field errors
+7. Happy path → `2xx`, body validated against the contract's `output`
+8. Not found → `404`
+9. Repeated mutation with the same idempotency key → one side effect
+10. **Exactly one audit entry written**, with the right actor and subject
+
+Rows 3, 7, and 10 catch the most real bugs. Do not skip them.
+
+## Rules
+
+- Use factories (`makeOrg`, `makeMember`, `makeProject`) with partial overrides. Hand-built setup blocks make permission tests unreadable and people stop writing them.
+- **Assert the response against the contract schema** — that's what stops the API drifting from what the client expects.
+- Airwallex calls use recorded fixtures. **No test may hit the network**; the network guard in setup will fail it.
+- Fresh in-memory database per file, collections cleared between tests.
+
+## Never
+
+- Weaken an assertion to make a test pass. If you can't make it pass, stop and ask.
+- Test only the happy path.

@@ -1,0 +1,36 @@
+---
+description: Repository layer conventions — tenancy scoping and domain mapping
+globs: src/server/repositories/**/*.ts
+alwaysApply: false
+---
+
+# Repository Pattern
+
+Repositories are the only place Mongoose documents exist. They take `OrgContext` and return plain domain objects.
+
+```ts
+export async function listProjects(ctx: OrgContext, filter: ProjectFilter): Promise<Project[]> {
+  const docs = await ProjectModel.find({ orgId: ctx.orgId, ...filter }).lean()
+  return docs.map(toDomain)
+}
+
+export async function getProject(ctx: OrgContext, id: string): Promise<Project | null> {
+  const doc = await ProjectModel.findOne({ _id: id, orgId: ctx.orgId }).lean()
+  return doc ? toDomain(doc) : null
+}
+```
+
+## Rules
+
+- **`OrgContext` is the first parameter of every method.** There is no overload without it.
+- **Every query filters `orgId: ctx.orgId`** — including `findOne` by `_id`. An id alone is not a tenant boundary.
+- **Return domain types**, never `HydratedDocument` or a raw lean document. Map through `toDomain`.
+- **Convert `ObjectId` to `string`** at this boundary. The rest of the app never sees an `ObjectId`.
+- Use `.lean()` for reads; you're mapping to domain objects anyway.
+- A missing resource returns `null`. The caller turns that into `404` — do not throw HTTP errors here.
+
+## Never
+
+- Query without `orgId`. If a worker sweep genuinely needs cross-org iteration, pass `{ allowCrossTenant: true }` explicitly and keep such uses few and greppable.
+- Put authorization logic here. Repositories enforce *tenancy*; `requirePermission` enforces *permission*.
+- Return a document with `_id` still on it.
