@@ -42,6 +42,7 @@ export default defineConfig({
           name: 'integration',
           include: [
             'src/server/models/**/*.test.ts',
+            'src/server/repositories/**/*.test.ts',
             'src/server/services/**/*.test.ts',
             'src/server/health*.test.ts',
             'src/app/**/*.test.ts',

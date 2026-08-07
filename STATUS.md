@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.2 — Repositories (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.1)
-**Blocked on:** user confirmation before starting B1.2
+**Active task:** B1.3 — Auth.js setup (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.2)
+**Blocked on:** user confirmation before starting B1.3
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 2 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 3 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.1 Models complete:
+B1.2 Repositories complete:
 
-- `User`, `Organization` — not tenant-scoped
-- `Membership`, `Invite` — `tenantScoped`
-- Secrets: `passwordHash` / `tokenHash` use `select: false` + `baseOptionsOmitting`
-- Org stores `createdBy` (model-only; not on public contract)
+- `users`, `organizations` — cross-tenant (no `OrgContext`)
+- `memberships`, `invites` — `OrgContext` first; `allowCrossTenant` for me/session, token preview, onboarding email lookup
+- Enrichment helpers: `listMembershipsWithUsers`, `listMembershipsWithOrgsForUser`
+- `acceptInviteByTokenHash` — conditional single-use accept
 
-**Do not start B1.2 until the user confirms.**
+**Do not start B1.3 until the user confirms.**
 
 ---
 

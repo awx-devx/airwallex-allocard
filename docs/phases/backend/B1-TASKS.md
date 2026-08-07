@@ -32,12 +32,11 @@
   - **Accept:** `pnpm test models/` — unique constraints enforced, `toJSON` drops `passwordHash` and `tokenHash`
   - **Notes:** `passwordHash` / `tokenHash`: `select: false` + `baseOptionsOmitting`. Org `createdBy` is model-only (not on public contract).
 
-- [ ] **B1.2** — Repositories
+- [x] **B1.2** — Repositories
   - **Files:** `src/server/repositories/{users,organizations,memberships,invites}.ts`
   - **Do:** Per `.cursor/rules/repositories.mdc`. Note `users` and `organizations` are cross-tenant by nature — take `userId` rather than `OrgContext` where that's genuinely correct, and document why at the top of each file.
   - **Accept:** `pnpm test repositories/`
-  - **Notes:**
-
+  - **Notes:** Users/orgs cross-tenant; memberships/invites `OrgContext`-first with documented `allowCrossTenant` helpers for `/api/me`, preview, and onboarding.
 - [ ] **B1.3** — Auth.js setup
   - **Files:** `src/server/auth/config.ts`, `src/app/api/auth/[...nextauth]/route.ts`
   - **Do:** Auth.js with a Mongoose adapter. Credentials provider using argon2. One OAuth provider. JWT session carrying `userId`, `orgId`, `orgRole`, `onboarded`.
