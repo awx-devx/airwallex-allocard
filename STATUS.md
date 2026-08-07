@@ -1,33 +1,33 @@
 # Status
 
-Single source of truth for *where the build is*. Update at the end of every task.
+Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.2 — Lint, format, and the import boundary
-**Last green `pnpm verify`:** 2026-08-07 (B0.1)
+**Active task:** B0.3 — Environment validation
+**Last green `pnpm verify`:** 2026-08-07 (B0.2)
 **Blocked on:** nothing
 
 ---
 
 ## Progress
 
-| Track | Phase | Status | Tasks |
-| --- | --- | --- | --- |
-| B | B0 Foundation | **in progress** | 1 / 13 |
-| B | B1 Auth & organisations | not started | 0 / 15 |
-| B | B2 Projects | not started | — |
-| B | B3 Access control | not started | — |
-| B | B4 Budget | not started | — |
-| B | B5 Cards | not started | — |
-| B | B6 Rules engine | not started | — |
-| B | B7 Requests & approvals | not started | — |
-| B | B8 Money in motion | not started | — |
-| B | B9 Reporting & closure | not started | — |
-| F | F0 Client foundation | not started | — |
-| F | F1 Data layer | not started | — |
-| F | F2 Utils | not started | — |
-| F | F3 UI library | not started | — |
-| A | A1–A9 Application | not started | — |
+| Track | Phase                   | Status          | Tasks  |
+| ----- | ----------------------- | --------------- | ------ |
+| B     | B0 Foundation           | **in progress** | 2 / 13 |
+| B     | B1 Auth & organisations | not started     | 0 / 15 |
+| B     | B2 Projects             | not started     | —      |
+| B     | B3 Access control       | not started     | —      |
+| B     | B4 Budget               | not started     | —      |
+| B     | B5 Cards                | not started     | —      |
+| B     | B6 Rules engine         | not started     | —      |
+| B     | B7 Requests & approvals | not started     | —      |
+| B     | B8 Money in motion      | not started     | —      |
+| B     | B9 Reporting & closure  | not started     | —      |
+| F     | F0 Client foundation    | not started     | —      |
+| F     | F1 Data layer           | not started     | —      |
+| F     | F2 Utils                | not started     | —      |
+| F     | F3 UI library           | not started     | —      |
+| A     | A1–A9 Application       | not started     | —      |
 
 Task files are generated at the start of each phase. Only B0 and B1 exist so far — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
@@ -35,14 +35,14 @@ Task files are generated at the start of each phase. Only B0 and B1 exist so far
 
 ## Model assignment
 
-| Phases | Model | Why |
-| --- | --- | --- |
-| B0, B1 | **Strong** | These set the patterns every later phase copies. Get them right. |
-| B2, B4, B7, B9 | Cheap | Repetitive CRUD following B1's established pattern |
-| B3, B5, B8 | Mid | Authorization, external API, and money correctness |
-| B6 | **Strong** | The rules engine is the product. Non-obvious merge and evaluation semantics |
-| F0–F3 | Mid | Pattern-heavy but decisions are already made |
-| A1–A9 | Cheap–Mid | Assembly from existing hooks and components |
+| Phases         | Model      | Why                                                                         |
+| -------------- | ---------- | --------------------------------------------------------------------------- |
+| B0, B1         | **Strong** | These set the patterns every later phase copies. Get them right.            |
+| B2, B4, B7, B9 | Cheap      | Repetitive CRUD following B1's established pattern                          |
+| B3, B5, B8     | Mid        | Authorization, external API, and money correctness                          |
+| B6             | **Strong** | The rules engine is the product. Non-obvious merge and evaluation semantics |
+| F0–F3          | Mid        | Pattern-heavy but decisions are already made                                |
+| A1–A9          | Cheap–Mid  | Assembly from existing hooks and components                                 |
 
 ---
 
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.1 scaffold is in. Next is B0.2 — ESLint import boundary, Prettier, husky pre-commit.
+B0.2 import boundary is in place and proven. Next is B0.3 — Zod-validated `src/server/env.ts` plus `.env.example`.
 
 ---
 

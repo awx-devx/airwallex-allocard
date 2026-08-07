@@ -4,7 +4,7 @@
 **Model:** strong — this phase sets every pattern later phases copy. Time spent here is repaid ten times.
 **Depends on:** nothing
 
-No contracts task: B0 builds the *machinery* for contracts, not any domain's contracts.
+No contracts task: B0 builds the _machinery_ for contracts, not any domain's contracts.
 
 ---
 
@@ -16,7 +16,7 @@ No contracts task: B0 builds the *machinery* for contracts, not any domain's con
   - **Accept:** `pnpm typecheck && pnpm build`
   - **Notes:**
 
-- [ ] **B0.2** — Lint, format, and the import boundary
+- [x] **B0.2** — Lint, format, and the import boundary
   - **Files:** `eslint.config.mjs`, `.prettierrc`, `.husky/pre-commit`
   - **Do:** ESLint with `no-restricted-imports` enforcing: `src/shared` may not import `@/server/*` or `@/client/*`; `src/client` may not import `@/server/*`. Prettier + lint-staged, pre-commit runs `typecheck` and `lint`.
   - **Accept:** A temporary file importing `@/server/x` from `src/shared/` **fails** lint. Delete it after proving the rule works.
