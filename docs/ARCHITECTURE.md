@@ -1,24 +1,24 @@
 # Allocard — Architecture & Implementation Guidelines
 
-Companion to [`PRD.md`](./PRD.md). This describes *how* to build it, not *what* to build.
+Companion to [`PRD.md`](./PRD.md). This describes _how_ to build it, not _what_ to build.
 
 ---
 
 ## 1. Stack
 
-| Concern | Choice | Notes |
-| --- | --- | --- |
-| App framework | **Next.js (App Router)** | Server Components by default; Route Handlers for webhooks and machine-to-machine endpoints |
-| Language | **TypeScript**, strict | |
-| Database | **MongoDB + Mongoose** | Every model and its indexes declared in one file; schemas typed against the shared domain type so drift is a compile error |
-| Types & validation | **Zod as single source of truth** | Zod schema → `z.infer` → domain type → Mongoose model, API contract, and query hook all derive from it. See §4 |
-| Cache / queue / locks | **Redis** | Optional for Phase B0–B4, effectively required from B6 |
-| Auth | **Auth.js (NextAuth)** with a Mongoose adapter | Credentials + one OAuth provider |
-| Background work | **A separate worker process**, same codebase | Event-driven via Redis Streams; scheduled sweeps as a backstop. BullMQ only when fan-out demands it — see §8 |
-| Client data layer | **TanStack Query** | Exactly one hook per endpoint; no `fetch` in a component, ever. See §4 |
-| UI | Tailwind + shadcn/ui | The mock's layout (left nav, project workspace tabs) is a fine starting IA |
-| Testing | **Vitest** + `mongodb-memory-server` + recorded Airwallex fixtures | Every endpoint carries the standard matrix in §13 |
-| Hosting | **Railway** | Two app services off one image — `web` (Next.js) and `worker` (jobs) — plus managed MongoDB and Redis. See §9 |
+| Concern               | Choice                                                             | Notes                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App framework         | **Next.js (App Router)**                                           | Server Components by default; Route Handlers for webhooks and machine-to-machine endpoints                                                            |
+| Language              | **TypeScript**, strict                                             |                                                                                                                                                       |
+| Database              | **MongoDB + Mongoose**                                             | Every model and its indexes declared in one file; schemas typed against the shared domain type so drift is a compile error                            |
+| Types & validation    | **Zod as single source of truth**                                  | Zod schema → `z.infer` → domain type → Mongoose model, API contract, and query hook all derive from it. See §4                                        |
+| Cache / queue / locks | **Redis**                                                          | Optional for Phase B0–B4, effectively required from B6                                                                                                |
+| Auth                  | **Auth.js (NextAuth)** with a Mongoose adapter                     | Credentials (argon2) + **Google** OAuth. Google because Allocard's users are finance and procurement staff living in Google Workspace, not developers |
+| Background work       | **A separate worker process**, same codebase                       | Event-driven via Redis Streams; scheduled sweeps as a backstop. BullMQ only when fan-out demands it — see §8                                          |
+| Client data layer     | **TanStack Query**                                                 | Exactly one hook per endpoint; no `fetch` in a component, ever. See §4                                                                                |
+| UI                    | Tailwind + shadcn/ui                                               | The mock's layout (left nav, project workspace tabs) is a fine starting IA                                                                            |
+| Testing               | **Vitest** + `mongodb-memory-server` + recorded Airwallex fixtures | Every endpoint carries the standard matrix in §13                                                                                                     |
+| Hosting               | **Railway**                                                        | Two app services off one image — `web` (Next.js) and `worker` (jobs) — plus managed MongoDB and Redis. See §9                                         |
 
 ### Why a persistent server, not serverless
 
@@ -73,7 +73,7 @@ Two processes, one codebase, one image. Railway runs them as separate services w
                   └────────┘ └────────┘
 ```
 
-The split is by *lifetime*, not by layer. `web` handles anything with a user or an inbound HTTP caller waiting on it; `worker` handles anything on a timer or a queue. Neither owns business logic — both call into `server/services`, so a job and a route handler running the same operation run literally the same function.
+The split is by _lifetime_, not by layer. `web` handles anything with a user or an inbound HTTP caller waiting on it; `worker` handles anything on a timer or a queue. Neither owns business logic — both call into `server/services`, so a job and a route handler running the same operation run literally the same function.
 
 ### The central loop
 
@@ -189,9 +189,19 @@ Each endpoint declares its input and output once:
 ```ts
 // src/shared/contracts/project.ts
 export const projectContracts = {
-  list:   { method: 'GET',  path: '/api/projects',      input: listProjectsQuery, output: z.array(projectSchema) },
-  create: { method: 'POST', path: '/api/projects',      input: createProjectInput, output: projectSchema },
-  get:    { method: 'GET',  path: '/api/projects/:id',  input: z.void(),           output: projectDetailSchema },
+  list: {
+    method: 'GET',
+    path: '/api/projects',
+    input: listProjectsQuery,
+    output: z.array(projectSchema),
+  },
+  create: {
+    method: 'POST',
+    path: '/api/projects',
+    input: createProjectInput,
+    output: projectSchema,
+  },
+  get: { method: 'GET', path: '/api/projects/:id', input: z.void(), output: projectDetailSchema },
 } as const
 
 export type ProjectContracts = typeof projectContracts
@@ -212,7 +222,11 @@ The classic source of FE/BE drift. Fix it by convention:
 schema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: (_doc, ret) => { ret.id = ret._id.toString(); delete ret._id; return ret },
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString()
+    delete ret._id
+    return ret
+  },
 })
 ```
 
@@ -238,24 +252,32 @@ import type { Project } from '@/shared/types/project'
 import { ProjectStatus } from '@/shared/enums'
 import { baseOptions, tenantScoped } from './base'
 
-const projectSchema = new Schema<Project, Model<Project>>({
-  orgId:     { type: String, required: true, index: true },
-  name:      { type: String, required: true, trim: true },
-  code:      { type: String, required: true },
-  status:    { type: String, enum: Object.values(ProjectStatus), required: true,
-               default: ProjectStatus.DRAFT },
-  ownerId:   { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate:   { type: Date, required: true },
-  workstreams: [{ id: String, name: String }],
-}, baseOptions)
+const projectSchema = new Schema<Project, Model<Project>>(
+  {
+    orgId: { type: String, required: true, index: true },
+    name: { type: String, required: true, trim: true },
+    code: { type: String, required: true },
+    status: {
+      type: String,
+      enum: Object.values(ProjectStatus),
+      required: true,
+      default: ProjectStatus.DRAFT,
+    },
+    ownerId: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    workstreams: [{ id: String, name: String }],
+  },
+  baseOptions,
+)
 
-projectSchema.plugin(tenantScoped)                       // see §6, invariant 1
+projectSchema.plugin(tenantScoped) // see §6, invariant 1
 projectSchema.index({ orgId: 1, code: 1 }, { unique: true })
 projectSchema.index({ orgId: 1, status: 1, updatedAt: -1 })
 
 export type ProjectDoc = HydratedDocument<Project>
-export const ProjectModel = (models.Project ?? model<Project>('Project', projectSchema)) as Model<Project>
+export const ProjectModel = (models.Project ??
+  model<Project>('Project', projectSchema)) as Model<Project>
 ```
 
 Four conventions that apply to every model:
@@ -313,7 +335,7 @@ type AccessScope = {
   cardIds?: string[]
   memberIds?: string[]
   validFrom?: Date
-  validTo?: Date          // drives "expire temporary access"
+  validTo?: Date // drives "expire temporary access"
 }
 ```
 
@@ -434,7 +456,7 @@ auditLogs:        { orgId: 1, at: -1 }, { orgId: 1, subjectType: 1, subjectId: 1
 
 Three invariants, enforced structurally rather than by discipline.
 
-Invariant 3 exists because of decision **D1** in [`PRD.md`](./PRD.md) §10: all organisations share one Airwallex account, so Airwallex will happily return another tenant's cards. It is not a backstop — it *is* the tenant boundary for anything card-related.
+Invariant 3 exists because of decision **D1** in [`PRD.md`](./PRD.md) §10: all organisations share one Airwallex account, so Airwallex will happily return another tenant's cards. It is not a backstop — it _is_ the tenant boundary for anything card-related.
 
 **1. No repository method may be called without an org context.**
 
@@ -454,8 +476,16 @@ Mongoose lets you enforce this rather than trust it. The `tenantScoped` plugin t
 ```ts
 // src/server/models/base.ts
 export function tenantScoped(schema: Schema) {
-  const guarded = ['find', 'findOne', 'findOneAndUpdate', 'updateOne',
-                   'updateMany', 'deleteOne', 'deleteMany', 'countDocuments']
+  const guarded = [
+    'find',
+    'findOne',
+    'findOneAndUpdate',
+    'updateOne',
+    'updateMany',
+    'deleteOne',
+    'deleteMany',
+    'countDocuments',
+  ]
   schema.pre(guarded, function () {
     const filter = this.getFilter()
     if (!filter.orgId && !this.getOptions().allowCrossTenant) {
@@ -502,9 +532,10 @@ function computeEffectivePermissions(input: {
 ```
 
 Rules of composition:
+
 - Start from the role's permission set.
 - Time-bounded scopes outside their window yield an empty set.
-- Scope narrows *which subjects* a permission applies to; it never adds permissions.
+- Scope narrows _which subjects_ a permission applies to; it never adds permissions.
 - Org role can only widen (Owner/Admin), never silently narrow a project role.
 - `reasons[]` explains each grant and denial — this is what the preview screen renders.
 
@@ -516,12 +547,29 @@ Domain events are the trigger surface for the rules engine. Keep them as an expl
 
 ```ts
 type DomainEvent =
-  | 'project.created' | 'project.approved' | 'project.launched' | 'project.closing' | 'project.closed'
-  | 'budget.approved' | 'budget.updated' | 'budget.threshold_crossed'
-  | 'member.added'    | 'member.role_changed' | 'member.scope_changed' | 'member.removed'
-  | 'card.created'    | 'card.status_changed' | 'card.limit_updated'
-  | 'request.created' | 'request.approved' | 'request.rejected' | 'request.escalated'
-  | 'transaction.authorized' | 'transaction.cleared' | 'transaction.declined' | 'transaction.reversed'
+  | 'project.created'
+  | 'project.approved'
+  | 'project.launched'
+  | 'project.closing'
+  | 'project.closed'
+  | 'budget.approved'
+  | 'budget.updated'
+  | 'budget.threshold_crossed'
+  | 'member.added'
+  | 'member.role_changed'
+  | 'member.scope_changed'
+  | 'member.removed'
+  | 'card.created'
+  | 'card.status_changed'
+  | 'card.limit_updated'
+  | 'request.created'
+  | 'request.approved'
+  | 'request.rejected'
+  | 'request.escalated'
+  | 'transaction.authorized'
+  | 'transaction.cleared'
+  | 'transaction.declined'
+  | 'transaction.reversed'
   | 'attribute.updated'
   | 'schedule.tick'
 ```
@@ -549,41 +597,41 @@ attribute written  →  XADD attribute.updated  →  worker wakes (ms)
 
 Two writes happen when a rule produces new state, and they have deliberately different latency profiles:
 
-| Write | Where | When | Why |
-| --- | --- | --- | --- |
-| Policy snapshot | Redis `policy:card:{id}` | **Synchronously, in the evaluation** | Governs real-time decisions. A Redis write is single-digit ms, so there is no reason to defer it. |
-| `authorization_controls` | Airwallex, via the reconciler | Async, retried | An HTTP call that can fail or be slow. Desired state is already persisted, so a failure just means the next attempt applies it. |
+| Write                    | Where                         | When                                 | Why                                                                                                                             |
+| ------------------------ | ----------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Policy snapshot          | Redis `policy:card:{id}`      | **Synchronously, in the evaluation** | Governs real-time decisions. A Redis write is single-digit ms, so there is no reason to defer it.                               |
+| `authorization_controls` | Airwallex, via the reconciler | Async, retried                       | An HTTP call that can fail or be slow. Desired state is already persisted, so a failure just means the next attempt applies it. |
 
 Splitting them matters: the snapshot that `/api/remote-auth` reads is current the instant the rule evaluates, even if the Airwallex patch is still in flight.
 
 ### Path 2 — Scheduled (the backstop)
 
-| Job | Interval | Why it exists |
-| --- | --- | --- |
-| `sweep-rules` | 5 min | Catch subjects whose event was lost, and re-evaluate time-dependent conditions (`project.daysRemaining`, `active_to` boundaries) that no event announces |
-| `reconcile-drift` | 15 min | Re-diff desired vs applied controls; repair anything Airwallex rejected or that changed outside Allocard |
-| `refresh-attributes` | Per-attribute `refreshIntervalSec` | Poll connector-sourced attributes that have no push mechanism |
-| `escalate-approvals` | 10 min | Escalate requests past their SLA — inherently time-based |
-| `expire-access` | Hourly | Revoke scopes past `validTo` — inherently time-based |
-| `sync-transactions` | 30 min | Backstop for missed Airwallex webhooks |
+| Job                  | Interval                           | Why it exists                                                                                                                                            |
+| -------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sweep-rules`        | 5 min                              | Catch subjects whose event was lost, and re-evaluate time-dependent conditions (`project.daysRemaining`, `active_to` boundaries) that no event announces |
+| `reconcile-drift`    | 15 min                             | Re-diff desired vs applied controls; repair anything Airwallex rejected or that changed outside Allocard                                                 |
+| `refresh-attributes` | Per-attribute `refreshIntervalSec` | Poll connector-sourced attributes that have no push mechanism                                                                                            |
+| `escalate-approvals` | 10 min                             | Escalate requests past their SLA — inherently time-based                                                                                                 |
+| `expire-access`      | Hourly                             | Revoke scopes past `validTo` — inherently time-based                                                                                                     |
+| `sync-transactions`  | 30 min                             | Backstop for missed Airwallex webhooks                                                                                                                   |
 
-Note that three of these are *genuinely* time-triggered: nothing happens in the world when an approval breaches its SLA or an access scope expires, so only a clock can notice. Those aren't compensating for a weak event path.
+Note that three of these are _genuinely_ time-triggered: nothing happens in the world when an approval breaches its SLA or an access scope expires, so only a clock can notice. Those aren't compensating for a weak event path.
 
 ### The one case where latency is inherent
 
 A poll-only attribute cannot beat its own refresh interval. If `campaign.roas` comes from an analytics API with no webhook, you cannot know it changed until you look, so `refreshIntervalSec` is the floor on end-to-end latency. That's a property of the data source, not a flaw in the architecture — but it should be visible in the UI. Show `observedAt` next to any attribute driving a limit, so nobody assumes a number is live when it's fifteen minutes old.
 
-Where a source *can* push, make it push: the attribute ingest webhook (`WEBHOOK` source in [`RULES-ENGINE.md`](./RULES-ENGINE.md) §2) takes the same path as any other event and lands in under a second.
+Where a source _can_ push, make it push: the attribute ingest webhook (`WEBHOOK` source in [`RULES-ENGINE.md`](./RULES-ENGINE.md) §2) takes the same path as any other event and lands in under a second.
 
 ### Latency budget
 
-| From → to | Target |
-| --- | --- |
-| Attribute write → policy snapshot updated | < 100 ms |
-| Attribute write → rules evaluated, desired state persisted | < 1 s |
-| Desired state → Airwallex controls patched | 1–5 s |
-| Airwallex authorization → budget ledger updated | < 2 s from webhook receipt |
-| Anything the event path dropped → repaired by sweep | < 15 min |
+| From → to                                                  | Target                     |
+| ---------------------------------------------------------- | -------------------------- |
+| Attribute write → policy snapshot updated                  | < 100 ms                   |
+| Attribute write → rules evaluated, desired state persisted | < 1 s                      |
+| Desired state → Airwallex controls patched                 | 1–5 s                      |
+| Airwallex authorization → budget ledger updated            | < 2 s from webhook receipt |
+| Anything the event path dropped → repaired by sweep        | < 15 min                   |
 
 Treat the last row as an alarm, not a target. If sweeps are routinely finding work to do, the event path is broken and the sweep is masking it. Emit a metric for "changes first applied by sweep rather than by event" and keep it near zero.
 
@@ -601,18 +649,18 @@ Both paths call the same functions. The worker entrypoint wires them up:
 
 ```ts
 // src/worker/index.ts
-consume('events', onDomainEvent)          // blocking XREADGROUP — no interval
-consume('webhooks', onAirwallexWebhook)   // blocking XREADGROUP — no interval
+consume('events', onDomainEvent) // blocking XREADGROUP — no interval
+consume('webhooks', onAirwallexWebhook) // blocking XREADGROUP — no interval
 
-schedule('sweep-rules',        { everyMs:  5 * 60_000 })
-schedule('reconcile-drift',    { everyMs: 15 * 60_000 })
-schedule('refresh-attributes', { everyMs:      60_000 })  // checks per-attribute TTLs
+schedule('sweep-rules', { everyMs: 5 * 60_000 })
+schedule('reconcile-drift', { everyMs: 15 * 60_000 })
+schedule('refresh-attributes', { everyMs: 60_000 }) // checks per-attribute TTLs
 schedule('escalate-approvals', { everyMs: 10 * 60_000 })
-schedule('expire-access',      { everyMs: 60 * 60_000 })
-schedule('sync-transactions',  { everyMs: 30 * 60_000 })
+schedule('expire-access', { everyMs: 60 * 60_000 })
+schedule('sync-transactions', { everyMs: 30 * 60_000 })
 ```
 
-Job bodies stay as plain functions in `server/services`; `consume` and `schedule` only decide *when*. That's what keeps a later BullMQ migration confined to this file.
+Job bodies stay as plain functions in `server/services`; `consume` and `schedule` only decide _when_. That's what keeps a later BullMQ migration confined to this file.
 
 ### When to add BullMQ
 
@@ -634,23 +682,23 @@ It is explicitly **not** how correctness is achieved. If a demo needs someone to
 
 Four services in one Railway project, built from a single repository.
 
-| Service | Start command | Notes |
-| --- | --- | --- |
-| `web` | `next start` | Public. Holds the Airwallex webhook URL and `/api/remote-auth`. |
-| `worker` | `tsx src/worker/index.ts` | No public domain. Scales independently of `web`. |
-| `mongo` | Railway plugin | Or MongoDB Atlas if you want change streams and better backups. |
-| `redis` | Railway plugin | Reachable over the private network. |
+| Service  | Start command             | Notes                                                           |
+| -------- | ------------------------- | --------------------------------------------------------------- |
+| `web`    | `next start`              | Public. Holds the Airwallex webhook URL and `/api/remote-auth`. |
+| `worker` | `tsx src/worker/index.ts` | No public domain. Scales independently of `web`.                |
+| `mongo`  | Railway plugin            | Or MongoDB Atlas if you want change streams and better backups. |
+| `redis`  | Railway plugin            | Reachable over the private network.                             |
 
 Both application services build from the same Dockerfile and differ only in start command, so there is exactly one image and no possibility of the two drifting apart.
 
 ```json
 {
   "scripts": {
-    "dev":        "next dev",
+    "dev": "next dev",
     "dev:worker": "tsx watch src/worker/index.ts",
-    "build":      "next build",
-    "start":      "next start",
-    "worker":     "tsx src/worker/index.ts"
+    "build": "next build",
+    "start": "next start",
+    "worker": "tsx src/worker/index.ts"
   }
 }
 ```
@@ -702,6 +750,8 @@ REDIS_URL=
 
 AUTH_SECRET=
 AUTH_URL=http://localhost:3000
+AUTH_GOOGLE_ID=                                     # optional — omit to run email/password only
+AUTH_GOOGLE_SECRET=
 
 AIRWALLEX_BASE_URL=https://api-demo.airwallex.com   # sandbox
 AIRWALLEX_CLIENT_ID=
@@ -727,12 +777,12 @@ Backend phases are reviewed by reading their tests as much as their code, so the
 
 ### Layers
 
-| Layer | Tool | Covers |
-| --- | --- | --- |
-| Unit | Vitest | Pure functions: `computeEffectivePermissions`, the formula evaluator, budget projection, the controls diff, the merge semantics |
-| Integration | Vitest + `mongodb-memory-server` | Repositories and services against a real Mongo, including index and tenancy-plugin behaviour |
-| API | Vitest, route handlers invoked directly | The full matrix below, per endpoint |
-| Contract | Recorded fixtures | The Airwallex client, replayed. **Tests never hit the network.** |
+| Layer       | Tool                                    | Covers                                                                                                                          |
+| ----------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Unit        | Vitest                                  | Pure functions: `computeEffectivePermissions`, the formula evaluator, budget projection, the controls diff, the merge semantics |
+| Integration | Vitest + `mongodb-memory-server`        | Repositories and services against a real Mongo, including index and tenancy-plugin behaviour                                    |
+| API         | Vitest, route handlers invoked directly | The full matrix below, per endpoint                                                                                             |
+| Contract    | Recorded fixtures                       | The Airwallex client, replayed. **Tests never hit the network.**                                                                |
 
 Invoke Route Handlers directly rather than booting a server — they're plain functions taking a `Request`. It's faster and gives typed access to the response body.
 
@@ -745,18 +795,18 @@ expect(res.status).toBe(201)
 
 Every endpoint gets these cases. A phase is not reviewable until each row is either a passing test or an explicit, justified N/A.
 
-| # | Case | Expected |
-| --- | --- | --- |
-| 1 | Unauthenticated | `401` |
-| 2 | Authenticated, no organisation | `403` + `ONBOARDING_INCOMPLETE` |
-| 3 | Member of a *different* org requests this org's resource | `404`, never `403` — a 403 confirms the resource exists |
-| 4 | Authenticated, lacks the required permission | `403` + the permission name |
-| 5 | Access scope excludes the subject | `403` |
-| 6 | Invalid payload (per field) | `422` + field-level errors |
-| 7 | Happy path | `2xx` + response parses against the contract's `output` schema |
-| 8 | Not found | `404` |
-| 9 | Repeated mutation with the same idempotency key | Same result, one side effect |
-| 10 | Audit entry written | Exactly one, with the right actor and subject |
+| #   | Case                                                     | Expected                                                       |
+| --- | -------------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | Unauthenticated                                          | `401`                                                          |
+| 2   | Authenticated, no organisation                           | `403` + `ONBOARDING_INCOMPLETE`                                |
+| 3   | Member of a _different_ org requests this org's resource | `404`, never `403` — a 403 confirms the resource exists        |
+| 4   | Authenticated, lacks the required permission             | `403` + the permission name                                    |
+| 5   | Access scope excludes the subject                        | `403`                                                          |
+| 6   | Invalid payload (per field)                              | `422` + field-level errors                                     |
+| 7   | Happy path                                               | `2xx` + response parses against the contract's `output` schema |
+| 8   | Not found                                                | `404`                                                          |
+| 9   | Repeated mutation with the same idempotency key          | Same result, one side effect                                   |
+| 10  | Audit entry written                                      | Exactly one, with the right actor and subject                  |
 
 Rows 3 and 10 are the ones that catch real bugs. Assert the response body against the contract schema in row 7 — that's what stops the API drifting from the type the client was built against.
 
@@ -764,8 +814,8 @@ Rows 3 and 10 are the ones that catch real bugs. Assert the response body agains
 
 ```ts
 // test/helpers/factories
-const org     = await makeOrg()
-const admin   = await makeMember(org, { orgRole: 'OWNER' })
+const org = await makeOrg()
+const admin = await makeMember(org, { orgRole: 'OWNER' })
 const spender = await makeMember(org, { roleKey: 'PROJECT_SPENDER' })
 const project = await makeProject(org, { budget: money(50_000, 'USD') })
 ```

@@ -32,50 +32,54 @@ Airwallex enforces. Allocard decides.
 
 ### What makes this different from an expense tool
 
-| Conventional spend management | Allocard |
-| --- | --- |
-| Admin sets a card limit | Admin sets a *formula* for the limit |
-| Card is created manually | Card is created when a condition becomes true |
-| Access is granted per-person | Access is a function of role × scope, recomputed on change |
-| Budget is a report | Budget is a live input to card enforcement |
-| Policy is a PDF | Policy is executable and audited per decision |
+| Conventional spend management | Allocard                                                   |
+| ----------------------------- | ---------------------------------------------------------- |
+| Admin sets a card limit       | Admin sets a _formula_ for the limit                       |
+| Card is created manually      | Card is created when a condition becomes true              |
+| Access is granted per-person  | Access is a function of role × scope, recomputed on change |
+| Budget is a report            | Budget is a live input to card enforcement                 |
+| Policy is a PDF               | Policy is executable and audited per decision              |
 
 ## 3. Personas
 
-| Persona | Cares about | Primary surfaces |
-| --- | --- | --- |
-| **Finance Administrator** | Org-wide control, exposure, reconciliation, audit | Org settings, all cards, reports, access reviews |
-| **Project Manager** | Getting their team spending without babysitting it | Project setup, project workspace, cards, controls |
-| **Approver** | Fast, contextual decisions | Approvals queue, purchase request detail |
+| Persona                      | Cares about                                            | Primary surfaces                                        |
+| ---------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| **Finance Administrator**    | Org-wide control, exposure, reconciliation, audit      | Org settings, all cards, reports, access reviews        |
+| **Project Manager**          | Getting their team spending without babysitting it     | Project setup, project workspace, cards, controls       |
+| **Approver**                 | Fast, contextual decisions                             | Approvals queue, purchase request detail                |
 | **Project Spender / Member** | Knowing what they're allowed to spend, and spending it | Assigned project, my cards, purchase requests, receipts |
-| **Procurement Lead** | Vendor and one-time cards | Cards, vendor card creation |
-| **Contractor** | Narrow, time-boxed access | Single project, single card, own transactions only |
-| **Viewer** | Read-only visibility (auditor, exec) | Overview, reports |
+| **Procurement Lead**         | Vendor and one-time cards                              | Cards, vendor card creation                             |
+| **Contractor**               | Narrow, time-boxed access                              | Single project, single card, own transactions only      |
+| **Viewer**                   | Read-only visibility (auditor, exec)                   | Overview, reports                                       |
 
 ## 4. Scope
 
 ### 4.1 In scope
 
 **Identity & organisation**
-- Email/password + OAuth sign-up and sign-in
+
+- Email/password + Google sign-up and sign-in
 - **Onboarding gate:** a session is not "onboarded" until the user owns or belongs to an organisation. Every authenticated route behind the gate redirects to `/onboarding` otherwise.
 - Organisation creation (name, country, base currency, cost centres)
 - Invite by email with a pre-assigned org role; invite acceptance completes onboarding
 - Organisation settings: roles, default approval policy, notification defaults, integrations
 
 **Projects**
+
 - Project list, filterable by status, owner, cost centre
 - Guided project setup wizard: details → budget → members → roles → card structure → controls → approval rules → review → launch
 - Project workspace with tabs: Overview, Budget, People & Access, Cards, Controls & Automation, Activity, Settings
 - Project lifecycle: `DRAFT → PENDING_APPROVAL → ACTIVE → CLOSING → CLOSED → ARCHIVED`
 
 **Budget**
+
 - Approved / committed / actual / remaining, tracked as an append-only ledger
 - Budget categories (workstreams) with their own allocations
 - Budget formulas — an allocation can be an expression over attributes, not just a number
 - Budget change requests with approval, and a full change history
 
 **People, roles & access**
+
 - Seven role templates (Finance Administrator, Project Manager, Approver, Project Spender, Procurement Lead, Contractor, Viewer) plus custom roles
 - A permission matrix covering: view project, view/edit budget, manage members, assign roles, create cards, view card details, make payments, approve requests, edit controls, view transactions, export reports, close project
 - **Access scopes** that narrow a role: whole project, a workstream, a budget category, a specific card, own transactions only, assigned team members only, a time window
@@ -83,12 +87,14 @@ Airwallex enforces. Allocard decides.
 - Access reviews and access change history
 
 **Cards**
+
 - Card structures: shared project card, per-member cards, vendor cards, one-time (single-use) cards
 - Create, assign cardholder, freeze, unfreeze, close
 - Live remaining limit, card status, card access list
 - PCI-safe reveal of card number / expiry / CVV via Airwallex secure iframes
 
-**Controls & automation** *(the differentiator — see [`RULES-ENGINE.md`](./RULES-ENGINE.md))*
+**Controls & automation** _(the differentiator — see [`RULES-ENGINE.md`](./RULES-ENGINE.md))_
+
 - Attribute registry: every value a rule can read
 - Rule builder: `WHEN <trigger> IF <condition> THEN <action>`
 - Spending controls: merchant categories, currencies, transaction limits per interval, active dates, merchant countries, transaction usage scopes
@@ -98,13 +104,15 @@ Airwallex enforces. Allocard decides.
 - Automation history: every rule run, its inputs, its decision, and what it changed
 
 **Requests, approvals & spending**
+
 - Purchase request creation by members
-- Automatic policy check producing one of: *no approval required*, *approval required*, *not permitted* (with the reason)
+- Automatic policy check producing one of: _no approval required_, _approval required_, _not permitted_ (with the reason)
 - Approval routing, approve/reject with reason, escalation
 - Payment readiness: card becomes usable only after approval, when the rule requires it
 - Real-time authorization decisioning (where Airwallex remote authorization is enabled)
 
 **Activity, reporting & closure**
+
 - Transactions, declined transactions, pending approvals, receipts
 - Audit history covering role changes, access changes, rule runs, and card mutations
 - Exports (CSV) for budget, card activity, access & audit
@@ -173,23 +181,23 @@ Nobody was watching a dashboard.
 
 The CSV in this directory enumerates ~183 functions. They map onto these modules — treat this as the build checklist, and the CSV as the detail behind each line.
 
-| Module | Functions | Phase |
-| --- | --- | --- |
-| Authentication & onboarding | Sign up, sign in, create org, invite, accept invite, onboarding gate | 0 |
-| Dashboard | Home, projects, approvals, all cards, reports entry points | 1 |
-| Organisation | Settings, cost centres, role templates, default approval policy, integrations | 1 |
-| Projects & setup wizard | List, create, 9-step setup, launch | 1 |
-| Roles & permissions | Role templates, custom roles, permission matrix, access scopes, effective-permission preview | 2 |
-| Members & access | Add, remove, assign role, assign scope, access reviews, access history | 2 |
-| Budget | Approved / committed / actual / remaining, categories, formulas, change requests, history | 3 |
-| Cards | Create, assign, freeze, unfreeze, close, edit controls, remaining limit, access list, secure reveal | 4 |
-| Attributes & rules engine | Attribute registry, rule builder, triggers, actions, simulation, automation history | 5 |
-| Spending controls | MCC, currency, transaction limits, active dates, countries, usage scopes | 5 |
-| Approval rules & workflow | Thresholds, approver selection, multi-approver, escalation, approve/reject | 6 |
-| Purchase requests & policy checks | Create request, policy evaluation, payment readiness | 6 |
-| Transactions & reconciliation | Webhook ingest, budget updates, limit recompute, receipts | 7 |
-| Activity, audit & reports | Transactions, declines, audit history, exports | 7 |
-| Lifecycle & closure | Lifecycle rules, notifications, closure, final report, archive | 8 |
+| Module                            | Functions                                                                                           | Phase |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- | ----- |
+| Authentication & onboarding       | Sign up, sign in, create org, invite, accept invite, onboarding gate                                | 0     |
+| Dashboard                         | Home, projects, approvals, all cards, reports entry points                                          | 1     |
+| Organisation                      | Settings, cost centres, role templates, default approval policy, integrations                       | 1     |
+| Projects & setup wizard           | List, create, 9-step setup, launch                                                                  | 1     |
+| Roles & permissions               | Role templates, custom roles, permission matrix, access scopes, effective-permission preview        | 2     |
+| Members & access                  | Add, remove, assign role, assign scope, access reviews, access history                              | 2     |
+| Budget                            | Approved / committed / actual / remaining, categories, formulas, change requests, history           | 3     |
+| Cards                             | Create, assign, freeze, unfreeze, close, edit controls, remaining limit, access list, secure reveal | 4     |
+| Attributes & rules engine         | Attribute registry, rule builder, triggers, actions, simulation, automation history                 | 5     |
+| Spending controls                 | MCC, currency, transaction limits, active dates, countries, usage scopes                            | 5     |
+| Approval rules & workflow         | Thresholds, approver selection, multi-approver, escalation, approve/reject                          | 6     |
+| Purchase requests & policy checks | Create request, policy evaluation, payment readiness                                                | 6     |
+| Transactions & reconciliation     | Webhook ingest, budget updates, limit recompute, receipts                                           | 7     |
+| Activity, audit & reports         | Transactions, declines, audit history, exports                                                      | 7     |
+| Lifecycle & closure               | Lifecycle rules, notifications, closure, final report, archive                                      | 8     |
 
 ## 7. Build phases
 
@@ -201,45 +209,45 @@ Per-phase specifications, deliverables, and review checklists live in [`phases/`
 
 Every phase ships route handlers, services, models, contracts, and tests. Nothing renders. Each ends with an API surface reviewable via its contract file and its test output.
 
-| Phase | Scope |
-| --- | --- |
-| [B0](./phases/backend/B0-foundation.md) | Project setup, Mongoose, shared types, error envelope, auth primitives, test harness, seed script |
-| [B1](./phases/backend/B1-auth-organizations.md) | Sign-up, sign-in, session, organisation creation, invites, onboarding gate |
-| [B2](./phases/backend/B2-projects.md) | Project CRUD, lifecycle transitions, workstreams, settings |
-| [B3](./phases/backend/B3-access-control.md) | Roles, permission matrix, access scopes, members, `computeEffectivePermissions` |
-| [B4](./phases/backend/B4-budget.md) | Budget ledger, categories, projections, change requests, history |
-| [B5](./phases/backend/B5-cards.md) | Airwallex client, cardholders, card provisioning, controls, lifecycle, PAN tokens |
-| [B6](./phases/backend/B6-rules-engine.md) | Attribute registry, rule DSL, evaluator, desired state, reconciler, simulation |
-| [B7](./phases/backend/B7-requests-approvals.md) | Purchase requests, policy checks, approval routing, escalation |
-| [B8](./phases/backend/B8-money-in-motion.md) | Webhook ingest, transaction mirroring, ledger reconciliation, remote authorization |
-| [B9](./phases/backend/B9-reporting-closure.md) | Activity feeds, audit queries, exports, access reviews, project closure |
+| Phase                                           | Scope                                                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [B0](./phases/backend/B0-foundation.md)         | Project setup, Mongoose, shared types, error envelope, auth primitives, test harness, seed script |
+| [B1](./phases/backend/B1-auth-organizations.md) | Sign-up, sign-in, session, organisation creation, invites, onboarding gate                        |
+| [B2](./phases/backend/B2-projects.md)           | Project CRUD, lifecycle transitions, workstreams, settings                                        |
+| [B3](./phases/backend/B3-access-control.md)     | Roles, permission matrix, access scopes, members, `computeEffectivePermissions`                   |
+| [B4](./phases/backend/B4-budget.md)             | Budget ledger, categories, projections, change requests, history                                  |
+| [B5](./phases/backend/B5-cards.md)              | Airwallex client, cardholders, card provisioning, controls, lifecycle, PAN tokens                 |
+| [B6](./phases/backend/B6-rules-engine.md)       | Attribute registry, rule DSL, evaluator, desired state, reconciler, simulation                    |
+| [B7](./phases/backend/B7-requests-approvals.md) | Purchase requests, policy checks, approval routing, escalation                                    |
+| [B8](./phases/backend/B8-money-in-motion.md)    | Webhook ingest, transaction mirroring, ledger reconciliation, remote authorization                |
+| [B9](./phases/backend/B9-reporting-closure.md)  | Activity feeds, audit queries, exports, access reviews, project closure                           |
 
 ### Track F — Client foundation
 
 No product screens. This track exists so that by the time screens are built, every piece of plumbing already exists and is reviewable in isolation.
 
-| Phase | Scope |
-| --- | --- |
-| [F0](./phases/frontend/F0-foundation.md) | App shell, providers, typed API client, session wiring, error and loading conventions |
-| [F1](./phases/frontend/F1-data-layer.md) | TanStack Query: key factory, one hook per endpoint, invalidation map, optimistic patterns |
-| [F2](./phases/frontend/F2-utils.md) | Money, dates, formatting, permission helpers, form utilities |
+| Phase                                    | Scope                                                                                                 |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [F0](./phases/frontend/F0-foundation.md) | App shell, providers, typed API client, session wiring, error and loading conventions                 |
+| [F1](./phases/frontend/F1-data-layer.md) | TanStack Query: key factory, one hook per endpoint, invalidation map, optimistic patterns             |
+| [F2](./phases/frontend/F2-utils.md)      | Money, dates, formatting, permission helpers, form utilities                                          |
 | [F3](./phases/frontend/F3-ui-library.md) | UI primitives and patterns, plus a `/dev/ui` kitchen-sink page rendering every element in every state |
 
 ### Track A — Application
 
 Screens only, assembled from F-track hooks and components. Each phase maps to the backend phase that already powers it.
 
-| Phase | Screens | Powered by |
-| --- | --- | --- |
-| [A1](./phases/app/A1-auth-onboarding.md) | Sign-up, sign-in, create organisation, accept invite | B1 |
-| [A2](./phases/app/A2-dashboard-projects.md) | Dashboard, project list, project creation wizard | B2 |
-| [A3](./phases/app/A3-people-access.md) | Project workspace shell, overview, people & access, permission preview | B3 |
-| [A4](./phases/app/A4-budget.md) | Budget tab, categories, change requests, history | B4 |
-| [A5](./phases/app/A5-cards.md) | Card list, card detail, secure reveal, lifecycle actions | B5 |
-| [A6](./phases/app/A6-controls-automation.md) | Rule builder, simulation, automation history, "why this limit?" | B6 |
-| [A7](./phases/app/A7-approvals.md) | Purchase requests, approvals queue, decision screens | B7 |
-| [A8](./phases/app/A8-activity.md) | Transactions, declines, receipts, activity feed | B8 |
-| [A9](./phases/app/A9-reports-closure.md) | Reports, exports, access reviews, closure flow | B9 |
+| Phase                                        | Screens                                                                | Powered by |
+| -------------------------------------------- | ---------------------------------------------------------------------- | ---------- |
+| [A1](./phases/app/A1-auth-onboarding.md)     | Sign-up, sign-in, create organisation, accept invite                   | B1         |
+| [A2](./phases/app/A2-dashboard-projects.md)  | Dashboard, project list, project creation wizard                       | B2         |
+| [A3](./phases/app/A3-people-access.md)       | Project workspace shell, overview, people & access, permission preview | B3         |
+| [A4](./phases/app/A4-budget.md)              | Budget tab, categories, change requests, history                       | B4         |
+| [A5](./phases/app/A5-cards.md)               | Card list, card detail, secure reveal, lifecycle actions               | B5         |
+| [A6](./phases/app/A6-controls-automation.md) | Rule builder, simulation, automation history, "why this limit?"        | B6         |
+| [A7](./phases/app/A7-approvals.md)           | Purchase requests, approvals queue, decision screens                   | B7         |
+| [A8](./phases/app/A8-activity.md)            | Transactions, declines, receipts, activity feed                        | B8         |
+| [A9](./phases/app/A9-reports-closure.md)     | Reports, exports, access reviews, closure flow                         | B9         |
 
 ### Review gate
 
@@ -251,7 +259,7 @@ The demo should be able to show, live:
 
 1. A project launched with zero manually-entered card limits.
 2. A card appearing in Airwallex sandbox seconds after project approval, with controls that match the project's attributes.
-3. A simulated transaction that reduces the budget and visibly moves a *different* card's limit.
+3. A simulated transaction that reduces the budget and visibly moves a _different_ card's limit.
 4. A budget floor breach that freezes cards automatically, with the rule run visible in automation history.
 5. A role change that instantly narrows what a member can see and spend.
 6. A purchase request that routes, escalates, gets approved, and unlocks a card.
@@ -259,18 +267,18 @@ The demo should be able to show, live:
 
 ## 9. Non-functional requirements
 
-| Area | Requirement |
-| --- | --- |
-| **Tenancy** | Every read and write is scoped by `orgId` at the data-access layer, not the route handler. Cross-org leakage is the top risk. |
-| **Authorization** | Permissions are enforced server-side on every mutation. The UI hiding a button is a convenience, never a control. |
-| **Propagation** | A change to any attribute must reach the cards that depend on it **within seconds, driven by an event** — never by a polling interval and never by someone pressing a button. Scheduled sweeps exist only to repair what the event path missed, and routinely finding work is an alarm. See [`ARCHITECTURE.md`](./ARCHITECTURE.md) §8. |
-| **Real-time decisions** | Remote authorization responses must return in **under 2.5s** (Airwallex's hard window). Target p99 < 300ms via Redis-cached policy snapshots. |
-| **Idempotency** | Every Airwallex write carries a stable `request_id`. Every inbound webhook is deduplicated by event `id`. |
-| **Determinism** | Rule evaluation with the same inputs must produce the same desired state. Recompute from scratch; never patch incrementally. |
-| **Auditability** | Every card mutation, permission change, and rule run is recorded with actor (user or rule), inputs, and outcome. |
-| **PCI** | The application never receives, stores, or logs a PAN. Sensitive card details are rendered exclusively through Airwallex-hosted iframes. |
-| **Secrets** | Airwallex client ID and API key live server-side only, are never exposed to the client bundle, and are scoped per environment. |
-| **Observability** | Structured logs on every rule run and Airwallex call, correlated by request ID. |
+| Area                    | Requirement                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tenancy**             | Every read and write is scoped by `orgId` at the data-access layer, not the route handler. Cross-org leakage is the top risk.                                                                                                                                                                                                          |
+| **Authorization**       | Permissions are enforced server-side on every mutation. The UI hiding a button is a convenience, never a control.                                                                                                                                                                                                                      |
+| **Propagation**         | A change to any attribute must reach the cards that depend on it **within seconds, driven by an event** — never by a polling interval and never by someone pressing a button. Scheduled sweeps exist only to repair what the event path missed, and routinely finding work is an alarm. See [`ARCHITECTURE.md`](./ARCHITECTURE.md) §8. |
+| **Real-time decisions** | Remote authorization responses must return in **under 2.5s** (Airwallex's hard window). Target p99 < 300ms via Redis-cached policy snapshots.                                                                                                                                                                                          |
+| **Idempotency**         | Every Airwallex write carries a stable `request_id`. Every inbound webhook is deduplicated by event `id`.                                                                                                                                                                                                                              |
+| **Determinism**         | Rule evaluation with the same inputs must produce the same desired state. Recompute from scratch; never patch incrementally.                                                                                                                                                                                                           |
+| **Auditability**        | Every card mutation, permission change, and rule run is recorded with actor (user or rule), inputs, and outcome.                                                                                                                                                                                                                       |
+| **PCI**                 | The application never receives, stores, or logs a PAN. Sensitive card details are rendered exclusively through Airwallex-hosted iframes.                                                                                                                                                                                               |
+| **Secrets**             | Airwallex client ID and API key live server-side only, are never exposed to the client bundle, and are scoped per environment.                                                                                                                                                                                                         |
+| **Observability**       | Structured logs on every rule run and Airwallex call, correlated by request ID.                                                                                                                                                                                                                                                        |
 
 ## 10. Decisions
 

@@ -37,11 +37,11 @@
   - **Do:** Per `.cursor/rules/repositories.mdc`. Note `users` and `organizations` are cross-tenant by nature — take `userId` rather than `OrgContext` where that's genuinely correct, and document why at the top of each file.
   - **Accept:** `pnpm test repositories/`
   - **Notes:** Users/orgs cross-tenant; memberships/invites `OrgContext`-first with documented `allowCrossTenant` helpers for `/api/me`, preview, and onboarding.
-- [ ] **B1.3** — Auth.js setup
+- [x] **B1.3** — Auth.js setup
   - **Files:** `src/server/auth/config.ts`, `src/app/api/auth/[...nextauth]/route.ts`
   - **Do:** Auth.js with a Mongoose adapter. Credentials provider using argon2. One OAuth provider. JWT session carrying `userId`, `orgId`, `orgRole`, `onboarded`.
   - **Accept:** `pnpm test auth/config`
-  - **Notes:**
+  - **Notes:** Custom Mongoose adapter (stock MongoDB adapter conflicts with our strict User schema). Google OAuth optional via `AUTH_GOOGLE_ID`/`SECRET` with `allowDangerousEmailAccountLinking`. JWT caches org context; request-level org resolution is B1.4.
 
 - [ ] **B1.4** — Onboarding derivation and org context
   - **Files:** `src/server/auth/session.ts`, update `src/server/http/withAuth.ts`

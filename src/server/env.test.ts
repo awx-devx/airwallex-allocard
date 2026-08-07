@@ -16,6 +16,8 @@ describe('loadServerEnv', () => {
     expect(env.MONGODB_URI).toBe(validServerEnv.MONGODB_URI)
     expect(env.MONGODB_DB).toBe('allocard')
     expect(env.AUTH_URL).toBe('http://localhost:3000')
+    expect(env.AUTH_GOOGLE_ID).toBeUndefined()
+    expect(env.AUTH_GOOGLE_SECRET).toBeUndefined()
     expect(env.REMOTE_AUTH_MODE).toBe('simulate')
     expect(env.WORKER_SCHEDULER_ENABLED).toBe(true)
     expect(env.REDIS_URL).toBeUndefined()

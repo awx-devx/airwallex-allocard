@@ -4,13 +4,13 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/sign-up` | Email + password, or OAuth |
-| `/sign-in` | Same, plus a return-path redirect |
-| `/onboarding` | The fork: create an organisation, or accept a pending invite |
-| `/onboarding/create-organization` | Name, country, base currency, cost centres |
-| `/invite/[token]` | Invite preview and acceptance |
+| Route                             | Purpose                                                      |
+| --------------------------------- | ------------------------------------------------------------ |
+| `/sign-up`                        | Email + password, or Google                                  |
+| `/sign-in`                        | Same, plus a return-path redirect                            |
+| `/onboarding`                     | The fork: create an organisation, or accept a pending invite |
+| `/onboarding/create-organization` | Name, country, base currency, cost centres                   |
+| `/invite/[token]`                 | Invite preview and acceptance                                |
 
 ## Notes
 
@@ -24,7 +24,8 @@ An invite whose email doesn't match the signed-in user must explain the mismatch
 
 - Sign-up with an existing email — a neutral message that doesn't confirm account existence
 - Expired, revoked, or already-accepted invite, each distinguishable
-- OAuth returning an email that already has a password account
+- Google returning an email that already has a password account — the accounts link, by design
+- Google not configured (`AUTH_GOOGLE_ID` unset) — hide the button rather than render one that 500s
 - A user who is already onboarded hitting `/onboarding` — redirect to the dashboard
 
 ## Review checklist

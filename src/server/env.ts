@@ -10,6 +10,8 @@ const serverEnvSchema = z.object({
 
   AUTH_SECRET: z.string().min(1),
   AUTH_URL: z.string().url().default('http://localhost:3000'),
+  AUTH_GOOGLE_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  AUTH_GOOGLE_SECRET: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
 
   AIRWALLEX_BASE_URL: z.string().url().default('https://api-demo.airwallex.com'),
   AIRWALLEX_CLIENT_ID: z.string().min(1),

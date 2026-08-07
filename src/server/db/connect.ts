@@ -27,6 +27,12 @@ export async function connectDb(options: ConnectDbOptions = {}): Promise<typeof 
     return cache.conn
   }
 
+  // Reuse a connection opened outside this helper (e.g. test harness).
+  if (mongoose.connection.readyState === 1) {
+    cache.conn = mongoose
+    return cache.conn
+  }
+
   if (!cache.promise) {
     let uri = options.uri
     let dbName = options.dbName

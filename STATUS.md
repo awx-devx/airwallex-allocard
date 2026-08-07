@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.3 — Auth.js setup (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.2)
-**Blocked on:** user confirmation before starting B1.3
+**Active task:** B1.4 — Onboarding derivation and org context (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.3)
+**Blocked on:** user confirmation before starting B1.4
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 3 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 4 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.2 Repositories complete:
+B1.3 Auth.js setup complete:
 
-- `users`, `organizations` — cross-tenant (no `OrgContext`)
-- `memberships`, `invites` — `OrgContext` first; `allowCrossTenant` for me/session, token preview, onboarding email lookup
-- Enrichment helpers: `listMembershipsWithUsers`, `listMembershipsWithOrgsForUser`
-- `acceptInviteByTokenHash` — conditional single-use accept
+- Credentials (argon2) + optional Google OAuth
+- Custom Mongoose adapter (`User` + `Account`)
+- JWT carries `userId`, `orgId`, `orgRole`, `onboarded`
+- Route: `/api/auth/[...nextauth]`
 
-**Do not start B1.3 until the user confirms.**
+**Do not start B1.4 until the user confirms.**
 
 ---
 
