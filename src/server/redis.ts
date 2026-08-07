@@ -15,6 +15,7 @@ export type RedisClient = {
   set(key: string, value: string, options?: SetOptions): Promise<boolean>
   del(...keys: string[]): Promise<number>
   incr(key: string): Promise<number>
+  ping(): Promise<'PONG'>
   quit(): Promise<void>
 }
 
@@ -78,6 +79,10 @@ export function createMemoryRedis(): RedisClient {
       return next
     },
 
+    async ping() {
+      return 'PONG' as const
+    },
+
     async quit() {
       store.clear()
     },
@@ -89,6 +94,7 @@ type IoRedisLike = {
   set(key: string, value: string, ...args: Array<string | number>): Promise<string | null>
   del(...keys: string[]): Promise<number>
   incr(key: string): Promise<number>
+  ping(): Promise<string>
   quit(): Promise<'OK'>
 }
 
@@ -120,6 +126,14 @@ export function createIoRedisClient(client: IoRedisLike | object): RedisClient {
 
     async incr(key) {
       return redis.incr(key)
+    },
+
+    async ping() {
+      const result = await redis.ping()
+      if (result !== 'PONG') {
+        throw new Error(`Unexpected Redis PING response: ${result}`)
+      }
+      return 'PONG'
     },
 
     async quit() {

@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B0 — Foundation
-**Active task:** B0.13 — Health endpoint and `pnpm verify`
-**Last green `pnpm verify`:** 2026-08-07 (B0.12)
+**Active phase:** B1 — Auth & organisations
+**Active task:** B1.0 — Schemas and contracts
+**Last green `pnpm verify`:** 2026-08-08 (B0.13)
 **Blocked on:** nothing
 
 ---
@@ -13,8 +13,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
-| B     | B0 Foundation           | **in progress** | 12 / 13 |
-| B     | B1 Auth & organisations | not started     | 0 / 15  |
+| B     | B0 Foundation           | **complete**    | 13 / 13 |
+| B     | B1 Auth & organisations | **in progress** | 0 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. Only B0 and B1 exist so far — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0 and B1 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.12 seed script is in (idempotent org + owner; B1 appends). Next is B0.13 — `GET /api/health` and confirm `verify` script. Last task of B0.
+B0 Foundation is complete (13/13). Next is **B1.0 — Schemas and contracts** — STOP for review after writing contracts (especially `meResponse`) before implementing further B1 tasks. B1-TASKS.md already exists. Run B0 phase exit checklist when convenient.
 
 ---
 

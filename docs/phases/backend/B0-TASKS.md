@@ -82,7 +82,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm seed && pnpm seed` succeeds twice with no duplicates.
   - **Notes:**
 
-- [ ] **B0.13** — Health endpoint and `pnpm verify`
+- [x] **B0.13** — Health endpoint and `pnpm verify`
   - **Files:** `src/app/api/health/route.ts`, `package.json`
   - **Do:** `GET /api/health` checking Mongo and Redis, returning 200 when both are up and 503 otherwise with which failed. `verify` script = `typecheck && lint && test`.
   - **Accept:** `pnpm verify` green; health returns 503 with Mongo stopped.

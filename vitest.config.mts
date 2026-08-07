@@ -43,6 +43,8 @@ export default defineConfig({
           include: [
             'src/server/models/**/*.test.ts',
             'src/server/services/**/*.test.ts',
+            'src/server/health*.test.ts',
+            'src/app/**/*.test.ts',
             'test/**/*.test.ts',
           ],
         },
