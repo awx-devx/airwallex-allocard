@@ -3,8 +3,8 @@
 Single source of truth for *where the build is*. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.1 — Project scaffold
-**Last green `pnpm verify`:** never
+**Active task:** B0.2 — Lint, format, and the import boundary
+**Last green `pnpm verify`:** 2026-08-07 (B0.1)
 **Blocked on:** nothing
 
 ---
@@ -13,7 +13,7 @@ Single source of truth for *where the build is*. Update at the end of every task
 
 | Track | Phase | Status | Tasks |
 | --- | --- | --- | --- |
-| B | B0 Foundation | **in progress** | 0 / 13 |
+| B | B0 Foundation | **in progress** | 1 / 13 |
 | B | B1 Auth & organisations | not started | 0 / 15 |
 | B | B2 Projects | not started | — |
 | B | B3 Access control | not started | — |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Nothing yet — B0.1 is the starting point.
+B0.1 scaffold is in. Next is B0.2 — ESLint import boundary, Prettier, husky pre-commit.
 
 ---
 

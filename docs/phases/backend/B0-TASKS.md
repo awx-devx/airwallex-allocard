@@ -10,7 +10,7 @@ No contracts task: B0 builds the *machinery* for contracts, not any domain's con
 
 ## Tasks
 
-- [ ] **B0.1** — Project scaffold
+- [x] **B0.1** — Project scaffold
   - **Files:** `package.json`, `tsconfig.json`, `next.config.ts`, `.gitignore`, `src/app/layout.tsx`, `src/app/page.tsx`
   - **Do:** Next.js App Router + TypeScript. `tsconfig` with `strict: true`, `noUncheckedIndexedAccess: true`, `paths: { "@/*": ["./src/*"] }`. pnpm. Scripts: `dev`, `build`, `start`, `typecheck`, `lint`, `test`, `verify`.
   - **Accept:** `pnpm typecheck && pnpm build`
