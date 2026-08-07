@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B0 — Foundation
-**Active task:** B0.8 — HTTP primitives
-**Last green `pnpm verify`:** 2026-08-07 (B0.7)
+**Active task:** B0.9 — Audit primitive
+**Last green `pnpm verify`:** 2026-08-07 (B0.8)
 **Blocked on:** nothing
 
 ---
@@ -13,7 +13,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 | Track | Phase                   | Status          | Tasks  |
 | ----- | ----------------------- | --------------- | ------ |
-| B     | B0 Foundation           | **in progress** | 7 / 13 |
+| B     | B0 Foundation           | **in progress** | 8 / 13 |
 | B     | B1 Auth & organisations | not started     | 0 / 15 |
 | B     | B2 Projects             | not started     | —      |
 | B     | B3 Access control       | not started     | —      |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B0.7 AppError + serializeError is in. Next is B0.8 — withAuth, withValidation, respond, requirePermission stub. Session resolution stubbed until B1.
+B0.8 HTTP primitives are in (`withAuth`, `withValidation`, `respond`, `requirePermission` stub). Session seam is `setSessionResolver` — B1 replaces it. Next is B0.9 — audit log model + service.
 
 ---
 

@@ -52,7 +52,7 @@ No contracts task: B0 builds the _machinery_ for contracts, not any domain's con
   - **Accept:** `pnpm test http/errors` — every code maps to the right status; unknown errors become `INTERNAL` without leaking a stack.
   - **Notes:**
 
-- [ ] **B0.8** — HTTP primitives
+- [x] **B0.8** — HTTP primitives
   - **Files:** `src/server/http/withAuth.ts`, `withValidation.ts`, `respond.ts`, `requirePermission.ts`
   - **Do:** `withAuth` resolves the session, builds `OrgContext { orgId, userId, orgRole }`, enforces the onboarding gate, catches `AppError` and serialises. `withValidation(schema, handler)` parses body/query into typed input, throwing `VALIDATION_FAILED` with field errors. `respond` helpers `ok`/`created`/`noContent`. `requirePermission` is a **stub** here: allow org `OWNER`/`ADMIN`, throw otherwise — B3 makes it real.
   - **Accept:** `pnpm test http/` — 401 without session, 403 without org, 422 on bad payload, envelope shape correct.
