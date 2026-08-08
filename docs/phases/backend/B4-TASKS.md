@@ -89,12 +89,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.3 — Projection pure function
 
-- [ ] **B4.3**
+- [x] **B4.3**
 - **Files:** `src/server/services/budget/projectProjection.ts`, `src/server/services/budget/projectProjection.test.ts`
 - **Do:** Export projectBudget(entries) returning a budget snapshot without updatedAt. Formulas: approved = sum(APPROVAL) + sum(ADJUSTMENT); committed = sum(COMMITMENT) - sum(RELEASE); actual = sum(ACTUAL); remaining = approved - committed - actual; plus utilisationPct and overCommitted per B4.0. No I/O. Property-style test: random sequences of entries → snapshot equals recompute-from-scratch (same function twice is fine; later ledger tests compare DB snapshot to this function).
 - **Pattern:** `src/server/services/projects/transitions.ts` (pure, table-driven tests)
 - **Accept:** `pnpm test budget/projectProjection` — long mixed sequence; negative remaining flagged; RELEASE reduces committed
-- **Notes:**
+- **Notes:** utilisationPct uses Math.floor; approved===0 → 100 if utilised>0 else 0. remaining never clamped; overCommitted = remaining < 0.
 
 ### B4.4 — Budget repositories
 
