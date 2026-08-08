@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.13 — Seed extension (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B3.12)
-**Blocked on:** user confirmation before starting B3.13
+**Active task:** B3 phase exit (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.13)
+**Blocked on:** user confirmation before B3 phase exit (sign-off + generate `B4-TASKS.md`)
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 13 / 14 |
+| B     | B3 Access control       | **in progress** | 14 / 14 |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B2 phase exit complete. Generated `docs/phases/backend/B3-TASKS.md`.
+B3.13 committed — all B3 tasks done. Phase exit checklist in `B3-TASKS.md` still open: sign off review checklist, mark phase complete, generate `docs/phases/backend/B4-TASKS.md`, set active phase B4.
 
 Carried forward:
 
@@ -73,16 +73,7 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-B3.12 committed. Do not start B3.13 until the user confirms.
-Role template permission lists approved from PRD personas (no CSV in-repo).
-`computeEffectivePermissions`: OWNER/ADMIN widen past role + time window; MEMBER empty outside window; `scopeCoversSubject` handles OWN/CARD narrowing.
-`requirePermission`: OWNER/ADMIN short-circuit; project subject when present; org-wide via any membership for `project.view|create`, `member.*`, `role.assign`; `org.manage` OWNER/ADMIN only; resource-scoped perms without `projectId` denied.
-Transition map: →PENDING_APPROVAL/CANCELLED=`project.edit`, →ACTIVE=`request.approve`, →CLOSING/CLOSED/ARCHIVED=`project.close`.
-MEMBER project list filtered to projects granting `project.view`.
-Preview uses the same `computeEffectivePermissions` as enforcement (hypothetical org MEMBER).
-Access reviews: CONFIRM keeps access; REVOKE soft-removes the project member.
-`GET /api/me/permissions`: OWNER/ADMIN → all org projects with full permissions; MEMBER → recomputed active memberships only.
-B3 events/audits covered in `test/events/members.test.ts` and `test/audit/b3.test.ts`.
+Seed: `seedB3` — 7 role templates; ACTIVE members span all templates/scopes; personas approver/spender/contractor/procurement (`password123`).
 
 Contract notes locked in B3.0:
 

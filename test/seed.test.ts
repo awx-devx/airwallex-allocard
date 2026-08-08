@@ -58,17 +58,43 @@ describe('pnpm seed idempotency', () => {
       code: SEED.projectClosedCode,
       status: 'CLOSED',
     })
+    const roles = await mongoose.connection.collection('roles').countDocuments({
+      isTemplate: true,
+    })
+    const projectMembers = await mongoose.connection
+      .collection('projectMembers')
+      .countDocuments({ removedAt: null })
+    const approverUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.approverEmail,
+    })
+    const spenderUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.spenderEmail,
+    })
+    const contractorUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.contractorEmail,
+    })
+    const procurementUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.procurementEmail,
+    })
 
     expect(ownerUsers).toBe(1)
     expect(adminUsers).toBe(1)
     expect(memberUsers).toBe(1)
     expect(orgs).toBe(1)
-    expect(memberships).toBe(3)
+    // owner + admin + member + approver + spender + contractor + procurement
+    expect(memberships).toBe(7)
     expect(pendingInvites).toBe(1)
     expect(projects).toBe(4)
     expect(draft).toBe(1)
     expect(active).toBe(1)
     expect(closing).toBe(1)
     expect(closed).toBe(1)
+    expect(roles).toBe(7)
+    // 7 on ACTIVE (all templates) + 1 viewer on DRAFT
+    expect(projectMembers).toBe(8)
+    expect(approverUsers).toBe(1)
+    expect(spenderUsers).toBe(1)
+    expect(contractorUsers).toBe(1)
+    expect(procurementUsers).toBe(1)
   })
 })

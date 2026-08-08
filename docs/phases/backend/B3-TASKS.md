@@ -113,11 +113,11 @@
   - **Accept:** `pnpm test events/members` and `pnpm test audit/b3`
   - **Notes:** Events: `test/events/members.test.ts` covers added/role_changed/scope_changed/removed once each (`subjectType: projectMember`). Audits: `test/audit/b3.test.ts` covers role create/update/delete, member add/update/remove, accessReview.resolved.
 
-- [ ] **B3.13** — Seed extension
+- [x] **B3.13** — Seed extension
   - **Files:** `scripts/seed.ts`
   - **Do:** `seedB3()` — role templates for demo org; at least one project with members spanning several templates/scopes useful for A3. Idempotent.
   - **Accept:** `pnpm seed && pnpm seed` (or `pnpm test seed`)
-  - **Notes:**
+  - **Notes:** `seedB3` seeds 7 role templates; ACTIVE has all seven templates as members (OWNER=FA, ADMIN=PM, MEMBER=viewer/OWN, plus approver/spender/contractor/procurement personas); MEMBER also viewer on DRAFT. Scopes: PROJECT, OWN, WORKSTREAM(`ws-demo`).
 
 ---
 

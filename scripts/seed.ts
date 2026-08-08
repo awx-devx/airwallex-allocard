@@ -17,6 +17,8 @@ import {
   hashInviteToken,
   inviteExpiresAt,
 } from '../src/server/services/invites/token'
+import { seedRoleTemplates } from '../src/server/services/organizations/seedRoleTemplates'
+import { ROLE_TEMPLATES } from '../src/shared/constants/roleTemplates'
 
 export const SEED = {
   ownerEmail: 'owner@allocard.local',
@@ -37,6 +39,15 @@ export const SEED = {
   projectActiveCode: 'SEED-ACTIVE',
   projectClosingCode: 'SEED-CLOSING',
   projectClosedCode: 'SEED-CLOSED',
+  /** B3 persona emails (org MEMBER + project roles on SEED-ACTIVE). */
+  approverEmail: 'approver@allocard.local',
+  approverName: 'Seed Approver',
+  spenderEmail: 'spender@allocard.local',
+  spenderName: 'Seed Spender',
+  contractorEmail: 'contractor@allocard.local',
+  contractorName: 'Seed Contractor',
+  procurementEmail: 'procurement@allocard.local',
+  procurementName: 'Seed Procurement',
 } as const
 
 type SeedUser = {
@@ -349,6 +360,171 @@ export async function seedB2(input: { orgId: string; ownerId: string }): Promise
   }
 }
 
+type SeedScope =
+  { level: 'PROJECT' } | { level: 'OWN' } | { level: 'WORKSTREAM'; workstreamIds: string[] }
+
+async function roleIdByKey(orgId: string, key: string): Promise<string> {
+  const role = await mongoose.connection.collection('roles').findOne({ orgId, key })
+  if (!role) {
+    throw new Error(`Seed role template missing for key=${key}`)
+  }
+  return String(role._id)
+}
+
+function permissionsForTemplate(key: string): string[] {
+  const template = ROLE_TEMPLATES.find((t) => t.key === key)
+  if (!template) {
+    throw new Error(`Unknown role template key=${key}`)
+  }
+  return [...template.permissions]
+}
+
+async function upsertProjectMember(input: {
+  orgId: string
+  projectId: string
+  userId: string
+  roleKey: string
+  scope: SeedScope
+  addedBy: string
+}): Promise<{ created: boolean }> {
+  const projectMembers = mongoose.connection.collection('projectMembers')
+  const existing = await projectMembers.findOne({
+    orgId: input.orgId,
+    projectId: input.projectId,
+    userId: input.userId,
+    removedAt: null,
+  })
+  if (existing) {
+    return { created: false }
+  }
+
+  const roleId = await roleIdByKey(input.orgId, input.roleKey)
+  const now = new Date()
+  await projectMembers.insertOne({
+    _id: new mongoose.Types.ObjectId(),
+    orgId: input.orgId,
+    projectId: input.projectId,
+    userId: input.userId,
+    roleId,
+    scope: input.scope,
+    effectivePermissions: permissionsForTemplate(input.roleKey),
+    addedBy: input.addedBy,
+    addedAt: now,
+    removedAt: null,
+    createdAt: now,
+    updatedAt: now,
+  })
+  return { created: true }
+}
+
+/**
+ * B3 — role templates for the demo org; ACTIVE (+ draft viewer) project members
+ * spanning several templates/scopes for A3 people & access.
+ * Idempotent on role `(orgId, key)` and active membership `(orgId, projectId, userId)`.
+ */
+export async function seedB3(input: {
+  orgId: string
+  ownerId: string
+  adminId: string
+  memberId: string
+  activeProjectId: string
+  draftProjectId: string
+}): Promise<{ roleKeys: number; createdMembers: number }> {
+  await seedRoleTemplates(input.orgId)
+
+  const approver = await upsertMemberUser(SEED.approverEmail, SEED.approverName, input.orgId)
+  const spender = await upsertMemberUser(SEED.spenderEmail, SEED.spenderName, input.orgId)
+  const contractor = await upsertMemberUser(SEED.contractorEmail, SEED.contractorName, input.orgId)
+  const procurement = await upsertMemberUser(
+    SEED.procurementEmail,
+    SEED.procurementName,
+    input.orgId,
+  )
+
+  const approverId = String(approver._id)
+  const spenderId = String(spender._id)
+  const contractorId = String(contractor._id)
+  const procurementId = String(procurement._id)
+
+  await upsertMembership(input.orgId, approverId, 'MEMBER')
+  await upsertMembership(input.orgId, spenderId, 'MEMBER')
+  await upsertMembership(input.orgId, contractorId, 'MEMBER')
+  await upsertMembership(input.orgId, procurementId, 'MEMBER')
+
+  const memberships: Array<{
+    userId: string
+    projectId: string
+    roleKey: string
+    scope: SeedScope
+  }> = [
+    {
+      userId: input.ownerId,
+      projectId: input.activeProjectId,
+      roleKey: 'finance_administrator',
+      scope: { level: 'PROJECT' },
+    },
+    {
+      userId: input.adminId,
+      projectId: input.activeProjectId,
+      roleKey: 'project_manager',
+      scope: { level: 'PROJECT' },
+    },
+    {
+      userId: input.memberId,
+      projectId: input.activeProjectId,
+      roleKey: 'viewer',
+      scope: { level: 'OWN' },
+    },
+    {
+      userId: approverId,
+      projectId: input.activeProjectId,
+      roleKey: 'approver',
+      scope: { level: 'PROJECT' },
+    },
+    {
+      userId: spenderId,
+      projectId: input.activeProjectId,
+      roleKey: 'project_spender',
+      scope: { level: 'WORKSTREAM', workstreamIds: ['ws-demo'] },
+    },
+    {
+      userId: contractorId,
+      projectId: input.activeProjectId,
+      roleKey: 'contractor',
+      scope: { level: 'OWN' },
+    },
+    {
+      userId: procurementId,
+      projectId: input.activeProjectId,
+      roleKey: 'procurement_lead',
+      scope: { level: 'PROJECT' },
+    },
+    {
+      userId: input.memberId,
+      projectId: input.draftProjectId,
+      roleKey: 'viewer',
+      scope: { level: 'PROJECT' },
+    },
+  ]
+
+  let createdMembers = 0
+  for (const row of memberships) {
+    const result = await upsertProjectMember({
+      orgId: input.orgId,
+      projectId: row.projectId,
+      userId: row.userId,
+      roleKey: row.roleKey,
+      scope: row.scope,
+      addedBy: input.ownerId,
+    })
+    if (result.created) {
+      createdMembers += 1
+    }
+  }
+
+  return { roleKeys: ROLE_TEMPLATES.length, createdMembers }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -366,7 +542,16 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
     `B2: draft=${b2.draftId} active=${b2.activeId} closing=${b2.closingId} closed=${b2.closedId} created=${b2.createdCount}`,
   )
 
-  // B3: await seedB3()
+  const b3 = await seedB3({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    adminId: b1.adminId,
+    memberId: b1.memberId,
+    activeProjectId: b2.activeId,
+    draftProjectId: b2.draftId,
+  })
+  console.log(`B3: roleTemplates=${b3.roleKeys} projectMembersCreated=${b3.createdMembers}`)
+
   // B4: await seedB4()
   // B5: await seedB5()
   // B6: await seedB6()
