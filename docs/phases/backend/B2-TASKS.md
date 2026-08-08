@@ -57,11 +57,11 @@
   - **Accept:** `pnpm test api/projects` — standard matrix rows that apply
   - **Notes:** Overview stubs via `emptyProjectOverview`. List query `page`/`pageSize` use `z.coerce` for query strings. Audit `project.created`.
 
-- [ ] **B2.5** — Partial update
+- [x] **B2.5** — Partial update
   - **Files:** `src/app/api/projects/[id]/route.ts` (PATCH), `src/server/services/projects/update.ts`
   - **Do:** Permissive `updateProjectInput`. Reject fields not editable in current status. Reject PATCH on `CLOSED`/`ARCHIVED`. Audit before/after for field changes. `project.edit`.
   - **Accept:** `pnpm test api/projects-update` — CLOSED rejected; partial DRAFT OK
-  - **Notes:**
+  - **Notes:** CLOSED/ARCHIVED/CANCELLED → 409. Non-terminal statuses allow all `updateProjectInput` fields via `EDITABLE_BY_STATUS`. Audit `project.updated` with before/after.
 
 - [ ] **B2.6** — Transition endpoint
   - **Files:** `src/app/api/projects/[id]/transition/route.ts`, `src/server/services/projects/transition.ts`

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B2 — Projects
-**Active task:** B2.5 — Partial update
-**Last green `pnpm verify`:** 2026-08-09 (B2.4)
+**Active task:** B2.6 — Transition endpoint
+**Last green `pnpm verify`:** 2026-08-09 (B2.5)
 **Blocked on:** nothing
 
 ---
@@ -15,7 +15,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **in progress** | 5 / 12  |
+| B     | B2 Projects             | **in progress** | 6 / 12  |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B2.4 create/list/get done. Next: B2.5 partial update.
+B2.5 partial update done. Next: B2.6 transition endpoint.
 
 Carried forward:
 
@@ -69,6 +69,7 @@ Carried forward:
 - **`TODO(B4)`:** overview `budgetRemaining` / `budgetSpent` stay null until B4
 - **`TODO(B3)` / `TODO(B5)` / `TODO(B7)`:** overview member/card/approval counts stub to 0
 - **Cancel graph:** `CANCELLED` only from `DRAFT` (spec `└`); not from `PENDING_APPROVAL`
+- **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 
 ---
 
