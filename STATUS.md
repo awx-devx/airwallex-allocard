@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.6 — Roles API (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B3.5)
-**Blocked on:** user confirmation before starting B3.6
+**Active task:** B3.7 — Project members API (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.6)
+**Blocked on:** user confirmation before starting B3.7
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 6 / 14  |
+| B     | B3 Access control       | **in progress** | 7 / 14  |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -74,10 +74,11 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-B3.5 committed. Do not start B3.6 until the user confirms.
+B3.6 committed. Do not start B3.7 until the user confirms.
 Role template permission lists approved from PRD personas (no CSV in-repo).
 `computeEffectivePermissions`: OWNER/ADMIN widen past role + time window; MEMBER empty outside window; `scopeCoversSubject` handles OWN/CARD narrowing.
 `requirePermission`: OWNER/ADMIN short-circuit; subject-scoped perms require `projectId`; uses computeEffectivePermissions + scopeCoversSubject.
+Roles API is org-wide — MEMBER without elevated org role is denied until B3.11 can grant via project membership.
 
 Contract notes locked in B3.0:
 

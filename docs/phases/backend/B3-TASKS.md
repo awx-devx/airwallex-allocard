@@ -62,7 +62,7 @@
   - **Accept:** `pnpm test http/requirePermission`
   - **Notes:**
 
-- [ ] **B3.6** — Roles API
+- [x] **B3.6** — Roles API
   - **Files:** `src/app/api/roles/route.ts`, `src/app/api/roles/[id]/route.ts`, `src/server/services/roles/*`
   - **Do:** List/create/update/delete per spec table. Template-in-use edits need `force` or reject. Delete rejected while assigned. Audit + events as applicable.
   - **Accept:** `pnpm test api/roles` — matrix rows that apply
