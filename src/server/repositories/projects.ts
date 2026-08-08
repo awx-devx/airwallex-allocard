@@ -82,6 +82,22 @@ function nullableIso(value: unknown): string | null {
   return String(value)
 }
 
+function toBudgetSnapshot(raw: unknown): Project['budgetSnapshot'] {
+  if (raw === null || raw === undefined) {
+    return null
+  }
+  const row = raw as Record<string, unknown>
+  return {
+    approved: Number(row.approved),
+    committed: Number(row.committed),
+    actual: Number(row.actual),
+    remaining: Number(row.remaining),
+    utilisationPct: Number(row.utilisationPct),
+    overCommitted: Boolean(row.overCommitted),
+    updatedAt: String(row.updatedAt),
+  }
+}
+
 function toProject(doc: Parameters<typeof toDomain>[0]): Project {
   const raw = toDomain<Record<string, unknown>>(doc)
   return {
@@ -98,6 +114,8 @@ function toProject(doc: Parameters<typeof toDomain>[0]): Project {
     endDate: nullableIso(raw.endDate),
     workstreams: toWorkstreams(raw.workstreams),
     cardStructure: toCardStructure(raw.cardStructure),
+    // Model field lands in B4.1; until then every project maps as null.
+    budgetSnapshot: toBudgetSnapshot(raw.budgetSnapshot),
     approvedAt: nullableIso(raw.approvedAt),
     launchedAt: nullableIso(raw.launchedAt),
     closedAt: nullableIso(raw.closedAt),

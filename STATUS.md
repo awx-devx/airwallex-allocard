@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B4 — Budget ledger
-**Active task:** B4.0 — Schemas and contracts (await go-ahead / contract review)
-**Last green `pnpm verify`:** 2026-08-09 (B3 phase exit)
-**Blocked on:** user confirmation before starting B4.0 (contracts-first STOP)
+**Active task:** B4.1 — Budget models + `Project.budgetSnapshot`
+**Last green `pnpm verify`:** 2026-08-09 (B4.0)
+**Blocked on:** nothing
 
 ---
 
@@ -17,7 +17,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
-| B     | B4 Budget               | **in progress** | 0 / 16  |
+| B     | B4 Budget               | **in progress** | 1 / 16  |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
@@ -54,13 +54,25 @@ _None yet._
 
 ## Decisions pending user review
 
-_None yet._ (B4.0 contract STOP is the next review gate — see `docs/phases/backend/B4-TASKS.md`)
+_None yet._
 
 ---
 
 ## Notes for the next session
 
-B3 phase exit complete. Generated `docs/phases/backend/B4-TASKS.md`. Do not start B4.0 until the user confirms (contracts-first).
+B4.0 contracts locked (recommendations accepted 2026-08-09). Next: B4.1 models.
+
+B4.0 locked policies (do not reopen):
+
+1. Σ(category.allocated) > approvedAmount → `422 VALIDATION_FAILED`
+2. `remaining` may be negative; `overCommitted: remaining < 0` — never clamp
+3. Public POST entries: no `type` on wire; service forces `ADJUSTMENT`+`MANUAL`
+4. GET with no budget → `{ budget: null, projection: zeros }`
+5. Category create: if both `allocated` and `formula`, formula wins
+6. History mirrors `projectHistoryEntrySchema` (`at`)
+7. `lifecycleId` on entries, nullable until B8
+8. Default `thresholdPcts`: `[80, 90, 100]`
+9. `Project.budgetSnapshot` on public project schema (null until first ledger write)
 
 Carried forward into B4:
 

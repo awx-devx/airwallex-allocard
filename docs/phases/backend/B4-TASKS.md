@@ -8,7 +8,7 @@
 
 ## Contracts first
 
-- [ ] **B4.0** — Schemas and contracts
+- [x] **B4.0** — Schemas and contracts
   - **Files:**
     - `src/shared/enums/budgetEntryType.ts`
     - `src/shared/enums/budgetEntrySourceType.ts`
@@ -54,7 +54,16 @@
     2. `remaining` **may be negative**; set `overCommitted: true` when `remaining < 0` — never clamp silently.
     3. Public API **cannot** create `COMMITMENT` or `ACTUAL` (or `RELEASE` / `APPROVAL` via POST entries) — only `ADJUSTMENT`.
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** Locked in B4.0:
+    1. Σ(category.allocated) > approvedAmount → `422 VALIDATION_FAILED`.
+    2. `remaining` may be negative; `overCommitted: remaining < 0` — never clamp.
+    3. Public POST entries accept only amount/note/categoryId — service forces `ADJUSTMENT`+`MANUAL`; no `type` on the wire.
+    4. GET with no budget → `{ budget: null, projection: zeros }` (`budgetDetail.budget` nullable).
+    5. Category create: if both `allocated` and `formula`, formula wins (evaluated into `allocated` at write).
+    6. History mirrors `projectHistoryEntrySchema` (`at`, not `createdAt`).
+    7. `lifecycleId` required on entry schema, nullable until B8.
+    8. `thresholdPcts` default `[80, 90, 100]` when omitted on PUT (service).
+    9. `Project.budgetSnapshot` on public project schema (null until first ledger write); repo maps missing field → null until B4.1 model.
 
 ---
 

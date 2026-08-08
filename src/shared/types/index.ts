@@ -42,9 +42,32 @@ export type {
   ResolveAccessReviewInput,
   ListAccessReviewsQuery,
 } from '@/shared/types/accessReview'
+export type {
+  Budget,
+  BudgetCategory,
+  BudgetChangeRequest,
+  BudgetDetail,
+  BudgetEntry,
+  BudgetEntryList,
+  BudgetHistoryEntry,
+  BudgetProjection,
+  BudgetSnapshot,
+  CreateBudgetCategoryInput,
+  CreateBudgetChangeRequestInput,
+  CreateBudgetEntryInput,
+  DecideBudgetChangeRequestInput,
+  ListBudgetEntriesQuery,
+  PutBudgetInput,
+  UpdateBudgetCategoryInput,
+  ValidateFormulaInput,
+  ValidateFormulaOutput,
+} from '@/shared/types/budget'
 export type { MeProjectPermissions, MePermissions } from '@/shared/types/mePermissions'
 export type { ProjectStatus } from '@/shared/enums/projectStatus'
 export type { Permission } from '@/shared/enums/permissions'
 export type { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 export type { AccessReviewStatus, AccessReviewResolution } from '@/shared/enums/accessReviewStatus'
+export type { BudgetEntryType } from '@/shared/enums/budgetEntryType'
+export type { BudgetEntrySourceType } from '@/shared/enums/budgetEntrySourceType'
+export type { BudgetChangeRequestStatus } from '@/shared/enums/budgetChangeRequestStatus'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'

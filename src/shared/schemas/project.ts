@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { ActorType } from '@/shared/enums/audit'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { idSchema, isoDateSchema, moneySchema } from '@/shared/schemas/base'
+import { budgetSnapshotSchema } from '@/shared/schemas/budget'
 
 export const workstreamSchema = z.object({
   id: idSchema,
@@ -37,6 +38,11 @@ export const projectSchema = z.object({
   endDate: isoDateSchema.nullable(),
   workstreams: z.array(workstreamSchema),
   cardStructure: cardStructureSchema,
+  /**
+   * Denormalised ledger projection. Null until the first budget ledger write.
+   * Recomputed on every append; never sum the ledger on the hot path.
+   */
+  budgetSnapshot: budgetSnapshotSchema.nullable(),
   approvedAt: isoDateSchema.nullable(),
   launchedAt: isoDateSchema.nullable(),
   closedAt: isoDateSchema.nullable(),
