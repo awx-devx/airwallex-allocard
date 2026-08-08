@@ -69,11 +69,11 @@
   - **Accept:** `pnpm test api/project-transition` — full matrix; concurrent launch once
   - **Notes:** → ACTIVE emits approved+launched. Concurrent launch → one 200 / one 409. `hasBudget` stubbed true. `noActiveCards` no-op. Permission map stubbed to `project.edit` (TODO(B3)).
 
-- [ ] **B2.7** — Workstreams
+- [x] **B2.7** — Workstreams
   - **Files:** `src/app/api/projects/[id]/workstreams/route.ts`, `.../[wsId]/route.ts`, `src/server/services/projects/workstreams.ts`
   - **Do:** List/create/update/delete. Delete rejected if budget categories reference it — stub `TODO(B4)` (allow delete until B4, or reject with a clear TODO message; prefer reject only when a real reference API exists — until then allow and note STATUS).
   - **Accept:** `pnpm test api/workstreams`
-  - **Notes:**
+  - **Notes:** Delete allowed until B4 reference API exists. Audit create/update/delete. List=`project.view`, mutate=`project.edit`.
 
 - [ ] **B2.8** — Change owner + history
   - **Files:** `src/app/api/projects/[id]/owner/route.ts`, `src/app/api/projects/[id]/history/route.ts`, `src/server/services/projects/owner.ts`, `history.ts`
