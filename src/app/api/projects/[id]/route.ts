@@ -7,6 +7,7 @@ import { withAuth } from '@/server/http/withAuth'
 import { withValidation } from '@/server/http/withValidation'
 import { getProjectDetail } from '@/server/services/projects/get'
 import { updateProjectForOrg } from '@/server/services/projects/update'
+import { Permission } from '@/shared/enums/permissions'
 
 function requireProjectId(req: Request): string {
   const { id } = getRouteParams(req)
@@ -19,8 +20,9 @@ function requireProjectId(req: Request): string {
 /** Get project detail — `project.view`. Cross-org → 404. */
 export const GET = withRouteParams(
   withAuth(async (ctx, req) => {
-    await requirePermission(ctx, 'project.view')
-    return ok(await getProjectDetail(ctx, requireProjectId(req)))
+    const projectId = requireProjectId(req)
+    await requirePermission(ctx, Permission.PROJECT_VIEW, { projectId })
+    return ok(await getProjectDetail(ctx, projectId))
   }),
 )
 
@@ -28,8 +30,9 @@ export const GET = withRouteParams(
 export const PATCH = withRouteParams(
   withAuth(
     withValidation(projectContracts.update.input, async (ctx, input, req) => {
-      await requirePermission(ctx, 'project.edit')
-      return ok(await updateProjectForOrg(ctx, requireProjectId(req), input))
+      const projectId = requireProjectId(req)
+      await requirePermission(ctx, Permission.PROJECT_EDIT, { projectId })
+      return ok(await updateProjectForOrg(ctx, projectId, input))
     }),
   ),
 )

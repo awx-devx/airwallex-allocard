@@ -38,7 +38,7 @@ describe('http/requirePermission', () => {
     await expect(requirePermission(ctx(OrgRole.ADMIN), 'org.manage')).resolves.toBeUndefined()
   })
 
-  it('denies MEMBER org-level permissions without a project grant path', async () => {
+  it('denies MEMBER org-only permissions; project.create needs a membership grant', async () => {
     await expect(requirePermission(ctx(OrgRole.MEMBER), 'org.manage')).rejects.toMatchObject({
       code: ErrorCode.PERMISSION_DENIED,
     })
@@ -47,15 +47,41 @@ describe('http/requirePermission', () => {
     ).rejects.toMatchObject({ code: ErrorCode.PERMISSION_DENIED })
   })
 
-  it('rejects subject-scoped permissions when projectId is omitted', async () => {
+  it('rejects resource-scoped permissions when projectId is omitted', async () => {
     expect(requiresProjectSubject(Permission.CARD_MANAGE)).toBe(true)
-    expect(requiresProjectSubject(Permission.PROJECT_VIEW)).toBe(true)
+    expect(requiresProjectSubject(Permission.PROJECT_VIEW)).toBe(false)
     expect(requiresProjectSubject(Permission.PROJECT_CREATE)).toBe(false)
+    expect(requiresProjectSubject(Permission.MEMBER_VIEW)).toBe(false)
     expect(requiresProjectSubject('org.manage')).toBe(false)
 
     await expect(
       requirePermission(ctx(OrgRole.MEMBER), Permission.CARD_MANAGE),
     ).rejects.toMatchObject({ code: ErrorCode.PERMISSION_DENIED })
+  })
+
+  it('allows MEMBER org-wide capability when any membership grants it', async () => {
+    const orgCtx = ctx(OrgRole.OWNER, { userId: 'admin_1' })
+    const role = await roles.createRole(orgCtx, {
+      key: 'viewer_wide',
+      name: 'Viewer Wide',
+      permissions: [Permission.PROJECT_VIEW, Permission.MEMBER_VIEW],
+    })
+
+    await projectMembers.addProjectMember(orgCtx, {
+      projectId: 'proj_wide',
+      userId: 'user_member',
+      roleId: role.id,
+      scope: { level: AccessScopeLevel.PROJECT },
+      effectivePermissions: [...role.permissions],
+      addedBy: 'admin_1',
+    })
+
+    const memberCtx = ctx(OrgRole.MEMBER)
+    await expect(requirePermission(memberCtx, Permission.MEMBER_VIEW)).resolves.toBeUndefined()
+    await expect(requirePermission(memberCtx, Permission.PROJECT_VIEW)).resolves.toBeUndefined()
+    await expect(requirePermission(memberCtx, Permission.ROLE_ASSIGN)).rejects.toMatchObject({
+      code: ErrorCode.PERMISSION_DENIED,
+    })
   })
 
   it('allows MEMBER when ProjectMember grants the permission under PROJECT scope', async () => {

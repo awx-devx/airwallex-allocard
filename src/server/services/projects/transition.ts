@@ -26,18 +26,21 @@ function zodToFieldErrors(error: z.ZodError): FieldErrors {
   return fieldErrors
 }
 
-/** Permission stub mapping — TODO(B3) replace with real per-target permissions. */
+/**
+ * Permission required to transition *to* the given status.
+ * Submit / draft-cancel → edit; approve+launch → request.approve; lifecycle end → close.
+ */
 export function permissionForTransition(to: ProjectStatus): string {
   switch (to) {
     case ProjectStatus.PENDING_APPROVAL:
+    case ProjectStatus.CANCELLED:
       return 'project.edit'
     case ProjectStatus.ACTIVE:
-      return 'project.edit'
+      return 'request.approve'
     case ProjectStatus.CLOSING:
     case ProjectStatus.CLOSED:
     case ProjectStatus.ARCHIVED:
-    case ProjectStatus.CANCELLED:
-      return 'project.edit'
+      return 'project.close'
     default:
       return 'project.edit'
   }

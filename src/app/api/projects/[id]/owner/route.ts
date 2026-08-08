@@ -6,6 +6,7 @@ import { getRouteParams, withRouteParams } from '@/server/http/routeParams'
 import { withAuth } from '@/server/http/withAuth'
 import { withValidation } from '@/server/http/withValidation'
 import { changeProjectOwner } from '@/server/services/projects/owner'
+import { Permission } from '@/shared/enums/permissions'
 
 function requireProjectId(req: Request): string {
   const { id } = getRouteParams(req)
@@ -19,8 +20,9 @@ function requireProjectId(req: Request): string {
 export const PATCH = withRouteParams(
   withAuth(
     withValidation(projectContracts.changeOwner.input, async (ctx, input, req) => {
-      await requirePermission(ctx, 'project.edit')
-      return ok(await changeProjectOwner(ctx, requireProjectId(req), input))
+      const projectId = requireProjectId(req)
+      await requirePermission(ctx, Permission.PROJECT_EDIT, { projectId })
+      return ok(await changeProjectOwner(ctx, projectId, input))
     }),
   ),
 )

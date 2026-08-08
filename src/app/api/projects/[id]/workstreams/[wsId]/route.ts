@@ -9,6 +9,7 @@ import {
   deleteProjectWorkstream,
   updateProjectWorkstream,
 } from '@/server/services/projects/workstreams'
+import { Permission } from '@/shared/enums/permissions'
 
 function requireIds(req: Request): { projectId: string; wsId: string } {
   const { id, wsId } = getRouteParams(req)
@@ -23,7 +24,10 @@ export const PATCH = withRouteParams(
   withAuth(
     withValidation(projectContracts.updateWorkstream.input, async (ctx, input, req) => {
       const { projectId, wsId } = requireIds(req)
-      await requirePermission(ctx, 'project.edit')
+      await requirePermission(ctx, Permission.PROJECT_EDIT, {
+        projectId,
+        workstreamId: wsId,
+      })
       return ok(await updateProjectWorkstream(ctx, projectId, wsId, input))
     }),
   ),
@@ -33,7 +37,10 @@ export const PATCH = withRouteParams(
 export const DELETE = withRouteParams(
   withAuth(async (ctx, req) => {
     const { projectId, wsId } = requireIds(req)
-    await requirePermission(ctx, 'project.edit')
+    await requirePermission(ctx, Permission.PROJECT_EDIT, {
+      projectId,
+      workstreamId: wsId,
+    })
     await deleteProjectWorkstream(ctx, projectId, wsId)
     return noContent()
   }),

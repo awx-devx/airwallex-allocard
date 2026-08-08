@@ -5,11 +5,12 @@ import { withAuth } from '@/server/http/withAuth'
 import { withValidation } from '@/server/http/withValidation'
 import { createProjectForOrg } from '@/server/services/projects/create'
 import { listProjectsForOrg } from '@/server/services/projects/list'
+import { Permission } from '@/shared/enums/permissions'
 
-/** List projects — `project.view`. */
+/** List projects — `project.view` (MEMBER: membership-filtered). */
 export const GET = withAuth(
   withValidation(projectContracts.list.input, async (ctx, query) => {
-    await requirePermission(ctx, 'project.view')
+    await requirePermission(ctx, Permission.PROJECT_VIEW)
     return ok(await listProjectsForOrg(ctx, query))
   }),
 )
@@ -17,7 +18,7 @@ export const GET = withAuth(
 /** Create DRAFT project — `project.create`. */
 export const POST = withAuth(
   withValidation(projectContracts.create.input, async (ctx, input) => {
-    await requirePermission(ctx, 'project.create')
+    await requirePermission(ctx, Permission.PROJECT_CREATE)
     return created(await createProjectForOrg(ctx, input))
   }),
 )

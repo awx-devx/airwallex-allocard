@@ -15,12 +15,13 @@ function requireProjectId(req: Request): string {
   return id
 }
 
-/** Status transition — permission varies by target (B0 stub: OWNER/ADMIN). */
+/** Status transition — permission varies by target status. */
 export const POST = withRouteParams(
   withAuth(
     withValidation(projectContracts.transition.input, async (ctx, input, req) => {
-      await requirePermission(ctx, permissionForTransition(input.to))
-      return ok(await transitionProject(ctx, requireProjectId(req), input))
+      const projectId = requireProjectId(req)
+      await requirePermission(ctx, permissionForTransition(input.to), { projectId })
+      return ok(await transitionProject(ctx, projectId, input))
     }),
   ),
 )

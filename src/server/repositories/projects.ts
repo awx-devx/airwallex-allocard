@@ -42,6 +42,8 @@ export type ListProjectsFilter = {
   status?: ProjectStatus
   ownerId?: string
   costCentre?: string
+  /** When set, restrict to these project ids (MEMBER visibility filter). */
+  ids?: string[]
   page?: number
   pageSize?: number
   sort?: ProjectSort
@@ -153,6 +155,10 @@ export async function listProjects(
   if (filter.status !== undefined) query.status = filter.status
   if (filter.ownerId !== undefined) query.ownerId = filter.ownerId
   if (filter.costCentre !== undefined) query.costCentre = filter.costCentre
+  if (filter.ids !== undefined) {
+    const objectIds = filter.ids.filter((id) => isValidObjectId(id))
+    query._id = { $in: objectIds }
+  }
 
   const [total, docs] = await Promise.all([
     ProjectModel.countDocuments(query).exec(),

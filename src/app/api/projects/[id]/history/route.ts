@@ -4,6 +4,7 @@ import { requirePermission } from '@/server/http/requirePermission'
 import { getRouteParams, withRouteParams } from '@/server/http/routeParams'
 import { withAuth } from '@/server/http/withAuth'
 import { getProjectHistory } from '@/server/services/projects/history'
+import { Permission } from '@/shared/enums/permissions'
 
 function requireProjectId(req: Request): string {
   const { id } = getRouteParams(req)
@@ -16,7 +17,8 @@ function requireProjectId(req: Request): string {
 /** Project audit history — `project.view`. */
 export const GET = withRouteParams(
   withAuth(async (ctx, req) => {
-    await requirePermission(ctx, 'project.view')
-    return ok(await getProjectHistory(ctx, requireProjectId(req)))
+    const projectId = requireProjectId(req)
+    await requirePermission(ctx, Permission.PROJECT_VIEW, { projectId })
+    return ok(await getProjectHistory(ctx, projectId))
   }),
 )

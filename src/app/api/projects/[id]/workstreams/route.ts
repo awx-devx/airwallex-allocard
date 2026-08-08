@@ -9,6 +9,7 @@ import {
   createProjectWorkstream,
   listProjectWorkstreams,
 } from '@/server/services/projects/workstreams'
+import { Permission } from '@/shared/enums/permissions'
 
 function requireProjectId(req: Request): string {
   const { id } = getRouteParams(req)
@@ -21,8 +22,9 @@ function requireProjectId(req: Request): string {
 /** List workstreams — `project.view`. */
 export const GET = withRouteParams(
   withAuth(async (ctx, req) => {
-    await requirePermission(ctx, 'project.view')
-    return ok(await listProjectWorkstreams(ctx, requireProjectId(req)))
+    const projectId = requireProjectId(req)
+    await requirePermission(ctx, Permission.PROJECT_VIEW, { projectId })
+    return ok(await listProjectWorkstreams(ctx, projectId))
   }),
 )
 
@@ -30,8 +32,9 @@ export const GET = withRouteParams(
 export const POST = withRouteParams(
   withAuth(
     withValidation(projectContracts.createWorkstream.input, async (ctx, input, req) => {
-      await requirePermission(ctx, 'project.edit')
-      return created(await createProjectWorkstream(ctx, requireProjectId(req), input))
+      const projectId = requireProjectId(req)
+      await requirePermission(ctx, Permission.PROJECT_EDIT, { projectId })
+      return created(await createProjectWorkstream(ctx, projectId, input))
     }),
   ),
 )

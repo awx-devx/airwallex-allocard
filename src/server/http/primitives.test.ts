@@ -138,7 +138,7 @@ describe('withValidation', () => {
 })
 
 describe('requirePermission', () => {
-  it('allows OWNER and ADMIN, denies MEMBER without project subject', async () => {
+  it('allows OWNER and ADMIN short-circuit without a project subject', async () => {
     await expect(
       requirePermission({ orgId: 'o', userId: 'u', orgRole: 'OWNER' }, 'project.create'),
     ).resolves.toBeUndefined()
@@ -146,9 +146,5 @@ describe('requirePermission', () => {
     await expect(
       requirePermission({ orgId: 'o', userId: 'u', orgRole: 'ADMIN' }, 'project.create'),
     ).resolves.toBeUndefined()
-
-    await expect(
-      requirePermission({ orgId: 'o', userId: 'u', orgRole: 'MEMBER' }, 'project.create'),
-    ).rejects.toMatchObject({ code: ErrorCode.PERMISSION_DENIED })
   })
 })

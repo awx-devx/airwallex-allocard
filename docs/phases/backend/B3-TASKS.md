@@ -92,11 +92,20 @@
   - **Accept:** `pnpm test api/me-permissions`
   - **Notes:**
 
-- [ ] **B3.11** — Retrofit B1 + B2 endpoints
+- [x] **B3.11** — Retrofit B1 + B2 endpoints
   - **Files:** every B1/B2 route using `requirePermission`; checklist in Notes
   - **Do:** Explicit sweep — each endpoint uses real permission + subject where required. Add/adjust tests so under-permissioned callers fail. Walk the list in the PR/Notes.
   - **Accept:** `pnpm test api/` green; document checklist in Notes
-  - **Notes:**
+  - **Notes:** Retrofit checklist (walked 2026-08-09):
+    - B1 `org.manage` (PATCH org, invites, org member mutate) — OWNER/ADMIN only; never via project role
+    - B1 GET org / list org members — any onboarded org member (unchanged)
+    - B2 `GET/POST /api/projects` — `project.view` / `project.create` org-wide via any membership; list filtered to granted projects for MEMBER
+    - B2 `GET/PATCH /api/projects/:id` — `{ projectId }` + `project.view` / `project.edit`
+    - B2 `POST .../transition` — `{ projectId }` + map: →PENDING_APPROVAL/CANCELLED=`project.edit`, →ACTIVE=`request.approve`, →CLOSING/CLOSED/ARCHIVED=`project.close`
+    - B2 workstreams list/create — `{ projectId }`; mutate ws — `{ projectId, workstreamId }`
+    - B2 owner / history — `{ projectId }` + edit/view
+    - B3 roles / access-reviews org-wide — `member.view|manage` / `role.assign` via any membership (B3.11 grant path)
+    - Coverage: `test/api/b3-retrofit.test.ts`
 
 - [ ] **B3.12** — Events + audit coverage
   - **Files:** `src/server/events/types.ts` if needed, `test/events/members.test.ts`, `test/audit/b3.test.ts`
