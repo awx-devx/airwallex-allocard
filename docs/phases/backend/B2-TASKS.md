@@ -50,12 +50,12 @@
   - **Accept:** `pnpm test repositories/projects`
   - **Notes:** `updateStatus(from, to)` conditional for launch-once. List sorts with secondary `_id` for stable pages. Duplicate code → Mongo 11000.
 
-- [ ] **B2.4** — Create + list + get
+- [x] **B2.4** — Create + list + get
   - **Files:** `src/app/api/projects/route.ts`, `src/app/api/projects/[id]/route.ts`, `src/server/services/projects/create.ts`, `list.ts`, `get.ts`
   - **Do:** `POST` creates `DRAFT` (`project.create`). `GET` list with filters/pagination (`project.view`). `GET :id` returns `projectDetail` (`project.view`). Cross-org → 404. Emit `project.created` after create commits.
   - **Pattern:** `src/app/api/organizations/route.ts`, `src/server/services/organizations/create.ts`
   - **Accept:** `pnpm test api/projects` — standard matrix rows that apply
-  - **Notes:**
+  - **Notes:** Overview stubs via `emptyProjectOverview`. List query `page`/`pageSize` use `z.coerce` for query strings. Audit `project.created`.
 
 - [ ] **B2.5** — Partial update
   - **Files:** `src/app/api/projects/[id]/route.ts` (PATCH), `src/server/services/projects/update.ts`

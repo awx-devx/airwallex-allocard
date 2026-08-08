@@ -138,8 +138,9 @@ export const listProjectsQuery = z.object({
   status: z.enum(ProjectStatus).optional(),
   ownerId: idSchema.optional(),
   costCentre: z.string().min(1).optional(),
-  page: z.number().int().min(1).default(1),
-  pageSize: z.number().int().min(1).max(100).default(20),
+  /** Coerced — GET query params arrive as strings. */
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
   sort: projectSortSchema.optional(),
 })
 

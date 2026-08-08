@@ -71,3 +71,9 @@ export type MemberRemovedPayload = {
   userId: string
   orgRole: string
 }
+
+export type ProjectCreatedPayload = {
+  projectId: string
+  code: string
+  createdBy: string
+}
