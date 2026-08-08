@@ -346,3 +346,33 @@ export async function deleteWorkstream(
     .exec()
   return doc !== null
 }
+
+/**
+ * Write the denormalised ledger projection onto the project.
+ * `snapshot.updatedAt` is a Date in Mongo; wire ISO is produced by toDomain.
+ */
+export async function updateProjectBudgetSnapshot(
+  ctx: OrgContext,
+  projectId: string,
+  snapshot: {
+    approved: number
+    committed: number
+    actual: number
+    remaining: number
+    utilisationPct: number
+    overCommitted: boolean
+    updatedAt: Date
+  },
+): Promise<Project | null> {
+  if (!isValidObjectId(projectId)) {
+    return null
+  }
+  const doc = await ProjectModel.findOneAndUpdate(
+    { _id: projectId, orgId: ctx.orgId },
+    { $set: { budgetSnapshot: snapshot } },
+    { returnDocument: 'after' },
+  )
+    .lean()
+    .exec()
+  return doc ? toProject(doc) : null
+}

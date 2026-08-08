@@ -98,12 +98,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.4 — Budget repositories
 
-- [ ] **B4.4**
+- [x] **B4.4**
 - **Files:** `src/server/repositories/budgets.ts`, `src/server/repositories/budgetEntries.ts`, `src/server/repositories/budgetChangeRequests.ts`, matching tests; extend `src/server/repositories/projects.ts`
 - **Do:** OrgContext first on every method. Include: findBudgetByProject, upsertBudgetFields, replaceCategories / category helpers, appendEntry (insert only — no update of amount), listEntries (filters + pagination), findEntriesByProject (for recompute), countEntriesReferencingCategory, createChangeRequest, listChangeRequests, decideChangeRequest (conditional on PENDING). Also updateProjectBudgetSnapshot(ctx, projectId, snapshot) in projects repo.
 - **Pattern:** `src/server/repositories/projects.ts`, `src/server/repositories/memberships.ts`
 - **Accept:** `pnpm test repositories/budget`
-- **Notes:**
+- **Notes:** Append-only entries; decideChangeRequest conditional on PENDING. updateProjectBudgetSnapshot stores Date updatedAt. Category helpers: add/update/delete/replaceCategories.
 
 ### B4.5 — Ledger write path (single mutation authority)
 
