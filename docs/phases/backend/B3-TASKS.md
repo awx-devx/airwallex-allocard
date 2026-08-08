@@ -68,7 +68,7 @@
   - **Accept:** `pnpm test api/roles` — matrix rows that apply
   - **Notes:**
 
-- [ ] **B3.7** — Project members API
+- [x] **B3.7** — Project members API
   - **Files:** `src/app/api/projects/[id]/members/route.ts`, `.../[userId]/route.ts`, `src/server/services/projectMembers/*`
   - **Do:** List/add/update/remove. On add/update: run `computeEffectivePermissions`, persist materialised cache. Soft-remove. Cross-org → 404. Emit `member.added` / `member.role_changed` / `member.scope_changed` / `member.removed`.
   - **Accept:** `pnpm test api/project-members`

@@ -72,6 +72,36 @@ export type MemberRemovedPayload = {
   orgRole: string
 }
 
+/** Project-scoped member events (B3). */
+export type ProjectMemberAddedPayload = {
+  projectMemberId: string
+  projectId: string
+  userId: string
+  roleId: string
+  addedBy: string
+}
+
+export type ProjectMemberRoleChangedPayload = {
+  projectMemberId: string
+  projectId: string
+  userId: string
+  fromRoleId: string
+  toRoleId: string
+}
+
+export type ProjectMemberScopeChangedPayload = {
+  projectMemberId: string
+  projectId: string
+  userId: string
+}
+
+export type ProjectMemberRemovedPayload = {
+  projectMemberId: string
+  projectId: string
+  userId: string
+  removedBy: string
+}
+
 export type ProjectCreatedPayload = {
   projectId: string
   code: string
