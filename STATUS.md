@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.3 — `computeEffectivePermissions` pure function (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B3.2)
-**Blocked on:** user confirmation before starting B3.3
+**Active task:** B3.4 — Repositories (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.3)
+**Blocked on:** user confirmation before starting B3.4
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 3 / 14  |
+| B     | B3 Access control       | **in progress** | 4 / 14  |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -74,8 +74,9 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-B3.2 committed. Do not start B3.3 until the user confirms.
+B3.3 committed. Do not start B3.4 until the user confirms.
 Role template permission lists approved from PRD personas (no CSV in-repo).
+`computeEffectivePermissions`: OWNER/ADMIN widen past role + time window; MEMBER empty outside window; `scopeCoversSubject` handles OWN/CARD narrowing.
 
 Contract notes locked in B3.0:
 

@@ -43,7 +43,7 @@
   - **Accept:** `pnpm test services/seedRoleTemplates`
   - **Notes:**
 
-- [ ] **B3.3** — `computeEffectivePermissions` pure function
+- [x] **B3.3** — `computeEffectivePermissions` pure function
   - **Files:** `src/server/services/access/computeEffectivePermissions.ts`
   - **Do:** Export the function from the spec. Composition: start from role permissions; expired time window → empty; scope narrows subjects only; org OWNER/ADMIN widens and is never silently narrowed by a project role; populate `reasons[]` for every grant/denial. No I/O.
   - **Accept:** `pnpm test access/computeEffectivePermissions` — seven templates × six scope levels + time-window + OWNER + OWN/CARD subject cases
