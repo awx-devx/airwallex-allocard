@@ -30,7 +30,7 @@
 
 ## Tasks
 
-- [ ] **B3.1** — Role + ProjectMember models
+- [x] **B3.1** — Role + ProjectMember models
   - **Files:** `src/server/models/Role.ts`, `src/server/models/ProjectMember.ts`
   - **Do:** Tenant-scoped. Role indexes `(orgId, key)` unique. ProjectMember unique `(orgId, projectId, userId)` partial where `removedAt` null. Embed `AccessScope` and `effectivePermissions[]`. Follow `docs/ARCHITECTURE.md` §5 and `src/server/models/Project.ts`.
   - **Pattern:** `src/server/models/Membership.ts`
