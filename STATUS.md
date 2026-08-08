@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B2 — Projects
-**Active task:** B2.11 — Seed extension
-**Last green `pnpm verify`:** 2026-08-09 (B2.10)
+**Active task:** B2 phase exit
+**Last green `pnpm verify`:** 2026-08-09 (B2.11)
 **Blocked on:** nothing
 
 ---
@@ -15,7 +15,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **in progress** | 11 / 12 |
+| B     | B2 Projects             | **in progress** | 12 / 12 |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B2.10 audit coverage done. Next: B2.11 seed extension.
+B2.11 seed extension done (all B2 tasks complete). Next: B2 phase exit — generate `B3-TASKS.md`, update STATUS to B3.
 
 Carried forward:
 
@@ -73,6 +73,7 @@ Carried forward:
 - **`TODO(B5)`:** `noActiveCards` guard is a no-op allow on → CLOSING
 - **Cancel graph:** `CANCELLED` only from `DRAFT` (spec `└`); not from `PENDING_APPROVAL`
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
+- **Seed:** live `pnpm seed` requires a valid `.env`; idempotency locked in `test/seed.test.ts`
 
 ---
 

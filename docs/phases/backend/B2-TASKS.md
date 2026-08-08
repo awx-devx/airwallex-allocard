@@ -95,11 +95,11 @@
   - **Accept:** `pnpm test audit/b2`
   - **Notes:** Covers create, update, transition, workstream create/update/delete, owner change (7 mutating endpoints).
 
-- [ ] **B2.11** — Seed extension
+- [x] **B2.11** — Seed extension
   - **Files:** `scripts/seed.ts`
   - **Do:** Append `seedB2()` — at least one project per key lifecycle stage useful for A2 (e.g. DRAFT, ACTIVE, CLOSING or CLOSED). Idempotent.
   - **Accept:** `pnpm seed && pnpm seed`
-  - **Notes:**
+  - **Notes:** Seeds DRAFT/ACTIVE/CLOSING/CLOSED with stable codes `SEED-*`. Idempotent on `(orgId, code)`. Covered by `test/seed.test.ts` (live `pnpm seed` needs `.env`).
 
 ---
 

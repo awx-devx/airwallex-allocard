@@ -32,6 +32,11 @@ export const SEED = {
   memberEmail: 'member@allocard.local',
   memberName: 'Seed Member',
   pendingInviteEmail: 'pending@allocard.local',
+  /** Stable project codes for idempotent B2 seed (unique per org). */
+  projectDraftCode: 'SEED-DRAFT',
+  projectActiveCode: 'SEED-ACTIVE',
+  projectClosingCode: 'SEED-CLOSING',
+  projectClosedCode: 'SEED-CLOSED',
 } as const
 
 type SeedUser = {
@@ -234,6 +239,116 @@ export async function seedB1(input: {
   return { adminId, memberId, inviteCreated }
 }
 
+type SeedProjectStatus = 'DRAFT' | 'ACTIVE' | 'CLOSING' | 'CLOSED'
+
+type SeedProjectSpec = {
+  code: string
+  name: string
+  status: SeedProjectStatus
+  description: string
+}
+
+const defaultCardStructure = {
+  shared: false,
+  perMember: false,
+  vendor: false,
+  oneTime: false,
+}
+
+async function upsertProject(
+  orgId: string,
+  ownerId: string,
+  spec: SeedProjectSpec,
+): Promise<{ id: string; created: boolean }> {
+  const projects = mongoose.connection.collection('projects')
+  const existing = await projects.findOne({ orgId, code: spec.code })
+  if (existing) {
+    return { id: String(existing._id), created: false }
+  }
+
+  const now = new Date()
+  const startDate = new Date('2026-01-01T00:00:00.000Z')
+  const endDate = new Date('2026-12-31T00:00:00.000Z')
+  const _id = new mongoose.Types.ObjectId()
+
+  await projects.insertOne({
+    _id,
+    orgId,
+    name: spec.name,
+    code: spec.code,
+    description: spec.description,
+    status: spec.status,
+    ownerId,
+    costCentre: 'DEMO',
+    startDate,
+    endDate,
+    workstreams: [{ id: 'ws-demo', name: 'General' }],
+    cardStructure: defaultCardStructure,
+    approvedAt: spec.status === 'DRAFT' ? null : now,
+    launchedAt:
+      spec.status === 'ACTIVE' || spec.status === 'CLOSING' || spec.status === 'CLOSED'
+        ? now
+        : null,
+    closedAt: spec.status === 'CLOSED' ? now : null,
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  return { id: String(_id), created: true }
+}
+
+/**
+ * B2 — projects at key lifecycle stages for A2 (DRAFT, ACTIVE, CLOSING, CLOSED).
+ * Idempotent on `(orgId, code)`.
+ */
+export async function seedB2(input: { orgId: string; ownerId: string }): Promise<{
+  draftId: string
+  activeId: string
+  closingId: string
+  closedId: string
+  createdCount: number
+}> {
+  const specs: SeedProjectSpec[] = [
+    {
+      code: SEED.projectDraftCode,
+      name: 'Seed Draft Project',
+      status: 'DRAFT',
+      description: 'Wizard-in-progress demo project',
+    },
+    {
+      code: SEED.projectActiveCode,
+      name: 'Seed Active Project',
+      status: 'ACTIVE',
+      description: 'Launched demo project',
+    },
+    {
+      code: SEED.projectClosingCode,
+      name: 'Seed Closing Project',
+      status: 'CLOSING',
+      description: 'Winding-down demo project',
+    },
+    {
+      code: SEED.projectClosedCode,
+      name: 'Seed Closed Project',
+      status: 'CLOSED',
+      description: 'Completed demo project',
+    },
+  ]
+
+  const results = []
+  for (const spec of specs) {
+    results.push(await upsertProject(input.orgId, input.ownerId, spec))
+  }
+
+  return {
+    draftId: results[0]!.id,
+    activeId: results[1]!.id,
+    closingId: results[2]!.id,
+    closedId: results[3]!.id,
+    createdCount: results.filter((r) => r.created).length,
+  }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -246,7 +361,11 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
     `B1: admin=${b1.adminId} member=${b1.memberId} invite=${b1.inviteCreated ? 'created' : 'exists'}`,
   )
 
-  // B2: await seedB2()
+  const b2 = await seedB2({ orgId: b0.orgId, ownerId: b0.userId })
+  console.log(
+    `B2: draft=${b2.draftId} active=${b2.activeId} closing=${b2.closingId} closed=${b2.closedId} created=${b2.createdCount}`,
+  )
+
   // B3: await seedB3()
   // B4: await seedB4()
   // B5: await seedB5()

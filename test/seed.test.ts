@@ -41,6 +41,23 @@ describe('pnpm seed idempotency', () => {
       email: SEED.pendingInviteEmail,
       status: 'PENDING',
     })
+    const projects = await mongoose.connection.collection('projects').countDocuments({})
+    const draft = await mongoose.connection.collection('projects').countDocuments({
+      code: SEED.projectDraftCode,
+      status: 'DRAFT',
+    })
+    const active = await mongoose.connection.collection('projects').countDocuments({
+      code: SEED.projectActiveCode,
+      status: 'ACTIVE',
+    })
+    const closing = await mongoose.connection.collection('projects').countDocuments({
+      code: SEED.projectClosingCode,
+      status: 'CLOSING',
+    })
+    const closed = await mongoose.connection.collection('projects').countDocuments({
+      code: SEED.projectClosedCode,
+      status: 'CLOSED',
+    })
 
     expect(ownerUsers).toBe(1)
     expect(adminUsers).toBe(1)
@@ -48,5 +65,10 @@ describe('pnpm seed idempotency', () => {
     expect(orgs).toBe(1)
     expect(memberships).toBe(3)
     expect(pendingInvites).toBe(1)
+    expect(projects).toBe(4)
+    expect(draft).toBe(1)
+    expect(active).toBe(1)
+    expect(closing).toBe(1)
+    expect(closed).toBe(1)
   })
 })
