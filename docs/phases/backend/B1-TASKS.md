@@ -43,11 +43,11 @@
   - **Accept:** `pnpm test auth/config`
   - **Notes:** Custom Mongoose adapter (stock MongoDB adapter conflicts with our strict User schema). Google OAuth optional via `AUTH_GOOGLE_ID`/`SECRET` with `allowDangerousEmailAccountLinking`. JWT caches org context; request-level org resolution is B1.4.
 
-- [ ] **B1.4** — Onboarding derivation and org context
+- [x] **B1.4** — Onboarding derivation and org context
   - **Files:** `src/server/auth/session.ts`, update `src/server/http/withAuth.ts`
   - **Do:** `onboarded` = has ≥1 `ACTIVE` membership, **computed, never stored**. Active org resolution order: explicit request `orgId` → `user.defaultOrgId` → sole membership. Requesting an org the user isn't a member of throws `NOT_FOUND`. Replace B0.8's stubbed session resolution with the real one.
   - **Accept:** `pnpm test auth/session` — covers all three resolution paths, plus non-member → 404
-  - **Notes:** Recompute `onboarded` on org creation and invite acceptance so the very next request reflects it.
+  - **Notes:** Explicit org via `x-org-id` header or `orgId` query. JWT callback recomputes org context each refresh. Resolver seam moved to `sessionResolver.ts` to avoid import cycles.
 
 - [ ] **B1.5** — Sign-up
   - **Files:** `src/app/api/auth/sign-up/route.ts`, `src/server/services/auth/signUp.ts`

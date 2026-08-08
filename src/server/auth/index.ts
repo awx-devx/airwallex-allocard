@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import { createAuthConfig } from '@/server/auth/config'
+import '@/server/auth/session'
 import '@/server/auth/types'
 
 const nextAuth = NextAuth(createAuthConfig())

@@ -5,9 +5,9 @@ import {
   authorizeCredentials,
   createAuthConfig,
   isGoogleAuthEnabled,
-  resolveTokenOrgContext,
   type AuthEnv,
 } from '@/server/auth/config'
+import { resolveOrgContextForUser } from '@/server/auth/session'
 import { hashPassword } from '@/server/auth/password'
 import { AccountModel } from '@/server/models/Account'
 import { MembershipModel } from '@/server/models/Membership'
@@ -139,10 +139,10 @@ describe('auth/config', () => {
     })
   })
 
-  describe('resolveTokenOrgContext', () => {
+  describe('resolveOrgContextForUser (via JWT path)', () => {
     it('sets onboarded false with null org when there is no membership', async () => {
       const user = await users.createUser({ email: 'solo@example.com', name: 'Solo' })
-      await expect(resolveTokenOrgContext(user.id)).resolves.toEqual({
+      await expect(resolveOrgContextForUser(user.id)).resolves.toEqual({
         orgId: null,
         orgRole: null,
         onboarded: false,
@@ -164,7 +164,7 @@ describe('auth/config', () => {
       )
       await users.updateUser(user.id, { defaultOrgId: org.id })
 
-      await expect(resolveTokenOrgContext(user.id)).resolves.toEqual({
+      await expect(resolveOrgContextForUser(user.id)).resolves.toEqual({
         orgId: org.id,
         orgRole: OrgRole.OWNER,
         onboarded: true,
@@ -185,7 +185,7 @@ describe('auth/config', () => {
         { userId: user.id, orgRole: OrgRole.MEMBER, status: MembershipStatus.ACTIVE },
       )
 
-      await expect(resolveTokenOrgContext(user.id)).resolves.toEqual({
+      await expect(resolveOrgContextForUser(user.id)).resolves.toEqual({
         orgId: org.id,
         orgRole: OrgRole.MEMBER,
         onboarded: true,

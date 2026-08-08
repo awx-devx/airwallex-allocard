@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.4 — Onboarding derivation and org context (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.3)
-**Blocked on:** user confirmation before starting B1.4
+**Active task:** B1.5 — Sign-up (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.4)
+**Blocked on:** user confirmation before starting B1.5
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 4 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 5 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.3 Auth.js setup complete:
+B1.4 session resolution complete:
 
-- Credentials (argon2) + optional Google OAuth
-- Custom Mongoose adapter (`User` + `Account`)
-- JWT carries `userId`, `orgId`, `orgRole`, `onboarded`
-- Route: `/api/auth/[...nextauth]`
+- `onboarded` derived from ACTIVE memberships
+- Active org: `x-org-id` / `?orgId=` → `defaultOrgId` → sole membership
+- Non-member explicit org → 404
+- Real resolver installed; tests override via `installTestSessionResolver`
 
-**Do not start B1.4 until the user confirms.**
+**Do not start B1.5 until the user confirms.**
 
 ---
 

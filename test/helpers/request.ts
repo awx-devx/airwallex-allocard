@@ -1,4 +1,4 @@
-import { setSessionResolver } from '@/server/http/withAuth'
+import { setSessionResolver } from '@/server/http/sessionResolver'
 import type { AuthSession } from '@/server/http/types'
 import type { TestMember } from './factories'
 

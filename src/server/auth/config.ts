@@ -3,18 +3,12 @@ import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { z } from 'zod'
 import { createMongooseAdapter } from '@/server/auth/adapter'
+import { resolveOrgContextForUser } from '@/server/auth/session'
 import { verifyPassword } from '@/server/auth/password'
 import { connectDb } from '@/server/db/connect'
 import type { ServerEnv } from '@/server/env'
 import { loadServerEnv } from '@/server/env'
-import {
-  findMembershipInOrg,
-  hasActiveMembership,
-  listMembershipsForUser,
-} from '@/server/repositories/memberships'
-import { findUserById, findUserCredentialsByEmail } from '@/server/repositories/users'
-import { MembershipStatus } from '@/shared/enums/membershipStatus'
-import type { OrgRole } from '@/shared/enums/orgRole'
+import { findUserCredentialsByEmail } from '@/server/repositories/users'
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -52,44 +46,6 @@ export async function authorizeCredentials(
     name: user.name,
     image: user.image ?? null,
   }
-}
-
-/**
- * Resolve org context cached on the JWT.
- * Full request-level resolution (explicit orgId header) is B1.4.
- */
-export async function resolveTokenOrgContext(userId: string): Promise<{
-  orgId: string | null
-  orgRole: OrgRole | null
-  onboarded: boolean
-}> {
-  const onboarded = await hasActiveMembership(userId)
-  if (!onboarded) {
-    return { orgId: null, orgRole: null, onboarded: false }
-  }
-
-  const user = await findUserById(userId)
-  if (user?.defaultOrgId) {
-    const membership = await findMembershipInOrg(user.defaultOrgId, userId)
-    if (membership && membership.status === MembershipStatus.ACTIVE) {
-      return {
-        orgId: membership.orgId,
-        orgRole: membership.orgRole,
-        onboarded: true,
-      }
-    }
-  }
-
-  const memberships = (await listMembershipsForUser(userId)).filter(
-    (m) => m.status === MembershipStatus.ACTIVE,
-  )
-  if (memberships.length === 1) {
-    const sole = memberships[0]!
-    return { orgId: sole.orgId, orgRole: sole.orgRole, onboarded: true }
-  }
-
-  // Multiple memberships and no usable default — leave org unset until B1.4 / client picks.
-  return { orgId: null, orgRole: null, onboarded: true }
 }
 
 export function createAuthConfig(env: AuthEnv = loadServerEnv()): NextAuthConfig {
@@ -133,7 +89,8 @@ export function createAuthConfig(env: AuthEnv = loadServerEnv()): NextAuthConfig
 
         await connectDb()
         token.userId = userId
-        const ctx = await resolveTokenOrgContext(userId)
+        // Recompute on every token refresh so org create / invite accept show up next request.
+        const ctx = await resolveOrgContextForUser(userId)
         token.orgId = ctx.orgId
         token.orgRole = ctx.orgRole
         token.onboarded = ctx.onboarded
