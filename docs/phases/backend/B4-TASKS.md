@@ -80,12 +80,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.2 — Formula parser (lib/formula)
 
-- [ ] **B4.2**
+- [x] **B4.2**
 - **Files:** `src/server/lib/formula/parse.ts`, `src/server/lib/formula/evaluate.ts`, `src/server/lib/formula/index.ts`, `src/server/lib/formula/formula.test.ts`
 - **Do:** Sandboxed expression evaluator for B4 category formulas (B6 will extend attribute resolution later). Support: + - * /, parentheses, min, max, round, floor, ceil, clamp, pct, and identifiers that resolve from a string→number context of integer sibling budget fields (e.g. approvedAmount). Rules: no eval, no Function, no property access (dot / brackets), no assignment. Node-count cap (e.g. 64) and evaluation timeout (e.g. 25ms) — document constants in file header. Division by zero → typed error. Unknown identifier → typed error. Oversized expression → typed error. All intermediate and final values are integers (truncate toward zero after each op, or use integer-only ops — state the rule in Notes; never introduce IEEE floats into stored amounts).
 - **Pattern:** pure-function style of `src/server/services/access/computeEffectivePermissions.ts` (no I/O)
 - **Accept:** `pnpm test lib/formula` — precedence; each allowlisted function; div-by-zero; unknown id; oversized; property-access attempt; eval attempt; integer-only results
-- **Notes:**
+- **Notes:** Hand-rolled recursive-descent parser (no eval/Function). Caps: length 500, nodes 64, eval 25ms. Integer rule: Math.trunc toward zero after every op/function. pct(x,p)=trunc(x*p/100). clamp(x,lo,hi). Vitest unit include for `src/server/lib/**/*.test.ts`.
 
 ### B4.3 — Projection pure function
 

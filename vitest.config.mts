@@ -31,6 +31,7 @@ export default defineConfig({
             'src/server/env.test.ts',
             'src/server/db/**/*.test.ts',
             'src/server/http/**/*.test.ts',
+            'src/server/lib/**/*.test.ts',
             'src/server/redis.test.ts',
           ],
         },
