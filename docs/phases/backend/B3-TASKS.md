@@ -80,7 +80,7 @@
   - **Accept:** `pnpm test api/member-preview` — preview matches enforcement fixtures
   - **Notes:**
 
-- [ ] **B3.9** — Access history + access reviews
+- [x] **B3.9** — Access history + access reviews
   - **Files:** `src/app/api/projects/[id]/access-history/route.ts`, `src/app/api/access-reviews/route.ts`, `src/app/api/access-reviews/[id]/resolve/route.ts`, services
   - **Do:** History from audit for membership changes. Access-reviews list + resolve (minimal model if not already present — define in B3.0).
   - **Accept:** `pnpm test api/access-history` and `pnpm test api/access-reviews`
