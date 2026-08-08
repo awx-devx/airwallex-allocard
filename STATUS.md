@@ -2,10 +2,10 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B2 — Projects
-**Active task:** B2 phase exit
-**Last green `pnpm verify`:** 2026-08-09 (B2.11)
-**Blocked on:** nothing
+**Active phase:** B3 — Access control
+**Active task:** B3.0 — Schemas and contracts (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B2 phase exit)
+**Blocked on:** user confirmation before starting B3.0
 
 ---
 
@@ -15,8 +15,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **in progress** | 12 / 12 |
-| B     | B3 Access control       | not started     | —       |
+| B     | B2 Projects             | **complete**    | 12 / 12 |
+| B     | B3 Access control       | **in progress** | 0 / 14  |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0–B2 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B3 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,20 +60,22 @@ _None yet._
 
 ## Notes for the next session
 
-B2.11 seed extension done (all B2 tasks complete). Next: B2 phase exit — generate `B3-TASKS.md`, update STATUS to B3.
+B2 phase exit complete. Generated `docs/phases/backend/B3-TASKS.md`.
 
 Carried forward:
 
-- **`TODO(B3)`:** `seedRoleTemplates` is a no-op until Role model exists (from B1.7)
-- **`TODO(B3)`:** transition permission map is stubbed to `project.edit` for all targets
+- **`TODO(B3)`:** `seedRoleTemplates` was a no-op — B3.2 replaces it with real per-org template copies
+- **`TODO(B3)`:** transition permission map was stubbed to `project.edit` for all targets — retrofit in B3.11
 - **`TODO(B4)`:** `projectReadyForApproval.hasBudget` is a soft stub — harden when budget exists
 - **`TODO(B4)`:** overview `budgetRemaining` / `budgetSpent` stay null until B4
 - **`TODO(B4)`:** workstream delete does not yet check budget-category references
-- **`TODO(B3)` / `TODO(B5)` / `TODO(B7)`:** overview member/card/approval counts stub to 0
+- **`TODO(B5)` / `TODO(B7)`:** overview card/approval counts stub to 0 (memberCount lands with B3)
 - **`TODO(B5)`:** `noActiveCards` guard is a no-op allow on → CLOSING
 - **Cancel graph:** `CANCELLED` only from `DRAFT` (spec `└`); not from `PENDING_APPROVAL`
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
-- **Seed:** live `pnpm seed` requires a valid `.env`; idempotency locked in `test/seed.test.ts`
+- **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
+
+**Do not start B3.0 until the user confirms.** B3.0 is contracts-first — stop for review after it.
 
 ---
 

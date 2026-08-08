@@ -105,13 +105,13 @@
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B2 endpoint
-- [ ] `canTransition` pure, exported, exhaustively tested
-- [ ] Status changes only through the transition endpoint
-- [ ] `project.launched` fires exactly once under concurrency
-- [ ] Seed script extended
-- [ ] Any `TODO(B4)` / `TODO(B5)` markers recorded in `STATUS.md`
-- [ ] Spec's review checklist signed off
-- [ ] `STATUS.md` updated: active phase B3, generate `B3-TASKS.md`
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B2 endpoint
+- [x] `canTransition` pure, exported, exhaustively tested
+- [x] Status changes only through the transition endpoint
+- [x] `project.launched` fires exactly once under concurrency
+- [x] Seed script extended
+- [x] Any `TODO(B4)` / `TODO(B5)` markers recorded in `STATUS.md`
+- [x] Spec's review checklist signed off
+- [x] `STATUS.md` updated: active phase B3, generate `B3-TASKS.md`

@@ -4,7 +4,7 @@
 
 ## Goal
 
-Full project lifecycle as an API: create a draft, configure it, move it through approval and launch, and eventually close it. The setup *wizard* is a client concern (A2); the backend exposes the pieces it saves.
+Full project lifecycle as an API: create a draft, configure it, move it through approval and launch, and eventually close it. The setup _wizard_ is a client concern (A2); the backend exposes the pieces it saves.
 
 ## Deliverables
 
@@ -45,19 +45,19 @@ The client saves the wizard step by step against a `DRAFT` project, so `PATCH` m
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/projects` | `project.view` | Filter by status, owner, cost centre; paginated; sortable |
-| `POST` | `/api/projects` | `project.create` | Creates a `DRAFT` |
-| `GET` | `/api/projects/:id` | `project.view` | Includes counts the overview needs |
-| `PATCH` | `/api/projects/:id` | `project.edit` | Partial; rejects fields not editable in the current status |
-| `POST` | `/api/projects/:id/transition` | varies by target | `{ to, reason? }`; the single mutation for status |
-| `GET` | `/api/projects/:id/workstreams` | `project.view` | |
-| `POST` | `/api/projects/:id/workstreams` | `project.edit` | |
-| `PATCH` | `/api/projects/:id/workstreams/:wsId` | `project.edit` | |
-| `DELETE` | `/api/projects/:id/workstreams/:wsId` | `project.edit` | Rejected if budget categories reference it (B4) |
-| `PATCH` | `/api/projects/:id/owner` | `project.edit` | Change owner; separate for audit clarity |
-| `GET` | `/api/projects/:id/history` | `project.view` | Status and field change history from audit |
+| Method   | Path                                  | Permission       | Notes                                                      |
+| -------- | ------------------------------------- | ---------------- | ---------------------------------------------------------- |
+| `GET`    | `/api/projects`                       | `project.view`   | Filter by status, owner, cost centre; paginated; sortable  |
+| `POST`   | `/api/projects`                       | `project.create` | Creates a `DRAFT`                                          |
+| `GET`    | `/api/projects/:id`                   | `project.view`   | Includes counts the overview needs                         |
+| `PATCH`  | `/api/projects/:id`                   | `project.edit`   | Partial; rejects fields not editable in the current status |
+| `POST`   | `/api/projects/:id/transition`        | varies by target | `{ to, reason? }`; the single mutation for status          |
+| `GET`    | `/api/projects/:id/workstreams`       | `project.view`   |                                                            |
+| `POST`   | `/api/projects/:id/workstreams`       | `project.edit`   |                                                            |
+| `PATCH`  | `/api/projects/:id/workstreams/:wsId` | `project.edit`   |                                                            |
+| `DELETE` | `/api/projects/:id/workstreams/:wsId` | `project.edit`   | Rejected if budget categories reference it (B4)            |
+| `PATCH`  | `/api/projects/:id/owner`             | `project.edit`   | Change owner; separate for audit clarity                   |
+| `GET`    | `/api/projects/:id/history`           | `project.view`   | Status and field change history from audit                 |
 
 **One transition endpoint, not five.** `POST /:id/submit`, `/approve`, `/launch` and friends duplicate the guard logic and invite drift. A single endpoint taking a target status keeps `canTransition` the only authority.
 
@@ -80,12 +80,12 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] `canTransition` is pure, exported, and exhaustively tested
-- [ ] Status changes only through the transition endpoint
-- [ ] `project.launched` fires exactly once — B6's card issuance depends on it
-- [ ] `GET /api/projects/:id` returns enough for the overview tab without a second call
-- [ ] List filters and pagination match what A2 will need
-- [ ] Audit entries record before/after for every field change
+- [x] `canTransition` is pure, exported, and exhaustively tested
+- [x] Status changes only through the transition endpoint
+- [x] `project.launched` fires exactly once — B6's card issuance depends on it
+- [x] `GET /api/projects/:id` returns enough for the overview tab without a second call
+- [x] List filters and pagination match what A2 will need
+- [x] Audit entries record before/after for every field change
 
 ## Out of scope
 
