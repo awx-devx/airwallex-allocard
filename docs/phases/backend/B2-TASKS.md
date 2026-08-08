@@ -75,12 +75,12 @@
   - **Accept:** `pnpm test api/workstreams`
   - **Notes:** Delete allowed until B4 reference API exists. Audit create/update/delete. List=`project.view`, mutate=`project.edit`.
 
-- [ ] **B2.8** — Change owner + history
+- [x] **B2.8** — Change owner + history
   - **Files:** `src/app/api/projects/[id]/owner/route.ts`, `src/app/api/projects/[id]/history/route.ts`, `src/server/services/projects/owner.ts`, `history.ts`
   - **Do:** `PATCH owner` separate for audit clarity. `GET history` from audit logs for this project (status + field changes).
   - **Pattern:** audit queries from `test/audit/b1.test.ts`
   - **Accept:** `pnpm test api/project-owner` and `pnpm test api/project-history`
-  - **Notes:**
+  - **Notes:** Owner must be ACTIVE org member (422 otherwise). History = audits with `projectId`, newest first. Audit `project.owner_changed`.
 
 - [ ] **B2.9** — Events coverage
   - **Files:** touches B2.4–B2.6 services; assert via `src/server/events/bus.ts`
