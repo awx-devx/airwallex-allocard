@@ -67,6 +67,30 @@ describe('withAuth', () => {
       orgRole: 'OWNER',
     })
   })
+
+  it('skips the onboarding gate when requireOnboarded is false', async () => {
+    setSessionResolver(async () =>
+      session({ userId: 'user_1', orgId: null, orgRole: null, onboarded: false }),
+    )
+
+    let seen: AuthSession | undefined
+    const handler = withAuth(
+      async (authSession) => {
+        seen = authSession
+        return ok({ ok: true })
+      },
+      { requireOnboarded: false },
+    )
+
+    const res = await handler(new Request('http://localhost/api/x', { method: 'GET' }))
+    expect(res.status).toBe(200)
+    expect(seen).toEqual({
+      userId: 'user_1',
+      orgId: null,
+      orgRole: null,
+      onboarded: false,
+    })
+  })
 })
 
 describe('withValidation', () => {

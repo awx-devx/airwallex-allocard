@@ -55,11 +55,11 @@
   - **Accept:** `pnpm test api/sign-up`
   - **Notes:** Public via `withPublicValidation`. Rate limit 10/hour/IP (Redis). Duplicate → neutral `CONFLICT`. Audit under sentinel org `_platform`.
 
-- [ ] **B1.6** — `/api/me`
+- [x] **B1.6** — `/api/me`
   - **Files:** `src/app/api/me/route.ts`
   - **Do:** `GET` returns `meResponse`. `PATCH` updates name, image, `defaultOrgId` (validating membership in the target org).
   - **Accept:** `pnpm test api/me` — includes standard matrix
-  - **Notes:** Highest-traffic endpoint in the app. Confirm it carries everything the shell needs.
+  - **Notes:** `withAuth({ requireOnboarded: false })` so the shell works pre-org. `defaultOrgId` must be an ACTIVE membership (else 404). Audit `user.updated`.
 
 - [ ] **B1.7** — Organisation create, read, update
   - **Files:** `src/app/api/organizations/route.ts`, `src/app/api/organizations/[id]/route.ts`, `src/server/services/organizations/`

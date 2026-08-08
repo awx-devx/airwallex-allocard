@@ -33,17 +33,19 @@ async function readRawInput(req: Request): Promise<unknown> {
 
 /**
  * Parse body (or query for GET) against `schema`, then call the handler with typed input.
+ * Context type defaults to `OrgContext`; use with `withAuth(..., { requireOnboarded: false })`
+ * by passing `AuthSession` as `TCtx`.
  */
-export function withValidation<TSchema extends z.ZodType>(
+export function withValidation<TSchema extends z.ZodType, TCtx = OrgContext>(
   schema: TSchema,
-  handler: (ctx: OrgContext, input: z.infer<TSchema>) => Response | Promise<Response>,
-): (ctx: OrgContext, req: Request) => Promise<Response> {
+  handler: (ctx: TCtx, input: z.infer<TSchema>, req: Request) => Response | Promise<Response>,
+): (ctx: TCtx, req: Request) => Promise<Response> {
   return async (ctx, req) => {
     const raw = await readRawInput(req)
     const parsed = schema.safeParse(raw)
     if (!parsed.success) {
       throw AppError.validationFailed(zodToFieldErrors(parsed.error))
     }
-    return handler(ctx, parsed.data)
+    return handler(ctx, parsed.data, req)
   }
 }
