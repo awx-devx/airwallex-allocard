@@ -2,10 +2,10 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B1 — Auth & organisations
-**Active task:** Phase exit (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.14)
-**Blocked on:** user confirmation before B1 phase exit / starting B2
+**Active phase:** B2 — Projects
+**Active task:** B2.0 — Project schemas and contracts (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1 phase exit)
+**Blocked on:** user confirmation before starting B2.0
 
 ---
 
@@ -14,8 +14,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 15 / 15 |
-| B     | B2 Projects             | not started     | —       |
+| B     | B1 Auth & organisations | **complete**    | 15 / 15 |
+| B     | B2 Projects             | **in progress** | 0 / 12  |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0 and B1 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B2 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,14 +60,13 @@ _None yet._
 
 ## Notes for the next session
 
-B1.14 seed extension complete — **all B1 tasks checked**.
+B1 phase exit complete. Generated `docs/phases/backend/B2-TASKS.md`.
 
-- `seedB1`: ADMIN + MEMBER (`password123`) and pending invite for `pending@allocard.local`
-- **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
+Carried forward:
 
-**Phase exit remaining:** review checklist sign-off, generate `B2-TASKS.md`, mark B1 complete in STATUS.
+- **`TODO(B3)`:** `seedRoleTemplates` is a no-op until Role model exists (from B1.7)
 
-**Do not start B2 until the user confirms.**
+**Do not start B2.0 until the user confirms.** B2.0 is contracts-first — stop for review after it.
 
 ---
 

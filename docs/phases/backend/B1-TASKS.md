@@ -113,13 +113,13 @@
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard matrix passing for every B1 endpoint
-- [ ] No endpoint but sign-up, Auth.js routes, and invite preview is reachable unauthenticated
-- [ ] `onboarded` is derived, not stored
-- [ ] Invite tokens stored hashed; raw token appears only in the create response
-- [ ] Cross-org reads return `404`
-- [ ] Any `TODO(B3)` markers recorded in `STATUS.md`
-- [ ] Spec's review checklist signed off
-- [ ] `STATUS.md` updated: active phase B2, generate `B2-TASKS.md`
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard matrix passing for every B1 endpoint
+- [x] No endpoint but sign-up, Auth.js routes, and invite preview is reachable unauthenticated
+- [x] `onboarded` is derived, not stored
+- [x] Invite tokens stored hashed; raw token appears only in the create response
+- [x] Cross-org reads return `404`
+- [x] Any `TODO(B3)` markers recorded in `STATUS.md`
+- [x] Spec's review checklist signed off
+- [x] `STATUS.md` updated: active phase B2, generate `B2-TASKS.md`

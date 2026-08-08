@@ -80,13 +80,13 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] No endpoint other than sign-up, the Auth.js routes, and invite preview is reachable unauthenticated
-- [ ] The onboarding gate is enforced in `withAuth`, not per-route
-- [ ] `onboarded` is derived from memberships, not stored on the user
-- [ ] Invite tokens are stored hashed
-- [ ] Cross-org reads return `404`
-- [ ] Audit entries exist for org creation, invite issue, invite accept, member removal
-- [ ] `GET /api/me` returns everything A1 and the app shell will need — this is the endpoint most likely to need a second round trip later
+- [x] No endpoint other than sign-up, the Auth.js routes, and invite preview is reachable unauthenticated
+- [x] The onboarding gate is enforced in `withAuth`, not per-route
+- [x] `onboarded` is derived from memberships, not stored on the user
+- [x] Invite tokens are stored hashed
+- [x] Cross-org reads return `404`
+- [x] Audit entries exist for org creation, invite issue, invite accept, member removal
+- [x] `GET /api/me` returns everything A1 and the app shell will need — this is the endpoint most likely to need a second round trip later
 
 ## Out of scope
 
