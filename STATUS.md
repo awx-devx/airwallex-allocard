@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.8 — Organisation members (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.7)
-**Blocked on:** user confirmation before starting B1.8
+**Active task:** B1.9 — Invites create/list/revoke/preview (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.8)
+**Blocked on:** user confirmation before starting B1.9
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 8 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 9 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,13 +60,13 @@ _None yet._
 
 ## Notes for the next session
 
-B1.7 organisations complete:
+B1.8 org members complete:
 
-- `POST /api/organizations` — create + OWNER membership + defaultOrgId; pre-onboarding allowed
-- `GET`/`PATCH /api/organizations/:id` — path id must match active org; `PATCH` needs `org.manage`
-- **`TODO(B3)`:** `seedRoleTemplates` is a no-op until Role model exists (seven per-org templates)
+- `GET .../members` — any member; returns `membershipWithUser[]`
+- `PATCH`/`DELETE .../members/:userId` — `org.manage`; last ACTIVE OWNER cannot be demoted/suspended/removed (`CONFLICT`)
+- **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
 
-**Do not start B1.8 until the user confirms.**
+**Do not start B1.9 until the user confirms.**
 
 ---
 

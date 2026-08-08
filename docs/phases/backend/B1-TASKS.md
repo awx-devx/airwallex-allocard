@@ -67,11 +67,11 @@
   - **Accept:** `pnpm test api/organizations`
   - **Notes:** `POST` via `requireOnboarded: false`. Role templates stubbed in `seedRoleTemplates.ts` (`TODO(B3)`). `GET`/`PATCH` require path id === `ctx.orgId` (cross-org → 404). `PATCH` needs `org.manage`.
 
-- [ ] **B1.8** — Organisation members
+- [x] **B1.8** — Organisation members
   - **Files:** `src/app/api/organizations/[id]/members/route.ts`, `.../[userId]/route.ts`
   - **Do:** List, change org role, suspend, remove. **Removing or demoting the last `OWNER` is rejected with `CONFLICT`.**
   - **Accept:** `pnpm test api/org-members` — last-owner rule covered
-  - **Notes:**
+  - **Notes:** Last ACTIVE OWNER cannot be demoted, suspended, or removed (`CONFLICT`). List is any member; mutate needs `org.manage`.
 
 - [ ] **B1.9** — Invites: create, list, revoke, preview
   - **Files:** `src/app/api/invites/route.ts`, `.../[id]/route.ts`, `.../preview/[token]/route.ts`
