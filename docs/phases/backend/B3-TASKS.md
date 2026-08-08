@@ -74,7 +74,7 @@
   - **Accept:** `pnpm test api/project-members`
   - **Notes:**
 
-- [ ] **B3.8** — Permission preview
+- [x] **B3.8** — Permission preview
   - **Files:** `src/app/api/projects/[id]/members/preview/route.ts`, service using same `computeEffectivePermissions`
   - **Do:** `POST` hypothetical `{ roleId, scope }` → preview output. Must call the **same** pure function as enforcement — no second implementation.
   - **Accept:** `pnpm test api/member-preview` — preview matches enforcement fixtures
