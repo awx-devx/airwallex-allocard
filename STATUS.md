@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.14 — Seed extension (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.13)
-**Blocked on:** user confirmation before starting B1.14
+**Active task:** Phase exit (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.14)
+**Blocked on:** user confirmation before B1 phase exit / starting B2
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 14 / 15 |
+| B     | B1 Auth & organisations | **in progress** | 15 / 15 |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,13 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.13 audit coverage complete:
+B1.14 seed extension complete — **all B1 tasks checked**.
 
-- Confirmed all nine B1.5–B1.10 mutating endpoints already write one audit each
-- `test/audit/b1.test.ts` — one assertion per endpoint (actor + subject)
+- `seedB1`: ADMIN + MEMBER (`password123`) and pending invite for `pending@allocard.local`
 - **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
 
-**Do not start B1.14 until the user confirms.**
+**Phase exit remaining:** review checklist sign-off, generate `B2-TASKS.md`, mark B1 complete in STATUS.
+
+**Do not start B2 until the user confirms.**
 
 ---
 

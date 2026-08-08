@@ -103,11 +103,11 @@
   - **Accept:** `pnpm test audit/b1` — one assertion per mutating endpoint
   - **Notes:** All nine mutating endpoints already audited; `test/audit/b1.test.ts` locks the matrix row.
 
-- [ ] **B1.14** — Seed extension
+- [x] **B1.14** — Seed extension
   - **Files:** `scripts/seed.ts`
   - **Do:** Extend to create one org with an owner, two additional members, and one pending invite.
   - **Accept:** `pnpm seed && pnpm seed`
-  - **Notes:**
+  - **Notes:** `seedB1` adds ADMIN + MEMBER (password `password123`) and pending invite for `pending@allocard.local`. Idempotent.
 
 ---
 

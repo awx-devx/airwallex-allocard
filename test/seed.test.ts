@@ -24,16 +24,29 @@ describe('pnpm seed idempotency', () => {
     await disconnectDb()
     await runSeed({ uri, dbName: 'allocard-seed' })
 
-    const users = await mongoose.connection.collection('users').countDocuments({
+    const ownerUsers = await mongoose.connection.collection('users').countDocuments({
       email: SEED.ownerEmail,
+    })
+    const adminUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.adminEmail,
+    })
+    const memberUsers = await mongoose.connection.collection('users').countDocuments({
+      email: SEED.memberEmail,
     })
     const orgs = await mongoose.connection.collection('organizations').countDocuments({
       slug: SEED.orgSlug,
     })
     const memberships = await mongoose.connection.collection('memberships').countDocuments({})
+    const pendingInvites = await mongoose.connection.collection('invites').countDocuments({
+      email: SEED.pendingInviteEmail,
+      status: 'PENDING',
+    })
 
-    expect(users).toBe(1)
+    expect(ownerUsers).toBe(1)
+    expect(adminUsers).toBe(1)
+    expect(memberUsers).toBe(1)
     expect(orgs).toBe(1)
-    expect(memberships).toBe(1)
+    expect(memberships).toBe(3)
+    expect(pendingInvites).toBe(1)
   })
 })
