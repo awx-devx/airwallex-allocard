@@ -88,12 +88,12 @@
   - **Accept:** `pnpm test events/projects`
   - **Notes:** Service-level coverage in `src/server/events/projects.test.ts`. Failed transitions emit nothing.
 
-- [ ] **B2.10** — Audit coverage
+- [x] **B2.10** — Audit coverage
   - **Files:** `test/audit/b2.test.ts`
   - **Do:** One assertion per mutating B2 endpoint — exactly one audit entry, correct actor/subject, before/after on field changes.
   - **Pattern:** `test/audit/b1.test.ts`
   - **Accept:** `pnpm test audit/b2`
-  - **Notes:**
+  - **Notes:** Covers create, update, transition, workstream create/update/delete, owner change (7 mutating endpoints).
 
 - [ ] **B2.11** — Seed extension
   - **Files:** `scripts/seed.ts`
