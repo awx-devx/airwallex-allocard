@@ -37,11 +37,11 @@
   - **Accept:** `pnpm test models/project`
   - **Notes:** `ProjectFields` storage shape (Dates in Mongo). Workstream subdocs `_id: false` with explicit `id`. Same code allowed across orgs.
 
-- [ ] **B2.2** — `canTransition` pure function
+- [x] **B2.2** — `canTransition` pure function
   - **Files:** `src/server/services/projects/transitions.ts`
   - **Do:** Export `canTransition(from, to): TransitionResult`. Encode the graph from the spec. No I/O. Guards that need data (required fields, active cards) return a structured “needs check” result the service applies — do not scatter status `if`s in handlers.
   - **Accept:** `pnpm test projects/transitions` — every `(from, to)` pair, valid and invalid
-  - **Notes:**
+  - **Notes:** Guards: `readyForApproval` (DRAFT→PENDING_APPROVAL), `noActiveCards` (ACTIVE→CLOSING). CANCELLED only from DRAFT per graph `└`. Full 7×7 matrix covered.
 
 - [ ] **B2.3** — Project repository
   - **Files:** `src/server/repositories/projects.ts`
