@@ -97,11 +97,11 @@
   - **Accept:** `pnpm test events` — each mutation emits exactly one event with the right payload
   - **Notes:** Added B1 event names to ARCHITECTURE §7. In-memory + log publisher; Redis Streams deferred to B6.
 
-- [ ] **B1.13** — Audit coverage
+- [x] **B1.13** — Audit coverage
   - **Files:** touches the services from B1.5–B1.10
   - **Do:** Confirm every mutation writes exactly one audit entry with the correct actor and subject. Add any that are missing.
   - **Accept:** `pnpm test audit/b1` — one assertion per mutating endpoint
-  - **Notes:** Row 10 of the standard matrix. Easy to skip, and it's what makes B9's audit view real.
+  - **Notes:** All nine mutating endpoints already audited; `test/audit/b1.test.ts` locks the matrix row.
 
 - [ ] **B1.14** — Seed extension
   - **Files:** `scripts/seed.ts`
