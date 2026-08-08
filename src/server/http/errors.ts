@@ -25,12 +25,29 @@ export class AppError extends Error {
     return new AppError(ErrorCode.PERMISSION_DENIED, `Missing ${permission}`, { permission })
   }
 
+  /** Invite email does not match the signed-in user — 403. */
+  static inviteEmailMismatch(message = 'Invite email does not match signed-in user'): AppError {
+    return new AppError(ErrorCode.PERMISSION_DENIED, message)
+  }
+
   static notFound(message = 'Not found'): AppError {
     return new AppError(ErrorCode.NOT_FOUND, message)
   }
 
   static conflict(message = 'Conflict'): AppError {
     return new AppError(ErrorCode.CONFLICT, message)
+  }
+
+  static inviteExpired(message = 'Invite has expired'): AppError {
+    return new AppError(ErrorCode.INVITE_EXPIRED, message)
+  }
+
+  static inviteRevoked(message = 'Invite has been revoked'): AppError {
+    return new AppError(ErrorCode.INVITE_REVOKED, message)
+  }
+
+  static inviteAlreadyAccepted(message = 'Invite has already been accepted'): AppError {
+    return new AppError(ErrorCode.INVITE_ALREADY_ACCEPTED, message)
   }
 
   static validationFailed(fieldErrors: FieldErrors): AppError {
@@ -56,6 +73,9 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   [ErrorCode.PERMISSION_DENIED]: 403,
   [ErrorCode.NOT_FOUND]: 404,
   [ErrorCode.CONFLICT]: 409,
+  [ErrorCode.INVITE_EXPIRED]: 409,
+  [ErrorCode.INVITE_REVOKED]: 409,
+  [ErrorCode.INVITE_ALREADY_ACCEPTED]: 409,
   [ErrorCode.VALIDATION_FAILED]: 422,
   [ErrorCode.RATE_LIMITED]: 429,
   [ErrorCode.UPSTREAM_ERROR]: 502,

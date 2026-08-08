@@ -79,11 +79,11 @@
   - **Accept:** `pnpm test api/invites` — raw token never appears in any response other than the create response
   - **Notes:** SHA-256 token hash. Create/list/revoke need `org.manage`. Preview via `withPublic`. Duplicate pending email → CONFLICT.
 
-- [ ] **B1.10** — Invite acceptance
+- [x] **B1.10** — Invite acceptance
   - **Files:** `src/app/api/invites/accept/route.ts`, `src/server/services/invites/accept.ts`
   - **Do:** Consume the token, create the membership, mark accepted. Reject expired, revoked, and already-accepted with **distinguishable** codes. Reject with `403` when the invite email doesn't match the signed-in user. Single-use, enforced under a lock or a conditional update so two concurrent accepts can't both succeed.
   - **Accept:** `pnpm test api/invite-accept` — every rejection path distinguishable; concurrent accept creates one membership
-  - **Notes:**
+  - **Notes:** Codes `INVITE_EXPIRED` / `INVITE_REVOKED` / `INVITE_ALREADY_ACCEPTED` (409). Email mismatch → 403 before consume. Atomic PENDING→ACCEPTED.
 
 - [ ] **B1.11** — Onboarding status
   - **Files:** `src/app/api/onboarding/status/route.ts`

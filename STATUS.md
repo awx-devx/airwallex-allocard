@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.10 — Invite acceptance (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.9)
-**Blocked on:** user confirmation before starting B1.10
+**Active task:** B1.11 — Onboarding status (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.10)
+**Blocked on:** user confirmation before starting B1.11
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 10 / 15 |
+| B     | B1 Auth & organisations | **in progress** | 11 / 15 |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,13 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.9 invites complete:
+B1.10 invite accept complete:
 
-- Create returns raw token once; stores SHA-256 hash only; 7-day expiry; logs accept link
-- List/revoke need `org.manage`; preview is public (`invitePreview` only)
+- `POST /api/invites/accept` — pre-onboarding allowed; email mismatch → 403 (does not burn token)
+- Distinguishable codes: `INVITE_EXPIRED`, `INVITE_REVOKED`, `INVITE_ALREADY_ACCEPTED` (409)
+- Atomic PENDING→ACCEPTED; concurrent accepts → one membership
 - **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
 
-**Do not start B1.10 until the user confirms.**
+**Do not start B1.11 until the user confirms.**
 
 ---
 
