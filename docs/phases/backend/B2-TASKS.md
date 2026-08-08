@@ -43,12 +43,12 @@
   - **Accept:** `pnpm test projects/transitions` — every `(from, to)` pair, valid and invalid
   - **Notes:** Guards: `readyForApproval` (DRAFT→PENDING_APPROVAL), `noActiveCards` (ACTIVE→CLOSING). CANCELLED only from DRAFT per graph `└`. Full 7×7 matrix covered.
 
-- [ ] **B2.3** — Project repository
+- [x] **B2.3** — Project repository
   - **Files:** `src/server/repositories/projects.ts`
   - **Do:** `OrgContext` first on every method. `create`, `findById`, `list` (filters + pagination + stable sort), `update`, `updateStatus` (conditional on current status for concurrency), workstream CRUD helpers, `changeOwner`. Duplicate `code` → conflict at DB unique index.
   - **Pattern:** `src/server/repositories/memberships.ts`
   - **Accept:** `pnpm test repositories/projects`
-  - **Notes:**
+  - **Notes:** `updateStatus(from, to)` conditional for launch-once. List sorts with secondary `_id` for stable pages. Duplicate code → Mongo 11000.
 
 - [ ] **B2.4** — Create + list + get
   - **Files:** `src/app/api/projects/route.ts`, `src/app/api/projects/[id]/route.ts`, `src/server/services/projects/create.ts`, `list.ts`, `get.ts`
