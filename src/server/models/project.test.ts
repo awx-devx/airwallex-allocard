@@ -44,6 +44,7 @@ describe('models/project', () => {
     expect(doc.approvedAt).toBeNull()
     expect(doc.launchedAt).toBeNull()
     expect(doc.closedAt).toBeNull()
+    expect(doc.budgetSnapshot).toBeNull()
   })
 
   it('enforces unique (orgId, code)', async () => {

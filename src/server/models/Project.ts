@@ -14,6 +14,17 @@ export type CardStructureFields = {
   oneTime: boolean
 }
 
+/** Denormalised ledger projection — Date in Mongo; ISO on the wire via toDomain. */
+export type BudgetSnapshotFields = {
+  approved: number
+  committed: number
+  actual: number
+  remaining: number
+  utilisationPct: number
+  overCommitted: boolean
+  updatedAt: Date
+}
+
 /**
  * Storage shape. Dates are `Date` in Mongo; `toJSON` / `toDomain` emit ISO strings
  * matching the public `Project` contract.
@@ -30,6 +41,8 @@ export type ProjectFields = {
   endDate: Date | null
   workstreams: WorkstreamFields[]
   cardStructure: CardStructureFields
+  /** Null until the first budget ledger write. */
+  budgetSnapshot: BudgetSnapshotFields | null
   approvedAt: Date | null
   launchedAt: Date | null
   closedAt: Date | null
@@ -51,6 +64,19 @@ const cardStructureSchema = new Schema<CardStructureFields>(
     perMember: { type: Boolean, required: true, default: false },
     vendor: { type: Boolean, required: true, default: false },
     oneTime: { type: Boolean, required: true, default: false },
+  },
+  { _id: false },
+)
+
+const budgetSnapshotSchema = new Schema<BudgetSnapshotFields>(
+  {
+    approved: { type: Number, required: true },
+    committed: { type: Number, required: true },
+    actual: { type: Number, required: true },
+    remaining: { type: Number, required: true },
+    utilisationPct: { type: Number, required: true },
+    overCommitted: { type: Boolean, required: true },
+    updatedAt: { type: Date, required: true },
   },
   { _id: false },
 )
@@ -84,6 +110,7 @@ const projectSchema = new Schema<ProjectFields, Model<ProjectFields>>(
       required: true,
       default: defaultCardStructure,
     },
+    budgetSnapshot: { type: budgetSnapshotSchema, default: null },
     approvedAt: { type: Date, default: null },
     launchedAt: { type: Date, default: null },
     closedAt: { type: Date, default: null },

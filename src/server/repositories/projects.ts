@@ -114,7 +114,7 @@ function toProject(doc: Parameters<typeof toDomain>[0]): Project {
     endDate: nullableIso(raw.endDate),
     workstreams: toWorkstreams(raw.workstreams),
     cardStructure: toCardStructure(raw.cardStructure),
-    // Model field lands in B4.1; until then every project maps as null.
+    // Null until first ledger write; model field present from B4.1.
     budgetSnapshot: toBudgetSnapshot(raw.budgetSnapshot),
     approvedAt: nullableIso(raw.approvedAt),
     launchedAt: nullableIso(raw.launchedAt),

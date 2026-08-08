@@ -71,12 +71,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.1 — Budget models + Project.budgetSnapshot
 
-- [ ] **B4.1**
+- [x] **B4.1**
 - **Files:** `src/server/models/Budget.ts`, `src/server/models/BudgetEntry.ts`, `src/server/models/BudgetChangeRequest.ts`, `src/server/models/Project.ts` (add budgetSnapshot subdoc, nullable), colocated model tests under `src/server/models/`
 - **Do:** Tenant-scoped via tenantScoped on all three budget models. Indexes: Budget unique (orgId, projectId); BudgetEntry (orgId, projectId, createdAt desc), (orgId, projectId, type, createdAt desc), (orgId, lifecycleId) sparse/partial where lifecycleId non-null; BudgetChangeRequest (orgId, projectId, status, createdAt desc). Embed categories[] on Budget with `_id: false` and explicit string id (same pattern as Project workstreams). Storage: Dates in Mongo; toDomain → ISO on the wire. amount / allocated / approvedAmount / deltaAmount are Number integers — never Decimal128 floats. lifecycleId field exists on BudgetEntry (String or null, default null).
 - **Pattern:** `src/server/models/Project.ts`, `src/server/models/Membership.ts`
 - **Accept:** `pnpm test models/budget`
-- **Notes:**
+- **Notes:** Budget unique (orgId, projectId); categories `_id: false` + explicit id; BudgetEntry partial index on lifecycleId when string; Project.budgetSnapshot nullable subdoc (Date updatedAt in Mongo). Amounts are Number integers.
 
 ### B4.2 — Formula parser (lib/formula)
 
