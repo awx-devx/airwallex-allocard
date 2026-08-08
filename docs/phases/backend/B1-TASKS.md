@@ -61,11 +61,11 @@
   - **Accept:** `pnpm test api/me` — includes standard matrix
   - **Notes:** `withAuth({ requireOnboarded: false })` so the shell works pre-org. `defaultOrgId` must be an ACTIVE membership (else 404). Audit `user.updated`.
 
-- [ ] **B1.7** — Organisation create, read, update
+- [x] **B1.7** — Organisation create, read, update
   - **Files:** `src/app/api/organizations/route.ts`, `src/app/api/organizations/[id]/route.ts`, `src/server/services/organizations/`
   - **Do:** `POST` creates the org, makes the caller `OWNER`, and seeds the seven role templates as per-org copies (stub the role model here if B3 hasn't defined it — leave a `TODO(B3)` and record it in `STATUS.md`). `GET`/`PATCH` per the spec.
   - **Accept:** `pnpm test api/organizations`
-  - **Notes:**
+  - **Notes:** `POST` via `requireOnboarded: false`. Role templates stubbed in `seedRoleTemplates.ts` (`TODO(B3)`). `GET`/`PATCH` require path id === `ctx.orgId` (cross-org → 404). `PATCH` needs `org.manage`.
 
 - [ ] **B1.8** — Organisation members
   - **Files:** `src/app/api/organizations/[id]/members/route.ts`, `.../[userId]/route.ts`

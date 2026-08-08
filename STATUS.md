@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.7 — Organisation create/read/update (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.6)
-**Blocked on:** user confirmation before starting B1.7
+**Active task:** B1.8 — Organisation members (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.7)
+**Blocked on:** user confirmation before starting B1.8
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 7 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 8 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,13 @@ _None yet._
 
 ## Notes for the next session
 
-B1.6 `/api/me` complete:
+B1.7 organisations complete:
 
-- `GET`/`PATCH` `/api/me` via `withAuth({ requireOnboarded: false })`
-- Response: `user`, `memberships[]` with org summary, optional `activeOrg`, derived `onboarded`
-- `defaultOrgId` must be an ACTIVE membership (else 404); null clears
-- Audit `user.updated` under active org or `_platform`
+- `POST /api/organizations` — create + OWNER membership + defaultOrgId; pre-onboarding allowed
+- `GET`/`PATCH /api/organizations/:id` — path id must match active org; `PATCH` needs `org.manage`
+- **`TODO(B3)`:** `seedRoleTemplates` is a no-op until Role model exists (seven per-org templates)
 
-**Do not start B1.7 until the user confirms.**
+**Do not start B1.8 until the user confirms.**
 
 ---
 

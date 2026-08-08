@@ -1,9 +1,9 @@
+import { setRouteParams, getRouteParams } from '@/server/http/routeParams'
 import { setSessionResolver } from '@/server/http/sessionResolver'
 import type { AuthSession } from '@/server/http/types'
 import type { TestMember } from './factories'
 
 const sessionByRequest = new WeakMap<Request, AuthSession | null>()
-const paramsByRequest = new WeakMap<Request, Record<string, string>>()
 
 export type BuildRequestOptions = {
   method?: string
@@ -74,14 +74,15 @@ export function buildRequest(options: BuildRequestOptions = {}): Request {
   }
 
   if (options.params) {
-    paramsByRequest.set(request, options.params)
+    setRouteParams(request, options.params)
   }
 
   return request
 }
 
+/** @deprecated Prefer `getRouteParams` from `@/server/http/routeParams`. */
 export function getRequestParams(req: Request): Record<string, string> {
-  return paramsByRequest.get(req) ?? {}
+  return getRouteParams(req)
 }
 
 /** Typed JSON body reader for a Response. */
