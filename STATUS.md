@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.0 — Schemas and contracts (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B2 phase exit)
-**Blocked on:** user confirmation before starting B3.0
+**Active task:** B3.1 — Role + ProjectMember models (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.0)
+**Blocked on:** user confirmation before starting B3.1
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 0 / 14  |
+| B     | B3 Access control       | **in progress** | 1 / 14  |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -75,7 +75,13 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-**Do not start B3.0 until the user confirms.** B3.0 is contracts-first — stop for review after it.
+B3.0 committed. Do not start B3.1 until the user confirms.
+
+Contract notes locked in B3.0:
+
+- Preview `reasons[]` is structured `{ permission, allowed, message }` (not ARCHITECTURE’s `string[]`)
+- `accessReview` is minimal: OPEN/RESOLVED, CONFIRM/REVOKE, subjectType `projectMember` only
+- Project-member inputs named `*ProjectMember*` to avoid colliding with org `updateMemberInput`
 
 ---
 

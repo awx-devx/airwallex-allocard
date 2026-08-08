@@ -8,7 +8,7 @@
 
 ## Contracts first
 
-- [ ] **B3.0** — Schemas and contracts
+- [x] **B3.0** — Schemas and contracts
   - **Files:** `src/shared/enums/permissions.ts`, `src/shared/schemas/accessScope.ts`, `src/shared/schemas/role.ts`, `src/shared/schemas/projectMember.ts`, `src/shared/schemas/accessReview.ts` (if needed), `src/shared/types/*`, `src/shared/contracts/role.ts`, `src/shared/contracts/projectMember.ts`, `src/shared/contracts/accessReview.ts`, `src/shared/contracts/mePermissions.ts` (or fold into auth)
   - **Do:** Every endpoint in the spec's table gets a contract entry. Inline shapes:
     - `Permission` enum (flat strings): `project.view | project.edit | project.create | project.close | budget.view | budget.edit | budget.request | member.view | member.manage | role.assign | card.create | card.view | card.viewDetails | card.manage | payment.make | request.approve | control.edit | transaction.view | report.export`
