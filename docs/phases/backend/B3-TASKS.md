@@ -86,7 +86,7 @@
   - **Accept:** `pnpm test api/access-history` and `pnpm test api/access-reviews`
   - **Notes:**
 
-- [ ] **B3.10** — `GET /api/me/permissions`
+- [x] **B3.10** — `GET /api/me/permissions`
   - **Files:** `src/app/api/me/permissions/route.ts`, service
   - **Do:** Effective permissions per project for the caller — shape for client `can()`. Authenticated + onboarded.
   - **Accept:** `pnpm test api/me-permissions`

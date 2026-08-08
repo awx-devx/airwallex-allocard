@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.10 — `GET /api/me/permissions` (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B3.9)
-**Blocked on:** user confirmation before starting B3.10
+**Active task:** B3.11 — Retrofit B1 + B2 endpoints (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.10)
+**Blocked on:** user confirmation before starting B3.11
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 10 / 14 |
+| B     | B3 Access control       | **in progress** | 11 / 14 |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -74,13 +74,14 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-B3.9 committed. Do not start B3.10 until the user confirms.
+B3.10 committed. Do not start B3.11 until the user confirms.
 Role template permission lists approved from PRD personas (no CSV in-repo).
 `computeEffectivePermissions`: OWNER/ADMIN widen past role + time window; MEMBER empty outside window; `scopeCoversSubject` handles OWN/CARD narrowing.
 `requirePermission`: OWNER/ADMIN short-circuit; subject-scoped perms require `projectId`; uses computeEffectivePermissions + scopeCoversSubject.
 Roles API is org-wide — MEMBER without elevated org role is denied until B3.11 can grant via project membership.
 Preview uses the same `computeEffectivePermissions` as enforcement (hypothetical org MEMBER).
 Access reviews: CONFIRM keeps access; REVOKE soft-removes the project member.
+`GET /api/me/permissions`: OWNER/ADMIN → all org projects with full permissions; MEMBER → recomputed active memberships only.
 
 Contract notes locked in B3.0:
 

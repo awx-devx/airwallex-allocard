@@ -112,6 +112,22 @@ export async function listActiveProjectMembers(
   return docs.map((doc) => toProjectMember(doc))
 }
 
+/** Active memberships for a user across projects in the org. */
+export async function listActiveProjectMembersForUser(
+  ctx: OrgContext,
+  userId: string,
+): Promise<ProjectMember[]> {
+  const docs = await ProjectMemberModel.find({
+    orgId: ctx.orgId,
+    userId,
+    removedAt: null,
+  })
+    .sort({ addedAt: 1, _id: 1 })
+    .lean()
+    .exec()
+  return docs.map((doc) => toProjectMember(doc))
+}
+
 /** Active members holding a role — used when a role definition changes. */
 export async function listActiveProjectMembersByRole(
   ctx: OrgContext,
