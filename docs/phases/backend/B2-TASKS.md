@@ -63,11 +63,11 @@
   - **Accept:** `pnpm test api/projects-update` — CLOSED rejected; partial DRAFT OK
   - **Notes:** CLOSED/ARCHIVED/CANCELLED → 409. Non-terminal statuses allow all `updateProjectInput` fields via `EDITABLE_BY_STATUS`. Audit `project.updated` with before/after.
 
-- [ ] **B2.6** — Transition endpoint
+- [x] **B2.6** — Transition endpoint
   - **Files:** `src/app/api/projects/[id]/transition/route.ts`, `src/server/services/projects/transition.ts`
   - **Do:** Single `POST` with `{ to, reason? }`. Use `canTransition` + data guards. Invalid → `409 CONFLICT`, no mutate. `→ PENDING_APPROVAL` runs `projectReadyForApproval` (field-level 422). Emit `project.approved` / `project.launched` / `project.closing` / `project.closed` as appropriate. **`project.launched` exactly once** under concurrent double-call (conditional status update). Soft budget check: `TODO(B4)`. Active-cards block on `→ CLOSING`: `TODO(B5)` no-op allow for now, note in STATUS.
   - **Accept:** `pnpm test api/project-transition` — full matrix; concurrent launch once
-  - **Notes:**
+  - **Notes:** → ACTIVE emits approved+launched. Concurrent launch → one 200 / one 409. `hasBudget` stubbed true. `noActiveCards` no-op. Permission map stubbed to `project.edit` (TODO(B3)).
 
 - [ ] **B2.7** — Workstreams
   - **Files:** `src/app/api/projects/[id]/workstreams/route.ts`, `.../[wsId]/route.ts`, `src/server/services/projects/workstreams.ts`
