@@ -30,6 +30,20 @@ async function readRawInput(req: Request): Promise<unknown> {
   }
 }
 
+/** Public route wrapper: no session, catch `AppError`. */
+export function withPublic(
+  handler: (req: Request) => Response | Promise<Response>,
+): (req: Request) => Promise<Response> {
+  return async (req) => {
+    try {
+      return await handler(req)
+    } catch (error) {
+      const { status, body } = serializeError(error)
+      return Response.json(body, { status })
+    }
+  }
+}
+
 /**
  * Public route wrapper: validate body/query, catch `AppError`, no session required.
  */

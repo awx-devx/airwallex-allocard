@@ -73,11 +73,11 @@
   - **Accept:** `pnpm test api/org-members` — last-owner rule covered
   - **Notes:** Last ACTIVE OWNER cannot be demoted, suspended, or removed (`CONFLICT`). List is any member; mutate needs `org.manage`.
 
-- [ ] **B1.9** — Invites: create, list, revoke, preview
+- [x] **B1.9** — Invites: create, list, revoke, preview
   - **Files:** `src/app/api/invites/route.ts`, `.../[id]/route.ts`, `.../preview/[token]/route.ts`
   - **Do:** Create generates a random token, stores **only its hash**, returns the raw token once for the link. 7-day expiry. Preview is public, resolves by token hash, and returns only `invitePreview`. Log the invite link rather than sending email.
   - **Accept:** `pnpm test api/invites` — raw token never appears in any response other than the create response
-  - **Notes:**
+  - **Notes:** SHA-256 token hash. Create/list/revoke need `org.manage`. Preview via `withPublic`. Duplicate pending email → CONFLICT.
 
 - [ ] **B1.10** — Invite acceptance
   - **Files:** `src/app/api/invites/accept/route.ts`, `src/server/services/invites/accept.ts`
