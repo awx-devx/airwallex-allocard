@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B2 — Projects
-**Active task:** B2.9 — Events coverage
-**Last green `pnpm verify`:** 2026-08-09 (B2.8)
+**Active task:** B2.10 — Audit coverage
+**Last green `pnpm verify`:** 2026-08-09 (B2.9)
 **Blocked on:** nothing
 
 ---
@@ -15,7 +15,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **in progress** | 9 / 12  |
+| B     | B2 Projects             | **in progress** | 10 / 12 |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B2.8 owner + history done. Next: B2.9 events coverage.
+B2.9 project events coverage done. Next: B2.10 audit coverage.
 
 Carried forward:
 

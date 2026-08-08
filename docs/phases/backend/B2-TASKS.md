@@ -82,11 +82,11 @@
   - **Accept:** `pnpm test api/project-owner` and `pnpm test api/project-history`
   - **Notes:** Owner must be ACTIVE org member (422 otherwise). History = audits with `projectId`, newest first. Audit `project.owner_changed`.
 
-- [ ] **B2.9** — Events coverage
+- [x] **B2.9** — Events coverage
   - **Files:** touches B2.4–B2.6 services; assert via `src/server/events/bus.ts`
   - **Do:** Confirm `project.created`, `project.approved`, `project.launched`, `project.closing`, `project.closed` emit once per successful transition/create.
   - **Accept:** `pnpm test events/projects`
-  - **Notes:**
+  - **Notes:** Service-level coverage in `src/server/events/projects.test.ts`. Failed transitions emit nothing.
 
 - [ ] **B2.10** — Audit coverage
   - **Files:** `test/audit/b2.test.ts`
