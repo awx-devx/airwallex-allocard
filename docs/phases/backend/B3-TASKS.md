@@ -49,7 +49,7 @@
   - **Accept:** `pnpm test access/computeEffectivePermissions` — seven templates × six scope levels + time-window + OWNER + OWN/CARD subject cases
   - **Notes:**
 
-- [ ] **B3.4** — Repositories
+- [x] **B3.4** — Repositories
   - **Files:** `src/server/repositories/roles.ts`, `src/server/repositories/projectMembers.ts`
   - **Do:** `OrgContext` first. Role CRUD; list templates+custom. ProjectMember add/update/soft-remove; find by project+user; list by project; recompute helpers that rewrite `effectivePermissions` wholesale. Soft-remove sets `removedAt`.
   - **Pattern:** `src/server/repositories/projects.ts`
