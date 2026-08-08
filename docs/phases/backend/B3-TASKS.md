@@ -56,7 +56,7 @@
   - **Accept:** `pnpm test repositories/roles` and `pnpm test repositories/projectMembers`
   - **Notes:**
 
-- [ ] **B3.5** — Real `requirePermission`
+- [x] **B3.5** — Real `requirePermission`
   - **Files:** `src/server/http/requirePermission.ts`
   - **Do:** Replace B0 stub. Resolve `ProjectMember` when `subject.projectId` present; check permission then scope against subject (`cardId` etc.). Org OWNER/ADMIN short-circuit with full access (document). Permission-only checks without subject remain half-authorization — require subject when the permission is subject-scoped.
   - **Accept:** `pnpm test http/requirePermission`

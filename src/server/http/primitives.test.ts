@@ -137,8 +137,8 @@ describe('withValidation', () => {
   })
 })
 
-describe('requirePermission stub', () => {
-  it('allows OWNER and ADMIN, denies MEMBER', async () => {
+describe('requirePermission', () => {
+  it('allows OWNER and ADMIN, denies MEMBER without project subject', async () => {
     await expect(
       requirePermission({ orgId: 'o', userId: 'u', orgRole: 'OWNER' }, 'project.create'),
     ).resolves.toBeUndefined()
