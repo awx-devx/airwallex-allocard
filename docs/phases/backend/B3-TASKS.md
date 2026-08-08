@@ -107,11 +107,11 @@
     - B3 roles / access-reviews org-wide — `member.view|manage` / `role.assign` via any membership (B3.11 grant path)
     - Coverage: `test/api/b3-retrofit.test.ts`
 
-- [ ] **B3.12** — Events + audit coverage
+- [x] **B3.12** — Events + audit coverage
   - **Files:** `src/server/events/types.ts` if needed, `test/events/members.test.ts`, `test/audit/b3.test.ts`
   - **Do:** `member.added|role_changed|scope_changed|removed` once each. One audit assertion per mutating B3 endpoint.
   - **Accept:** `pnpm test events/members` and `pnpm test audit/b3`
-  - **Notes:**
+  - **Notes:** Events: `test/events/members.test.ts` covers added/role_changed/scope_changed/removed once each (`subjectType: projectMember`). Audits: `test/audit/b3.test.ts` covers role create/update/delete, member add/update/remove, accessReview.resolved.
 
 - [ ] **B3.13** — Seed extension
   - **Files:** `scripts/seed.ts`
