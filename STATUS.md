@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B2 — Projects
-**Active task:** B2.0 — Project schemas and contracts (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1 phase exit)
-**Blocked on:** user confirmation before starting B2.0
+**Active task:** B2.1 — Project model
+**Last green `pnpm verify`:** 2026-08-09 (B2.0)
+**Blocked on:** nothing
 
 ---
 
@@ -15,7 +15,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **in progress** | 0 / 12  |
+| B     | B2 Projects             | **in progress** | 1 / 12  |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
@@ -60,13 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1 phase exit complete. Generated `docs/phases/backend/B2-TASKS.md`.
+B2.0 contracts committed and reviewed. Next: B2.1 Project model.
 
 Carried forward:
 
 - **`TODO(B3)`:** `seedRoleTemplates` is a no-op until Role model exists (from B1.7)
-
-**Do not start B2.0 until the user confirms.** B2.0 is contracts-first — stop for review after it.
+- **`TODO(B4)`:** `projectReadyForApproval.hasBudget` is a soft stub — harden when budget exists
+- **`TODO(B4)`:** overview `budgetRemaining` / `budgetSpent` stay null until B4
+- **`TODO(B3)` / `TODO(B5)` / `TODO(B7)`:** overview member/card/approval counts stub to 0
 
 ---
 

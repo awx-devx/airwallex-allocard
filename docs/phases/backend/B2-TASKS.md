@@ -8,7 +8,7 @@
 
 ## Contracts first
 
-- [ ] **B2.0** — Schemas and contracts
+- [x] **B2.0** — Schemas and contracts
   - **Files:** `src/shared/schemas/project.ts`, `src/shared/schemas/workstream.ts` (if separate), `src/shared/enums/projectStatus.ts`, `src/shared/types/project.ts`, `src/shared/contracts/project.ts`
   - **Do:** Every endpoint in the spec's table gets a contract entry. Inline shapes:
     - `ProjectStatus`: `DRAFT | PENDING_APPROVAL | ACTIVE | CLOSING | CLOSED | ARCHIVED | CANCELLED`
@@ -24,6 +24,7 @@
   - **Pattern:** `src/shared/contracts/organization.ts`, `src/shared/schemas/organization.ts`
   - **STOP and get reviewed before implementing.**
   - **Accept:** `pnpm typecheck`
+  - **Notes:** Workstreams stayed in `project.ts`. Draft nullables for owner/dates/costCentre. `updateProjectInput` omits owner (dedicated endpoint). List is page/`pageSize` + `{ items, page, pageSize, total }`. Overview stubs + soft `hasBudget` until B4.
 
 ---
 
