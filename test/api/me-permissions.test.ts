@@ -78,6 +78,7 @@ describe('/api/me/permissions', () => {
     }
   }
 
+  // Matrix #1
   it('returns 401 when unauthenticated', async () => {
     const res = await GET(
       buildRequest({ method: 'GET', path: '/api/me/permissions', session: null }),
@@ -85,6 +86,7 @@ describe('/api/me/permissions', () => {
     expect(res.status).toBe(401)
   })
 
+  // Matrix #2
   it('returns 403 when onboarding is incomplete', async () => {
     const user = await users.createUser({
       email: `u-${Date.now()}@example.com`,

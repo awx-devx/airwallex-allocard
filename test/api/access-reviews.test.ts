@@ -135,6 +135,71 @@ describe('/api/access-reviews', () => {
     expect(res.status).toBe(401)
   })
 
+  // Matrix #2
+  it('returns 403 when onboarding is incomplete', async () => {
+    const user = await users.createUser({
+      email: `u-${Date.now()}@example.com`,
+      name: 'U',
+    })
+    const res = await GET(
+      buildRequest({
+        method: 'GET',
+        path: '/api/access-reviews',
+        session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+      }),
+    )
+    expect(res.status).toBe(403)
+    expect((await readBody<{ error: { code: string } }>(res)).error.code).toBe(
+      ErrorCode.ONBOARDING_INCOMPLETE,
+    )
+  })
+
+  // Matrix #4
+  it('returns 403 when MEMBER lacks member.manage', async () => {
+    const setup = await seedOwnerWithMember()
+    const member = await users.createUser({
+      email: `m-${Date.now()}@example.com`,
+      name: 'Member',
+    })
+    await memberships.createMembership(
+      { orgId: setup.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
+      { userId: member.id, orgRole: OrgRole.MEMBER },
+    )
+
+    const list = await GET(
+      buildRequest({
+        method: 'GET',
+        path: '/api/access-reviews',
+        session: {
+          userId: member.id,
+          orgId: setup.org.id,
+          orgRole: OrgRole.MEMBER,
+          onboarded: true,
+        },
+      }),
+    )
+    expect(list.status).toBe(403)
+    expect((await readBody<{ error: { code: string } }>(list)).error.code).toBe(
+      ErrorCode.PERMISSION_DENIED,
+    )
+
+    const resolve = await RESOLVE(
+      buildRequest({
+        method: 'POST',
+        path: `/api/access-reviews/${setup.review.id}/resolve`,
+        session: {
+          userId: member.id,
+          orgId: setup.org.id,
+          orgRole: OrgRole.MEMBER,
+          onboarded: true,
+        },
+        params: { id: setup.review.id },
+        body: { resolution: AccessReviewResolution.CONFIRM },
+      }),
+    )
+    expect(resolve.status).toBe(403)
+  })
+
   it('lists open reviews and filters by status', async () => {
     const setup = await seedOwnerWithMember()
     const res = await GET(

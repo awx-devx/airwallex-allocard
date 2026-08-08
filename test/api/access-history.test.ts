@@ -93,6 +93,26 @@ describe('/api/projects/:id/access-history', () => {
     expect(res.status).toBe(401)
   })
 
+  // Matrix #2
+  it('returns 403 when onboarding is incomplete', async () => {
+    const user = await users.createUser({
+      email: `u-${Date.now()}@example.com`,
+      name: 'U',
+    })
+    const res = await GET(
+      buildRequest({
+        method: 'GET',
+        path: '/api/projects/x/access-history',
+        session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+        params: { id: '507f1f77bcf86cd799439011' },
+      }),
+    )
+    expect(res.status).toBe(403)
+    expect((await readBody<{ error: { code: string } }>(res)).error.code).toBe(
+      ErrorCode.ONBOARDING_INCOMPLETE,
+    )
+  })
+
   it('returns 404 for a project in another org', async () => {
     const a = await seedOwnerWithProject()
     const b = await seedOwnerWithProject()

@@ -123,13 +123,13 @@
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B3 endpoint
-- [ ] `computeEffectivePermissions` pure, exported, exhaustively tested
-- [ ] Preview and enforcement share one implementation
-- [ ] Every B1 and B2 endpoint retrofitted (walk the list)
-- [ ] Role templates are per-org copies
-- [ ] Seed script extended
-- [ ] Spec's review checklist signed off
-- [ ] `STATUS.md` updated: active phase B4, generate `B4-TASKS.md`
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B3 endpoint
+- [x] `computeEffectivePermissions` pure, exported, exhaustively tested
+- [x] Preview and enforcement share one implementation
+- [x] Every B1 and B2 endpoint retrofitted (walk the list)
+- [x] Role templates are per-org copies
+- [x] Seed script extended
+- [x] Spec's review checklist signed off
+- [x] `STATUS.md` updated: active phase B4, generate `B4-TASKS.md`
