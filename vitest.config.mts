@@ -44,6 +44,7 @@ export default defineConfig({
             'src/server/models/**/*.test.ts',
             'src/server/repositories/**/*.test.ts',
             'src/server/auth/**/*.test.ts',
+            'src/server/events/**/*.test.ts',
             'src/server/services/**/*.test.ts',
             'src/server/health*.test.ts',
             'src/app/**/*.test.ts',

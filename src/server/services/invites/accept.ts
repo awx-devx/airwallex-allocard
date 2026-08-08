@@ -1,4 +1,6 @@
 import { connectDb } from '@/server/db/connect'
+import { publishEvent } from '@/server/events/bus'
+import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import type { AuthSession } from '@/server/http/types'
 import { acceptInviteByTokenHash, findInviteByTokenHash } from '@/server/repositories/invites'
@@ -114,6 +116,19 @@ export async function acceptInvite(session: AuthSession, token: string): Promise
     actorId: session.userId,
     after: { invite: accepted, membership },
     metadata: { userId: session.userId },
+  })
+
+  await publishEvent({
+    type: DomainEventType.MEMBER_JOINED,
+    orgId: accepted!.orgId,
+    subjectType: 'membership',
+    subjectId: membership.id,
+    payload: {
+      membershipId: membership.id,
+      userId: session.userId,
+      orgRole: membership.orgRole,
+      inviteId: accepted!.id,
+    },
   })
 
   return membership

@@ -91,11 +91,11 @@
   - **Accept:** `pnpm test api/onboarding`
   - **Notes:** `requireOnboarded: false`. `pendingInvites` are `invitePreview` (no tokens).
 
-- [ ] **B1.12** — Events
+- [x] **B1.12** — Events
   - **Files:** `src/server/events/bus.ts`, `src/server/events/types.ts`
   - **Do:** Typed `DomainEvent` union per `docs/ARCHITECTURE.md` §7. Publish after the write commits. Emit `organization.created`, `member.invited`, `member.joined`, `member.removed`. **Redis Streams transport is B6** — here, a no-op publisher that logs and is asserted in tests is sufficient. Do not build the consumer.
   - **Accept:** `pnpm test events` — each mutation emits exactly one event with the right payload
-  - **Notes:**
+  - **Notes:** Added B1 event names to ARCHITECTURE §7. In-memory + log publisher; Redis Streams deferred to B6.
 
 - [ ] **B1.13** — Audit coverage
   - **Files:** touches the services from B1.5–B1.10

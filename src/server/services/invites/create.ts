@@ -1,4 +1,6 @@
 import { connectDb } from '@/server/db/connect'
+import { publishEvent } from '@/server/events/bus'
+import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import {
@@ -73,6 +75,19 @@ export async function createOrgInvite(
     actorId: ctx.userId,
     after: invite,
     metadata: { email, orgRole: input.orgRole },
+  })
+
+  await publishEvent({
+    type: DomainEventType.MEMBER_INVITED,
+    orgId: ctx.orgId,
+    subjectType: 'invite',
+    subjectId: invite.id,
+    payload: {
+      inviteId: invite.id,
+      email,
+      orgRole: input.orgRole,
+      invitedBy: ctx.userId,
+    },
   })
 
   return { ...invite, token }

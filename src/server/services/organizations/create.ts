@@ -1,5 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import { connectDb } from '@/server/db/connect'
+import { publishEvent } from '@/server/events/bus'
+import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import { audit } from '@/server/services/audit/log'
 import { seedRoleTemplates } from '@/server/services/organizations/seedRoleTemplates'
@@ -101,6 +103,18 @@ export async function createOrganizationForUser(
     actorType: ActorType.USER,
     actorId: userId,
     after: org,
+  })
+
+  await publishEvent({
+    type: DomainEventType.ORGANIZATION_CREATED,
+    orgId: org.id,
+    subjectType: 'organization',
+    subjectId: org.id,
+    payload: {
+      organizationId: org.id,
+      createdBy: userId,
+      slug: org.slug,
+    },
   })
 
   return org

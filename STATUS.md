@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.12 — Events (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.11)
-**Blocked on:** user confirmation before starting B1.12
+**Active task:** B1.13 — Audit coverage (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.12)
+**Blocked on:** user confirmation before starting B1.13
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 12 / 15 |
+| B     | B1 Auth & organisations | **in progress** | 13 / 15 |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,13 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.11 onboarding status complete:
+B1.12 events complete:
 
-- `GET /api/onboarding/status` — `{ onboarded, pendingInvites: invitePreview[] }`
-- Pre-onboarding allowed; invites matched by signed-in user email
+- Typed `DomainEvent` envelope + full §7 type union (added `organization.created`, `member.invited`, `member.joined`)
+- In-memory/log publisher; Redis Streams is B6
+- Emits: org create → `organization.created`; invite → `member.invited`; accept → `member.joined`; remove → `member.removed`
 - **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
 
-**Do not start B1.12 until the user confirms.**
+**Do not start B1.13 until the user confirms.**
 
 ---
 

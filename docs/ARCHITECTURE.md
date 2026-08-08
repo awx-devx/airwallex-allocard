@@ -547,6 +547,7 @@ Domain events are the trigger surface for the rules engine. Keep them as an expl
 
 ```ts
 type DomainEvent =
+  | 'organization.created'
   | 'project.created'
   | 'project.approved'
   | 'project.launched'
@@ -555,6 +556,8 @@ type DomainEvent =
   | 'budget.approved'
   | 'budget.updated'
   | 'budget.threshold_crossed'
+  | 'member.invited'
+  | 'member.joined'
   | 'member.added'
   | 'member.role_changed'
   | 'member.scope_changed'

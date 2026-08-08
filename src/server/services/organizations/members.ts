@@ -1,4 +1,6 @@
 import { connectDb } from '@/server/db/connect'
+import { publishEvent } from '@/server/events/bus'
+import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import {
@@ -150,5 +152,17 @@ export async function removeOrgMember(
     actorId: ctx.userId,
     before,
     metadata: { userId },
+  })
+
+  await publishEvent({
+    type: DomainEventType.MEMBER_REMOVED,
+    orgId: ctx.orgId,
+    subjectType: 'membership',
+    subjectId: before.id,
+    payload: {
+      membershipId: before.id,
+      userId,
+      orgRole: before.orgRole,
+    },
   })
 }
