@@ -85,11 +85,11 @@
   - **Accept:** `pnpm test api/invite-accept` — every rejection path distinguishable; concurrent accept creates one membership
   - **Notes:** Codes `INVITE_EXPIRED` / `INVITE_REVOKED` / `INVITE_ALREADY_ACCEPTED` (409). Email mismatch → 403 before consume. Atomic PENDING→ACCEPTED.
 
-- [ ] **B1.11** — Onboarding status
+- [x] **B1.11** — Onboarding status
   - **Files:** `src/app/api/onboarding/status/route.ts`
   - **Do:** Returns `onboarded` plus pending invites matching the signed-in user's email. Powers A1's fork screen.
   - **Accept:** `pnpm test api/onboarding`
-  - **Notes:**
+  - **Notes:** `requireOnboarded: false`. `pendingInvites` are `invitePreview` (no tokens).
 
 - [ ] **B1.12** — Events
   - **Files:** `src/server/events/bus.ts`, `src/server/events/types.ts`

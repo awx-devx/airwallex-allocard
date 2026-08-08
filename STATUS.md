@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.11 — Onboarding status (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.10)
-**Blocked on:** user confirmation before starting B1.11
+**Active task:** B1.12 — Events (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.11)
+**Blocked on:** user confirmation before starting B1.12
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 11 / 15 |
+| B     | B1 Auth & organisations | **in progress** | 12 / 15 |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,13 @@ _None yet._
 
 ## Notes for the next session
 
-B1.10 invite accept complete:
+B1.11 onboarding status complete:
 
-- `POST /api/invites/accept` — pre-onboarding allowed; email mismatch → 403 (does not burn token)
-- Distinguishable codes: `INVITE_EXPIRED`, `INVITE_REVOKED`, `INVITE_ALREADY_ACCEPTED` (409)
-- Atomic PENDING→ACCEPTED; concurrent accepts → one membership
+- `GET /api/onboarding/status` — `{ onboarded, pendingInvites: invitePreview[] }`
+- Pre-onboarding allowed; invites matched by signed-in user email
 - **`TODO(B3)`:** `seedRoleTemplates` still a no-op (from B1.7)
 
-**Do not start B1.11 until the user confirms.**
+**Do not start B1.12 until the user confirms.**
 
 ---
 
