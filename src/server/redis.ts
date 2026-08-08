@@ -161,6 +161,7 @@ export const redisKeys = {
   lockJob: (jobName: string) => `lock:job:${jobName}`,
   awToken: () => 'aw:token',
   rateRemoteAuth: (cardId: string) => `rate:remote-auth:${cardId}`,
+  rateSignUp: (ip: string) => `rate:sign-up:${ip}`,
 } as const
 
 let singleton: RedisClient | undefined
@@ -171,7 +172,14 @@ let singleton: RedisClient | undefined
  */
 export function getRedis(options?: { url?: string | null }): RedisClient {
   if (!singleton) {
-    const url = options?.url !== undefined ? options.url : loadServerEnv().REDIS_URL
+    let url: string | null | undefined
+    if (options?.url !== undefined) {
+      url = options.url
+    } else if (process.env.VITEST === 'true') {
+      url = null
+    } else {
+      url = loadServerEnv().REDIS_URL
+    }
     singleton = url ? createRedisFromUrl(url) : createMemoryRedis()
   }
   return singleton

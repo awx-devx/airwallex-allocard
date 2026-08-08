@@ -49,11 +49,11 @@
   - **Accept:** `pnpm test auth/session` — covers all three resolution paths, plus non-member → 404
   - **Notes:** Explicit org via `x-org-id` header or `orgId` query. JWT callback recomputes org context each refresh. Resolver seam moved to `sessionResolver.ts` to avoid import cycles.
 
-- [ ] **B1.5** — Sign-up
+- [x] **B1.5** — Sign-up
   - **Files:** `src/app/api/auth/sign-up/route.ts`, `src/server/services/auth/signUp.ts`
   - **Do:** Create a user. **Does not create an organisation.** Duplicate email returns a neutral message that doesn't confirm account existence. Rate limit by IP.
   - **Accept:** `pnpm test api/sign-up`
-  - **Notes:**
+  - **Notes:** Public via `withPublicValidation`. Rate limit 10/hour/IP (Redis). Duplicate → neutral `CONFLICT`. Audit under sentinel org `_platform`.
 
 - [ ] **B1.6** — `/api/me`
   - **Files:** `src/app/api/me/route.ts`

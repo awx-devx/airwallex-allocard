@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B1 — Auth & organisations
-**Active task:** B1.5 — Sign-up (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-08 (B1.4)
-**Blocked on:** user confirmation before starting B1.5
+**Active task:** B1.6 — `/api/me` (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-08 (B1.5)
+**Blocked on:** user confirmation before starting B1.6
 
 ---
 
@@ -14,7 +14,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | Track | Phase                   | Status          | Tasks   |
 | ----- | ----------------------- | --------------- | ------- |
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **in progress** | 5 / 15  |
+| B     | B1 Auth & organisations | **in progress** | 6 / 15  |
 | B     | B2 Projects             | not started     | —       |
 | B     | B3 Access control       | not started     | —       |
 | B     | B4 Budget               | not started     | —       |
@@ -60,14 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-B1.4 session resolution complete:
+B1.5 Sign-up complete:
 
-- `onboarded` derived from ACTIVE memberships
-- Active org: `x-org-id` / `?orgId=` → `defaultOrgId` → sole membership
-- Non-member explicit org → 404
-- Real resolver installed; tests override via `installTestSessionResolver`
+- `POST /api/auth/sign-up` — public, no org created
+- Duplicate email → neutral `CONFLICT` ("Unable to complete sign-up")
+- IP rate limit 10/hour via Redis
+- Audit `user.signed_up` under sentinel org `_platform` (pre-org)
 
-**Do not start B1.5 until the user confirms.**
+**Do not start B1.6 until the user confirms.**
 
 ---
 
