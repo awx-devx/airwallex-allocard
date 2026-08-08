@@ -30,12 +30,12 @@
 
 ## Tasks
 
-- [ ] **B2.1** — Project model
+- [x] **B2.1** — Project model
   - **Files:** `src/server/models/Project.ts`
   - **Do:** Tenant-scoped via `tenantScoped`. Unique `(orgId, code)`. Indexes `(orgId, status, updatedAt)`, `(orgId, ownerId)`. Embed workstreams and cardStructure. Follow `docs/ARCHITECTURE.md` §5 and `src/server/models/Membership.ts`.
   - **Pattern:** `src/server/models/Organization.ts` + tenant plugin from Membership
   - **Accept:** `pnpm test models/project`
-  - **Notes:**
+  - **Notes:** `ProjectFields` storage shape (Dates in Mongo). Workstream subdocs `_id: false` with explicit `id`. Same code allowed across orgs.
 
 - [ ] **B2.2** — `canTransition` pure function
   - **Files:** `src/server/services/projects/transitions.ts`
