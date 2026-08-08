@@ -1,11 +1,27 @@
+import { connectDb } from '@/server/db/connect'
+import { RoleModel } from '@/server/models/Role'
+import { ROLE_TEMPLATES } from '@/shared/constants/roleTemplates'
+
 /**
- * TODO(B3): Seed the seven per-org role templates when the Role model exists:
- * Finance Administrator, Project Manager, Approver, Project Spender,
- * Procurement Lead, Contractor, Viewer.
- *
- * Templates must be per-org copies, not global singletons — editing one org's
- * template must not mutate another's.
+ * Copy the seven built-in role templates into an organisation as `isTemplate: true`.
+ * Idempotent on `(orgId, key)` — existing rows are left unchanged (including edits).
  */
 export async function seedRoleTemplates(orgId: string): Promise<void> {
-  void orgId
+  await connectDb()
+
+  for (const template of ROLE_TEMPLATES) {
+    await RoleModel.updateOne(
+      { orgId, key: template.key },
+      {
+        $setOnInsert: {
+          orgId,
+          key: template.key,
+          name: template.name,
+          isTemplate: true,
+          permissions: [...template.permissions],
+        },
+      },
+      { upsert: true },
+    ).exec()
+  }
 }

@@ -37,7 +37,7 @@
   - **Accept:** `pnpm test models/role` and `pnpm test models/projectMember`
   - **Notes:**
 
-- [ ] **B3.2** — Role templates constant + seed helper
+- [x] **B3.2** — Role templates constant + seed helper
   - **Files:** `src/shared/constants/roleTemplates.ts`, replace `src/server/services/organizations/seedRoleTemplates.ts` no-op
   - **Do:** Seven templates: Finance Administrator, Project Manager, Approver, Project Spender, Procurement Lead, Contractor, Viewer — each with an explicit `Permission[]` from the CSV/PRD matrix (inline the lists). `seedRoleTemplates(orgId)` copies them into the org as `isTemplate: true`. Idempotent on `(orgId, key)`.
   - **Accept:** `pnpm test services/seedRoleTemplates`

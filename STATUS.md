@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B3 — Access control
-**Active task:** B3.2 — Role templates constant + seed helper (await go-ahead)
-**Last green `pnpm verify`:** 2026-08-09 (B3.1)
-**Blocked on:** user confirmation before starting B3.2
+**Active task:** B3.3 — `computeEffectivePermissions` pure function (await go-ahead)
+**Last green `pnpm verify`:** 2026-08-09 (B3.2)
+**Blocked on:** user confirmation before starting B3.3
 
 ---
 
@@ -16,7 +16,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B0 Foundation           | **complete**    | 13 / 13 |
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **in progress** | 2 / 14  |
+| B     | B3 Access control       | **in progress** | 3 / 14  |
 | B     | B4 Budget               | not started     | —       |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
@@ -64,7 +64,6 @@ B2 phase exit complete. Generated `docs/phases/backend/B3-TASKS.md`.
 
 Carried forward:
 
-- **`TODO(B3)`:** `seedRoleTemplates` was a no-op — B3.2 replaces it with real per-org template copies
 - **`TODO(B3)`:** transition permission map was stubbed to `project.edit` for all targets — retrofit in B3.11
 - **`TODO(B4)`:** `projectReadyForApproval.hasBudget` is a soft stub — harden when budget exists
 - **`TODO(B4)`:** overview `budgetRemaining` / `budgetSpent` stay null until B4
@@ -75,7 +74,8 @@ Carried forward:
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
 
-B3.1 committed. Do not start B3.2 until the user confirms.
+B3.2 committed. Do not start B3.3 until the user confirms.
+Role template permission lists approved from PRD personas (no CSV in-repo).
 
 Contract notes locked in B3.0:
 

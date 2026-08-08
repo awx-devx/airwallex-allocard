@@ -52,7 +52,7 @@ async function allocateSlug(preferred: string, explicit: boolean): Promise<strin
 }
 
 /**
- * Create an organisation, make the caller OWNER, and seed role templates (B3 stub).
+ * Create an organisation, make the caller OWNER, and seed role templates.
  * Allowed before onboarding — this is the create-org half of the onboarding fork.
  */
 export async function createOrganizationForUser(
@@ -93,7 +93,6 @@ export async function createOrganizationForUser(
     await updateUser(userId, { defaultOrgId: org.id })
   }
 
-  // TODO(B3): real per-org role template copies — see seedRoleTemplates.ts
   await seedRoleTemplates(org.id)
 
   await audit(ctx, {
