@@ -41,6 +41,7 @@ const ORG_WIDE_VIA_MEMBERSHIP = new Set<string>([
   Permission.MEMBER_VIEW,
   Permission.MEMBER_MANAGE,
   Permission.ROLE_ASSIGN,
+  Permission.BUDGET_EDIT,
 ])
 
 function isOrgElevated(orgRole: OrgRole): boolean {
@@ -102,9 +103,9 @@ async function memberGrantsPermission(
  * - With `subject.projectId`: resolve the active ProjectMember, recompute
  *   effective permissions (same function as preview), then check scope.
  * - Without `projectId`: org-only permissions deny for MEMBER; org-wide
- *   capability permissions (`project.view|create`, `member.*`, `role.assign`)
- *   grant if any active membership includes them; other permissions deny
- *   (half-authorization).
+ *   capability permissions (`project.view|create`, `member.*`, `role.assign`,
+ *   `budget.edit`) grant if any active membership includes them; other
+ *   permissions deny (half-authorization).
  */
 export async function requirePermission(
   ctx: OrgContext,

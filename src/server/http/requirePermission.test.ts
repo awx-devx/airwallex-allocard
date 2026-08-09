@@ -52,6 +52,7 @@ describe('http/requirePermission', () => {
     expect(requiresProjectSubject(Permission.PROJECT_VIEW)).toBe(false)
     expect(requiresProjectSubject(Permission.PROJECT_CREATE)).toBe(false)
     expect(requiresProjectSubject(Permission.MEMBER_VIEW)).toBe(false)
+    expect(requiresProjectSubject(Permission.BUDGET_EDIT)).toBe(false)
     expect(requiresProjectSubject('org.manage')).toBe(false)
 
     await expect(

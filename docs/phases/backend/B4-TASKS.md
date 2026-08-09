@@ -161,7 +161,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.11 — Formula validate endpoint
 
-- [ ] **B4.11**
+- [x] **B4.11**
 - **Files:** `src/app/api/budget/formula/validate/route.ts`, `src/server/services/budget/validateFormula.ts`, `test/api/budget-formula.test.ts`
 - **Do:** POST budget.edit — org-wide capability (prefer org-wide via membership like project.view). Parses and dry-evaluates; returns validateFormulaOutput.
 - **Pattern:** `src/app/api/roles/route.ts` (org-level POST)
