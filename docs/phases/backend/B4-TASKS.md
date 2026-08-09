@@ -188,7 +188,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.14 — Events + audit coverage
 
-- [ ] **B4.14**
+- [x] **B4.14**
 - **Files:** `src/server/events/types.ts` (payload types if missing), `test/events/budget.test.ts`, `test/audit/b4.test.ts`
 - **Do:** budget.approved, budget.updated, budget.threshold_crossed once each with right payload. One audit assertion per mutating B4 endpoint (PUT budget, category CUD, POST entry, change-request create, decide).
 - **Pattern:** `test/events/members.test.ts`, `test/audit/b3.test.ts`
