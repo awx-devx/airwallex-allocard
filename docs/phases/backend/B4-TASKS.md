@@ -143,7 +143,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.9 — Budget history
 
-- [ ] **B4.9**
+- [x] **B4.9**
 - **Files:** `src/app/api/projects/[id]/budget/history/route.ts`, `src/server/services/budget/history.ts`, `test/api/budget-history.test.ts`
 - **Do:** GET change history with actor and reason from audit logs for this project's budget subjects (budget.view). Newest first.
 - **Pattern:** `src/app/api/projects/[id]/history/route.ts`, `src/server/services/projects/history.ts`
