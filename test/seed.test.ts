@@ -96,5 +96,26 @@ describe('pnpm seed idempotency', () => {
     expect(spenderUsers).toBe(1)
     expect(contractorUsers).toBe(1)
     expect(procurementUsers).toBe(1)
+
+    const budgetDocs = await mongoose.connection.collection('budgets').find({}).toArray()
+    expect(budgetDocs).toHaveLength(1)
+    expect(budgetDocs[0]?.categories).toHaveLength(2)
+    expect(budgetDocs[0]?.approvedAmount).toBe(
+      SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount,
+    )
+
+    const entries = await mongoose.connection.collection('budgetEntries').countDocuments({})
+    expect(entries).toBe(2)
+
+    const activeProject = await mongoose.connection.collection('projects').findOne({
+      code: SEED.projectActiveCode,
+    })
+    expect(activeProject?.budgetSnapshot).toMatchObject({
+      approved: SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount,
+      committed: 0,
+      actual: 0,
+      remaining: SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount,
+      overCommitted: false,
+    })
   })
 })

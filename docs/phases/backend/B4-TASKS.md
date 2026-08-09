@@ -197,7 +197,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.15 — Seed extension
 
-- [ ] **B4.15**
+- [x] **B4.15**
 - **Files:** `scripts/seed.ts`, `test/seed.test.ts`
 - **Do:** Append seedB4(orgId, ownerId, activeProjectId) — idempotent budget on SEED-ACTIVE with approved amount, at least 2 categories (one formula optional), one APPROVAL entry, one ADJUSTMENT, matching snapshot. Do not duplicate on re-run.
 - **Pattern:** seedB2 / seedB3 in `scripts/seed.ts`

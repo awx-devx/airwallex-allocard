@@ -17,8 +17,14 @@ import {
   hashInviteToken,
   inviteExpiresAt,
 } from '../src/server/services/invites/token'
+import { evaluateFormula } from '../src/server/lib/formula'
+import * as budgets from '../src/server/repositories/budgets'
+import { appendBudgetEntry } from '../src/server/services/budget/ledger'
 import { seedRoleTemplates } from '../src/server/services/organizations/seedRoleTemplates'
 import { ROLE_TEMPLATES } from '../src/shared/constants/roleTemplates'
+import { BudgetEntrySourceType } from '../src/shared/enums/budgetEntrySourceType'
+import { BudgetEntryType } from '../src/shared/enums/budgetEntryType'
+import { OrgRole } from '../src/shared/enums/orgRole'
 
 export const SEED = {
   ownerEmail: 'owner@allocard.local',
@@ -48,6 +54,11 @@ export const SEED = {
   contractorName: 'Seed Contractor',
   procurementEmail: 'procurement@allocard.local',
   procurementName: 'Seed Procurement',
+  /** B4 — SEED-ACTIVE budget (integer minor units). */
+  budgetApprovedAmount: 500_000,
+  budgetAdjustmentAmount: -10_000,
+  budgetMediaAllocated: 100_000,
+  budgetOpsFormula: 'pct(approvedAmount, 20)',
 } as const
 
 type SeedUser = {
@@ -525,6 +536,83 @@ export async function seedB3(input: {
   return { roleKeys: ROLE_TEMPLATES.length, createdMembers }
 }
 
+/**
+ * B4 — idempotent budget on SEED-ACTIVE: approved amount, 2 categories
+ * (one formula), APPROVAL + ADJUSTMENT entries, matching Project.budgetSnapshot.
+ */
+export async function seedB4(input: {
+  orgId: string
+  ownerId: string
+  activeProjectId: string
+}): Promise<{ budgetId: string; created: boolean; entryCount: number }> {
+  const ctx = {
+    orgId: input.orgId,
+    userId: input.ownerId,
+    orgRole: OrgRole.OWNER,
+  }
+
+  const existing = await budgets.findBudgetByProject(ctx, input.activeProjectId)
+  if (existing) {
+    const entryCount = await mongoose.connection.collection('budgetEntries').countDocuments({
+      orgId: input.orgId,
+      projectId: input.activeProjectId,
+    })
+    return { budgetId: existing.id, created: false, entryCount }
+  }
+
+  const approvedAmount = SEED.budgetApprovedAmount
+  const budget = await budgets.upsertBudgetFields(ctx, input.activeProjectId, {
+    currency: SEED.orgBaseCurrency,
+    approvedAmount,
+    thresholdPcts: [80, 90, 100],
+  })
+
+  const opsAllocated = evaluateFormula(SEED.budgetOpsFormula, { approvedAmount })
+  await budgets.addCategory(ctx, input.activeProjectId, {
+    name: 'Media',
+    allocated: SEED.budgetMediaAllocated,
+  })
+  await budgets.addCategory(ctx, input.activeProjectId, {
+    name: 'Ops',
+    allocated: opsAllocated,
+    formula: SEED.budgetOpsFormula,
+  })
+
+  await appendBudgetEntry(ctx, input.activeProjectId, {
+    type: BudgetEntryType.APPROVAL,
+    amount: approvedAmount,
+    currency: SEED.orgBaseCurrency,
+    sourceType: BudgetEntrySourceType.MANUAL,
+    sourceId: budget.id,
+    createdBy: input.ownerId,
+    note: 'seed.approval',
+  })
+
+  await appendBudgetEntry(ctx, input.activeProjectId, {
+    type: BudgetEntryType.ADJUSTMENT,
+    amount: SEED.budgetAdjustmentAmount,
+    currency: SEED.orgBaseCurrency,
+    sourceType: BudgetEntrySourceType.MANUAL,
+    sourceId: budget.id,
+    createdBy: input.ownerId,
+    note: 'seed.adjustment',
+  })
+
+  const finalApproved = approvedAmount + SEED.budgetAdjustmentAmount
+  await budgets.upsertBudgetFields(ctx, input.activeProjectId, {
+    currency: SEED.orgBaseCurrency,
+    approvedAmount: finalApproved,
+    thresholdPcts: [80, 90, 100],
+  })
+
+  const entryCount = await mongoose.connection.collection('budgetEntries').countDocuments({
+    orgId: input.orgId,
+    projectId: input.activeProjectId,
+  })
+
+  return { budgetId: budget.id, created: true, entryCount }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -552,7 +640,13 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   })
   console.log(`B3: roleTemplates=${b3.roleKeys} projectMembersCreated=${b3.createdMembers}`)
 
-  // B4: await seedB4()
+  const b4 = await seedB4({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    activeProjectId: b2.activeId,
+  })
+  console.log(`B4: budget=${b4.budgetId} created=${b4.created} entries=${b4.entryCount}`)
+
   // B5: await seedB5()
   // B6: await seedB6()
   // B7: await seedB7()
