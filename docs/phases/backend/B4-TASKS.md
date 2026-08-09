@@ -134,7 +134,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.8 — Entries list + manual ADJUSTMENT
 
-- [ ] **B4.8**
+- [x] **B4.8**
 - **Files:** `src/app/api/projects/[id]/budget/entries/route.ts`, `src/server/services/budget/entries.ts`, `test/api/budget-entries.test.ts`
 - **Do:** GET paginated/filterable (budget.view). POST only ADJUSTMENT + MANUAL via ledger (budget.edit). Contract input must not accept type; add a service-level test that internal ledger can write COMMITMENT but HTTP cannot.
 - **Pattern:** `src/app/api/projects/route.ts` list pagination

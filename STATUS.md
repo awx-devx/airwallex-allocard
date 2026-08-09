@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B4 — Budget ledger
-**Active task:** B4.8 — Entries list + manual ADJUSTMENT
-**Last green `pnpm verify`:** 2026-08-09 (B4.7)
+**Active task:** B4.9 — Budget history
+**Last green `pnpm verify`:** 2026-08-09 (B4.8)
 **Blocked on:** nothing
 
 ---
@@ -17,7 +17,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
-| B     | B4 Budget               | **in progress** | 8 / 16  |
+| B     | B4 Budget               | **in progress** | 9 / 16  |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
