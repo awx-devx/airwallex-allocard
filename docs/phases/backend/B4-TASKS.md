@@ -152,7 +152,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.10 — Change requests
 
-- [ ] **B4.10**
+- [x] **B4.10**
 - **Files:** `src/app/api/projects/[id]/budget/change-requests/route.ts`, `src/app/api/budget/change-requests/[id]/decide/route.ts`, `src/server/services/budget/changeRequests.ts`, `test/api/budget-change-requests.test.ts`
 - **Do:** POST change-requests requires budget.request + projectId; creates PENDING. GET requires budget.view. POST decide requires budget.edit with subject projectId from the request; APPROVE → append ADJUSTMENT for deltaAmount via ledger + set status; REJECT → status only. Concurrent double-decide → one wins, other 409.
 - **Pattern:** `src/app/api/access-reviews/[id]/resolve/route.ts`, `src/server/services/accessReviews/resolve.ts`
