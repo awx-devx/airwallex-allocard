@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx scripts/seed.ts",
+    "budget:verify": "tsx scripts/budget-verify.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "prepare": "husky"
   },

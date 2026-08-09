@@ -179,7 +179,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.13 — budget:verify script
 
-- [ ] **B4.13**
+- [x] **B4.13**
 - **Files:** `scripts/budget-verify.ts`, package.json script budget:verify, `test/budget-verify.test.ts`
 - **Do:** For every project with entries: recompute via projectBudget, compare to Project.budgetSnapshot and Redis key `budget:project:` + id. Exit non-zero on drift. Cover via test so pnpm verify includes it.
 - **Pattern:** `scripts/seed.ts`
