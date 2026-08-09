@@ -157,6 +157,7 @@ export const redisKeys = {
   budgetProject: (projectId: string) => `budget:project:${projectId}`,
   webhook: (eventId: string) => `webhook:${eventId}`,
   lockCard: (cardId: string) => `lock:card:${cardId}`,
+  lockBudget: (projectId: string) => `lock:budget:${projectId}`,
   lockRule: (ruleId: string, subjectId: string) => `lock:rule:${ruleId}:${subjectId}`,
   lockJob: (jobName: string) => `lock:job:${jobName}`,
   awToken: () => 'aw:token',

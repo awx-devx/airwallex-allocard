@@ -107,12 +107,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.5 — Ledger write path (single mutation authority)
 
-- [ ] **B4.5**
+- [x] **B4.5**
 - **Files:** `src/server/services/budget/ledger.ts`, `src/server/services/budget/ledger.test.ts`, extend `src/server/redis.ts` with redisKeys.lockBudget(projectId) → `lock:budget:` + projectId
 - **Do:** One service function used by all writers, e.g. appendBudgetEntry(ctx, projectId, entryInput) returns entry + projection: (1) acquire per-project Redis lock (SET NX + PX, same pattern as card locks); (2) insert entry append-only; (3) load all entries → projectBudget → write Project.budgetSnapshot + Redis `budget:project:` + projectId in the same unit of work (await both; if Redis fails, fail the request); (4) compare previous vs new utilisationPct against budget.thresholdPcts; on edge cross upward emit budget.threshold_crossed (crossing only — not while merely above); (5) emit budget.updated (and budget.approved when type is APPROVAL / first approval); (6) write exactly one audit entry for the mutation that called the ledger (prefer audit in the HTTP-facing service after ledger returns). Concurrent double-append test: final projection matches full recompute.
 - **Pattern:** lock usage in `src/server/redis.test.ts`; event publish in `src/server/services/projects/create.ts`
 - **Accept:** `pnpm test budget/ledger` — snapshot==recompute; threshold edge-triggered; concurrent writes; Redis key shape `budget:project:` + id
-- **Notes:**
+- **Notes:** Per-project Redis lock `lock:budget:{id}` (NX+PX, retry). Audit deferred to HTTP services. Emits budget.updated always; budget.approved on APPROVAL; threshold_crossed edge-up only. Mongo snapshot then Redis; Redis failure fails the request.
 
 ### B4.6 — GET + PUT project budget
 

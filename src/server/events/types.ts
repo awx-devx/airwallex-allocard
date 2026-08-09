@@ -107,3 +107,28 @@ export type ProjectCreatedPayload = {
   code: string
   createdBy: string
 }
+
+export type BudgetUpdatedPayload = {
+  projectId: string
+  entryId: string
+  entryType: string
+  approved: number
+  committed: number
+  actual: number
+  remaining: number
+  utilisationPct: number
+  overCommitted: boolean
+}
+
+export type BudgetApprovedPayload = {
+  projectId: string
+  entryId: string
+  approved: number
+}
+
+export type BudgetThresholdCrossedPayload = {
+  projectId: string
+  thresholdPct: number
+  previousUtilisationPct: number
+  utilisationPct: number
+}

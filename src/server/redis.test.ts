@@ -74,6 +74,7 @@ describe('redisKeys', () => {
     expect(redisKeys.budgetProject('p1')).toBe('budget:project:p1')
     expect(redisKeys.webhook('e1')).toBe('webhook:e1')
     expect(redisKeys.lockCard('c1')).toBe('lock:card:c1')
+    expect(redisKeys.lockBudget('p1')).toBe('lock:budget:p1')
     expect(redisKeys.lockRule('r1', 's1')).toBe('lock:rule:r1:s1')
     expect(redisKeys.lockJob('reconcile')).toBe('lock:job:reconcile')
     expect(redisKeys.awToken()).toBe('aw:token')
