@@ -116,12 +116,12 @@ B4.0 is done. Remaining work below.
 
 ### B4.6 — GET + PUT project budget
 
-- [ ] **B4.6**
+- [x] **B4.6**
 - **Files:** `src/app/api/projects/[id]/budget/route.ts`, `src/server/services/budget/get.ts`, `src/server/services/budget/put.ts`, `test/api/budget.test.ts`
 - **Do:** GET requires budget.view with projectId; 404 if project missing (cross-org → 404); if no budget yet return budget null + zero projection (locked in B4.0). PUT requires budget.edit; upsert currency/approvedAmount/formula/thresholds; append APPROVAL via ledger (sourceType MANUAL); return budgetDetail.
 - **Pattern:** `src/app/api/projects/[id]/route.ts`, `src/server/services/projects/get.ts`
 - **Accept:** `pnpm test api/budget` — matrix rows #1 auth, #2 onboarding, #3 cross-org 404, #4 under-permission, #6 validation, #7 happy path
-- **Notes:**
+- **Notes:** GET with no budget → `{ budget: null, projection: zeros }`. PUT upserts header then appends delta: APPROVAL if delta≥0, ADJUSTMENT if delta<0 (keeps APPROVAL amounts nonnegative). Audit budget.created/updated.
 
 ### B4.7 — Categories CRUD
 
