@@ -125,7 +125,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.7 — Categories CRUD
 
-- [ ] **B4.7**
+- [x] **B4.7**
 - **Files:** `src/app/api/projects/[id]/budget/categories/route.ts`, `src/app/api/projects/[id]/budget/categories/[catId]/route.ts`, `src/server/services/budget/categories.ts`, `test/api/budget-categories.test.ts`
 - **Do:** List/create/update/delete. Permissions budget.view / budget.edit + projectId. Create may evaluate formula via lib/formula with integer context. Reject create/update when sum(allocated) exceeds approvedAmount. DELETE rejected if any entry references categoryId (409 CONFLICT). If workstreamId set, must exist on the project.
 - **Pattern:** `src/app/api/projects/[id]/workstreams/route.ts`, `src/server/services/projects/workstreams.ts`
