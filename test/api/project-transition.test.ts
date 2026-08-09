@@ -3,10 +3,12 @@ import { POST } from '@/app/api/projects/[id]/transition/route'
 import { getPublishedEvents, resetEventPublisher } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
 import { AuditLogModel } from '@/server/models/AuditLog'
+import { BudgetModel } from '@/server/models/Budget'
 import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
@@ -43,6 +45,7 @@ describe('/api/projects/:id/transition', () => {
       OrganizationModel.syncIndexes(),
       MembershipModel.syncIndexes(),
       ProjectModel.syncIndexes(),
+      BudgetModel.syncIndexes(),
       AuditLogModel.syncIndexes(),
     ])
   })
@@ -92,13 +95,18 @@ describe('/api/projects/:id/transition', () => {
     ctx: { orgId: string; userId: string; orgRole: OrgRole },
     code: string,
   ) {
-    return projectsRepo.createProject(ctx, {
+    const project = await projectsRepo.createProject(ctx, {
       name: 'Ready Project',
       code,
       ownerId: ctx.userId,
       startDate: new Date('2026-01-01T00:00:00.000Z'),
       endDate: new Date('2026-12-31T00:00:00.000Z'),
     })
+    await budgets.upsertBudgetFields(ctx, project.id, {
+      currency: 'USD',
+      approvedAmount: 100_000,
+    })
+    return project
   }
 
   /** Advance a project along the happy path until `target` (inclusive). */
@@ -224,6 +232,25 @@ describe('/api/projects/:id/transition', () => {
 
     const still = await projectsRepo.findProjectById(ctx, project.id)
     expect(still?.status).toBe(ProjectStatus.DRAFT)
+  })
+
+  it('returns 422 when DRAFT→PENDING_APPROVAL has fields but no approved budget', async () => {
+    const { session, ctx } = await seedOwner()
+    const project = await projectsRepo.createProject(ctx, {
+      name: 'Ready without budget',
+      code: `NOB-${Date.now()}`,
+      ownerId: ctx.userId,
+      startDate: new Date('2026-01-01T00:00:00.000Z'),
+      endDate: new Date('2026-12-31T00:00:00.000Z'),
+    })
+
+    const res = await callTransition(session, project.id, ProjectStatus.PENDING_APPROVAL)
+    expect(res.status).toBe(422)
+    const body = await readBody<{
+      error: { code: string; details?: { fieldErrors?: { hasBudget?: string[] } } }
+    }>(res)
+    expect(body.error.code).toBe(ErrorCode.VALIDATION_FAILED)
+    expect(body.error.details?.fieldErrors?.hasBudget).toBeTruthy()
   })
 
   it('covers the full transition matrix (valid + invalid)', async () => {

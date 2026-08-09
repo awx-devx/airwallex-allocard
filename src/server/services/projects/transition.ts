@@ -4,6 +4,7 @@ import { publishEvent } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
 import { AppError, type FieldErrors } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
+import { findBudgetByProject } from '@/server/repositories/budgets'
 import {
   findProjectById,
   updateStatus,
@@ -46,14 +47,16 @@ export function permissionForTransition(to: ProjectStatus): string {
   }
 }
 
-function applyReadyForApproval(project: Project): void {
-  // TODO(B4): harden — derive hasBudget from budget ledger instead of stubbing true.
+async function applyReadyForApproval(ctx: OrgContext, project: Project): Promise<void> {
+  const budget = await findBudgetByProject(ctx, project.id)
+  const hasBudget = (budget?.approvedAmount ?? 0) > 0 || (project.budgetSnapshot?.approved ?? 0) > 0
+
   const parsed = projectReadyForApproval.safeParse({
     name: project.name,
     ownerId: project.ownerId,
     startDate: project.startDate,
     endDate: project.endDate,
-    hasBudget: true,
+    hasBudget,
   })
   if (!parsed.success) {
     throw AppError.validationFailed(zodToFieldErrors(parsed.error))
@@ -65,10 +68,14 @@ function applyNoActiveCards(_project: Project): void {
   void _project
 }
 
-function runGuards(project: Project, guards: readonly TransitionGuard[]): void {
+async function runGuards(
+  ctx: OrgContext,
+  project: Project,
+  guards: readonly TransitionGuard[],
+): Promise<void> {
   for (const guard of guards) {
     if (guard === 'readyForApproval') {
-      applyReadyForApproval(project)
+      await applyReadyForApproval(ctx, project)
     } else if (guard === 'noActiveCards') {
       applyNoActiveCards(project)
     }
@@ -151,7 +158,7 @@ export async function transitionProject(
     throw AppError.conflict('Invalid project status transition')
   }
 
-  runGuards(before, decision.guards)
+  await runGuards(ctx, before, decision.guards)
 
   const now = new Date()
   const after = await updateStatus(

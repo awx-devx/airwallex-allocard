@@ -1,6 +1,7 @@
 import { connectDb } from '@/server/db/connect'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
+import { findBudgetByProject } from '@/server/repositories/budgets'
 import {
   addWorkstream,
   deleteWorkstream as deleteWorkstreamRecord,
@@ -93,11 +94,7 @@ export async function updateProjectWorkstream(
   return after
 }
 
-/**
- * Delete a workstream.
- * TODO(B4): reject when budget categories reference this workstream.
- * Until a reference API exists, delete is allowed.
- */
+/** Delete a workstream. Rejected when a budget category references it. */
 export async function deleteProjectWorkstream(
   ctx: OrgContext,
   projectId: string,
@@ -110,7 +107,11 @@ export async function deleteProjectWorkstream(
     throw AppError.notFound()
   }
 
-  // TODO(B4): if budget categories reference workstreamId → conflict
+  const budget = await findBudgetByProject(ctx, projectId)
+  if (budget?.categories.some((category) => category.workstreamId === workstreamId)) {
+    throw AppError.conflict('Workstream is referenced by a budget category')
+  }
+
   const deleted = await deleteWorkstreamRecord(ctx, projectId, workstreamId)
   if (!deleted) {
     throw AppError.notFound()

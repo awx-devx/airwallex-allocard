@@ -18,6 +18,7 @@ import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
@@ -147,6 +148,10 @@ describe('audit/b2', () => {
       ownerId: ctx.userId,
       startDate: new Date('2026-01-01T00:00:00.000Z'),
       endDate: new Date('2026-12-31T00:00:00.000Z'),
+    })
+    await budgets.upsertBudgetFields(ctx, project.id, {
+      currency: 'USD',
+      approvedAmount: 100_000,
     })
 
     const res = await TRANSITION(

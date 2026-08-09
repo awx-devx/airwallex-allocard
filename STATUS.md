@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B4 — Budget ledger
-**Active task:** B4.12 — Harden B2 budget TODOs
-**Last green `pnpm verify`:** 2026-08-09 (B4.11)
+**Active task:** B4.13 — budget:verify script
+**Last green `pnpm verify`:** 2026-08-09 (B4.12)
 **Blocked on:** nothing
 
 ---
@@ -17,7 +17,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B1 Auth & organisations | **complete**    | 15 / 15 |
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
-| B     | B4 Budget               | **in progress** | 12 / 16 |
+| B     | B4 Budget               | **in progress** | 13 / 16 |
 | B     | B5 Cards                | not started     | —       |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B4.6 GET/PUT budget complete. Next: B4.7 categories CRUD.
+B4.12 complete. Next: B4.13 budget:verify script.
 
 B4.0 locked policies (do not reopen):
 
@@ -76,14 +76,13 @@ B4.0 locked policies (do not reopen):
 
 Carried forward into B4:
 
-- **`TODO(B4)`:** `projectReadyForApproval.hasBudget` is a soft stub — harden in B4.12
-- **`TODO(B4)`:** overview `budgetRemaining` / `budgetSpent` stay null until B4.12
-- **`TODO(B4)`:** workstream delete does not yet check budget-category references — B4.12
 - **`TODO(B5)` / `TODO(B7)`:** overview card/approval counts stub to 0 (memberCount available via project members)
 - **`TODO(B5)`:** `noActiveCards` guard is a no-op allow on → CLOSING
 - **Cancel graph:** `CANCELLED` only from `DRAFT` (spec `└`); not from `PENDING_APPROVAL`
 - **PATCH editability:** non-terminal statuses allow all update fields; tighten per-status later if product requires
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A; onboarding `#2` locked in `test/api/b2-matrix-onboarding.test.ts`
+
+B4.12 cleared prior B2 stubs: `hasBudget` from budget/snapshot; overview money from `budgetSnapshot`; workstream delete 409 on category reference.
 
 B3 locked decisions (do not reopen):
 

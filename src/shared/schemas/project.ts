@@ -102,7 +102,7 @@ export const updateProjectInput = projectSchema
 
 /**
  * Strict readiness for DRAFT → PENDING_APPROVAL only.
- * Soft budget: `hasBudget` must be true; service stubs true until B4. TODO(B4) harden.
+ * `hasBudget` is true when Budget.approvedAmount > 0 or snapshot.approved > 0.
  */
 export const projectReadyForApproval = z
   .object({
@@ -110,7 +110,7 @@ export const projectReadyForApproval = z
     ownerId: idSchema,
     startDate: isoDateSchema,
     endDate: isoDateSchema,
-    /** Soft stand-in until B4 provides a real budget presence check. */
+    /** True when the project has an approved budget (ledger or snapshot). */
     hasBudget: z.boolean(),
   })
   .refine((value) => value.hasBudget, {

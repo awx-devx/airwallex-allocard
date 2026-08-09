@@ -4,10 +4,12 @@ import { GET, POST } from '@/app/api/projects/route'
 import { getPublishedEvents, resetEventPublisher } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
 import { AuditLogModel } from '@/server/models/AuditLog'
+import { BudgetModel } from '@/server/models/Budget'
 import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
@@ -29,6 +31,7 @@ describe('/api/projects', () => {
       OrganizationModel.syncIndexes(),
       MembershipModel.syncIndexes(),
       ProjectModel.syncIndexes(),
+      BudgetModel.syncIndexes(),
       AuditLogModel.syncIndexes(),
     ])
   })
@@ -384,6 +387,41 @@ describe('/api/projects', () => {
         budgetRemaining: null,
         budgetSpent: null,
       })
+    })
+
+    it('fills overview budgetRemaining/budgetSpent from budgetSnapshot', async () => {
+      const { session, user, org } = await seedMember()
+      const ctx = { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER }
+      const created = await projectsRepo.createProject(ctx, {
+        name: 'With Snapshot',
+        code: `SNAP-${Date.now()}`,
+      })
+      await budgets.upsertBudgetFields(ctx, created.id, {
+        currency: 'USD',
+        approvedAmount: 100_000,
+      })
+      await projectsRepo.updateProjectBudgetSnapshot(ctx, created.id, {
+        approved: 100_000,
+        committed: 20_000,
+        actual: 5_000,
+        remaining: 75_000,
+        utilisationPct: 25,
+        overCommitted: false,
+        updatedAt: new Date(),
+      })
+
+      const res = await GET_ONE(
+        buildRequest({
+          method: 'GET',
+          path: `/api/projects/${created.id}`,
+          session,
+          params: { id: created.id },
+        }),
+      )
+      expect(res.status).toBe(200)
+      const detail = await expectMatchesContract(res, projectContracts.get.output)
+      expect(detail.overview.budgetRemaining).toEqual({ amount: 75_000, currency: 'USD' })
+      expect(detail.overview.budgetSpent).toEqual({ amount: 25_000, currency: 'USD' })
     })
   })
 })

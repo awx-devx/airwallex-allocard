@@ -8,6 +8,7 @@ import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as users from '@/server/repositories/users'
@@ -16,6 +17,16 @@ import { transitionProject } from '@/server/services/projects/transition'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { useTestDb } from '../../../test/helpers/db'
+
+async function withApprovedBudget(
+  ctx: { orgId: string; userId: string; orgRole: OrgRole },
+  projectId: string,
+) {
+  await budgets.upsertBudgetFields(ctx, projectId, {
+    currency: 'USD',
+    approvedAmount: 100_000,
+  })
+}
 
 describe('events/projects', () => {
   useTestDb()
@@ -90,6 +101,7 @@ describe('events/projects', () => {
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T00:00:00.000Z',
     })
+    await withApprovedBudget(ctx, project.id)
     await transitionProject(ctx, project.id, { to: ProjectStatus.PENDING_APPROVAL })
     resetEventPublisher()
 
@@ -122,6 +134,7 @@ describe('events/projects', () => {
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T00:00:00.000Z',
     })
+    await withApprovedBudget(ctx, project.id)
     await transitionProject(ctx, project.id, { to: ProjectStatus.PENDING_APPROVAL })
     await transitionProject(ctx, project.id, { to: ProjectStatus.ACTIVE })
     resetEventPublisher()
@@ -146,6 +159,7 @@ describe('events/projects', () => {
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T00:00:00.000Z',
     })
+    await withApprovedBudget(ctx, project.id)
     await transitionProject(ctx, project.id, { to: ProjectStatus.PENDING_APPROVAL })
     await transitionProject(ctx, project.id, { to: ProjectStatus.ACTIVE })
     await transitionProject(ctx, project.id, { to: ProjectStatus.CLOSING })

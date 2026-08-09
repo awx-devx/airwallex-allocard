@@ -18,6 +18,7 @@ import { ProjectMemberModel } from '@/server/models/ProjectMember'
 import { ProjectModel } from '@/server/models/Project'
 import { RoleModel } from '@/server/models/Role'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
@@ -370,6 +371,10 @@ describe('B3.11 B1/B2 permission retrofit', () => {
         ownerId: owner.user.id,
         startDate: new Date('2026-01-01'),
         endDate: new Date('2026-12-31'),
+      })
+      await budgets.upsertBudgetFields(owner.ctx, draft2.id, {
+        currency: 'USD',
+        approvedAmount: 100_000,
       })
       // Re-assign approver/pm onto second project
       for (const [userId, key] of [

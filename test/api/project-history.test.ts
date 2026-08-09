@@ -7,6 +7,7 @@ import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
@@ -100,7 +101,11 @@ describe('/api/projects/:id/history', () => {
   })
 
   it('returns status and field-change history newest first', async () => {
-    const { session, project } = await seedOwnerWithProject()
+    const { session, project, ctx } = await seedOwnerWithProject()
+    await budgets.upsertBudgetFields(ctx, project.id, {
+      currency: 'USD',
+      approvedAmount: 100_000,
+    })
 
     await UPDATE_PROJECT(
       buildRequest({

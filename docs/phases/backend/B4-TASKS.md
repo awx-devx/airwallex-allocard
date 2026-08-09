@@ -170,7 +170,7 @@ B4.0 is done. Remaining work below.
 
 ### B4.12 — Harden B2 budget TODOs
 
-- [ ] **B4.12**
+- [x] **B4.12**
 - **Files:** `src/server/services/projects/transition.ts` (hasBudget), `src/server/services/projects/get.ts` (overview remaining/spent), `src/server/services/projects/workstreams.ts` (delete guard), extend existing api tests (do not rewrite)
 - **Do:** hasBudget true iff project has a Budget with approvedAmount greater than 0 (or snapshot.approved greater than 0). Overview budgetRemaining / budgetSpent from budgetSnapshot as moneySchema; null if no snapshot. Workstream delete 409 if any budget category references workstreamId.
 - **Pattern:** existing B2 services; keep diffs minimal

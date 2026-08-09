@@ -2,15 +2,18 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { DELETE, PATCH } from '@/app/api/projects/[id]/workstreams/[wsId]/route'
 import { GET, POST } from '@/app/api/projects/[id]/workstreams/route'
 import { AuditLogModel } from '@/server/models/AuditLog'
+import { BudgetModel } from '@/server/models/Budget'
 import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
 import { UserModel } from '@/server/models/User'
+import * as budgets from '@/server/repositories/budgets'
 import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
 import * as users from '@/server/repositories/users'
 import { projectContracts } from '@/shared/contracts/project'
+import { ErrorCode } from '@/shared/enums/errors'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { expectMatchesContract } from '../helpers/contract'
 import { useTestDb } from '../helpers/db'
@@ -25,6 +28,7 @@ describe('/api/projects/:id/workstreams', () => {
       OrganizationModel.syncIndexes(),
       MembershipModel.syncIndexes(),
       ProjectModel.syncIndexes(),
+      BudgetModel.syncIndexes(),
       AuditLogModel.syncIndexes(),
     ])
   })
@@ -268,6 +272,32 @@ describe('/api/projects/:id/workstreams', () => {
       expect(res.status).toBe(403)
       const body = await readBody<{ error: { message: string } }>(res)
       expect(body.error.message).toContain('project.edit')
+    })
+
+    it('returns 409 when a budget category references the workstream', async () => {
+      const { session, project, ctx } = await seedOwner()
+      const ws = await projectsRepo.addWorkstream(ctx, project.id, 'Linked')
+      await budgets.upsertBudgetFields(ctx, project.id, {
+        currency: 'USD',
+        approvedAmount: 50_000,
+      })
+      await budgets.addCategory(ctx, project.id, {
+        name: 'Field',
+        allocated: 1_000,
+        workstreamId: ws!.id,
+      })
+
+      const res = await DELETE(
+        buildRequest({
+          method: 'DELETE',
+          path: `/api/projects/${project.id}/workstreams/${ws!.id}`,
+          session,
+          params: { id: project.id, wsId: ws!.id },
+        }),
+      )
+      expect(res.status).toBe(409)
+      const body = await readBody<{ error: { code: string } }>(res)
+      expect(body.error.code).toBe(ErrorCode.CONFLICT)
     })
   })
 })
