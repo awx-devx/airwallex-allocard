@@ -206,17 +206,17 @@ B4.0 is done. Remaining work below.
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B4 endpoint
-- [ ] No code path mutates a balance directly (append-only entries only)
-- [ ] lifecycleId exists on BudgetEntry
-- [ ] Snapshot + Redis update in the same unit of work as each entry
-- [ ] pnpm budget:verify exists and is covered under pnpm verify via tests
-- [ ] Formula parser allowlist reviewed (no arbitrary code execution)
-- [ ] COMMITMENT / ACTUAL unreachable from the public API
-- [ ] Threshold crossing is edge-triggered
-- [ ] All amounts are integer minor units end to end
-- [ ] B2 TODO(B4) markers cleared or updated in STATUS.md
-- [ ] Spec's review checklist signed off
-- [ ] STATUS.md updated: active phase B5, generate B5-TASKS.md
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B4 endpoint
+- [x] No code path mutates a balance directly (append-only entries only)
+- [x] lifecycleId exists on BudgetEntry
+- [x] Snapshot + Redis update in the same unit of work as each entry
+- [x] pnpm budget:verify exists and is covered under pnpm verify via tests
+- [x] Formula parser allowlist reviewed (no arbitrary code execution)
+- [x] COMMITMENT / ACTUAL unreachable from the public API
+- [x] Threshold crossing is edge-triggered
+- [x] All amounts are integer minor units end to end
+- [x] B2 TODO(B4) markers cleared or updated in STATUS.md
+- [x] Spec's review checklist signed off
+- [x] STATUS.md updated: active phase B5, generate B5-TASKS.md

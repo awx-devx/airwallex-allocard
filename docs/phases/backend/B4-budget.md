@@ -10,11 +10,11 @@ Budget as an append-only ledger with derived balances. This is the primary cost 
 
 ### Models
 
-| Model | Notes |
-| --- | --- |
-| `Budget` | orgId, projectId, currency, approvedAmount, `formula?`, categories[{ id, name, workstreamId?, allocated, formula? }] |
-| `BudgetEntry` | orgId, projectId, categoryId?, type, amount, currency, sourceType, sourceId, `lifecycleId?`, createdBy, note |
-| `BudgetChangeRequest` | orgId, projectId, requestedBy, deltaAmount, reason, status, decidedBy, decidedAt |
+| Model                 | Notes                                                                                                                |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `Budget`              | orgId, projectId, currency, approvedAmount, `formula?`, categories[{ id, name, workstreamId?, allocated, formula? }] |
+| `BudgetEntry`         | orgId, projectId, categoryId?, type, amount, currency, sourceType, sourceId, `lifecycleId?`, createdBy, note         |
+| `BudgetChangeRequest` | orgId, projectId, requestedBy, deltaAmount, reason, status, decidedBy, decidedAt                                     |
 
 Entry types: `APPROVAL`, `COMMITMENT`, `ACTUAL`, `RELEASE`, `ADJUSTMENT`.
 
@@ -45,25 +45,25 @@ Scope for B4: arithmetic, `min`, `max`, `round`, `floor`, `ceil`, `clamp`, `pct`
 
 ### Thresholds
 
-Emit `budget.threshold_crossed` when `utilisationPct` crosses a configured boundary, with crossing detected against the previous snapshot rather than the current value. Firing on every write while merely *above* a threshold is what turns B6's rules into a notification storm.
+Emit `budget.threshold_crossed` when `utilisationPct` crosses a configured boundary, with crossing detected against the previous snapshot rather than the current value. Firing on every write while merely _above_ a threshold is what turns B6's rules into a notification storm.
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/projects/:id/budget` | `budget.view` | Budget, categories, live projection |
-| `PUT` | `/api/projects/:id/budget` | `budget.edit` | Set approved amount and currency; appends `APPROVAL` |
-| `GET` | `/api/projects/:id/budget/categories` | `budget.view` | |
-| `POST` | `/api/projects/:id/budget/categories` | `budget.edit` | Fixed amount or formula |
-| `PATCH` | `/api/projects/:id/budget/categories/:catId` | `budget.edit` | |
-| `DELETE` | `/api/projects/:id/budget/categories/:catId` | `budget.edit` | Rejected if entries reference it |
-| `GET` | `/api/projects/:id/budget/entries` | `budget.view` | Paginated, filterable by type and date |
-| `POST` | `/api/projects/:id/budget/entries` | `budget.edit` | Manual `ADJUSTMENT` only; other types are system-written |
-| `GET` | `/api/projects/:id/budget/history` | `budget.view` | Change history with actor and reason |
-| `POST` | `/api/projects/:id/budget/change-requests` | `budget.request` | |
-| `GET` | `/api/projects/:id/budget/change-requests` | `budget.view` | |
-| `POST` | `/api/budget/change-requests/:id/decide` | `budget.edit` | Approve or reject; approval appends `ADJUSTMENT` |
-| `POST` | `/api/budget/formula/validate` | `budget.edit` | Parses and dry-evaluates; powers inline UI validation |
+| Method   | Path                                         | Permission       | Notes                                                    |
+| -------- | -------------------------------------------- | ---------------- | -------------------------------------------------------- |
+| `GET`    | `/api/projects/:id/budget`                   | `budget.view`    | Budget, categories, live projection                      |
+| `PUT`    | `/api/projects/:id/budget`                   | `budget.edit`    | Set approved amount and currency; appends `APPROVAL`     |
+| `GET`    | `/api/projects/:id/budget/categories`        | `budget.view`    |                                                          |
+| `POST`   | `/api/projects/:id/budget/categories`        | `budget.edit`    | Fixed amount or formula                                  |
+| `PATCH`  | `/api/projects/:id/budget/categories/:catId` | `budget.edit`    |                                                          |
+| `DELETE` | `/api/projects/:id/budget/categories/:catId` | `budget.edit`    | Rejected if entries reference it                         |
+| `GET`    | `/api/projects/:id/budget/entries`           | `budget.view`    | Paginated, filterable by type and date                   |
+| `POST`   | `/api/projects/:id/budget/entries`           | `budget.edit`    | Manual `ADJUSTMENT` only; other types are system-written |
+| `GET`    | `/api/projects/:id/budget/history`           | `budget.view`    | Change history with actor and reason                     |
+| `POST`   | `/api/projects/:id/budget/change-requests`   | `budget.request` |                                                          |
+| `GET`    | `/api/projects/:id/budget/change-requests`   | `budget.view`    |                                                          |
+| `POST`   | `/api/budget/change-requests/:id/decide`     | `budget.edit`    | Approve or reject; approval appends `ADJUSTMENT`         |
+| `POST`   | `/api/budget/formula/validate`               | `budget.edit`    | Parses and dry-evaluates; powers inline UI validation    |
 
 The API refuses to write `COMMITMENT` or `ACTUAL` directly — those come only from B7 and B8. Enforce it in the service, not by convention.
 
@@ -87,14 +87,14 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] No code path mutates a balance directly
-- [ ] `lifecycleId` exists on `BudgetEntry` even though B8 populates it
-- [ ] Snapshot and Redis cache update within the same unit of work as the entry
-- [ ] `pnpm budget:verify` exists and runs in CI
-- [ ] The formula parser cannot execute arbitrary code — review the allowlist adversarially
-- [ ] `COMMITMENT` and `ACTUAL` are unreachable from the public API
-- [ ] Threshold crossing is edge-triggered
-- [ ] All amounts are integer minor units end to end
+- [x] No code path mutates a balance directly
+- [x] `lifecycleId` exists on `BudgetEntry` even though B8 populates it
+- [x] Snapshot and Redis cache update within the same unit of work as the entry
+- [x] `pnpm budget:verify` exists and runs in CI
+- [x] The formula parser cannot execute arbitrary code — review the allowlist adversarially
+- [x] `COMMITMENT` and `ACTUAL` are unreachable from the public API
+- [x] Threshold crossing is edge-triggered
+- [x] All amounts are integer minor units end to end
 
 ## Out of scope
 
