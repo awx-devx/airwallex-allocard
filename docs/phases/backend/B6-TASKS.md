@@ -49,12 +49,12 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test repositories/attribute` and `pnpm test repositories/rule`
   - **Notes:** Tests live in `repositories/attributes.test.ts` + `repositories/rules.test.ts`. `putAttributeValue` upserts and keeps source `observedAt`. `updateRule` bumps `version`; `setRuleEnabled` does not. `listEnabledRulesForScope` returns ORG rules always + PROJECT rules for that project, ascending priority. `findWebhookSecretHash` is the only reader of the hash; `findLastRuleRun` feeds crossedAbove/Below.
 
-- [ ] **B6.3** — Built-in attribute resolvers + registry service
+- [x] **B6.3** — Built-in attribute resolvers + registry service
   - **Files:** `src/server/services/attributes/builtins.ts`, `registry.ts`, `resolve.ts`, tests
   - **Do:** Implement built-ins from RULES-ENGINE §2 (project/budget/member/card). Stale (`ttlSec`) → skip reason, never silent zero. Missing → fail with named key. Connector interface + one stub "Campaign Analytics" connector.
   - **Pattern:** pure style of `src/server/services/budget/projectProjection.ts`
   - **Accept:** `pnpm test attributes` — stale SKIPPED; missing named; builtins match ledger/project state
-  - **Notes:**
+  - **Notes:** `builtins.ts` is pure; an uncomputable attribute is **omitted**, never zero (no ledger → no `project.budget.*`; no endDate → no `daysRemaining`). `resolve.ts` marks `stale` from `observedAt + ttlSec` and `requireAttributes` splits missing vs stale — the pipeline maps those to FAILED/SKIPPED in B6.5. `project.approvalStatus` derived: `approvedAt` set → APPROVED, else PENDING_APPROVAL when status is, else NOT_SUBMITTED. `member.spend.mtd` stays null (TODO(B8) transactions) so it reads as missing, not 0. `card.remaining.{interval}` only appears when the caller passes `cardLimits` — no Airwallex call during context building. Category remaining = allocation until B8 attributes spend.
 
 - [ ] **B6.4** — Formula extension for attribute identifiers
   - **Files:** extend `src/server/lib/formula/*`, tests

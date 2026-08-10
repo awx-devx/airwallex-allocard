@@ -114,6 +114,26 @@ export async function findAttributeValuesForSubjects(
   return docs.map((doc) => toAttributeValue(doc))
 }
 
+/** Every stored value for these subjects, regardless of key — context building. */
+export async function findAttributeValuesBySubjects(
+  ctx: OrgContext,
+  subjects: AttributeSubjectRef[],
+): Promise<AttributeValue[]> {
+  if (subjects.length === 0) {
+    return []
+  }
+  const docs = await AttributeValueModel.find({
+    orgId: ctx.orgId,
+    $or: subjects.map((subject) => ({
+      subjectType: subject.subjectType,
+      subjectId: subject.subjectId,
+    })),
+  })
+    .lean()
+    .exec()
+  return docs.map((doc) => toAttributeValue(doc))
+}
+
 export async function listAttributeValues(
   ctx: OrgContext,
   filter: ListAttributeValuesFilter = {},
