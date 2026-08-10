@@ -69,12 +69,20 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
     5. `coalesce` rescues a declared-but-**null** attribute only. A _missing_ key still throws `UNKNOWN_IDENTIFIER`, so a typo can never become a silent default.
     6. Non-numeric attributes (strings, booleans) project to null → `NULL_VALUE` on arithmetic. Use them in conditions, not formulas. Formula identifiers cannot contain hyphens (ambiguous with minus), so hyphenated category ids are referenced via `attr` conditions.
 
-- [ ] **B6.5** — Pure pipeline steps 1–6 (select → context → evaluate → targets → merge → diff)
+- [x] **B6.5** — Pure pipeline steps 1–6 (select → context → evaluate → targets → merge → diff)
   - **Files:** `src/server/services/rules/select.ts`, `context.ts`, `evaluate.ts`, `targets.ts`, `merge.ts`, `diff.ts`, `pipeline.ts`, extensive unit tests
   - **Do:** Implement RULES-ENGINE §4. Merge table exactly (min limits, intersect allowlists, union blocklists, max/min dates, most-restrictive status). Impossible merge → conflict object, no push. `crossedAbove`/`crossedBelow` vs previous RuleRun. Determinism: identical inputs → identical desired state over many runs. No I/O in steps 1–6.
   - **Pattern:** `src/server/services/cards/controls.ts` (pure) + RULES-ENGINE §4
   - **Accept:** `pnpm test rules/pipeline` — merge fields; three rules one card; impossible merge; priority; freeze beats limit; crossedBelow once; determinism
-  - **Notes:**
+  - **Notes:** No I/O in `select/context/evaluate/targets/merge/diff/pipeline` — attribute loading already happened in B6.3, so `runPipeline` takes a built `AttributeContext`. Decisions:
+    1. **Merge is commutative** — min/intersect/union/max give the same answer in any order, so freeze beats a limit because `INACTIVE` is more restrictive, not because it ran last. Rule order (priority asc, then id) and explanation contribution order are sorted purely for determinism.
+    2. Missing attribute → `FAILED` naming the keys; stale → `SKIPPED` naming the keys; merge conflict → contributing rules become `PARTIAL` and the field is dropped, never pushed.
+    3. `crossedAbove`/`crossedBelow`/`changedBy` need a previous value; with no previous run they do **not** fire — a first observation is not a crossing.
+    4. Diff compares only fields a rule contributed, so silence about merchant categories is not a request to clear them.
+    5. Literal vs formula is decided by field, never guessed: currency is literal iff `/^[A-Z]{3}$/`, dates literal iff ISO-8601, amounts literal iff numeric, allowlists literal iff an array. A string allowlist names an attribute holding a comma-separated list.
+    6. `expr` conditions evaluate the numeric formula and treat non-zero as true — the sandbox has no boolean operators by design (B6.4).
+    7. `card.create` resolves to member targets with `WOULD_APPLY`; provisioning is step 7. `access.*`, `budget.allocate`, `approval.require`, `notify`, `flag.review` record `SKIPPED` until their owning phase wires them.
+    8. Added `activeFromOffsetDays` / `activeToOffsetDays` to `ruleControlsParamsSchema` — the relative-window form agreed in B6.4 instead of `now() + 7d`.
 
 - [ ] **B6.6** — Apply + record (steps 7–8) + synchronous Redis policy snapshot
   - **Files:** `src/server/services/rules/apply.ts`, `record.ts`, `evaluateAndApply.ts`, tests

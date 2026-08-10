@@ -174,6 +174,13 @@ export const ruleControlsParamsSchema = z.object({
   transactionLimits: ruleTransactionLimitsSchema.optional(),
   activeFrom: formulaOrDateSchema.nullable().optional(),
   activeTo: formulaOrDateSchema.nullable().optional(),
+  /**
+   * Relative active window, in whole days from evaluation time. Kept out of the
+   * formula grammar deliberately (B6.4): the sandbox stays numeric-only and has
+   * no `now()` or duration literals. `activeTo` wins if both are given.
+   */
+  activeFromOffsetDays: z.number().int().optional(),
+  activeToOffsetDays: z.number().int().optional(),
   allowedCurrencies: formulaOrAllowlistSchema.optional(),
   allowedMerchantCategories: formulaOrAllowlistSchema.optional(),
   allowedMerchantCountries: formulaOrAllowlistSchema.optional(),
