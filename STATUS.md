@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.14 — Seed extension
-**Last green `pnpm verify`:** 2026-08-11 (B5.13)
+**Active task:** Phase exit (stop — do not start B6)
+**Last green `pnpm verify`:** 2026-08-11 (B5.14)
 **Blocked on:** nothing
 
 ---
@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 14 / 15 |
+| B     | B5 Cards                | **in progress** | 15 / 15 |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B5.14** — Seed extension.
+**B5.3–B5.14 complete.** Phase exit checklist remains — do not start B6 until phase exit is signed off.
 
 B5.0 contracts reviewed and locked. Do not reopen:
 
@@ -73,11 +73,7 @@ B5.0 contracts reviewed and locked. Do not reopen:
 7. Cross-org 404; scope miss 403; CLOSED → 409
 8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
 
-B5.12 locked: `activeCardCount` / noActiveCards count **non-CLOSED** cards (PENDING/INACTIVE still block close).
-
-Read `docs/AIRWALLEX-INTEGRATION.md` before Airwallex client work (B5.2+).
-
-B4 locked policies (do not reopen): see prior notes / B4-TASKS.
+B5.12 locked: `activeCardCount` / noActiveCards count **non-CLOSED** cards.
 
 Carried forward:
 

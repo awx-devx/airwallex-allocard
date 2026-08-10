@@ -613,6 +613,117 @@ export async function seedB4(input: {
   return { budgetId: budget.id, created: true, entryCount }
 }
 
+/**
+ * B5 — idempotent cardholder + card on SEED-ACTIVE under fixture mode.
+ * READY INDIVIDUAL for spender; one DELEGATE; one ACTIVE MEMBER card with
+ * desiredControls === appliedControls.
+ */
+export async function seedB5(input: {
+  orgId: string
+  ownerId: string
+  activeProjectId: string
+}): Promise<{
+  individualCardholderId: string
+  delegateCardholderId: string
+  cardId: string
+  created: boolean
+}> {
+  const { ensureIndividualCardholder } = await import('../src/server/services/cardholders/ensure')
+  const { createCardholderForOrg } = await import('../src/server/services/cardholders/create')
+  const { createCardForProject } = await import('../src/server/services/cards/create')
+  const cardholdersRepo = await import('../src/server/repositories/cardholders')
+  const cardsRepo = await import('../src/server/repositories/cards')
+  const { CardholderType } = await import('../src/shared/enums/cardholderType')
+  const { CardholderStatus } = await import('../src/shared/enums/cardholderStatus')
+  const { CardPurpose } = await import('../src/shared/enums/cardPurpose')
+  const { AllowedTransactionCount } = await import('../src/shared/enums/allowedTransactionCount')
+  const { TransactionLimitInterval } = await import('../src/shared/enums/transactionLimitInterval')
+
+  const ctx = {
+    orgId: input.orgId,
+    userId: input.ownerId,
+    orgRole: OrgRole.OWNER,
+  }
+
+  const existingCards = await cardsRepo.listCards(ctx, {
+    projectId: input.activeProjectId,
+    purpose: CardPurpose.MEMBER,
+    page: 1,
+    pageSize: 1,
+  })
+  if (existingCards.total > 0) {
+    const card = existingCards.items[0]!
+    const individual =
+      (await cardholdersRepo.findCardholderById(ctx, card.cardholderId)) ??
+      (await cardholdersRepo.listCardholders(ctx, { type: CardholderType.INDIVIDUAL, pageSize: 1 }))
+        .items[0]
+    const delegate = (
+      await cardholdersRepo.listCardholders(ctx, { type: CardholderType.DELEGATE, pageSize: 1 })
+    ).items[0]
+    return {
+      individualCardholderId: individual?.id ?? card.cardholderId,
+      delegateCardholderId: delegate?.id ?? card.cardholderId,
+      cardId: card.id,
+      created: false,
+    }
+  }
+
+  const spender = await mongoose.connection
+    .collection('users')
+    .findOne({ email: SEED.spenderEmail })
+  if (!spender) {
+    throw new Error('seedB5: spender user missing — run seedB3 first')
+  }
+  const spenderId = String(spender._id)
+
+  let individual = await ensureIndividualCardholder(ctx, spenderId)
+  if (individual.status !== CardholderStatus.READY) {
+    await cardholdersRepo.updateCardholderStatus(ctx, individual.id, CardholderStatus.READY)
+    individual = (await cardholdersRepo.findCardholderById(ctx, individual.id))!
+  }
+
+  let delegate = (
+    await cardholdersRepo.listCardholders(ctx, { type: CardholderType.DELEGATE, pageSize: 1 })
+  ).items[0]
+  if (!delegate) {
+    delegate = await createCardholderForOrg(ctx, { type: CardholderType.DELEGATE })
+    if (delegate.status !== CardholderStatus.READY) {
+      await cardholdersRepo.updateCardholderStatus(ctx, delegate.id, CardholderStatus.READY)
+      delegate = (await cardholdersRepo.findCardholderById(ctx, delegate.id))!
+    }
+  }
+
+  const controls = {
+    allowedTransactionCount: AllowedTransactionCount.MULTIPLE,
+    transactionLimits: {
+      currency: SEED.orgBaseCurrency,
+      limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 400_000 }],
+    },
+    activeFrom: null,
+    activeTo: null,
+    allowedCurrencies: null,
+    allowedMerchantCategories: null,
+    allowedMerchantCountries: null,
+    allowedMerchantBrands: null,
+    blockedTransactionUsages: [] as { transactionScope: string; usageScope: string }[],
+  }
+
+  const card = await createCardForProject(ctx, input.activeProjectId, {
+    purpose: CardPurpose.MEMBER,
+    cardholderId: individual.id,
+    nickName: 'SEED-ACTIVE — Spender',
+    accessList: [spenderId],
+    desiredControls: controls,
+  })
+
+  return {
+    individualCardholderId: individual.id,
+    delegateCardholderId: delegate.id,
+    cardId: card.id,
+    created: true,
+  }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -647,7 +758,15 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   })
   console.log(`B4: budget=${b4.budgetId} created=${b4.created} entries=${b4.entryCount}`)
 
-  // B5: await seedB5()
+  const b5 = await seedB5({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    activeProjectId: b2.activeId,
+  })
+  console.log(
+    `B5: card=${b5.cardId} individual=${b5.individualCardholderId} delegate=${b5.delegateCardholderId} created=${b5.created}`,
+  )
+
   // B6: await seedB6()
   // B7: await seedB7()
   // B8: await seedB8()

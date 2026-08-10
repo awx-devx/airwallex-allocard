@@ -117,5 +117,18 @@ describe('pnpm seed idempotency', () => {
       remaining: SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount,
       overCommitted: false,
     })
+
+    const cardholders = await mongoose.connection.collection('cardholders').countDocuments({})
+    expect(cardholders).toBeGreaterThanOrEqual(2)
+    const individual = await mongoose.connection.collection('cardholders').countDocuments({
+      type: 'INDIVIDUAL',
+      status: 'READY',
+    })
+    expect(individual).toBeGreaterThanOrEqual(1)
+    const cards = await mongoose.connection.collection('cards').find({}).toArray()
+    expect(cards).toHaveLength(1)
+    expect(cards[0]?.purpose).toBe('MEMBER')
+    expect(cards[0]?.status).toBe('ACTIVE')
+    expect(cards[0]?.desiredControls).toEqual(cards[0]?.appliedControls)
   })
 })

@@ -272,12 +272,12 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.14 — Seed extension
 
-- [ ] **B5.14**
+- [x] **B5.14**
   - **Files:** `scripts/seed.ts`, `test/seed.test.ts`
   - **Do:** `seedB5` — under fixture mode, idempotent: at least one READY INDIVIDUAL cardholder for a SEED-ACTIVE member; one DELEGATE if useful; at least one ACTIVE card on SEED-ACTIVE with `desiredControls === appliedControls` (MEMBER purpose). Do not duplicate on re-run.
   - **Pattern:** `seedB4` in `scripts/seed.ts`
   - **Accept:** `pnpm test seed`
-  - **Notes:**
+  - **Notes:** Idempotent READY INDIVIDUAL + DELEGATE + MEMBER card on SEED-ACTIVE. `pnpm verify` green.
 
 ## Phase exit
 
