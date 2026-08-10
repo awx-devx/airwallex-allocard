@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.5 — Controls mapping (domain ↔ authorization_controls)
-**Last green `pnpm verify`:** 2026-08-11 (B5.4)
+**Active task:** B5.6 — Card reconciler
+**Last green `pnpm verify`:** 2026-08-11 (B5.5)
 **Blocked on:** nothing
 
 ---
@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 5 / 15  |
+| B     | B5 Cards                | **in progress** | 6 / 15  |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B5.5** — Controls mapping (domain ↔ authorization_controls).
+Active: **B5.6** — Card reconciler.
 
 B5.0 contracts reviewed and locked. Do not reopen:
 

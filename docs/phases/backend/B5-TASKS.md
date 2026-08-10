@@ -144,7 +144,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.5 — Controls mapping (domain ↔ authorization_controls)
 
-- [ ] **B5.5**
+- [x] **B5.5**
   - **Files:** `src/server/services/cards/controls.ts`, `src/server/services/cards/controls.test.ts`
   - **Do:** Pure functions, no I/O:
     - `toAirwallexControls(domain): authorization_controls` — camelCase → snake_case; minor → major; omit allowlist fields when domain value is `null`; **throw typed conflict** if any allowlist is `[]` or would push empty
@@ -155,7 +155,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - Empty-array trap tests are mandatory
   - **Pattern:** pure style of `src/server/services/budget/projectProjection.ts`
   - **Accept:** `pnpm test cards/controls` — empty intersection/[] conflict; clamp flagged; SINGLE immutability; minor↔major round-trip for USD
-  - **Notes:**
+  - **Notes:** Empty `[]` → CONFLICT; null omit; USD ÷100; zero-decimal set documented. `pnpm verify` green.
 
 ### B5.6 — Card reconciler
 
