@@ -91,6 +91,48 @@ describe('/api/budget/formula/validate', () => {
     expect(body.error.code).toBe(ErrorCode.ONBOARDING_INCOMPLETE)
   })
 
+  // Matrix #4 — org-wide budget.edit via membership; bare MEMBER is denied
+  it('returns 403 when the caller lacks budget.edit', async () => {
+    const owner = await seedOwner()
+    const member = await users.createUser({
+      email: `m-${Date.now()}@example.com`,
+      name: 'Member',
+    })
+    await memberships.createMembership(
+      { orgId: owner.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
+      { userId: member.id, orgRole: OrgRole.MEMBER },
+    )
+
+    const res = await POST(
+      buildRequest({
+        method: 'POST',
+        path: '/api/budget/formula/validate',
+        session: {
+          userId: member.id,
+          orgId: owner.org.id,
+          orgRole: OrgRole.MEMBER,
+          onboarded: true,
+        },
+        body: { expression: '1+1' },
+      }),
+    )
+    expect(res.status).toBe(403)
+  })
+
+  // Matrix #6
+  it('returns 422 on invalid payload', async () => {
+    const owner = await seedOwner()
+    const res = await POST(
+      buildRequest({
+        method: 'POST',
+        path: '/api/budget/formula/validate',
+        session: owner.session,
+        body: { expression: 'x'.repeat(501) },
+      }),
+    )
+    expect(res.status).toBe(422)
+  })
+
   it('returns ok true with integer value', async () => {
     const owner = await seedOwner()
     const res = await POST(

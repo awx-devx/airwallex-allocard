@@ -91,6 +91,7 @@ Beyond the standard matrix:
 - [x] `lifecycleId` exists on `BudgetEntry` even though B8 populates it
 - [x] Snapshot and Redis cache update within the same unit of work as the entry
 - [x] `pnpm budget:verify` exists and runs in CI
+  - Covered by `test/budget-verify.test.ts` under `pnpm verify` (no separate CI workflow required)
 - [x] The formula parser cannot execute arbitrary code — review the allowlist adversarially
 - [x] `COMMITMENT` and `ACTUAL` are unreachable from the public API
 - [x] Threshold crossing is edge-triggered

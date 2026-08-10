@@ -103,6 +103,7 @@ describe('/api/projects/:id/budget/change-requests', () => {
     expect(res.status).toBe(200)
   }
 
+  // Matrix #1
   it('returns 401 when unauthenticated', async () => {
     const res = await GET(
       buildRequest({
@@ -115,6 +116,26 @@ describe('/api/projects/:id/budget/change-requests', () => {
     expect(res.status).toBe(401)
   })
 
+  // Matrix #2
+  it('returns 403 when onboarding is incomplete', async () => {
+    const user = await users.createUser({
+      email: `u-${Date.now()}@example.com`,
+      name: 'U',
+    })
+    const res = await GET(
+      buildRequest({
+        method: 'GET',
+        path: '/api/projects/x/budget/change-requests',
+        session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+        params: { id: 'x' },
+      }),
+    )
+    expect(res.status).toBe(403)
+    const body = await readBody<{ error: { code: string } }>(res)
+    expect(body.error.code).toBe(ErrorCode.ONBOARDING_INCOMPLETE)
+  })
+
+  // Matrix #3
   it('returns 404 for cross-org project access', async () => {
     const a = await seedOwner()
     const b = await seedOwner()
@@ -127,6 +148,80 @@ describe('/api/projects/:id/budget/change-requests', () => {
       }),
     )
     expect(res.status).toBe(404)
+  })
+
+  // Matrix #4
+  it('returns 403 when the caller lacks budget.view', async () => {
+    const owner = await seedOwner()
+    const member = await users.createUser({
+      email: `m-${Date.now()}@example.com`,
+      name: 'Member',
+    })
+    await memberships.createMembership(
+      { orgId: owner.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
+      { userId: member.id, orgRole: OrgRole.MEMBER },
+    )
+
+    const res = await GET(
+      buildRequest({
+        method: 'GET',
+        path: `/api/projects/${owner.project.id}/budget/change-requests`,
+        session: {
+          userId: member.id,
+          orgId: owner.org.id,
+          orgRole: OrgRole.MEMBER,
+          onboarded: true,
+        },
+        params: { id: owner.project.id },
+      }),
+    )
+    expect(res.status).toBe(403)
+  })
+
+  // Matrix #4 (mutate)
+  it('returns 403 when the caller lacks budget.request on create', async () => {
+    const owner = await seedOwner()
+    await putBudget(owner)
+    const member = await users.createUser({
+      email: `m-${Date.now()}@example.com`,
+      name: 'Member',
+    })
+    await memberships.createMembership(
+      { orgId: owner.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
+      { userId: member.id, orgRole: OrgRole.MEMBER },
+    )
+
+    const res = await POST(
+      buildRequest({
+        method: 'POST',
+        path: `/api/projects/${owner.project.id}/budget/change-requests`,
+        session: {
+          userId: member.id,
+          orgId: owner.org.id,
+          orgRole: OrgRole.MEMBER,
+          onboarded: true,
+        },
+        params: { id: owner.project.id },
+        body: { deltaAmount: 1_000, reason: 'nope' },
+      }),
+    )
+    expect(res.status).toBe(403)
+  })
+
+  // Matrix #6
+  it('returns 422 on invalid create payload', async () => {
+    const owner = await seedOwner()
+    await putBudget(owner)
+    const res = await POST(
+      buildRequest({
+        method: 'POST',
+        path: `/api/projects/${owner.project.id}/budget/change-requests`,
+        session: owner.session,
+        params: { id: owner.project.id },
+        body: { deltaAmount: 0, reason: 'zero' },
+      }),
+    )
+    expect(res.status).toBe(422)
   })
 
   it('create PENDING, list, approve appends ADJUSTMENT, reject decides only', async () => {
@@ -285,5 +380,119 @@ describe('/api/projects/:id/budget/change-requests', () => {
     const conflict = a.status === 409 ? a : b
     const body = await readBody<{ error: { code: string } }>(conflict)
     expect(body.error.code).toBe(ErrorCode.CONFLICT)
+  })
+
+  describe('/api/budget/change-requests/:id/decide', () => {
+    async function createPending(owner: Awaited<ReturnType<typeof seedOwner>>) {
+      await putBudget(owner)
+      const createRes = await POST(
+        buildRequest({
+          method: 'POST',
+          path: `/api/projects/${owner.project.id}/budget/change-requests`,
+          session: owner.session,
+          params: { id: owner.project.id },
+          body: { deltaAmount: 1_000, reason: 'decide matrix' },
+        }),
+      )
+      return expectMatchesContract(createRes, budgetContracts.createChangeRequest.output)
+    }
+
+    // Matrix #1
+    it('returns 401 when unauthenticated', async () => {
+      const res = await DECIDE(
+        buildRequest({
+          method: 'POST',
+          path: '/api/budget/change-requests/x/decide',
+          session: null,
+          params: { id: 'x' },
+          body: { decision: 'APPROVE' },
+        }),
+      )
+      expect(res.status).toBe(401)
+    })
+
+    // Matrix #2
+    it('returns 403 when onboarding is incomplete', async () => {
+      const user = await users.createUser({
+        email: `u-${Date.now()}@example.com`,
+        name: 'U',
+      })
+      const res = await DECIDE(
+        buildRequest({
+          method: 'POST',
+          path: '/api/budget/change-requests/x/decide',
+          session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+          params: { id: 'x' },
+          body: { decision: 'APPROVE' },
+        }),
+      )
+      expect(res.status).toBe(403)
+      const body = await readBody<{ error: { code: string } }>(res)
+      expect(body.error.code).toBe(ErrorCode.ONBOARDING_INCOMPLETE)
+    })
+
+    // Matrix #3
+    it('returns 404 for cross-org change request', async () => {
+      const a = await seedOwner()
+      const b = await seedOwner()
+      const pending = await createPending(a)
+
+      const res = await DECIDE(
+        buildRequest({
+          method: 'POST',
+          path: `/api/budget/change-requests/${pending.id}/decide`,
+          session: b.session,
+          params: { id: pending.id },
+          body: { decision: 'APPROVE' },
+        }),
+      )
+      expect(res.status).toBe(404)
+    })
+
+    // Matrix #4
+    it('returns 403 when the caller lacks budget.edit', async () => {
+      const owner = await seedOwner()
+      const pending = await createPending(owner)
+      const member = await users.createUser({
+        email: `m-${Date.now()}@example.com`,
+        name: 'Member',
+      })
+      await memberships.createMembership(
+        { orgId: owner.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
+        { userId: member.id, orgRole: OrgRole.MEMBER },
+      )
+
+      const res = await DECIDE(
+        buildRequest({
+          method: 'POST',
+          path: `/api/budget/change-requests/${pending.id}/decide`,
+          session: {
+            userId: member.id,
+            orgId: owner.org.id,
+            orgRole: OrgRole.MEMBER,
+            onboarded: true,
+          },
+          params: { id: pending.id },
+          body: { decision: 'APPROVE' },
+        }),
+      )
+      expect(res.status).toBe(403)
+    })
+
+    // Matrix #6
+    it('returns 422 on invalid decide payload', async () => {
+      const owner = await seedOwner()
+      const pending = await createPending(owner)
+      const res = await DECIDE(
+        buildRequest({
+          method: 'POST',
+          path: `/api/budget/change-requests/${pending.id}/decide`,
+          session: owner.session,
+          params: { id: pending.id },
+          body: { decision: 'MAYBE' },
+        }),
+      )
+      expect(res.status).toBe(422)
+    })
   })
 })

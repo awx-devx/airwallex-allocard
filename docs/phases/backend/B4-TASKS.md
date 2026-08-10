@@ -209,10 +209,12 @@ B4.0 is done. Remaining work below.
 - [x] All tasks checked and committed
 - [x] `pnpm verify` green
 - [x] Standard endpoint matrix passing for every B4 endpoint
+  - Includes change-requests list/create, decide, and formula validate (#1–#4, #6 where applicable)
 - [x] No code path mutates a balance directly (append-only entries only)
 - [x] lifecycleId exists on BudgetEntry
 - [x] Snapshot + Redis update in the same unit of work as each entry
 - [x] pnpm budget:verify exists and is covered under pnpm verify via tests
+  - `pnpm budget:verify` script + `test/budget-verify.test.ts` (no separate CI workflow)
 - [x] Formula parser allowlist reviewed (no arbitrary code execution)
 - [x] COMMITMENT / ACTUAL unreachable from the public API
 - [x] Threshold crossing is edge-triggered
