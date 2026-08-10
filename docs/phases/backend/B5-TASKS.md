@@ -263,12 +263,12 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.13 — Events + audit coverage
 
-- [ ] **B5.13**
+- [x] **B5.13**
   - **Files:** `test/events/cards.test.ts`, `test/audit/b5.test.ts`; payload types in `src/server/events/types.ts` if missing (event names already exist: `card.created`, `card.status_changed`, `card.limit_updated`)
   - **Do:** Each event once with right payload/subject. One audit assertion per mutating card/cardholder endpoint **including pan-token**. Exactly one audit per successful mutation.
   - **Pattern:** `test/events/budget.test.ts`, `test/audit/b4.test.ts`
   - **Accept:** `pnpm test events/cards` and `pnpm test audit/b5`
-  - **Notes:**
+  - **Notes:** Payload types added; events + audits covered including pan-token. `pnpm verify` green.
 
 ### B5.14 — Seed extension
 

@@ -132,3 +132,22 @@ export type BudgetThresholdCrossedPayload = {
   previousUtilisationPct: number
   utilisationPct: number
 }
+
+export type CardCreatedPayload = {
+  cardId: string
+  projectId: string | null
+  purpose: string
+  cardholderId: string
+}
+
+export type CardStatusChangedPayload = {
+  cardId: string
+  projectId: string | null
+  from: string
+  to: string
+}
+
+export type CardLimitUpdatedPayload = {
+  cardId: string
+  projectId: string | null
+}
