@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B6 — Attributes & rules engine
-**Active task:** B6.9 — Rules HTTP API (CRUD, enable, validate)
-**Last green `pnpm verify`:** 2026-08-11 (B6.8)
+**Active task:** B6.10 — Simulate + rule-runs + card explain endpoints
+**Last green `pnpm verify`:** 2026-08-11 (B6.9)
 **Blocked on:** nothing
 
 ---
@@ -19,7 +19,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **in progress** | 9 / 15  |
+| B     | B6 Rules engine         | **in progress** | 10 / 15 |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B6.9** — rules HTTP API: CRUD, enable, validate.
+Active: **B6.10** — simulate, rule-runs, and card explain endpoints.
 
 B6.0 locked policies (do not reopen):
 

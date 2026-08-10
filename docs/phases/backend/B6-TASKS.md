@@ -119,11 +119,11 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
     3. Built-in keys cannot be redefined (409). Secret is write-only; response only carries `hasWebhookSecret`.
     4. Both MANUAL put and WEBHOOK ingest emit `attribute.updated` and write one audit entry.
 
-- [ ] **B6.9** — Rules HTTP API (CRUD, enable, validate)
+- [x] **B6.9** — Rules HTTP API (CRUD, enable, validate)
   - **Files:** routes under `src/app/api/rules/`, services, tests
   - **Do:** PATCH bumps `version`. Validate parses DSL for builder. `control.edit` throughout. Audit mutations.
   - **Accept:** `pnpm test api/rules`
-  - **Notes:**
+  - **Notes:** Create defaults to `enabled: false`. Enable/disable does not bump `version`. Validate walks `when`/`then`/`else` formulas with the B6 dialect and returns `{ ok, errors[] }` without writing. Cross-org id → 404. Mutations audit `rule.created|updated|deleted|enabled|disabled`.
 
 - [ ] **B6.10** — Simulate + rule-runs + card explain endpoints
   - **Files:** `src/app/api/rules/simulate/route.ts`, `src/app/api/rule-runs/**`, `src/app/api/cards/[id]/explain/route.ts`, tests
