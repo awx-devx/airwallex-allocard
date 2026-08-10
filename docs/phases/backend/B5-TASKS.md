@@ -201,7 +201,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.9 — Cards HTTP API (list/create/get/patch)
 
-- [ ] **B5.9**
+- [x] **B5.9**
   - **Files:**
     - `src/app/api/cards/route.ts` — GET org list
     - `src/app/api/projects/[id]/cards/route.ts` — GET list + POST create
@@ -218,7 +218,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - GET :id: local mirror; optionally refresh status from Airwallex get (fixture); never call details
   - **Pattern:** `src/app/api/projects/[id]/budget/route.ts`, `src/server/services/budget/put.ts`
   - **Accept:** `pnpm test api/cards` — metadata on create; PENDING skip; empty allowlist never calls Airwallex; matrix rows that apply including #5 scope
-  - **Notes:**
+  - **Notes:** Non-READY → 409 + retryable; empty allowlist 422; makeCardControls helper; test setup seeds AW env for fixtures. `pnpm verify` green.
 
 ### B5.10 — Freeze / unfreeze / close
 

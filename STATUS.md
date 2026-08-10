@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.9 — Cards HTTP API (list/create/get/patch)
-**Last green `pnpm verify`:** 2026-08-11 (B5.8)
+**Active task:** B5.10 — Freeze / unfreeze / close
+**Last green `pnpm verify`:** 2026-08-11 (B5.9)
 **Blocked on:** nothing
 
 ---

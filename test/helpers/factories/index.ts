@@ -69,3 +69,28 @@ export async function makeMember(
     org,
   }
 }
+
+/** Default domain card controls (minor-unit limits). */
+export function makeCardControls(
+  overrides: Partial<{
+    allowedTransactionCount: 'SINGLE' | 'MULTIPLE'
+    monthlyAmount: number
+    allowedCurrencies: string[] | null
+  }> = {},
+) {
+  return {
+    allowedTransactionCount: overrides.allowedTransactionCount ?? ('MULTIPLE' as const),
+    transactionLimits: {
+      currency: 'USD',
+      limits: [{ interval: 'MONTHLY' as const, amount: overrides.monthlyAmount ?? 400_000 }],
+    },
+    activeFrom: null,
+    activeTo: null,
+    allowedCurrencies:
+      overrides.allowedCurrencies === undefined ? null : overrides.allowedCurrencies,
+    allowedMerchantCategories: null,
+    allowedMerchantCountries: null,
+    allowedMerchantBrands: null,
+    blockedTransactionUsages: [] as { transactionScope: string; usageScope: string }[],
+  }
+}
