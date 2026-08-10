@@ -91,7 +91,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.2 — Airwallex client skeleton + fixture mode + FundingSource
 
-- [ ] **B5.2**
+- [x] **B5.2**
   - **Files:**
     - `src/server/airwallex/client.ts` — `AirwallexClient` + `forAccount(accountId: string | null)`
     - `src/server/airwallex/auth.ts` — login + Redis token cache + refresh mutex
@@ -110,7 +110,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - **Do not** implement `GET .../details`
   - **Pattern:** `src/server/redis.ts` (`awToken`, `lockCard`); `src/server/env.ts` Zod style from B0/B1
   - **Accept:** `pnpm test airwallex` — fixture hit; missing fixture does not call network; token cache mutex smoke
-  - **Notes:**
+  - **Notes:** Fixture recordings under `fixtures/recordings/`. `awConfig` + `cardLimits` redis keys added. Vitest unit project includes `airwallex/**/*.test.ts`.
 
 ### B5.3 — Issuing API wrappers (cardholders, cards, limits, pan token, config)
 

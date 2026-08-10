@@ -19,6 +19,19 @@ const serverEnvSchema = z.object({
   AIRWALLEX_WEBHOOK_SECRET: z.string().min(1),
   AIRWALLEX_API_VERSION: z.string().min(1).default('2024-02-22'),
   AIRWALLEX_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  /**
+   * Replay recorded Airwallex responses. Defaults true under Vitest so tests
+   * never hit the network; false otherwise unless explicitly set.
+   */
+  AIRWALLEX_USE_FIXTURES: z.preprocess(
+    (value) => {
+      if (value === '' || value === undefined) {
+        return process.env.VITEST === 'true' ? 'true' : 'false'
+      }
+      return value
+    },
+    z.enum(['true', 'false']).transform((value) => value === 'true'),
+  ),
 
   REMOTE_AUTH_MODE: z.enum(['simulate', 'live']).default('simulate'),
 

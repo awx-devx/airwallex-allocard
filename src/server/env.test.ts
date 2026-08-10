@@ -21,6 +21,18 @@ describe('loadServerEnv', () => {
     expect(env.REMOTE_AUTH_MODE).toBe('simulate')
     expect(env.WORKER_SCHEDULER_ENABLED).toBe(true)
     expect(env.REDIS_URL).toBeUndefined()
+    expect(env.AIRWALLEX_USE_FIXTURES).toBe(true)
+  })
+
+  it('defaults AIRWALLEX_USE_FIXTURES to false outside Vitest when unset', () => {
+    const previous = process.env.VITEST
+    process.env.VITEST = 'false'
+    try {
+      const env = loadServerEnv(validServerEnv)
+      expect(env.AIRWALLEX_USE_FIXTURES).toBe(false)
+    } finally {
+      process.env.VITEST = previous
+    }
   })
 
   it('throws naming a missing required variable', () => {

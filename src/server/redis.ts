@@ -160,7 +160,10 @@ export const redisKeys = {
   lockBudget: (projectId: string) => `lock:budget:${projectId}`,
   lockRule: (ruleId: string, subjectId: string) => `lock:rule:${ruleId}:${subjectId}`,
   lockJob: (jobName: string) => `lock:job:${jobName}`,
-  awToken: () => 'aw:token',
+  awToken: (accountId: string | null = null) => (accountId ? `aw:token:${accountId}` : 'aw:token'),
+  awConfig: (accountId: string | null = null) =>
+    accountId ? `aw:config:${accountId}` : 'aw:config',
+  cardLimits: (cardId: string) => `card:limits:${cardId}`,
   rateRemoteAuth: (cardId: string) => `rate:remote-auth:${cardId}`,
   rateSignUp: (ip: string) => `rate:sign-up:${ip}`,
 } as const

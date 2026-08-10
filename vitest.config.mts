@@ -33,6 +33,7 @@ export default defineConfig({
             'src/server/http/**/*.test.ts',
             'src/server/lib/**/*.test.ts',
             'src/server/redis.test.ts',
+            'src/server/airwallex/**/*.test.ts',
           ],
         },
       },

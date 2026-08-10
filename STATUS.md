@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.2 — Airwallex client skeleton + fixture mode + FundingSource
-**Last green `pnpm verify`:** 2026-08-11 (B5.1)
+**Active task:** B5.3 — Issuing API wrappers
+**Last green `pnpm verify`:** 2026-08-11 (B5.2)
 **Blocked on:** nothing
 
 ---
@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 2 / 15  |
+| B     | B5 Cards                | **in progress** | 3 / 15  |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B5.2** — Airwallex client skeleton + fixture mode + FundingSource.
+Active: **B5.3** — Issuing API wrappers (cardholders, cards, limits, pan token, config).
 
 B5.0 contracts reviewed and locked. Do not reopen:
 
