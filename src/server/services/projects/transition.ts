@@ -5,6 +5,7 @@ import { DomainEventType } from '@/server/events/types'
 import { AppError, type FieldErrors } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import { findBudgetByProject } from '@/server/repositories/budgets'
+import { countNonClosedByProject } from '@/server/repositories/cards'
 import {
   findProjectById,
   updateStatus,
@@ -63,9 +64,11 @@ async function applyReadyForApproval(ctx: OrgContext, project: Project): Promise
   }
 }
 
-function applyNoActiveCards(_project: Project): void {
-  // TODO(B5): block → CLOSING while cards are active. No-op allow until B5.
-  void _project
+async function applyNoActiveCards(ctx: OrgContext, project: Project): Promise<void> {
+  const count = await countNonClosedByProject(ctx, project.id)
+  if (count > 0) {
+    throw AppError.conflict(`Cannot close project while ${count} card(s) are not CLOSED`)
+  }
 }
 
 async function runGuards(
@@ -77,7 +80,7 @@ async function runGuards(
     if (guard === 'readyForApproval') {
       await applyReadyForApproval(ctx, project)
     } else if (guard === 'noActiveCards') {
-      applyNoActiveCards(project)
+      await applyNoActiveCards(ctx, project)
     }
   }
 }

@@ -254,12 +254,12 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.12 — Harden B2 noActiveCards + overview card counts
 
-- [ ] **B5.12**
+- [x] **B5.12**
   - **Files:** `src/server/services/projects/transition.ts` (`applyNoActiveCards`), `src/server/services/projects/get.ts` (`activeCardCount`), extend `test/api/project-transition.test.ts` and `test/api/projects.test.ts`
   - **Do:** Block ACTIVE→CLOSING while any project card has `status != CLOSED` (count via cards repo). Overview `activeCardCount` = count of non-CLOSED cards on the project (or strictly ACTIVE — **prefer non-CLOSED** so PENDING/INACTIVE still block close; lock in Notes). Clear `TODO(B5)` comments.
   - **Pattern:** B4.12 hasBudget hardening in the same files
   - **Accept:** `pnpm test api/project-transition` and `pnpm test api/projects` green
-  - **Notes:**
+  - **Notes:** Locked: `activeCardCount` / noActiveCards use **non-CLOSED** (PENDING/INACTIVE still block). `TODO(B5)` cleared. `pnpm verify` green.
 
 ### B5.13 — Events + audit coverage
 

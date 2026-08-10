@@ -389,6 +389,44 @@ describe('/api/projects', () => {
       })
     })
 
+    it('counts non-CLOSED cards in overview.activeCardCount', async () => {
+      const { session, user, org } = await seedMember()
+      const ctx = { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER }
+      const created = await projectsRepo.createProject(ctx, {
+        name: 'With Cards',
+        code: `WC-${Date.now()}`,
+      })
+      const { createCardholderForOrg } = await import('@/server/services/cardholders/create')
+      const { createCardForProject } = await import('@/server/services/cards/create')
+      const cardholdersRepo = await import('@/server/repositories/cardholders')
+      const { CardholderType } = await import('@/shared/enums/cardholderType')
+      const { CardholderStatus } = await import('@/shared/enums/cardholderStatus')
+      const { CardPurpose } = await import('@/shared/enums/cardPurpose')
+      const { makeCardControls } = await import('../helpers/factories')
+
+      const ch = await createCardholderForOrg(ctx, { type: CardholderType.DELEGATE })
+      if (ch.status !== CardholderStatus.READY) {
+        await cardholdersRepo.updateCardholderStatus(ctx, ch.id, CardholderStatus.READY)
+      }
+      await createCardForProject(ctx, created.id, {
+        purpose: CardPurpose.SHARED,
+        cardholderId: ch.id,
+        desiredControls: makeCardControls(),
+      })
+
+      const res = await GET_ONE(
+        buildRequest({
+          method: 'GET',
+          path: `/api/projects/${created.id}`,
+          session,
+          params: { id: created.id },
+        }),
+      )
+      expect(res.status).toBe(200)
+      const detail = await expectMatchesContract(res, projectContracts.get.output)
+      expect(detail.overview.activeCardCount).toBe(1)
+    })
+
     it('fills overview budgetRemaining/budgetSpent from budgetSnapshot', async () => {
       const { session, user, org } = await seedMember()
       const ctx = { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER }

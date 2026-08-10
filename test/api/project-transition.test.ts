@@ -4,6 +4,8 @@ import { getPublishedEvents, resetEventPublisher } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
 import { AuditLogModel } from '@/server/models/AuditLog'
 import { BudgetModel } from '@/server/models/Budget'
+import { CardModel } from '@/server/models/Card'
+import { CardholderModel } from '@/server/models/Cardholder'
 import { MembershipModel } from '@/server/models/Membership'
 import { OrganizationModel } from '@/server/models/Organization'
 import { ProjectModel } from '@/server/models/Project'
@@ -46,6 +48,8 @@ describe('/api/projects/:id/transition', () => {
       MembershipModel.syncIndexes(),
       ProjectModel.syncIndexes(),
       BudgetModel.syncIndexes(),
+      CardholderModel.syncIndexes(),
+      CardModel.syncIndexes(),
       AuditLogModel.syncIndexes(),
     ])
   })
@@ -347,5 +351,35 @@ describe('/api/projects/:id/transition', () => {
       to: ProjectStatus.CANCELLED,
       reason: 'abandoned',
     })
+  })
+
+  it('blocks ACTIVE→CLOSING while non-CLOSED cards exist', async () => {
+    const { session, ctx } = await seedOwner()
+    const project = await createReadyDraft(ctx, `CARDS-${Date.now()}`)
+    await advanceTo(ctx, project.id, ProjectStatus.ACTIVE)
+
+    const { createCardholderForOrg } = await import('@/server/services/cardholders/create')
+    const { createCardForProject } = await import('@/server/services/cards/create')
+    const { CardholderType } = await import('@/shared/enums/cardholderType')
+    const { CardholderStatus } = await import('@/shared/enums/cardholderStatus')
+    const { CardPurpose } = await import('@/shared/enums/cardPurpose')
+    const cardholdersRepo = await import('@/server/repositories/cardholders')
+    const { makeCardControls } = await import('../helpers/factories')
+
+    const ch = await createCardholderForOrg(ctx, { type: CardholderType.DELEGATE })
+    if (ch.status !== CardholderStatus.READY) {
+      await cardholdersRepo.updateCardholderStatus(ctx, ch.id, CardholderStatus.READY)
+    }
+    await createCardForProject(ctx, project.id, {
+      purpose: CardPurpose.SHARED,
+      cardholderId: ch.id,
+      desiredControls: makeCardControls(),
+    })
+
+    const res = await callTransition(session, project.id, ProjectStatus.CLOSING)
+    expect(res.status).toBe(409)
+    const body = await readBody<{ error: { code: string; message: string } }>(res)
+    expect(body.error.code).toBe(ErrorCode.CONFLICT)
+    expect(body.error.message).toMatch(/not CLOSED/)
   })
 })

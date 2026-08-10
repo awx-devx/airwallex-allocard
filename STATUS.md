@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.12 — Harden B2 noActiveCards + overview card counts
-**Last green `pnpm verify`:** 2026-08-11 (B5.11)
+**Active task:** B5.13 — Events + audit coverage
+**Last green `pnpm verify`:** 2026-08-11 (B5.12)
 **Blocked on:** nothing
 
 ---
@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 12 / 15 |
+| B     | B5 Cards                | **in progress** | 13 / 15 |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B5.12** — Harden B2 noActiveCards + overview card counts.
+Active: **B5.13** — Events + audit coverage.
 
 B5.0 contracts reviewed and locked. Do not reopen:
 
@@ -73,14 +73,15 @@ B5.0 contracts reviewed and locked. Do not reopen:
 7. Cross-org 404; scope miss 403; CLOSED → 409
 8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
 
+B5.12 locked: `activeCardCount` / noActiveCards count **non-CLOSED** cards (PENDING/INACTIVE still block close).
+
 Read `docs/AIRWALLEX-INTEGRATION.md` before Airwallex client work (B5.2+).
 
 B4 locked policies (do not reopen): see prior notes / B4-TASKS.
 
 Carried forward:
 
-- **`TODO(B5)`:** `noActiveCards` guard is a no-op allow on → CLOSING — harden in B5.12
-- **`TODO(B5)` / `TODO(B7)`:** overview card/approval counts stub to 0
+- **`TODO(B7)`:** overview approval counts stub to 0
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A
 
