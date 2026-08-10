@@ -135,12 +135,12 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.4 — Cardholder + Card repositories
 
-- [ ] **B5.4**
+- [x] **B5.4**
   - **Files:** `src/server/repositories/cardholders.ts`, `src/server/repositories/cards.ts`, `src/server/repositories/cardholders.test.ts`, `src/server/repositories/cards.test.ts` (or colocated `repositories/card*.test.ts`)
   - **Do:** `OrgContext` first on every method. Include: create/findById/findByAirwallexId/list (pagination + filters), updateStatus, updateDesiredControls, updateAppliedControls (set applied + lastReconciledAt), updateNickname/accessList, countNonClosedByProject (for noActiveCards). Cross-org find → null (handler maps to 404).
   - **Pattern:** `src/server/repositories/budgets.ts`, `src/server/repositories/memberships.ts` (B1)
   - **Accept:** `pnpm test repositories/card`
-  - **Notes:**
+  - **Notes:** Cross-org null; countNonClosedByProject for B5.12; controls Dates ↔ ISO at boundary. `pnpm verify` green.
 
 ### B5.5 — Controls mapping (domain ↔ authorization_controls)
 
