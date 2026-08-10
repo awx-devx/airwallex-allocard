@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B6 — Attributes & rules engine
-**Active task:** B6.0 — Schemas and contracts
-**Last green `pnpm verify`:** 2026-08-11 (B5 phase exit)
+**Active task:** B6.1 — AttributeDefinition + AttributeValue + Rule + RuleRun models
+**Last green `pnpm verify`:** 2026-08-11 (B6.0)
 **Blocked on:** nothing
 
 ---
@@ -19,7 +19,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **in progress** | 0 / 15  |
+| B     | B6 Rules engine         | **in progress** | 1 / 15  |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
@@ -60,9 +60,18 @@ _None yet._
 
 ## Notes for the next session
 
-B5 complete. Active: **B6.0** — attribute/rule/ruleRun contracts (STOP for review before implementing).
+Active: **B6.1** — AttributeDefinition + AttributeValue + Rule + RuleRun Mongoose models.
 
-Read `docs/RULES-ENGINE.md` and `docs/ARCHITECTURE.md` §8 before B6.0.
+B6.0 locked policies (do not reopen):
+
+1. WEBHOOK secret write-only; output `hasWebhookSecret`; ingest header `x-allocard-attribute-secret`
+2. Stale → SKIPPED + named key; missing → FAILED + named key; no new ErrorCode; impossible merge → PARTIAL + conflicts
+3. Simulate = DRY_RUN runs + cardDiffs; zero writes
+4. Explain: finalControls/status + governingRules + attributeValues + merge contributions
+5. DesiredCardStatus: ACTIVE | INACTIVE | CLOSED only
+6. Attribute NUMBER allows floats; money attrs still minor-unit ints by convention
+7. Full RuleActionType in DSL; non-card actions may SKIPPED until owning phase
+8. AttributeDefinition includes `enumValues` + `hasWebhookSecret`
 
 B5 locked policies (do not reopen):
 

@@ -103,4 +103,68 @@ export type { CardStatus } from '@/shared/enums/cardStatus'
 export type { CardPurpose } from '@/shared/enums/cardPurpose'
 export type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 export type { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
+export type { AttributeType } from '@/shared/enums/attributeType'
+export type { AttributeScope } from '@/shared/enums/attributeScope'
+export type { AttributeSource } from '@/shared/enums/attributeSource'
+export type { AttributeSubjectType } from '@/shared/enums/attributeSubjectType'
+export type { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
+export type { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
+export type { ConditionOperator } from '@/shared/enums/conditionOperator'
+export type { RuleActionType } from '@/shared/enums/ruleActionType'
+export type { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
+export type { ActionResultStatus } from '@/shared/enums/actionResultStatus'
+export type { MergeStrategy } from '@/shared/enums/mergeStrategy'
+export type { DesiredCardStatus } from '@/shared/enums/desiredCardStatus'
+export type {
+  AttributeDefinition,
+  AttributeDefinitionList,
+  AttributeLiteral,
+  AttributeValue,
+  AttributeValueList,
+  CreateAttributeDefinitionInput,
+  IngestAttributeValueInput,
+  ListAttributeValuesQuery,
+  ListAttributesQuery,
+  PutAttributeValueInput,
+  UpdateAttributeDefinitionInput,
+} from '@/shared/types/attribute'
+export type {
+  CardFilter,
+  Condition,
+  ConditionValue,
+  CreateRuleInput,
+  EnableRuleInput,
+  ListRulesQuery,
+  MemberFilter,
+  Rule,
+  RuleAction,
+  RuleControlsParams,
+  RuleList,
+  RuleScope,
+  RuleTarget,
+  RuleTransactionLimitEntry,
+  RuleTransactionLimits,
+  RuleTrigger,
+  UpdateRuleInput,
+  ValidateRuleInput,
+  ValidateRuleOutput,
+} from '@/shared/types/rule'
+export type {
+  ActionResult,
+  AttributeOverride,
+  CardControlsDiff,
+  CardExplain,
+  DesiredCardState,
+  DesiredState,
+  GoverningRule,
+  ListRuleRunsQuery,
+  MergeConflict,
+  MergeExplanationEntry,
+  RuleRun,
+  RuleRunDiff,
+  RuleRunInputValue,
+  RuleRunList,
+  SimulateRulesInput,
+  SimulateRulesOutput,
+} from '@/shared/types/ruleRun'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'

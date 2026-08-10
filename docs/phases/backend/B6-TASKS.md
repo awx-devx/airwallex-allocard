@@ -10,7 +10,7 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
 
 ## Contracts first
 
-- [ ] **B6.0** — Schemas and contracts
+- [x] **B6.0** — Schemas and contracts
   - **Files:**
     - `src/shared/enums/` for attribute type/source/scope, rule-run status, condition ops as needed
     - `src/shared/schemas/attribute.ts`, `src/shared/schemas/rule.ts`, `src/shared/schemas/ruleRun.ts` (split if cleaner)
@@ -23,7 +23,15 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Pattern:** `src/shared/contracts/card.ts`, `src/shared/schemas/cardControls.ts`
   - **STOP and get reviewed before implementing.** Highest-risk: rule DSL JSON shape, simulate vs evaluate output, explain payload, stale/missing attribute error shapes.
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** Locked in review:
+    1. WEBHOOK secret write-only on create/patch; output `hasWebhookSecret` only; ingest auth header `x-allocard-attribute-secret`.
+    2. Stale → RuleRun `SKIPPED` + `skipReason` naming key; missing → `FAILED` + `failureReason`; no new ErrorCode. Impossible merge → `PARTIAL` + `conflicts[]`, never push.
+    3. Simulate = same `ruleRunSchema` with status `DRY_RUN`; returns `{ runs, cardDiffs, conflicts }`; zero writes.
+    4. Explain: `finalControls`/`finalStatus` + `governingRules[]` + `attributeValues[]` + `merge[]` (field, strategy, contributions, result).
+    5. Desired card status subset: `ACTIVE | INACTIVE | CLOSED` only (rules never emit PENDING/BLOCKED/…).
+    6. Attribute NUMBER is `z.number()` (ROAS floats); money attrs still integer minor units by convention.
+    7. Full RuleActionType enum in DSL; access/budget/approval/notify/flag may record SKIPPED until owning phase.
+    8. AttributeDefinition adds `enumValues` (ENUM) + `hasWebhookSecret` beyond ARCHITECTURE sketch.
 
 ## Implementation tasks
 
