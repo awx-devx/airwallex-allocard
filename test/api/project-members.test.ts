@@ -10,7 +10,9 @@ import { ProjectMemberModel } from '@/server/models/ProjectMember'
 import { ProjectModel } from '@/server/models/Project'
 import { RoleModel } from '@/server/models/Role'
 import { UserModel } from '@/server/models/User'
+import { CardholderModel } from '@/server/models/Cardholder'
 import * as memberships from '@/server/repositories/memberships'
+import * as cardholdersRepo from '@/server/repositories/cardholders'
 import * as organizations from '@/server/repositories/organizations'
 import * as projectsRepo from '@/server/repositories/projects'
 import * as rolesRepo from '@/server/repositories/roles'
@@ -36,6 +38,7 @@ describe('/api/projects/:id/members', () => {
       RoleModel.syncIndexes(),
       ProjectMemberModel.syncIndexes(),
       AuditLogModel.syncIndexes(),
+      CardholderModel.syncIndexes(),
     ])
   })
 
@@ -259,6 +262,11 @@ describe('/api/projects/:id/members', () => {
       const events = getPublishedEvents().filter((e) => e.type === DomainEventType.MEMBER_ADDED)
       expect(events).toHaveLength(1)
       expect(events[0]?.projectId).toBe(setup.project.id)
+
+      const cardholder = await cardholdersRepo.findCardholderByUserId(setup.ctx, assignee.id)
+      expect(cardholder).not.toBeNull()
+      expect(cardholder?.type).toBe('INDIVIDUAL')
+      expect(cardholder?.userId).toBe(assignee.id)
     })
 
     it('rejects adding a user who is not an org member', async () => {

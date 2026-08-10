@@ -175,7 +175,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.7 — Cardholder provisioning on member-add + cardholder service
 
-- [ ] **B5.7**
+- [x] **B5.7**
   - **Files:**
     - `src/server/services/cardholders/ensure.ts` (or `provision.ts`) — ensure INDIVIDUAL cardholder for a user
     - `src/server/services/cardholders/create.ts` — explicit create (DELEGATE path)
@@ -184,7 +184,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
   - **Do:** Create cardholder at **member-add**, not card-create. Type `INDIVIDUAL` when tying to a user; `DELEGATE` for shared/vendor/one-time card flows (create at card-create if no cardholder yet). Treat `status != READY` at card-issue time as **retryable skip**, never hard failure. Idempotent ensure on `(orgId, userId)`.
   - **Pattern:** `src/server/services/projectMembers/mutate.ts` (extend); B1 membership create for audit/event style
   - **Accept:** `pnpm test api/project-members` and `pnpm test services/cardholders` green
-  - **Notes:**
+  - **Notes:** Ensure on member-add; PENDING mirror on AW failure; idempotent; DELEGATE create path. `pnpm verify` green.
 
 ### B5.8 — Cardholder HTTP API
 
