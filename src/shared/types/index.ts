@@ -70,4 +70,37 @@ export type { AccessReviewStatus, AccessReviewResolution } from '@/shared/enums/
 export type { BudgetEntryType } from '@/shared/enums/budgetEntryType'
 export type { BudgetEntrySourceType } from '@/shared/enums/budgetEntrySourceType'
 export type { BudgetChangeRequestStatus } from '@/shared/enums/budgetChangeRequestStatus'
+export type {
+  Allowlist,
+  BlockedTransactionUsage,
+  CardControls,
+  CreateCardControlsInput,
+  TransactionLimitEntry,
+  TransactionLimits,
+  UpdateCardControlsInput,
+} from '@/shared/types/cardControls'
+export type {
+  Cardholder,
+  CardholderList,
+  CreateCardholderInput,
+  ListCardholdersQuery,
+} from '@/shared/types/cardholder'
+export type {
+  Card,
+  CardLimitEntry,
+  CardLimitsOutput,
+  CardList,
+  CloseCardInput,
+  CreateCardInput,
+  ListCardsQuery,
+  ListProjectCardsQuery,
+  PanTokenOutput,
+  UpdateCardInput,
+} from '@/shared/types/card'
+export type { CardholderType } from '@/shared/enums/cardholderType'
+export type { CardholderStatus } from '@/shared/enums/cardholderStatus'
+export type { CardStatus } from '@/shared/enums/cardStatus'
+export type { CardPurpose } from '@/shared/enums/cardPurpose'
+export type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
+export type { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'

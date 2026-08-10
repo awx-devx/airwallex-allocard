@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** B5.0 — Schemas and contracts
-**Last green `pnpm verify`:** 2026-08-09 (B4 complete)
+**Active task:** B5.1 — Cardholder + Card models
+**Last green `pnpm verify`:** 2026-08-11 (B5.0)
 **Blocked on:** nothing
 
 ---
@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 0 / 15  |
+| B     | B5 Cards                | **in progress** | 1 / 15  |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,21 +60,22 @@ _None yet._
 
 ## Notes for the next session
 
-B4 complete. Active: **B5.0** — card/cardholder contracts (STOP for review before implementing).
+Active: **B5.1** — Cardholder + Card models.
 
-Read `docs/AIRWALLEX-INTEGRATION.md` before B5.0.
+B5.0 contracts reviewed and locked. Do not reopen:
 
-B4 locked policies (do not reopen):
+1. Purpose enum `SHARED | MEMBER | VENDOR | ONE_TIME` (`perMember` ↔ `MEMBER`)
+2. Allowlists: domain `null` = unconstrained; wire `[]` → 422; empty intersection = conflict
+3. `allowedTransactionCount` immutable; VENDOR/ONE_TIME → SINGLE; SHARED/MEMBER → MULTIPLE
+4. Domain amounts = minor units; Airwallex limits = major — convert only in `controls.ts`
+5. Never call `GET /issuing/cards/{id}/details`; PAN via pantoken + iframe only
+6. `request_id`: `allocard-card-{id}` / `allocard-cardholder-{id}`
+7. Cross-org 404; scope miss 403; CLOSED → 409
+8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
 
-1. Σ(category.allocated) > approvedAmount → `422 VALIDATION_FAILED`
-2. `remaining` may be negative; `overCommitted: remaining < 0` — never clamp
-3. Public POST entries: no `type` on wire; service forces `ADJUSTMENT`+`MANUAL`
-4. GET with no budget → `{ budget: null, projection: zeros }`
-5. Category create: if both `allocated` and `formula`, formula wins
-6. History mirrors `projectHistoryEntrySchema` (`at`)
-7. `lifecycleId` on entries, nullable until B8
-8. Default `thresholdPcts`: `[80, 90, 100]`
-9. `Project.budgetSnapshot` on public project schema (null until first ledger write)
+Read `docs/AIRWALLEX-INTEGRATION.md` before Airwallex client work (B5.2+).
+
+B4 locked policies (do not reopen): see prior notes / B4-TASKS.
 
 Carried forward:
 
