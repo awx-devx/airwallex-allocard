@@ -77,7 +77,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.1 — Cardholder + Card models
 
-- [ ] **B5.1**
+- [x] **B5.1**
   - **Files:** `src/server/models/Cardholder.ts`, `src/server/models/Card.ts`, colocated tests `src/server/models/cardholder.test.ts`, `src/server/models/card.test.ts`
   - **Do:** Tenant-scoped via `tenantScoped`. Indexes (ARCHITECTURE §5):
     - Cardholder: unique `(orgId, userId)` **partial where userId exists**
@@ -87,7 +87,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - Storage: Dates in Mongo; `toDomain` → ISO on the wire (same as Project/Budget)
   - **Pattern:** `src/server/models/Budget.ts`, `src/server/models/Membership.ts` (B1 tenant plugin)
   - **Accept:** `pnpm test models/card`
-  - **Notes:**
+  - **Notes:** Single `card.test.ts` covers both models. Partial unique on cardholder userId; multiple null-userId DELEGATEs allowed. Controls subdocs with Date windows.
 
 ### B5.2 — Airwallex client skeleton + fixture mode + FundingSource
 
