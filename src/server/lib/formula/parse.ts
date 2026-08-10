@@ -1,15 +1,18 @@
 /**
- * Sandboxed budget formula parser (B4; B6 extends attribute resolution later).
+ * Sandboxed formula parser. Two dialects share one grammar and one set of caps:
  *
- * Limits (adversarial / DoS caps):
+ * - **Budget (B4, default).** Integer literals only; every op truncates toward
+ *   zero; dots are property access and rejected; B4's seven functions.
+ * - **Rules (B6, opt-in via `ParseOptions`).** Dotted attribute keys are single
+ *   identifiers, decimal literals are allowed, and three more functions exist.
+ *   See `rules.ts` for why floats are safe there.
+ *
+ * Limits (adversarial / DoS caps) are identical in both dialects:
  * - MAX_EXPRESSION_LENGTH = 500
  * - MAX_NODES = 64
  * - EVAL_TIMEOUT_MS = 25 (enforced in evaluate.ts)
  *
- * Integer rule: every arithmetic op and function result is truncated toward
- * zero with Math.trunc so stored amounts never become IEEE floats.
- *
- * No eval, no Function, no property access (`.` / `[]`), no assignment.
+ * No eval, no Function, no property access on values, no assignment.
  */
 
 export const MAX_EXPRESSION_LENGTH = 500
@@ -26,6 +29,8 @@ export type FormulaErrorCode =
   | 'INVALID_SYNTAX'
   | 'TIMEOUT'
   | 'ARITY'
+  /** Identifier is present in context but holds no value. Only `coalesce` tolerates it. */
+  | 'NULL_VALUE'
 
 export class FormulaError extends Error {
   readonly code: FormulaErrorCode
@@ -54,7 +59,27 @@ const ALLOWED_FUNCTIONS = new Set(['min', 'max', 'round', 'floor', 'ceil', 'clam
 
 const FORBIDDEN_IDENTIFIERS = new Set(['eval', 'Function', 'function', 'constructor'])
 
-function tokenize(input: string): Token[] {
+/**
+ * Dialect switches. Defaults reproduce B4 exactly: integer literals only,
+ * no dots, B4's seven functions. B6 opts in via `RULE_FORMULA_OPTIONS`.
+ */
+export type ParseOptions = {
+  /** Treat `a.b.c` as one identifier rather than property access. */
+  allowDottedIdentifiers?: boolean
+  /** Permit decimal literals such as `0.25`. */
+  allowDecimals?: boolean
+  functions?: ReadonlySet<string>
+}
+
+function isIdentifierStart(ch: string | undefined): boolean {
+  return ch !== undefined && ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_')
+}
+
+function isIdentifierPart(ch: string | undefined): boolean {
+  return isIdentifierStart(ch) || (ch !== undefined && ch >= '0' && ch <= '9')
+}
+
+function tokenize(input: string, options: ParseOptions): Token[] {
   const tokens: Token[] = []
   let i = 0
 
@@ -94,27 +119,49 @@ function tokenize(input: string): Token[] {
         j += 1
       }
       if (j < input.length && input[j] === '.') {
-        throw new FormulaError('FORBIDDEN', 'Floating-point literals are not allowed')
+        if (!options.allowDecimals) {
+          throw new FormulaError('FORBIDDEN', 'Floating-point literals are not allowed')
+        }
+        j += 1
+        const fractionStart = j
+        while (j < input.length && input[j]! >= '0' && input[j]! <= '9') {
+          j += 1
+        }
+        if (j === fractionStart) {
+          throw new FormulaError('INVALID_SYNTAX', 'Decimal literal is missing its fraction')
+        }
+        tokens.push({ type: 'number', value: Number.parseFloat(input.slice(i, j)) })
+        i = j
+        continue
       }
       tokens.push({ type: 'number', value: Number.parseInt(input.slice(i, j), 10) })
       i = j
       continue
     }
 
-    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_') {
+    if (isIdentifierStart(ch)) {
       let j = i + 1
-      while (
-        j < input.length &&
-        ((input[j]! >= 'a' && input[j]! <= 'z') ||
-          (input[j]! >= 'A' && input[j]! <= 'Z') ||
-          (input[j]! >= '0' && input[j]! <= '9') ||
-          input[j] === '_')
-      ) {
+      while (j < input.length && isIdentifierPart(input[j])) {
         j += 1
       }
+
+      // Dotted attribute keys (`project.budget.remaining`) are a single
+      // identifier. A dot not joining two identifier characters is still
+      // property access and still rejected.
+      if (options.allowDottedIdentifiers) {
+        while (j < input.length && input[j] === '.' && isIdentifierPart(input[j + 1])) {
+          j += 1
+          while (j < input.length && isIdentifierPart(input[j])) {
+            j += 1
+          }
+        }
+      }
+
       const name = input.slice(i, j)
-      if (FORBIDDEN_IDENTIFIERS.has(name)) {
-        throw new FormulaError('FORBIDDEN', `Identifier '${name}' is not allowed`)
+      for (const segment of name.split('.')) {
+        if (FORBIDDEN_IDENTIFIERS.has(segment)) {
+          throw new FormulaError('FORBIDDEN', `Identifier '${segment}' is not allowed`)
+        }
       }
       tokens.push({ type: 'identifier', value: name })
       i = j
@@ -142,8 +189,33 @@ export function countNodes(node: AstNode): number {
   }
 }
 
+/** Every identifier the expression reads — the attribute keys a rule depends on. */
+export function collectIdentifiers(node: AstNode): string[] {
+  const out = new Set<string>()
+  const walk = (current: AstNode): void => {
+    switch (current.kind) {
+      case 'identifier':
+        out.add(current.name)
+        return
+      case 'number':
+        return
+      case 'unary':
+        walk(current.arg)
+        return
+      case 'binary':
+        walk(current.left)
+        walk(current.right)
+        return
+      case 'call':
+        current.args.forEach(walk)
+    }
+  }
+  walk(node)
+  return [...out]
+}
+
 /** Parse an expression into an AST. Throws FormulaError on invalid input. */
-export function parse(expression: string): AstNode {
+export function parse(expression: string, options: ParseOptions = {}): AstNode {
   if (expression.length > MAX_EXPRESSION_LENGTH) {
     throw new FormulaError(
       'OVERSIZED',
@@ -151,7 +223,8 @@ export function parse(expression: string): AstNode {
     )
   }
 
-  const tokens = tokenize(expression)
+  const allowedFunctions = options.functions ?? ALLOWED_FUNCTIONS
+  const tokens = tokenize(expression, options)
   let pos = 0
 
   const peek = (): Token => tokens[pos]!
@@ -225,7 +298,7 @@ export function parse(expression: string): AstNode {
         if (!isOp(close, ')')) {
           throw new FormulaError('INVALID_SYNTAX', "Expected ')'")
         }
-        if (!ALLOWED_FUNCTIONS.has(token.value)) {
+        if (!allowedFunctions.has(token.value)) {
           throw new FormulaError('UNKNOWN_FUNCTION', `Unknown function '${token.value}'`)
         }
         return { kind: 'call', name: token.value, args }

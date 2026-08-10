@@ -7,7 +7,6 @@
  */
 import type { OrgContext } from '@/server/http/types'
 import { AttributeScope } from '@/shared/enums/attributeScope'
-import { AttributeSource } from '@/shared/enums/attributeSource'
 import type { AttributeSubjectType } from '@/shared/enums/attributeSubjectType'
 import { AttributeType } from '@/shared/enums/attributeType'
 import type { AttributeLiteral } from '@/shared/types/attribute'

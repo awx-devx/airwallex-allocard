@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B6 — Attributes & rules engine
-**Active task:** B6.4 — Formula extension for attribute identifiers
-**Last green `pnpm verify`:** 2026-08-11 (B6.3)
+**Active task:** B6.5 — Pure pipeline steps 1–6 (select → context → evaluate → targets → merge → diff)
+**Last green `pnpm verify`:** 2026-08-11 (B6.4)
 **Blocked on:** nothing
 
 ---
@@ -19,7 +19,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **in progress** | 4 / 15  |
+| B     | B6 Rules engine         | **in progress** | 5 / 15  |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B6.4** — formula attribute identifier resolution (same sandbox caps as B4).
+Active: **B6.5** — pure pipeline steps 1–6, no I/O.
 
 B6.0 locked policies (do not reopen):
 

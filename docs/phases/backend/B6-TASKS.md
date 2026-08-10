@@ -56,12 +56,18 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test attributes` — stale SKIPPED; missing named; builtins match ledger/project state
   - **Notes:** `builtins.ts` is pure; an uncomputable attribute is **omitted**, never zero (no ledger → no `project.budget.*`; no endDate → no `daysRemaining`). `resolve.ts` marks `stale` from `observedAt + ttlSec` and `requireAttributes` splits missing vs stale — the pipeline maps those to FAILED/SKIPPED in B6.5. `project.approvalStatus` derived: `approvedAt` set → APPROVED, else PENDING_APPROVAL when status is, else NOT_SUBMITTED. `member.spend.mtd` stays null (TODO(B8) transactions) so it reads as missing, not 0. `card.remaining.{interval}` only appears when the caller passes `cardLimits` — no Airwallex call during context building. Category remaining = allocation until B8 attributes spend.
 
-- [ ] **B6.4** — Formula extension for attribute identifiers
+- [x] **B6.4** — Formula extension for attribute identifiers
   - **Files:** extend `src/server/lib/formula/*`, tests
   - **Do:** Resolve attribute keys from evaluation context. Same sandbox caps as B4; allowlist does not grow except attribute identifiers. Missing/stale attr → typed error (not zero).
   - **Pattern:** existing `src/server/lib/formula/`
   - **Accept:** `pnpm test lib/formula` — attribute id resolution; missing fails; no eval/property access
-  - **Notes:**
+  - **Notes:** **Spec conflict resolved with the user** — B4 forbids decimals, but RULES-ENGINE §3/§6 formulas need `* 0.25` and float attributes (`campaign.roas`). Decisions locked:
+    1. Two dialects, one grammar. B4's `evaluateFormula` is byte-for-byte unchanged (integer literals, truncate every op, dots = property access). B6 opts in via `RULE_FORMULA_OPTIONS` in `lib/formula/rules.ts`.
+    2. Rule dialect: dotted attribute keys are single identifiers, decimals and float intermediates allowed, and `evaluateMoneyFormula` truncates **once** at the money boundary — money stays integer minor units at rest.
+    3. Function allowlist grows in the rule dialect only: `abs`, `daysBetween`, `coalesce` (RULES-ENGINE §3). B4 still rejects all three.
+    4. No `now()` function and no duration literals. `now` is a context identifier (epoch ms) for `daysBetween`; relative card windows are an **action param** (`activeToOffsetDays`), not an expression — see B6.5.
+    5. `coalesce` rescues a declared-but-**null** attribute only. A _missing_ key still throws `UNKNOWN_IDENTIFIER`, so a typo can never become a silent default.
+    6. Non-numeric attributes (strings, booleans) project to null → `NULL_VALUE` on arithmetic. Use them in conditions, not formulas. Formula identifiers cannot contain hyphens (ambiguous with minus), so hyphenated category ids are referenced via `attr` conditions.
 
 - [ ] **B6.5** — Pure pipeline steps 1–6 (select → context → evaluate → targets → merge → diff)
   - **Files:** `src/server/services/rules/select.ts`, `context.ts`, `evaluate.ts`, `targets.ts`, `merge.ts`, `diff.ts`, `pipeline.ts`, extensive unit tests
