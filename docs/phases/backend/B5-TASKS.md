@@ -159,7 +159,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.6 — Card reconciler
 
-- [ ] **B5.6**
+- [x] **B5.6**
   - **Files:** `src/server/services/cards/reconciler.ts`, `src/server/services/cards/reconciler.test.ts`
   - **Do:** `reconcileCard(ctx, cardId)` under `redisKeys.lockCard(cardId)` (`lock:card:{cardId}`, SET NX PX 10000, retry like budget ledger):
     1. Load card; if CLOSED → 409
@@ -171,7 +171,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     7. Emit `card.limit_updated` when limits changed
   - **Pattern:** lock + unit-of-work style of `src/server/services/budget/ledger.ts`
   - **Accept:** `pnpm test cards/reconciler` — minimal patch; no-op; 5xx preserves desired
-  - **Notes:**
+  - **Notes:** lock:card PX 10000; no-op skips AW; 5xx → UPSTREAM_ERROR retryable, desired intact. `pnpm verify` green.
 
 ### B5.7 — Cardholder provisioning on member-add + cardholder service
 
