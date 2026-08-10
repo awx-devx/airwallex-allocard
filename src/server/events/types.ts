@@ -30,6 +30,7 @@ export const DomainEventType = {
   TRANSACTION_DECLINED: 'transaction.declined',
   TRANSACTION_REVERSED: 'transaction.reversed',
   ATTRIBUTE_UPDATED: 'attribute.updated',
+  RULE_EVALUATED: 'rule.evaluated',
   SCHEDULE_TICK: 'schedule.tick',
 } as const
 
@@ -150,4 +151,22 @@ export type CardStatusChangedPayload = {
 export type CardLimitUpdatedPayload = {
   cardId: string
   projectId: string | null
+}
+
+export type RuleEvaluatedPayload = {
+  ruleRunId: string
+  ruleId: string
+  projectId: string | null
+  status: string
+  matched: boolean
+  /** Cards whose desired state actually changed. */
+  changedCardIds: string[]
+}
+
+export type AttributeUpdatedPayload = {
+  key: string
+  subjectType: string
+  subjectId: string
+  source: string
+  observedAt: string
 }

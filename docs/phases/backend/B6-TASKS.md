@@ -84,12 +84,18 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
     7. `card.create` resolves to member targets with `WOULD_APPLY`; provisioning is step 7. `access.*`, `budget.allocate`, `approval.require`, `notify`, `flag.review` record `SKIPPED` until their owning phase wires them.
     8. Added `activeFromOffsetDays` / `activeToOffsetDays` to `ruleControlsParamsSchema` — the relative-window form agreed in B6.4 instead of `now() + 7d`.
 
-- [ ] **B6.6** — Apply + record (steps 7–8) + synchronous Redis policy snapshot
+- [x] **B6.6** — Apply + record (steps 7–8) + synchronous Redis policy snapshot
   - **Files:** `src/server/services/rules/apply.ts`, `record.ts`, `evaluateAndApply.ts`, tests
   - **Do:** Persist desired on cards, call existing card reconciler under `lock:card:{id}`, write `policy:card:{cardId}` **before** returning. On Airwallex 5xx leave desired intact. One failing rule does not stop others. Emit `rule.evaluated` / `card.limit_updated` as applicable. One audit per mutation path.
   - **Pattern:** `src/server/services/cards/reconciler.ts`, `src/server/services/budget/ledger.ts` (lock + dual write)
   - **Accept:** `pnpm test rules/apply` — snapshot before return; 5xx retryable; isolation between rules
-  - **Notes:**
+  - **Notes:** `applyCard` writes `policy:card:{id}` **before** the Airwallex round-trip — remote auth reads the snapshot, not Airwallex, so it must be current while the patch is still in flight. Decisions:
+    1. Snapshot amounts are integer minor units, not the major units in RULES-ENGINE §5's illustrative JSON — invariant 2 outranks the snippet. `version` increments from the previous snapshot; `memberMtdCap` / `requireApprovalAbove` / `approvedRequestIds` stay null/empty (TODO B7/B8).
+    2. Apply runs **once per card** off the merged desired state, not once per rule — reality matches the merge, not the last writer. Conflicted cards record `CONFLICT` and are never pushed; unchanged cards record `SKIPPED`.
+    3. `applyCard` never throws for one card; the outcome carries the failure so sibling cards still apply. Airwallex 5xx → `FAILED` + `retryable`, desired state persisted for the reconciler's next pass.
+    4. Rules contribute fields; `mergeIntoControls` keeps everything they were silent about, so an uncontributed allowlist is never cleared.
+    5. One audit entry (`rule.applied`, actor RULE) per run that actually changed a card. A run that changed nothing is history, recorded as a RuleRun without an audit entry.
+    6. Added `rule.evaluated` to `DomainEventType` with `RuleEvaluatedPayload` / `AttributeUpdatedPayload`.
 
 - [ ] **B6.7** — Simulation (pipeline stop after step 6)
   - **Files:** `src/server/services/rules/simulate.ts`, tests
