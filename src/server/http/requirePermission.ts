@@ -42,6 +42,8 @@ const ORG_WIDE_VIA_MEMBERSHIP = new Set<string>([
   Permission.MEMBER_MANAGE,
   Permission.ROLE_ASSIGN,
   Permission.BUDGET_EDIT,
+  // Org-scoped control surfaces (attributes, rules) have no projectId on the wire.
+  Permission.CONTROL_EDIT,
 ])
 
 function isOrgElevated(orgRole: OrgRole): boolean {

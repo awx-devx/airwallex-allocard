@@ -7,7 +7,7 @@ import { AttributeDefinitionModel } from '@/server/models/AttributeDefinition'
 import { toDomain } from '@/server/models/base'
 import type { OrgContext } from '@/server/http/types'
 import type { AttributeScope } from '@/shared/enums/attributeScope'
-import type { AttributeSource } from '@/shared/enums/attributeSource'
+import { AttributeSource } from '@/shared/enums/attributeSource'
 import type { AttributeType } from '@/shared/enums/attributeType'
 import type { AttributeDefinition, AttributeDefinitionList } from '@/shared/types/attribute'
 
@@ -168,6 +168,26 @@ export async function findWebhookSecretHash(ctx: OrgContext, key: string): Promi
     .exec()
   const hash = (doc as { webhookSecretHash?: string | null } | null)?.webhookSecretHash
   return hash ?? null
+}
+
+/**
+ * Cross-tenant bootstrap for webhook ingest (same pattern as invite token lookup).
+ * Returns the definition when `(key, webhookSecretHash)` matches; never the hash.
+ */
+export async function findAttributeDefinitionByWebhookSecret(
+  key: string,
+  webhookSecretHash: string,
+): Promise<AttributeDefinition | null> {
+  const doc = await AttributeDefinitionModel.findOne({
+    key,
+    webhookSecretHash,
+    source: AttributeSource.WEBHOOK,
+  })
+    .select('+webhookSecretHash')
+    .setOptions({ allowCrossTenant: true })
+    .lean()
+    .exec()
+  return doc ? toAttributeDefinition(doc) : null
 }
 
 export async function deleteAttributeDefinition(ctx: OrgContext, key: string): Promise<boolean> {

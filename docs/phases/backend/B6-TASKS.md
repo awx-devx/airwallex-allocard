@@ -108,12 +108,16 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
     4. Draft rules are force-enabled with id `draft` and merge against live rules — a limit previewed in isolation is not the limit the cardholder would get.
     5. Attribute overrides replace readings in memory only; AttributeValue / Redis / RuleRun / events stay untouched.
 
-- [ ] **B6.8** — Attributes HTTP API (registry, values, ingest)
+- [x] **B6.8** — Attributes HTTP API (registry, values, ingest)
   - **Files:** routes under `src/app/api/attributes/`, services, `test/api/attributes*.test.ts`
   - **Do:** Spec table rows for attributes. Ingest uses signed secret (not session). Emit `attribute.updated` on MANUAL/WEBHOOK write. Matrix rows that apply.
   - **Pattern:** `src/app/api/roles/route.ts`
   - **Accept:** `pnpm test api/attributes`
-  - **Notes:**
+  - **Notes:** Session routes take `control.edit` (OWNER/ADMIN short-circuit; MEMBER via any project membership — `CONTROL_EDIT` added to `ORG_WIDE_VIA_MEMBERSHIP`). Decisions:
+    1. Ingest is `withPublicValidation`; auth header `x-allocard-attribute-secret`. Org is recovered by cross-tenant `(key, webhookSecretHash)` lookup with `allowCrossTenant` (invite-token pattern). Wrong/missing secret → 401, never confirming the key.
+    2. MANUAL put rejects non-MANUAL definitions (409). WEBHOOK ingest rejects non-matching subjectType / typed value (422).
+    3. Built-in keys cannot be redefined (409). Secret is write-only; response only carries `hasWebhookSecret`.
+    4. Both MANUAL put and WEBHOOK ingest emit `attribute.updated` and write one audit entry.
 
 - [ ] **B6.9** — Rules HTTP API (CRUD, enable, validate)
   - **Files:** routes under `src/app/api/rules/`, services, tests
