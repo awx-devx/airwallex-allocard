@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B5 — Airwallex client, cardholders & cards
-**Active task:** Phase exit (stop — do not start B6)
-**Last green `pnpm verify`:** 2026-08-11 (B5.14)
+**Active phase:** B6 — Attributes & rules engine
+**Active task:** B6.0 — Schemas and contracts
+**Last green `pnpm verify`:** 2026-08-11 (B5 phase exit)
 **Blocked on:** nothing
 
 ---
@@ -18,8 +18,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 15 / 15 |
-| B     | B6 Rules engine         | not started     | —       |
+| B     | B5 Cards                | **complete**    | 15 / 15 |
+| B     | B6 Rules engine         | **in progress** | 0 / 15  |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0–B5 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B6 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,9 +60,11 @@ _None yet._
 
 ## Notes for the next session
 
-**B5.3–B5.14 complete.** Phase exit checklist remains — do not start B6 until phase exit is signed off.
+B5 complete. Active: **B6.0** — attribute/rule/ruleRun contracts (STOP for review before implementing).
 
-B5.0 contracts reviewed and locked. Do not reopen:
+Read `docs/RULES-ENGINE.md` and `docs/ARCHITECTURE.md` §8 before B6.0.
+
+B5 locked policies (do not reopen):
 
 1. Purpose enum `SHARED | MEMBER | VENDOR | ONE_TIME` (`perMember` ↔ `MEMBER`)
 2. Allowlists: domain `null` = unconstrained; wire `[]` → 422; empty intersection = conflict
@@ -72,12 +74,12 @@ B5.0 contracts reviewed and locked. Do not reopen:
 6. `request_id`: `allocard-card-{id}` / `allocard-cardholder-{id}`
 7. Cross-org 404; scope miss 403; CLOSED → 409
 8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
-
-9. **B5.12 (user-confirmed):** `activeCardCount` / `noActiveCards` count **non-CLOSED** cards (PENDING/INACTIVE/BLOCKED/… still block ACTIVE→CLOSING) — not ACTIVE-only.
+9. `activeCardCount` / `noActiveCards` count **non-CLOSED** cards
 
 Carried forward:
 
 - **`TODO(B7)`:** overview approval counts stub to 0
+- **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance`
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A
 

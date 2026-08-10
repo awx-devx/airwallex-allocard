@@ -281,19 +281,20 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B5 endpoint (#1–#10 as applicable; #5 on card-scoped routes; #9 where request_id retries apply)
-- [ ] Fixture mode on by default in tests; network guard fails real calls (`test/setup.ts` + fixture loader)
-- [ ] Every allowlist path has empty-intersection / empty-array guard
-- [ ] `metadata.orgId` on create and filtered on every Airwallex list read
-- [ ] `request_id` deterministic from local document id
-- [ ] Per-card lock wraps every Airwallex patch (`lock:card:{cardId}`)
-- [ ] PAN never in logs, responses, or DB; no `details` client method
-- [ ] `desiredControls` / `appliedControls` both persisted and diffable
-- [ ] Cardholders provisioned at member-add time
-- [ ] Minor units on Allocard wire; major units only inside Airwallex mapping
-- [ ] Purpose enum is `MEMBER` not `PER_MEMBER`
-- [ ] B2 `TODO(B5)` noActiveCards / activeCardCount cleared in STATUS.md
-- [ ] Spec's review checklist signed off
-- [ ] STATUS.md updated: active phase B6, generate B6-TASKS.md
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B5 endpoint (#1–#10 as applicable; #5 on card-scoped routes; #9 where request_id retries apply)
+  - Includes `test/api/b5-matrix.test.ts` + existing card/cardholder/lifecycle/limits tests; request_id replay in `issuing.test.ts`
+- [x] Fixture mode on by default in tests; network guard fails real calls (`test/setup.ts` + fixture loader)
+- [x] Every allowlist path has empty-intersection / empty-array guard
+- [x] `metadata.orgId` on create and filtered on every Airwallex list read
+- [x] `request_id` deterministic from local document id
+- [x] Per-card lock wraps every Airwallex patch (`lock:card:{cardId}`)
+- [x] PAN never in logs, responses, or DB; no `details` client method
+- [x] `desiredControls` / `appliedControls` both persisted and diffable
+- [x] Cardholders provisioned at member-add time
+- [x] Minor units on Allocard wire; major units only inside Airwallex mapping
+- [x] Purpose enum is `MEMBER` not `PER_MEMBER`
+- [x] B2 `TODO(B5)` noActiveCards / activeCardCount cleared in STATUS.md
+- [x] Spec's review checklist signed off
+- [x] STATUS.md updated: active phase B6, generate B6-TASKS.md

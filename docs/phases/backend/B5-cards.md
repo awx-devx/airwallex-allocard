@@ -25,10 +25,10 @@ Record fixtures for every call against the real sandbox once, then commit them.
 
 ### Models
 
-| Model | Notes |
-| --- | --- |
-| `Cardholder` | orgId, userId?, airwallexCardholderId, type, status; unique on `(orgId, userId)` |
-| `Card` | orgId, projectId?, categoryId?, cardholderId, airwallexCardId, maskedNumber, nickName, purpose, status, `desiredControls`, `appliedControls`, lastReconciledAt, managedByRuleIds[], accessList[] |
+| Model        | Notes                                                                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Cardholder` | orgId, userId?, airwallexCardholderId, type, status; unique on `(orgId, userId)`                                                                                                                 |
+| `Card`       | orgId, projectId?, categoryId?, cardholderId, airwallexCardId, maskedNumber, nickName, purpose, status, `desiredControls`, `appliedControls`, lastReconciledAt, managedByRuleIds[], accessList[] |
 
 `desiredControls` and `appliedControls` both exist from day one. In B5 a human sets desired and the reconciler applies it; in B6 rules set desired and nothing else changes.
 
@@ -42,7 +42,7 @@ Type selection: `INDIVIDUAL` for per-member cards; `DELEGATE` for shared, vendor
 
 `server/services/cards/controls.ts` maps the domain control shape to `authorization_controls`. Two traps to encode as assertions:
 
-1. **The empty-array trap.** `null`, absent, and `[]` all mean *allow everything* for every Airwallex allowlist. A computed empty intersection must raise a conflict, never be pushed. This is the most likely security bug in the entire build.
+1. **The empty-array trap.** `null`, absent, and `[]` all mean _allow everything_ for every Airwallex allowlist. A computed empty intersection must raise a conflict, never be pushed. This is the most likely security bug in the entire build.
 2. **`allowed_transaction_count` is immutable.** Single-use versus multi-use is decided at creation and can never change. Vendor and one-time cards are `SINGLE`; everything else is `MULTIPLE`.
 
 Also clamp every amount against the per-currency maximum from `GET /issuing/config`, cached at boot — an over-large computed limit should be clamped and flagged, not sent and rejected.
@@ -57,22 +57,22 @@ Also clamp every amount against the per-currency maximum from `GET /issuing/conf
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/cardholders` | `card.view` | |
-| `POST` | `/api/cardholders` | `member.manage` | Usually called by the member-add flow |
-| `GET` | `/api/cardholders/:id` | `card.view` | Includes screening status |
-| `GET` | `/api/cards` | `card.view` | Org-wide, scope-filtered, paginated |
-| `GET` | `/api/projects/:id/cards` | `card.view` | |
-| `POST` | `/api/projects/:id/cards` | `card.create` | Purpose, cardholder, initial controls |
-| `GET` | `/api/cards/:id` | `card.view` | Local mirror plus live status |
-| `PATCH` | `/api/cards/:id` | `card.manage` | Nickname, access list, `desiredControls` |
-| `POST` | `/api/cards/:id/freeze` | `card.manage` | → `INACTIVE` |
-| `POST` | `/api/cards/:id/unfreeze` | `card.manage` | → `ACTIVE` |
-| `POST` | `/api/cards/:id/close` | `card.manage` | → `CLOSED`, terminal, requires confirmation |
-| `GET` | `/api/cards/:id/limits` | `card.view` | Live from Airwallex, cached ~30s |
-| `POST` | `/api/cards/:id/pan-token` | `card.viewDetails` | Short-lived token for the iframe |
-| `POST` | `/api/cards/:id/reconcile` | `card.manage` | Force a diff-and-push; ops affordance |
+| Method  | Path                       | Permission         | Notes                                       |
+| ------- | -------------------------- | ------------------ | ------------------------------------------- |
+| `GET`   | `/api/cardholders`         | `card.view`        |                                             |
+| `POST`  | `/api/cardholders`         | `member.manage`    | Usually called by the member-add flow       |
+| `GET`   | `/api/cardholders/:id`     | `card.view`        | Includes screening status                   |
+| `GET`   | `/api/cards`               | `card.view`        | Org-wide, scope-filtered, paginated         |
+| `GET`   | `/api/projects/:id/cards`  | `card.view`        |                                             |
+| `POST`  | `/api/projects/:id/cards`  | `card.create`      | Purpose, cardholder, initial controls       |
+| `GET`   | `/api/cards/:id`           | `card.view`        | Local mirror plus live status               |
+| `PATCH` | `/api/cards/:id`           | `card.manage`      | Nickname, access list, `desiredControls`    |
+| `POST`  | `/api/cards/:id/freeze`    | `card.manage`      | → `INACTIVE`                                |
+| `POST`  | `/api/cards/:id/unfreeze`  | `card.manage`      | → `ACTIVE`                                  |
+| `POST`  | `/api/cards/:id/close`     | `card.manage`      | → `CLOSED`, terminal, requires confirmation |
+| `GET`   | `/api/cards/:id/limits`    | `card.view`        | Live from Airwallex, cached ~30s            |
+| `POST`  | `/api/cards/:id/pan-token` | `card.viewDetails` | Short-lived token for the iframe            |
+| `POST`  | `/api/cards/:id/reconcile` | `card.manage`      | Force a diff-and-push; ops affordance       |
 
 Read available-to-spend from `GET /issuing/cards/:id/limits`, not from a local sum — refunds restore limit balance and a local calculation will drift.
 
@@ -99,14 +99,14 @@ Beyond the standard matrix, all against fixtures:
 
 ## Review checklist
 
-- [ ] Fixture mode is on by default in tests, and CI would fail if a real call were attempted
-- [ ] Every allowlist path has an explicit empty-intersection guard
-- [ ] `metadata.orgId` is written on create and filtered on every read
-- [ ] `request_id` is deterministic from the local document id
-- [ ] The per-card lock wraps every Airwallex patch
-- [ ] PAN details never appear in a log, a response, or a database field
-- [ ] `desiredControls` / `appliedControls` are both persisted and diffable
-- [ ] Cardholders are provisioned at member-add time
+- [x] Fixture mode is on by default in tests, and CI would fail if a real call were attempted
+- [x] Every allowlist path has an explicit empty-intersection guard
+- [x] `metadata.orgId` is written on create and filtered on every read
+- [x] `request_id` is deterministic from the local document id
+- [x] The per-card lock wraps every Airwallex patch
+- [x] PAN details never appear in a log, a response, or a database field
+- [x] `desiredControls` / `appliedControls` are both persisted and diffable
+- [x] Cardholders are provisioned at member-add time
 
 ## Out of scope
 
