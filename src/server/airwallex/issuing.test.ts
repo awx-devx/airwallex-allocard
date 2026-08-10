@@ -99,6 +99,15 @@ describe('airwallex/issuing', () => {
     expect(created.card_number).toMatch(/^\*+\d{4}$/)
   })
 
+  it('retried create with the same request_id returns the same Airwallex card', async () => {
+    const client = makeClient()
+    const requestId = cardRequestId('carddoc001')
+    const first = await client.cards.create(sampleCreateBody(requestId))
+    const second = await client.cards.create(sampleCreateBody(requestId))
+    expect(first.card_id).toBe(second.card_id)
+    expect(first.card_id).toBe('card_fixture_001')
+  })
+
   it('cards.list always filters by metadata.orgId', async () => {
     const client = makeClient()
 
