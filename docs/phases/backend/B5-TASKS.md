@@ -222,7 +222,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.10 — Freeze / unfreeze / close
 
-- [ ] **B5.10**
+- [x] **B5.10**
   - **Files:**
     - `src/app/api/cards/[id]/freeze/route.ts`
     - `src/app/api/cards/[id]/unfreeze/route.ts`
@@ -232,7 +232,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
   - **Do:** All require `card.manage` + scope subject `{ projectId, cardId }`. freeze → INACTIVE; unfreeze → ACTIVE; close → CLOSED with `{ confirm: true }` (else 422). CLOSED is terminal — further freeze/unfreeze/patch/reconcile → 409. Push status via Airwallex update under `lock:card:{cardId}`. Emit `card.status_changed`. Exactly one audit per call.
   - **Pattern:** `src/app/api/projects/[id]/transition/route.ts` (B2 state machine style)
   - **Accept:** `pnpm test api/card-lifecycle` — irreversible close; mutations on CLOSED rejected
-  - **Notes:**
+  - **Notes:** lock:card wraps status push; CLOSED terminal; confirm:true required. `pnpm verify` green.
 
 ### B5.11 — Limits + pan-token + reconcile endpoints
 

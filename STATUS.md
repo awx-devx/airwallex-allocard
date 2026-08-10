@@ -18,7 +18,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B2 Projects             | **complete**    | 12 / 12 |
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **in progress** | 9 / 15  |
+| B     | B5 Cards                | **in progress** | 10 / 15 |
 | B     | B6 Rules engine         | not started     | —       |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B5.9** — Cards HTTP API (list/create/get/patch).
+Active: **B5.10** — Freeze / unfreeze / close.
 
 B5.0 contracts reviewed and locked. Do not reopen:
 
