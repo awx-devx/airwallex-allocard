@@ -7,28 +7,17 @@
  */
 import { connectDb } from '@/server/db/connect'
 import type { OrgContext } from '@/server/http/types'
-import { listCards } from '@/server/repositories/cards'
-import { findCardholderById } from '@/server/repositories/cardholders'
-import { listActiveProjectMembers } from '@/server/repositories/projectMembers'
-import { listRoles } from '@/server/repositories/roles'
-import { findLastRuleRun } from '@/server/repositories/ruleRuns'
 import { listEnabledRulesForScope } from '@/server/repositories/rules'
 import { buildAttributeContext } from '@/server/services/attributes/resolve'
 import { applyCard, type ApplyDeps } from '@/server/services/rules/apply'
-import { previousValuesFrom, recordRuleRun } from '@/server/services/rules/record'
-import {
-  runPipeline,
-  type PipelineCard,
-  type PipelineResult,
-} from '@/server/services/rules/pipeline'
-import type { EventSubject, TargetMember } from '@/server/services/rules/targets'
+import { loadMembers, loadPipelineCards, loadPreviousValues } from '@/server/services/rules/load'
+import { recordRuleRun } from '@/server/services/rules/record'
+import { runPipeline, type PipelineResult } from '@/server/services/rules/pipeline'
+import type { EventSubject } from '@/server/services/rules/targets'
 import { ActionResultStatus } from '@/shared/enums/actionResultStatus'
 import { ActorType } from '@/shared/enums/audit'
-import { CardStatus } from '@/shared/enums/cardStatus'
-import { DesiredCardStatus } from '@/shared/enums/desiredCardStatus'
 import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 import type { AttributeLiteral } from '@/shared/types/attribute'
-import type { Rule } from '@/shared/types/rule'
 import type { ActionResult, RuleRun } from '@/shared/types/ruleRun'
 
 export type EvaluateAndApplyInput = {
@@ -45,77 +34,6 @@ export type EvaluateAndApplyInput = {
 export type EvaluateAndApplyResult = {
   runs: RuleRun[]
   pipeline: PipelineResult
-}
-
-/** Cards only carry a desired status once they are past PENDING. */
-function desiredStatusOf(status: CardStatus): DesiredCardStatus | null {
-  switch (status) {
-    case CardStatus.ACTIVE:
-      return DesiredCardStatus.ACTIVE
-    case CardStatus.INACTIVE:
-      return DesiredCardStatus.INACTIVE
-    case CardStatus.CLOSED:
-      return DesiredCardStatus.CLOSED
-    default:
-      return null
-  }
-}
-
-async function loadPipelineCards(
-  ctx: OrgContext,
-  projectId: string | null | undefined,
-): Promise<PipelineCard[]> {
-  const page = await listCards(ctx, {
-    ...(projectId ? { projectId } : {}),
-    pageSize: 100,
-  })
-
-  const cardholderIds = [...new Set(page.items.map((card) => card.cardholderId))]
-  const cardholders = await Promise.all(cardholderIds.map((id) => findCardholderById(ctx, id)))
-  const userIdByCardholder = new Map(
-    cardholders.filter((entry) => entry !== null).map((entry) => [entry.id, entry.userId]),
-  )
-
-  return page.items.map((card) => ({
-    cardId: card.id,
-    projectId: card.projectId,
-    purpose: card.purpose,
-    userId: userIdByCardholder.get(card.cardholderId) ?? null,
-    controls: card.appliedControls,
-    cardStatus: desiredStatusOf(card.status),
-  }))
-}
-
-async function loadMembers(
-  ctx: OrgContext,
-  projectId: string | null | undefined,
-): Promise<TargetMember[]> {
-  if (!projectId) {
-    return []
-  }
-  const [members, roles] = await Promise.all([
-    listActiveProjectMembers(ctx, projectId),
-    listRoles(ctx),
-  ])
-  const roleKeyById = new Map(roles.map((role) => [role.id, role.key]))
-  return members.map((member) => ({
-    userId: member.userId,
-    roleKey: roleKeyById.get(member.roleId) ?? null,
-  }))
-}
-
-async function loadPreviousValues(
-  ctx: OrgContext,
-  rules: readonly Rule[],
-  projectId: string | null | undefined,
-): Promise<Map<string, Map<string, AttributeLiteral>>> {
-  const entries = await Promise.all(
-    rules.map(async (rule) => {
-      const previous = await findLastRuleRun(ctx, rule.id, { projectId })
-      return [rule.id, previous ? previousValuesFrom(previous) : new Map()] as const
-    }),
-  )
-  return new Map(entries)
 }
 
 /** Run the engine for one subject and persist everything it decided. */

@@ -97,11 +97,16 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
     5. One audit entry (`rule.applied`, actor RULE) per run that actually changed a card. A run that changed nothing is history, recorded as a RuleRun without an audit entry.
     6. Added `rule.evaluated` to `DomainEventType` with `RuleEvaluatedPayload` / `AttributeUpdatedPayload`.
 
-- [ ] **B6.7** — Simulation (pipeline stop after step 6)
+- [x] **B6.7** — Simulation (pipeline stop after step 6)
   - **Files:** `src/server/services/rules/simulate.ts`, tests
   - **Do:** Same pipeline as evaluate, optional attribute overrides, zero Airwallex calls, zero DB/Redis writes. Diff must match what a real run would apply from the same fixtures.
   - **Accept:** `pnpm test rules/simulate` — no network; no writes; diff parity with dry evaluate fixture
-  - **Notes:**
+  - **Notes:** `simulateRules` shares the same loaders as `evaluateAndApply` (`load.ts`) and stops after `runPipeline` — it imports neither `apply` nor `record`. Decisions:
+    1. Diff parity is asserted against a real `evaluateAndApply` on the same fixtures (same trigger, same clock).
+    2. `SUCCESS` → `DRY_RUN` on returned runs; `FAILED` / `SKIPPED` / `PARTIAL` keep their diagnostic status so a preview of a broken rule stays honest.
+    3. Omitting `triggerEvent` sets `ignoreTrigger` so the builder can ask "what would these rules do?" without inventing an event. A real evaluation never ignores triggers.
+    4. Draft rules are force-enabled with id `draft` and merge against live rules — a limit previewed in isolation is not the limit the cardholder would get.
+    5. Attribute overrides replace readings in memory only; AttributeValue / Redis / RuleRun / events stay untouched.
 
 - [ ] **B6.8** — Attributes HTTP API (registry, values, ingest)
   - **Files:** routes under `src/app/api/attributes/`, services, `test/api/attributes*.test.ts`

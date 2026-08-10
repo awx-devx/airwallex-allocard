@@ -15,6 +15,12 @@ export type SelectRulesInput = {
   rules: readonly Rule[]
   triggerEvent: string
   projectId?: string | null
+  /**
+   * Simulation only — ask "what would these rules do", ignoring which event
+   * would have woken them. A real run never sets this: the trigger is how the
+   * engine stays event-driven rather than polling.
+   */
+  ignoreTrigger?: boolean
 }
 
 export function scopeMatches(rule: Rule, projectId?: string | null): boolean {
@@ -45,7 +51,7 @@ export function selectRules(input: SelectRulesInput): Rule[] {
       (rule) =>
         rule.enabled &&
         scopeMatches(rule, input.projectId) &&
-        triggerMatches(rule, input.triggerEvent),
+        (input.ignoreTrigger === true || triggerMatches(rule, input.triggerEvent)),
     )
     .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id))
 }

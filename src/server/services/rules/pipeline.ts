@@ -68,6 +68,8 @@ export type PipelineInput = {
   members: readonly TargetMember[]
   triggerEvent: string
   projectId?: string | null
+  /** Simulation only — evaluate in-scope rules whatever their trigger. */
+  ignoreTrigger?: boolean
   eventSubject?: EventSubject
   /** Values recorded by each rule's previous run, for crossedAbove / crossedBelow. */
   previousValues?: Map<string, Map<string, AttributeLiteral>>
@@ -413,6 +415,7 @@ export function runPipeline(input: PipelineInput): PipelineResult {
     rules: input.rules,
     triggerEvent: input.triggerEvent,
     projectId: input.projectId,
+    ...(input.ignoreTrigger === true ? { ignoreTrigger: true } : {}),
   })
 
   const outcomes = selected.map((rule) => {
