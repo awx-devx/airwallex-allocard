@@ -73,7 +73,7 @@ B5.0 contracts reviewed and locked. Do not reopen:
 7. Cross-org 404; scope miss 403; CLOSED → 409
 8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
 
-B5.12 locked: `activeCardCount` / noActiveCards count **non-CLOSED** cards.
+9. **B5.12 (user-confirmed):** `activeCardCount` / `noActiveCards` count **non-CLOSED** cards (PENDING/INACTIVE/BLOCKED/… still block ACTIVE→CLOSING) — not ACTIVE-only.
 
 Carried forward:
 
