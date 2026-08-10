@@ -188,7 +188,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.8 — Cardholder HTTP API
 
-- [ ] **B5.8**
+- [x] **B5.8**
   - **Files:**
     - `src/app/api/cardholders/route.ts` — GET list, POST create
     - `src/app/api/cardholders/[id]/route.ts` — GET :id
@@ -197,7 +197,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
   - **Do:** GET list / GET :id require `card.view`; POST requires `member.manage`. Cross-org → 404. Response includes screening `status`. Matrix #1–#4, #7, #8; #10 on POST.
   - **Pattern:** `src/app/api/roles/route.ts`, `src/app/api/organizations/[id]/members/route.ts` (B1)
   - **Accept:** `pnpm test api/cardholders` — matrix #1–#4, #7, #8
-  - **Notes:**
+  - **Notes:** list/get/create routes; matrix coverage; audit on POST. `pnpm verify` green.
 
 ### B5.9 — Cards HTTP API (list/create/get/patch)
 
