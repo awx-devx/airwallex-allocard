@@ -1,0 +1,29 @@
+{
+  "has_more": false,
+  "items": [
+    {
+      "card_id": "card_fixture_001",
+      "cardholder_id": "ch_fixture_ready_001",
+      "card_number": "************1234",
+      "card_status": "ACTIVE",
+      "nick_name": "Org A card",
+      "metadata": {
+        "orgId": "org_fixture_a",
+        "projectId": "proj_fixture_1",
+        "cardDocId": "carddoc001"
+      }
+    },
+    {
+      "card_id": "card_fixture_other_org",
+      "cardholder_id": "ch_other",
+      "card_number": "************9999",
+      "card_status": "ACTIVE",
+      "nick_name": "Other org card",
+      "metadata": {
+        "orgId": "org_fixture_b",
+        "projectId": "proj_other",
+        "cardDocId": "carddoc_other"
+      }
+    }
+  ]
+}

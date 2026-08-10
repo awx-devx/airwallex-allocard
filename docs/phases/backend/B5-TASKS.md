@@ -114,7 +114,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.3 — Issuing API wrappers (cardholders, cards, limits, pan token, config)
 
-- [ ] **B5.3**
+- [x] **B5.3**
   - **Files:**
     - `src/server/airwallex/cardholders.ts` — create/get/update
     - `src/server/airwallex/cards.ts` — create/get/list/update/limits/activate
@@ -131,7 +131,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - Never add a `details` method
   - **Pattern:** B5.2 client; method split mirrors `docs/ARCHITECTURE.md` tree (`airwallex/cardholders.ts`, `cards.ts`, …)
   - **Accept:** `pnpm test airwallex/issuing` — request_id stable; list always org-filtered; config max readable
-  - **Notes:**
+  - **Notes:** Client namespaces wired; `list` org-filters; `listAllTenantsUnsafe` escape hatch; config Redis-cached; no `details`; transactions stub TODO(B8). `pnpm verify` green.
 
 ### B5.4 — Cardholder + Card repositories
 

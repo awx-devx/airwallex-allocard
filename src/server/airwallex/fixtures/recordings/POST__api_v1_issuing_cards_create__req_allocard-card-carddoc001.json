@@ -1,0 +1,28 @@
+{
+  "card_id": "card_fixture_001",
+  "cardholder_id": "ch_fixture_ready_001",
+  "card_number": "************1234",
+  "card_status": "ACTIVE",
+  "nick_name": "APAC Brand Launch — Priya",
+  "form_factor": "VIRTUAL",
+  "is_personalized": true,
+  "metadata": {
+    "orgId": "org_fixture_a",
+    "projectId": "proj_fixture_1",
+    "cardDocId": "carddoc001"
+  },
+  "authorization_controls": {
+    "allowed_transaction_count": "MULTIPLE",
+    "transaction_limits": {
+      "currency": "USD",
+      "limits": [
+        { "interval": "MONTHLY", "amount": 4000 },
+        { "interval": "PER_TRANSACTION", "amount": 800 }
+      ]
+    },
+    "allowed_currencies": ["USD", "SGD"],
+    "blocked_transaction_usages": [{ "transaction_scope": "CASH_WITHDRAWAL", "usage_scope": "ALL" }]
+  },
+  "created_at": "2026-08-01T12:00:00+0000",
+  "updated_at": "2026-08-01T12:00:00+0000"
+}

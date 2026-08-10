@@ -1,10 +1,16 @@
 import type { ServerEnv } from '@/server/env'
 import type { AuthDeps } from '@/server/airwallex/auth'
+import { createCardholdersApi, type CardholdersApi } from '@/server/airwallex/cardholders'
+import { createCardsApi, type CardsApi } from '@/server/airwallex/cards'
+import { createConfigApi, type ConfigApi } from '@/server/airwallex/config'
 import {
   airwallexRequest,
   type AirwallexRequestOptions,
   type HttpDeps,
 } from '@/server/airwallex/http'
+import { createPanTokensApi, type PanTokensApi } from '@/server/airwallex/panTokens'
+import { createTransactionsApi, type TransactionsApi } from '@/server/airwallex/transactions'
+import type { AirwallexRequester } from '@/server/airwallex/types'
 import type { RedisClient } from '@/server/redis'
 
 export type AirwallexClientDeps = HttpDeps & {
@@ -14,14 +20,17 @@ export type AirwallexClientDeps = HttpDeps & {
 
 /**
  * Account-scoped Airwallex client. Demo always uses `forAccount(null)`
- * (single-account tenancy). Domain namespaces are attached in B5.3.
+ * (single-account tenancy).
  *
  * Never exposes GET /issuing/cards/{id}/details (PCI).
  */
-export type AirwallexClient = {
-  readonly accountId: string | null
+export type AirwallexClient = AirwallexRequester & {
   forAccount(accountId: string | null): AirwallexClient
-  request<T>(opts: Omit<AirwallexRequestOptions, 'accountId'>): Promise<T>
+  cardholders: CardholdersApi
+  cards: CardsApi
+  transactions: TransactionsApi
+  config: ConfigApi
+  panTokens: PanTokensApi
 }
 
 function resolveDeps(deps: AirwallexClientDeps): AuthDeps & HttpDeps {
@@ -42,17 +51,24 @@ export function createAirwallexClient(
 ): AirwallexClient {
   const resolvedDeps = resolveDeps(deps)
 
-  const client: AirwallexClient = {
+  const requester: AirwallexRequester = {
     accountId,
-    forAccount(nextAccountId: string | null) {
-      return createAirwallexClient(nextAccountId, deps)
-    },
     request<T>(opts: Omit<AirwallexRequestOptions, 'accountId'>) {
       return airwallexRequest<T>({ ...opts, accountId }, resolvedDeps)
     },
   }
 
-  return client
+  return {
+    ...requester,
+    forAccount(nextAccountId: string | null) {
+      return createAirwallexClient(nextAccountId, deps)
+    },
+    cardholders: createCardholdersApi(requester),
+    cards: createCardsApi(requester),
+    transactions: createTransactionsApi(requester),
+    config: createConfigApi(requester, { redis: deps.redis }),
+    panTokens: createPanTokensApi(requester),
+  }
 }
 
 /** Default client for single-account demo mode. */

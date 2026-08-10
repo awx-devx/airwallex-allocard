@@ -1,4 +1,15 @@
 {
-  "ok": true,
-  "fixture": "ping"
+  "primary_currency": "USD",
+  "spending_limit_settings": {
+    "per_transaction_limits": [
+      { "currency": "USD", "default": 10000, "maximum": 50000 },
+      { "currency": "AUD", "default": 15000, "maximum": 75000 },
+      { "currency": "SGD", "default": 10000, "maximum": 50000 }
+    ]
+  },
+  "blocked_transaction_usages": [],
+  "remote_auth_config": {
+    "enabled": false,
+    "default_action": "APPROVED"
+  }
 }

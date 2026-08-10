@@ -32,12 +32,14 @@ describe('airwallex', () => {
       fetchImpl: fetchSpy as unknown as typeof fetch,
     })
 
-    const body = await client.request<{ ok: boolean; fixture: string }>({
+    const body = await client.request<{
+      spending_limit_settings: { per_transaction_limits: Array<{ currency: string }> }
+    }>({
       method: 'GET',
       path: '/api/v1/issuing/config',
     })
 
-    expect(body).toEqual({ ok: true, fixture: 'ping' })
+    expect(body.spending_limit_settings.per_transaction_limits.length).toBeGreaterThan(0)
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 

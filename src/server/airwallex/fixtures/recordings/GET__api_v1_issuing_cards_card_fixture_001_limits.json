@@ -1,0 +1,7 @@
+{
+  "currency": "USD",
+  "limits": [
+    { "interval": "MONTHLY", "amount": 4000, "remaining": 3500 },
+    { "interval": "PER_TRANSACTION", "amount": 800, "remaining": 800 }
+  ]
+}
