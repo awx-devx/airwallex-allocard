@@ -42,12 +42,12 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test models/attribute` and `pnpm test models/rule`
   - **Notes:** `webhookSecretHash` is `select: false` + stripped from `toJSON`; `hasWebhookSecret` is the public signal. Rule `when`/`then`/`else` stored as Mixed (shape owned by shared schemas). RuleRun carries storage-only `cardIds`/`projectId` for history filters, stripped from the domain shape. AttributeValue `value` is Mixed — string/boolean/null stored without coercion.
 
-- [ ] **B6.2** — Attribute + Rule + RuleRun repositories
+- [x] **B6.2** — Attribute + Rule + RuleRun repositories
   - **Files:** `src/server/repositories/attributeDefinitions.ts`, `attributeValues.ts`, `rules.ts`, `ruleRuns.ts`, tests
   - **Do:** `OrgContext` first. CRUD/list/filter helpers needed by the pipeline and HTTP layer. Never return `HydratedDocument`.
   - **Pattern:** `src/server/repositories/cards.ts`
   - **Accept:** `pnpm test repositories/attribute` and `pnpm test repositories/rule`
-  - **Notes:**
+  - **Notes:** Tests live in `repositories/attributes.test.ts` + `repositories/rules.test.ts`. `putAttributeValue` upserts and keeps source `observedAt`. `updateRule` bumps `version`; `setRuleEnabled` does not. `listEnabledRulesForScope` returns ORG rules always + PROJECT rules for that project, ascending priority. `findWebhookSecretHash` is the only reader of the hash; `findLastRuleRun` feeds crossedAbove/Below.
 
 - [ ] **B6.3** — Built-in attribute resolvers + registry service
   - **Files:** `src/server/services/attributes/builtins.ts`, `registry.ts`, `resolve.ts`, tests
