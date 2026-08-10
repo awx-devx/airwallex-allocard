@@ -236,7 +236,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
 
 ### B5.11 — Limits + pan-token + reconcile endpoints
 
-- [ ] **B5.11**
+- [x] **B5.11**
   - **Files:**
     - `src/app/api/cards/[id]/limits/route.ts`
     - `src/app/api/cards/[id]/pan-token/route.ts`
@@ -250,7 +250,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) before B
     - Reconcile: `card.manage` + scope; force B5.6 diff-and-push
   - **Pattern:** permission+audit style of `src/app/api/projects/[id]/members/[userId]/route.ts` (B3)
   - **Accept:** `pnpm test api/card-limits` and `pnpm test api/card-pan-token` — deny without viewDetails; deny out of scope; audit on success
-  - **Notes:**
+  - **Notes:** Limits cached 30s minor units; pan-token needs viewDetails + audit; reconcile reuses B5.6. `pnpm verify` green.
 
 ### B5.12 — Harden B2 noActiveCards + overview card counts
 
