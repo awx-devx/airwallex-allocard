@@ -35,12 +35,12 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
 
 ## Implementation tasks
 
-- [ ] **B6.1** — AttributeDefinition + AttributeValue + Rule + RuleRun models
+- [x] **B6.1** — AttributeDefinition + AttributeValue + Rule + RuleRun models
   - **Files:** `src/server/models/AttributeDefinition.ts`, `AttributeValue.ts`, `Rule.ts`, `RuleRun.ts`, colocated model tests
   - **Do:** Tenant-scoped. AttributeValue unique `(orgId, key, subjectType, subjectId)`. Indexes per ARCHITECTURE §5. Dates in Mongo → ISO via `toDomain`.
   - **Pattern:** `src/server/models/Card.ts`, `src/server/models/Budget.ts`
   - **Accept:** `pnpm test models/attribute` and `pnpm test models/rule`
-  - **Notes:**
+  - **Notes:** `webhookSecretHash` is `select: false` + stripped from `toJSON`; `hasWebhookSecret` is the public signal. Rule `when`/`then`/`else` stored as Mixed (shape owned by shared schemas). RuleRun carries storage-only `cardIds`/`projectId` for history filters, stripped from the domain shape. AttributeValue `value` is Mixed — string/boolean/null stored without coercion.
 
 - [ ] **B6.2** — Attribute + Rule + RuleRun repositories
   - **Files:** `src/server/repositories/attributeDefinitions.ts`, `attributeValues.ts`, `rules.ts`, `ruleRuns.ts`, tests
