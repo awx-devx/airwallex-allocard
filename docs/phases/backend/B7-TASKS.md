@@ -57,7 +57,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.1 — Models
 
-- [ ] **B7.1** — PurchaseRequest + ApprovalRule models
+- [x] **B7.1** — PurchaseRequest + ApprovalRule models
   - **Files:** `src/server/models/PurchaseRequest.ts`, `src/server/models/ApprovalRule.ts`, colocated model tests
   - **Do:** `tenantScoped` + `baseOptions`. Indexes: PurchaseRequest `(orgId, projectId, status, createdAt desc)`, `(orgId, requestedBy, createdAt desc)`, `(orgId, status, updatedAt)` for escalation sweep; ApprovalRule `(orgId, projectId)` (projectId null = org default). Embed `approvals[]` and `policyDecision` on PurchaseRequest. Amounts are Number integers.
   - **Pattern:** `src/server/models/BudgetChangeRequest.ts`
