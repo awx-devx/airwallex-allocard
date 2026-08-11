@@ -85,7 +85,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.5 — Remote authorization
 
-- [ ] **B8.5** — `POST /api/remote-auth`
+- [x] **B8.5** — `POST /api/remote-auth`
   - **Files:** `src/server/services/remoteAuth/decide.ts`, `src/app/api/remote-auth/route.ts`, tests
   - **Do:** One Redis GET of policy snapshot → pure comparisons → respond. **No DB reads** (spy in tests). Hard ceiling 2.5s; target p99 < 300ms warm. Missing/stale snapshot → **approve and flag** (configurable fail-open, log loudly). Record decision async. Rate-limit via `redisKeys.rateRemoteAuth`.
   - **Pattern:** policy snapshot written in `src/server/services/rules/apply.ts`
@@ -93,7 +93,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.6 — Simulator
 
-- [ ] **B8.6** — `POST /api/simulate/purchase`
+- [x] **B8.6** — `POST /api/simulate/purchase`
   - **Files:** `src/app/api/simulate/purchase/route.ts`, service glue, tests
   - **Do:** `REMOTE_AUTH_MODE=simulate` (and/or OWNER+secret) posts synthetic auth into the **same** decide handler as live. Demo-only. Identical decision logic.
   - **Accept:** `pnpm test api/simulate`
