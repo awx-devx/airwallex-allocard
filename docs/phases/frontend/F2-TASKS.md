@@ -318,7 +318,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.9 — Misc hooks & pagination helpers
 
-- [ ] **F2.9** — Pagination, clipboard, debounce/throttle, disclosure; CSV re-export
+- [x] **F2.9** — Pagination, clipboard, debounce/throttle, disclosure; CSV re-export
   - **Files:**
     - `src/lib/pagination.ts`
     - `src/lib/pagination.test.ts`
@@ -347,7 +347,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     6. **`useDisclosure(initial = false)`** → `{ isOpen: boolean, onOpen: () => void, onClose: () => void, onToggle: () => void, setOpen: (v: boolean) => void }`.
   - **Pattern:** Pagination copy from `src/client/hooks/useReports.ts` + `useRules.ts` (F1). Toast from `src/client/providers/toastStore.ts` (F0). Download from `src/client/api/download.ts` (F1.1). Hook style from `src/client/hooks/useCall.ts` (F1.1).
   - **Accept:** `pnpm test lib/pagination` and `pnpm test client/lib`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Dual pagination helpers; clipboard toasts; pure helpers for hook tests. `pnpm verify` green.
 
 ### F2.10 — Root barrels + no money maths outside `src/lib/money`
 
