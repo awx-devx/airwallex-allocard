@@ -107,7 +107,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.1 — Client form deps
 
-- [ ] **F2.1** — Add React Hook Form + Zod resolver
+- [x] **F2.1** — Add React Hook Form + Zod resolver
   - **Files:** `package.json`, `pnpm-lock.yaml`
   - **Do:**
     1. Add `react-hook-form` (current major compatible with React 19).
@@ -115,7 +115,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     3. Do **not** add UI libraries (F3), date-fns, or i18n frameworks — use `Intl.*`.
   - **Pattern:** F0.1 / F1 deps style in `package.json` (F0.1 added `@tanstack/react-query` the same way)
   - **Accept:** `pnpm install` succeeds; `pnpm typecheck`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** `react-hook-form` 7.85.0 + `@hookform/resolvers` 5.7.1 (`zodResolver` present).
 
 ### F2.2 — Money helpers
 
