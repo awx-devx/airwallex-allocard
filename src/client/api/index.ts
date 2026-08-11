@@ -3,3 +3,9 @@ export type { CallArgs } from '@/client/api/client'
 export { ApiError, isApiError } from '@/client/api/errors'
 export { buildUrl } from '@/client/api/path'
 export type { PathParams } from '@/client/api/path'
+export {
+  resolveErrorBehaviour,
+  buildSignInHref,
+  isSafeReturnPath,
+} from '@/client/api/errorBehaviour'
+export type { ErrorBehaviour } from '@/client/api/errorBehaviour'

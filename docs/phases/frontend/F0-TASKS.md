@@ -82,7 +82,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.5 — Error behaviour map
 
-- [ ] **F0.5** — Error → client behaviour map
+- [x] **F0.5** — Error → client behaviour map
   - **Files:** `src/client/api/errorBehaviour.ts`, `src/client/api/errorBehaviour.test.ts`
   - **Do:** Pure functions — no React. Encode F0's table once via `resolveErrorBehaviour(error: ApiError): ErrorBehaviour`:
     - `UNAUTHENTICATED` → `{ type: 'redirect', to: '/sign-in', preserveReturn: true }`
@@ -96,11 +96,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     - Also `buildSignInHref(returnPath: string): string` — only allow relative paths starting with `/` and **not** starting with `//`; otherwise drop return → `/sign-in`. Query: `?returnTo=` + `encodeURIComponent(path)`.
   - **Pattern:** F0 spec error table + `ErrorCode` in `src/shared/enums/errors.ts` + server `AppError.validationFailed` / `permissionDenied` detail shapes in `src/server/http/errors.ts`
   - **Accept:** `pnpm test client/api/errorBehaviour` — every `ErrorCode` covered; open-redirect attempts rejected
-  - **Notes:**
+  - **Notes:** Exhaustive switch; invite codes → toast; open-redirect rejected.
 
 ### F0.6 — QueryClient factory
 
-- [ ] **F0.6** — QueryClient factory (F1 defaults)
+- [x] **F0.6** — QueryClient factory (F1 defaults)
   - **Files:** `src/client/providers/queryClient.ts`, `src/client/providers/queryClient.test.ts`
   - **Do:** Single factory `createAppQueryClient(): QueryClient` with defaults from F1:
     - `staleTime: 30_000`
@@ -111,11 +111,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     - Prefer creating inside the provider (next task); module-level getter only if needed for non-React callers.
   - **Pattern:** F1 spec “Query defaults” block in `docs/phases/frontend/F1-data-layer.md`
   - **Accept:** `pnpm test client/providers/queryClient` — 4xx not retried; 5xx `ApiError` retries twice max
-  - **Notes:**
+  - **Notes:** Non-ApiError: no retry.
 
 ### F0.7 — Toast + error boundary
 
-- [ ] **F0.7** — Toast host + top-level error boundary
+- [x] **F0.7** — Toast host + top-level error boundary
   - **Files:**
     - `src/client/providers/ToastProvider.tsx`
     - `src/client/providers/toastStore.ts`
@@ -125,11 +125,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     2. `ErrorBoundary` class component: `getDerivedStateFromError` → render a fallback with message + “Retry” calling `this.setState({ error: null })`. Log via `console.error` only.
   - **Pattern:** keep tiny — F3 owns polished Toast/Alert; this is the host the error map and shell need now
   - **Accept:** `pnpm typecheck`; smoke test optional `pnpm test client/providers/toast` if store is pure
-  - **Notes:**
+  - **Notes:** Pure `toastStore` + minimal host; ErrorBoundary with Retry.
 
 ### F0.8 — App providers
 
-- [ ] **F0.8** — App providers composition
+- [x] **F0.8** — App providers composition
   - **Files:**
     - `src/client/providers/AppProviders.tsx`
     - `src/client/providers/SessionProvider.tsx`
@@ -140,11 +140,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     3. Root `src/app/layout.tsx`: wrap `{children}` with `AppProviders`. Keep existing metadata.
   - **Pattern:** `src/app/layout.tsx` (current) + Auth.js client pattern; session config lives in `src/server/auth/config.ts` / `src/server/auth/index.ts` (`auth`, `handlers`) — do not duplicate config
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:**
+  - **Notes:** Root layout wraps `AppProviders` (Session → Query → ActiveOrg → Toast → ErrorBoundary).
 
 ### F0.9 — Active org context
 
-- [ ] **F0.9** — Active org context (client)
+- [x] **F0.9** — Active org context (client)
   - **Files:** `src/client/providers/ActiveOrgProvider.tsx`, `src/client/providers/activeOrg.tsx`
   - **Do:**
     1. Context value: `{ orgId: string | null, setOrgId: (id: string | null) => void }`
@@ -154,7 +154,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     5. When `meResponse.activeOrg` arrives (shell task), initialise from `activeOrg.id` if no localStorage value.
   - **Pattern:** server resolution order in `src/server/auth/session.ts` — client must send `x-org-id` when multiple memberships; `meResponse` shape in `src/shared/schemas/auth.ts`
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** `localStorage` key `allocard:activeOrgId`; `getActiveOrgId()` module ref.
 
 ### F0.10 — Route guards
 
