@@ -65,7 +65,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.2 — Repositories
 
-- [ ] **B7.2** — PurchaseRequest + ApprovalRule repositories
+- [x] **B7.2** — PurchaseRequest + ApprovalRule repositories
   - **Files:** `src/server/repositories/purchaseRequests.ts`, `src/server/repositories/approvalRules.ts`
   - **Do:** Every method takes `OrgContext` first. Cross-org → null (404 at handler). Include `listPendingForApprover`, `listOverdueForEscalation` (allowCrossTenant only on the sweep helper, greppable), `replaceProjectRules`.
   - **Pattern:** `src/server/repositories/budgetChangeRequests.ts`
