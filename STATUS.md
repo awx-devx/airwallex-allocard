@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7.2 — PurchaseRequest + ApprovalRule repositories
-**Last green `pnpm verify`:** 2026-08-11 (B7.1)
+**Active task:** B7.4 — Resolve approvers
+**Last green `pnpm verify`:** 2026-08-11 (B7.3)
 **Blocked on:** nothing
 
 ---
@@ -20,7 +20,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 2 / 11  |
+| B     | B7 Requests & approvals | **in progress** | 4 / 11  |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B7.2** — PurchaseRequest + ApprovalRule repositories.
+Active: **B7.4** — resolve ROLE / NAMED_USERS / PROJECT_OWNER to distinct approver ids.
 
 B7.0 locked policies (do not reopen):
 
@@ -76,28 +76,9 @@ B6 exit locked (do not reopen):
 3. Freeze beats limit by restrictiveness; priority orders explanations only
 4. Impossible merge → `PARTIAL`, no Airwallex call
 
-B6.0 locked policies (do not reopen):
+B6.0 locked policies (do not reopen): see prior notes.
 
-1. WEBHOOK secret write-only; output `hasWebhookSecret`; ingest header `x-allocard-attribute-secret`
-2. Stale → SKIPPED + named key; missing → FAILED + named key; no new ErrorCode; impossible merge → PARTIAL + conflicts
-3. Simulate = DRY_RUN runs + cardDiffs; zero writes
-4. Explain: finalControls/status + governingRules + attributeValues + merge contributions
-5. DesiredCardStatus: ACTIVE | INACTIVE | CLOSED only
-6. Attribute NUMBER allows floats; money attrs still minor-unit ints by convention
-7. Full RuleActionType in DSL; non-card actions may SKIPPED until owning phase
-8. AttributeDefinition includes `enumValues` + `hasWebhookSecret`
-
-B5 locked policies (do not reopen):
-
-1. Purpose enum `SHARED | MEMBER | VENDOR | ONE_TIME` (`perMember` ↔ `MEMBER`)
-2. Allowlists: domain `null` = unconstrained; wire `[]` → 422; empty intersection = conflict
-3. `allowedTransactionCount` immutable; VENDOR/ONE_TIME → SINGLE; SHARED/MEMBER → MULTIPLE
-4. Domain amounts = minor units; Airwallex limits = major — convert only in `controls.ts`
-5. Never call `GET /issuing/cards/{id}/details`; PAN via pantoken + iframe only
-6. `request_id`: `allocard-card-{id}` / `allocard-cardholder-{id}`
-7. Cross-org 404; scope miss 403; CLOSED → 409
-8. Non-READY cardholder on create → 409 CONFLICT + `details: { retryable: true, cardholderStatus }`
-9. `activeCardCount` / `noActiveCards` count **non-CLOSED** cards
+B5 locked policies (do not reopen): see prior notes.
 
 Carried forward:
 

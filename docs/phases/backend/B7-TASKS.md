@@ -73,7 +73,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.3 — Policy check (pure)
 
-- [ ] **B7.3** — Policy evaluation
+- [x] **B7.3** — Policy evaluation
   - **Files:** `src/server/services/approvals/policy.ts`, `policy.test.ts`
   - **Do:** Pure function → `PolicyOutcome` + reasons. Order: role → access scope → spending rules → thresholds (from ApprovalRule). `NOT_PERMITTED` **must** name which check failed. Same function used by preview and submit.
   - **Pattern:** `src/server/services/budget/projectProjection.ts`
