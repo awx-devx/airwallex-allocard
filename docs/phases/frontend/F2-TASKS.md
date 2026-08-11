@@ -142,7 +142,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.3 — Date helpers
 
-- [ ] **F2.3** — `src/lib/dates.ts`
+- [x] **F2.3** — `src/lib/dates.ts`
   - **Files:** `src/lib/dates.ts`, `src/lib/dates.test.ts`
   - **Do:**
     1. Everything takes **ISO 8601 strings** on the wire (`isoDateSchema` = `z.string().datetime()`), matching shared contracts.
@@ -159,7 +159,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     4. Do **not** change `src/client/states/PartialState.tsx` in this task (optional later consumer).
   - **Pattern:** `src/lib/money.ts` (F2.2) for module shape; semantics copy `src/server/services/attributes/resolve.ts` `isStale`. Relative display inspiration: local helper in `src/client/states/PartialState.tsx` (F0) — replace ad-hoc maths with `Intl`, do not import PartialState.
   - **Accept:** `pnpm test lib/dates`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Default locale `en-GB`; `isStale` matches server attribute resolve. `pnpm verify` green.
 
 ### F2.4 — Pure `can()` + denial explanation
 

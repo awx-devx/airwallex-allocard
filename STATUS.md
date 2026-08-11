@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F2 — Utils
-**Active task:** F2.3 — `src/lib/dates.ts`
-**Last green `pnpm verify`:** 2026-08-12 (F2.2)
+**Active task:** F2.4 — Pure `can()` + denial explanation
+**Last green `pnpm verify`:** 2026-08-12 (F2.3)
 **Blocked on:** nothing
 
 ---
@@ -25,7 +25,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
-| F     | F2 Utils                | in progress  | 3 / 11  |
+| F     | F2 Utils                | in progress  | 4 / 11  |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
@@ -60,9 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F2 in progress (2026-08-12).** Next: **F2.3** — date helpers.
+**F2 in progress (2026-08-12).** Next: **F2.4** — pure `can()` + `explainDenial`.
 
-F2.2: `src/lib/money.ts` — format/parse/percentOf/major↔minor; zero-decimal via shared exponent.
+F2.3: `src/lib/dates.ts` — en-GB formatters, relative, range, daysRemaining, isStale.
 
 F1.0 locked policies (do not reopen):
 
