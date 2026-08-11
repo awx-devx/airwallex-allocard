@@ -16,7 +16,7 @@ Generated off `shared/contracts`, so no endpoint is ever called with a hand-writ
 // src/client/api/client.ts
 export async function call<C extends Contract>(
   contract: C,
-  args: { params?: PathParams<C>; input?: z.infer<C['input']> }
+  args: { params?: PathParams<C>; input?: z.infer<C['input']> },
 ): Promise<z.infer<C['output']>>
 ```
 
@@ -31,15 +31,15 @@ Responsibilities:
 
 `ApiError` maps the B0 error codes to client behaviour:
 
-| Code | Client behaviour |
-| --- | --- |
-| `UNAUTHENTICATED` | Redirect to sign-in, preserving the return path |
-| `ONBOARDING_INCOMPLETE` | Redirect to `/onboarding` |
-| `PERMISSION_DENIED` | Inline permission message naming the missing permission |
-| `NOT_FOUND` | Not-found view |
-| `VALIDATION_FAILED` | Map `details` onto form fields |
-| `CONFLICT` | Toast with the server's message; refetch |
-| `RATE_LIMITED` / `UPSTREAM_ERROR` / `INTERNAL` | Retryable error state |
+| Code                                           | Client behaviour                                        |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| `UNAUTHENTICATED`                              | Redirect to sign-in, preserving the return path         |
+| `ONBOARDING_INCOMPLETE`                        | Redirect to `/onboarding`                               |
+| `PERMISSION_DENIED`                            | Inline permission message naming the missing permission |
+| `NOT_FOUND`                                    | Not-found view                                          |
+| `VALIDATION_FAILED`                            | Map `details` onto form fields                          |
+| `CONFLICT`                                     | Toast with the server's message; refetch                |
+| `RATE_LIMITED` / `UPSTREAM_ERROR` / `INTERNAL` | Retryable error state                                   |
 
 Decide this once, here. Every hook and screen then inherits it.
 
@@ -69,12 +69,12 @@ The partial state matters more here than in a typical app: attribute values carr
 
 ## Review checklist
 
-- [ ] No component calls `fetch` directly; everything goes through the client
-- [ ] Response validation against contracts is active in development
-- [ ] Every error code has a defined client behaviour
-- [ ] Route guards run server-side in layouts
-- [ ] The shell renders with mocked data in every state
-- [ ] No server-only import is reachable from client code — the ESLint boundary rule proves it
+- [x] No component calls `fetch` directly; everything goes through the client
+- [x] Response validation against contracts is active in development
+- [x] Every error code has a defined client behaviour
+- [x] Route guards run server-side in layouts
+- [x] The shell renders with mocked data in every state
+- [x] No server-only import is reachable from client code — the ESLint boundary rule proves it
 
 ## Out of scope
 

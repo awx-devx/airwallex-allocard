@@ -272,16 +272,16 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] No component outside `src/client/api/**` calls `fetch` directly (lint rule)
-- [ ] Response validation against contracts active when `NODE_ENV !== 'production'`
-- [ ] Every `ErrorCode` has a defined client behaviour (F0.5)
-- [ ] Route guards run server-side in `(auth)` / `(onboarding)` / `(app)` layouts (not client-only)
-- [ ] `/dev/shell` renders shell + loading/empty/error/partial
-- [ ] No server-only import reachable from `src/client` (ESLint boundary proof)
-- [ ] Spec's review checklist in `F0-foundation.md` signed off
-- [ ] `STATUS.md` updated: active phase F1, generate `F1-TASKS.md` when starting F1
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] No component outside `src/client/api/**` calls `fetch` directly (lint rule)
+- [x] Response validation against contracts active when `NODE_ENV !== 'production'`
+- [x] Every `ErrorCode` has a defined client behaviour (F0.5)
+- [x] Route guards run server-side in `(auth)` / `(onboarding)` / `(app)` layouts (not client-only)
+- [x] `/dev/shell` renders shell + loading/empty/error/partial
+- [x] No server-only import reachable from `src/client` (ESLint boundary proof)
+- [x] Spec's review checklist in `F0-foundation.md` signed off
+- [x] `STATUS.md` updated: active phase F1, generate `F1-TASKS.md` when starting F1
 
 ## Out of scope (do not do in F0)
 
