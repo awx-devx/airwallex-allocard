@@ -351,7 +351,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.10 — Root barrels + no money maths outside `src/lib/money`
 
-- [ ] **F2.10** — Public barrels + lint/proof that money maths stay centralised
+- [x] **F2.10** — Public barrels + lint/proof that money maths stay centralised
   - **Files:**
     - `src/lib/index.ts`
     - `src/client/lib/index.ts`
@@ -365,7 +365,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     5. Do **not** ban `/ 100` inside `src/lib/money.ts` or `src/server/**` or `src/shared/constants/currency.ts`.
   - **Pattern:** F1.13 barrel + ESLint proof in `docs/phases/frontend/F1-TASKS.md`; F0.15 boundary proofs.
   - **Accept:** Proof failure observed; proofs deleted; `pnpm lint` / boundary test green; `pnpm typecheck`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Vitest boundary scan (no ESLint rule). `src/lib/index.ts` + `src/client/lib/index.ts` barrels. `pnpm verify` green.
 
 ---
 
