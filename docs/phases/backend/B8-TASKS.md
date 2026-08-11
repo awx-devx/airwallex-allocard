@@ -77,7 +77,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.4 — Webhook consumer + ledger mapping
 
-- [ ] **B8.4** — Process webhooks → ledger
+- [x] **B8.4** — Process webhooks → ledger
   - **Files:** `src/server/services/webhooks/process.ts`, `src/server/services/transactions/ledgerMap.ts`, wire worker `onWebhookEvent`, tests
   - **Do:** Map Airwallex events to B4 ledger per spec table (`AUTHORIZATION`→COMMITMENT, `CLEARING`→RELEASE+ACTUAL, partials, reversals/expiry, refunds as negative ACTUAL). Every entry carries `lifecycleId`. Out-of-order clearing before auth must converge. Emit `transaction.*` domain events for B6. Never invent float money.
   - **Pattern:** `src/server/services/budget/ledger.ts` `appendBudgetEntry`; worker consumers already have webhook stream

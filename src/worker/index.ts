@@ -10,8 +10,13 @@ import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
 import { escalateApprovals } from '@/server/services/approvals/escalate'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
+import { processAirwallexWebhook } from '@/server/services/webhooks/process'
 import { createDebouncer } from '@/worker/debounce'
-import { createConsumers, createDebouncedDispatcher } from '@/worker/consumers'
+import {
+  createConsumers,
+  createDebouncedDispatcher,
+  type EventDispatcher,
+} from '@/worker/consumers'
 import { createScheduler } from '@/worker/scheduler'
 
 export type WorkerRuntime = {
@@ -23,6 +28,8 @@ export type StartWorkerOptions = {
   /** Override for tests — skip the ROLE gate. */
   allowWithoutRole?: boolean
   evaluate?: (event: unknown) => Promise<void>
+  /** Test seam — replace processAirwallexWebhook for webhook events. */
+  processWebhook?: (eventId: string) => Promise<void>
   /** Test seam — shorter debounce so SIGTERM drain is observable. */
   debounceWindowMs?: number
   /** Test seam — inject the event stream used by consumers. */
@@ -61,7 +68,30 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
       await handleDomainEventForRules(event as Parameters<typeof handleDomainEventForRules>[0])
     })
 
-  const dispatcher = createDebouncedDispatcher(debouncer, evaluate)
+  const processWebhook =
+    options.processWebhook ??
+    (async (eventId: string) => {
+      await processAirwallexWebhook(eventId)
+    })
+
+  const rulesDispatcher = createDebouncedDispatcher(debouncer, evaluate)
+
+  const dispatcher: EventDispatcher = {
+    onDomainEvent: rulesDispatcher.onDomainEvent,
+    async onWebhookEvent(event) {
+      const payload = event.payload as { eventId?: string } | undefined
+      const eventId =
+        typeof payload?.eventId === 'string' && payload.eventId.length > 0
+          ? payload.eventId
+          : event.subjectId
+      await debouncer.schedule({
+        ruleId: `webhook:${event.type}`,
+        subjectId: eventId,
+        run: () => processWebhook(eventId),
+      })
+    },
+  }
+
   const consumers = createConsumers(dispatcher, {
     ...(options.stream ? { stream: options.stream } : {}),
     blockMs: 500,

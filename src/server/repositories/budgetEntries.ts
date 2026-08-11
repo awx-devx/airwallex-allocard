@@ -117,6 +117,23 @@ export async function findEntriesByProject(
   return docs.map((doc) => toEntry(doc))
 }
 
+/** All entries for a lifecycle (oldest first) — used by ledger mapping convergence. */
+export async function findEntriesByLifecycleId(
+  ctx: OrgContext,
+  projectId: string,
+  lifecycleId: string,
+): Promise<BudgetEntry[]> {
+  const docs = await BudgetEntryModel.find({
+    orgId: ctx.orgId,
+    projectId,
+    lifecycleId,
+  })
+    .sort({ createdAt: 1, _id: 1 })
+    .lean()
+    .exec()
+  return docs.map((doc) => toEntry(doc))
+}
+
 export async function countEntriesReferencingCategory(
   ctx: OrgContext,
   projectId: string,

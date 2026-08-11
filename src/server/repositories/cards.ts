@@ -309,6 +309,18 @@ export async function updateCardAirwallexFields(
   return doc ? toCard(doc) : null
 }
 
+/**
+ * Cross-tenant card lookup by Airwallex card ID — webhook processing only.
+ * allowCrossTenant: true (greppable). Returns null when no card exists.
+ */
+export async function findCardByAirwallexIdGlobal(airwallexCardId: string): Promise<Card | null> {
+  const doc = await CardModel.findOne({ airwallexCardId })
+    .setOptions({ allowCrossTenant: true })
+    .lean()
+    .exec()
+  return doc ? toCard(doc) : null
+}
+
 /** Count cards that are not CLOSED — used by noActiveCards / overview. */
 export async function countNonClosedByProject(ctx: OrgContext, projectId: string): Promise<number> {
   return CardModel.countDocuments({
