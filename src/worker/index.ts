@@ -8,6 +8,7 @@
 import { handleDomainEventForRules } from '@/server/events/handlers/rules'
 import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
+import { escalateApprovals } from '@/server/services/approvals/escalate'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
 import { createDebouncer } from '@/worker/debounce'
 import { createConsumers, createDebouncedDispatcher } from '@/worker/consumers'
@@ -28,6 +29,8 @@ export type StartWorkerOptions = {
   stream?: EventStream
   /** Test seam — replace the rules sweep body. */
   sweepRules?: () => Promise<void>
+  /** Test seam — replace the escalate-approvals body. */
+  escalateApprovals?: () => Promise<void>
 }
 
 function requireWorkerRole(role: string | undefined, allowWithoutRole?: boolean): void {
@@ -70,6 +73,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
 
   const scheduler = createScheduler()
   const runSweep = options.sweepRules ?? (() => sweepScheduledRules().then(() => undefined))
+  const runEscalate = options.escalateApprovals ?? (() => escalateApprovals().then(() => undefined))
   scheduler.schedule({
     name: 'sweep-rules',
     everyMs: 5 * 60_000,
@@ -88,7 +92,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   scheduler.schedule({
     name: 'escalate-approvals',
     everyMs: 10 * 60_000,
-    run: () => noopJob('escalate-approvals'),
+    run: runEscalate,
   })
   scheduler.schedule({
     name: 'expire-access',

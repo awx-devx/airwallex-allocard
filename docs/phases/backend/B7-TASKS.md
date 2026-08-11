@@ -121,7 +121,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.9 — Escalation sweep
 
-- [ ] **B7.9** — Wire `escalate-approvals` worker job
+- [x] **B7.9** — Wire `escalate-approvals` worker job
   - **Files:** `src/server/services/approvals/escalate.ts`, update `src/worker/index.ts`, tests
   - **Do:** Replace noop with real job. Find PENDING past `escalationAfterMins`, route to `escalateTo`, emit `request.escalated` once (idempotent). Genuinely time-triggered.
   - **Pattern:** `src/server/services/rules/sweep.ts`
