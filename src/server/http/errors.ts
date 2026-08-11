@@ -1,5 +1,7 @@
 import { ErrorCode } from '@/shared/enums/errors'
+import type { ErrorEnvelope } from '@/shared/types/error'
 
+export type { ErrorEnvelope }
 export type FieldErrors = Record<string, string[] | undefined>
 
 export class AppError extends Error {
@@ -80,14 +82,6 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   [ErrorCode.RATE_LIMITED]: 429,
   [ErrorCode.UPSTREAM_ERROR]: 502,
   [ErrorCode.INTERNAL]: 500,
-}
-
-export type ErrorEnvelope = {
-  error: {
-    code: ErrorCode
-    message: string
-    details?: unknown
-  }
 }
 
 export type SerializedError = {
