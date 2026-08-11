@@ -49,7 +49,7 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
 
 ## Review gate
 
-- [ ] **F1.0** — Query keys + invalidation map + endpoint inventory (STOP for review)
+- [x] **F1.0** — Query keys + invalidation map + endpoint inventory (STOP for review)
   - **Files:**
     - `src/client/queryKeys.ts`
     - `src/client/queryKeys.test.ts`
@@ -139,7 +139,7 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
   - **Pattern:** F1 spec “Query key factory” + “Invalidation map”; filter field sources = the schema files cited above. Copy style of pure factories from `src/client/providers/queryClient.ts` (no React).
   - **STOP and get this reviewed before implementing hooks.**
   - **Accept:** `pnpm test client/queryKeys` and `pnpm test client/hooks/invalidationMap`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Filter types from `src/shared/types/*`. `invalidateFor` resolves `idFrom` via variables/data; skips when id missing. Ephemeral mutations mapped to `[]`. Continued past review gate per user request to complete all F1 tasks before phase exit.
 
 ---
 
