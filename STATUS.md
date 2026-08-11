@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B8 — Webhooks, transactions & remote authorization
-**Active task:** B8.1 — WebhookEvent + Transaction models
-**Last green `pnpm verify`:** 2026-08-11 (B8.0)
+**Active task:** B8.2 — WebhookEvent + Transaction repositories
+**Last green `pnpm verify`:** 2026-08-11 (B8.1)
 **Blocked on:** nothing
 
 ---
@@ -21,7 +21,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
-| B     | B8 Money in motion      | **in progress** | 1 / 11  |
+| B     | B8 Money in motion      | **in progress** | 2 / 11  |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B8.0 contracts reviewed and locked. Active: **B8.1** — WebhookEvent + Transaction models.
+B8.1 models done. Active: **B8.2** — WebhookEvent + Transaction repositories.
 
 B8.0 locked policies (do not reopen):
 

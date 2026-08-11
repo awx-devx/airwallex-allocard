@@ -52,11 +52,12 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.1 — Models
 
-- [ ] **B8.1** — WebhookEvent + Transaction models
+- [x] **B8.1** — WebhookEvent + Transaction models
   - **Files:** `src/server/models/WebhookEvent.ts`, `src/server/models/Transaction.ts`, colocated tests
   - **Do:** WebhookEvent unique `eventId`. Transaction unique `(orgId, airwallexTransactionId)`; indexes `(orgId, cardId, transactedAt)`, `(orgId, projectId, transactedAt)`, `(orgId, lifecycleId)`. Amounts Number integers. `tenantScoped` on Transaction; WebhookEvent may be global by `eventId` — document tenancy choice in Notes (Airwallex account is shared — see ARCHITECTURE D1).
   - **Pattern:** `src/server/models/BudgetEntry.ts`, `src/server/models/PurchaseRequest.ts`
   - **Accept:** `pnpm test models/transaction` (or webhook+transaction)
+  - **Notes:** WebhookEvent is **not** tenant-scoped — shared Airwallex account (D1); org routing at process time via card mirror. Transaction is `tenantScoped`.
 
 ### B8.2 — Repositories
 
