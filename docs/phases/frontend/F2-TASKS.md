@@ -191,7 +191,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.5 — `useCan` + permission wrappers
 
-- [ ] **F2.5** — React `useCan` + `<RequirePermission>` + `<PermissionTooltip>`
+- [x] **F2.5** — React `useCan` + `<RequirePermission>` + `<PermissionTooltip>`
   - **Files:**
     - `src/client/lib/permissions/useCan.ts`
     - `src/client/lib/permissions/useCan.test.ts`
@@ -213,7 +213,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     5. Tests: prefer testing pure options / wrapping `can` with mocked `me` data without full RTL if possible (same spirit as F1.1 `useCall` tests). If a hook test needs React, use the lightest approach already in repo — **do not** add `@testing-library/react` unless unavoidable; prefer exporting `buildCanFromMe(me)` used by the hook.
   - **Pattern:** Hook wiring like `src/client/hooks/useSession.ts` (F1.3) + `src/client/hooks/useCall.ts` (F1.1). Presentational thinness like `src/client/states/EmptyState.tsx` / `PartialState.tsx` (F0). Pure logic from F2.4.
   - **Accept:** `pnpm test client/lib/permissions`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** `buildCanFromMe` for unit tests; fallback default `null`. `pnpm verify` green.
 
 ### F2.6 — Forms: Zod RHF + server errors + dirty guard
 
