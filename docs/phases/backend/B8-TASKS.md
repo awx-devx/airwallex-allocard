@@ -108,7 +108,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.8 — Receipts
 
-- [ ] **B8.8** — Receipt upload/delete + missing-receipt sweep
+- [x] **B8.8** — Receipt upload/delete + missing-receipt sweep
   - **Files:** receipt routes under `transactions/[id]/receipt`, `src/server/services/transactions/receipts.ts`, worker job or schedule hook, tests
   - **Do:** Upload attach; DELETE per permissions; sweep requests missing receipts above threshold (persist request / flag — no OCR).
   - **Accept:** `pnpm test transactions/receipts`

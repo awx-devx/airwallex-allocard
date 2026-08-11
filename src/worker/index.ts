@@ -10,6 +10,7 @@ import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
 import { escalateApprovals } from '@/server/services/approvals/escalate'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
+import { sweepMissingReceiptsAll } from '@/server/services/transactions/receiptSweep'
 import { processAirwallexWebhook } from '@/server/services/webhooks/process'
 import { createDebouncer } from '@/worker/debounce'
 import {
@@ -133,6 +134,11 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
     name: 'sync-transactions',
     everyMs: 30 * 60_000,
     run: () => noopJob('sync-transactions'),
+  })
+  scheduler.schedule({
+    name: 'sweep-missing-receipts',
+    everyMs: 60 * 60_000,
+    run: () => sweepMissingReceiptsAll(),
   })
 
   console.info('[worker] started')
