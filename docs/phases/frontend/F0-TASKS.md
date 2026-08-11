@@ -28,12 +28,12 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.1 — Client deps
 
-- [ ] **F0.1** — Client deps: TanStack Query
+- [x] **F0.1** — Client deps: TanStack Query
   - **Files:** `package.json`, `pnpm-lock.yaml`
   - **Do:** Add `@tanstack/react-query` (current major compatible with React 19). Do not add UI libraries yet (F3). `next-auth` already present for `SessionProvider`.
   - **Pattern:** dependency add style in `package.json` (existing deps block)
   - **Accept:** `pnpm install` succeeds; `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** `@tanstack/react-query` 5.101.4.
 
 ### F0.2 — ApiError
 
