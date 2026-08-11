@@ -50,7 +50,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.3 — Path builder
 
-- [ ] **F0.3** — Path builder for contract paths
+- [x] **F0.3** — Path builder for contract paths
   - **Files:** `src/client/api/path.ts`, `src/client/api/path.test.ts`
   - **Do:**
     1. Contracts use Express-style segments (`/api/projects/:id/members/:userId`).
@@ -59,7 +59,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     4. For `GET` with Zod object `input`, later `call()` appends query string; this task is path-only.
   - **Pattern:** contract paths in `src/shared/contracts/project.ts` / `src/shared/contracts/organization.ts` (`:id` style)
   - **Accept:** `pnpm test client/api/path` — covers multi-param paths and missing/extra params
-  - **Notes:**
+  - **Notes:** `buildUrl` encodes values; missing/unused params throw.
 
 ### F0.4 — Typed call()
 
