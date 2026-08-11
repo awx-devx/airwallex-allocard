@@ -215,7 +215,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.9 — Stale access sweep (access reviews)
 
-- [ ] **B9.9** — Flag stale/elevated access
+- [x] **B9.9** — Flag stale/elevated access
   - **Files:**
     - `src/server/services/accessReviews/sweep.ts`
     - wire `expire-access` or new schedule in `src/worker/index.ts` (replace noop if still noop)
@@ -226,6 +226,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     3. Resolve path already exists — do not rebuild HTTP.
   - **Pattern:** `src/server/services/approvals/escalate.ts`, `src/server/repositories/accessReviews.ts`
   - **Accept:** `pnpm test accessReviews/sweep`
+  - **Notes:** `INACTIVE_MEMBER_DAYS=30` via `projectMember.updatedAt` (no lastLogin field). Reasons: `Scope past validTo` / `Member inactive for 30 days` / rule `params.reason`. `flag.review` pipeline → WOULD_APPLY with targetId; worker `expire-access` runs `sweepAccessReviews` (flags only, no revoke). Idempotent via `createAccessReviewIfAbsent`.
 
 ### B9.10 — Events + audit + seed + budget:verify on closed project
 

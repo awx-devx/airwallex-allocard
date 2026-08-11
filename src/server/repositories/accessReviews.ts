@@ -62,6 +62,28 @@ export async function createAccessReview(
   return toAccessReview(doc)
 }
 
+/**
+ * Idempotent create: skip when an OPEN review already exists for
+ * `(orgId, subjectId, reason)`.
+ */
+export async function createAccessReviewIfAbsent(
+  ctx: OrgContext,
+  input: CreateAccessReviewInput,
+): Promise<AccessReview | null> {
+  const existing = await AccessReviewModel.findOne({
+    orgId: ctx.orgId,
+    subjectId: input.subjectId,
+    reason: input.reason,
+    status: AccessReviewStatus.OPEN,
+  })
+    .lean()
+    .exec()
+  if (existing) {
+    return null
+  }
+  return createAccessReview(ctx, input)
+}
+
 export async function findAccessReviewById(
   ctx: OrgContext,
   reviewId: string,

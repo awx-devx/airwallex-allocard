@@ -103,7 +103,7 @@ const UNWIRED_ACTIONS = new Set<RuleActionType>([
   RuleActionType.BUDGET_ALLOCATE,
   RuleActionType.APPROVAL_REQUIRE,
   RuleActionType.NOTIFY,
-  RuleActionType.FLAG_REVIEW,
+  // FLAG_REVIEW is wired in B9.9 — records WOULD_APPLY; sweep creates AccessReview rows.
 ])
 
 const STATUS_ACTIONS: Partial<Record<RuleActionType, DesiredCardStatus>> = {
@@ -282,6 +282,33 @@ function applyAction(
         status: ActionResultStatus.WOULD_APPLY,
         message: null,
         details: { controls: resolved, purpose: action.params.purpose ?? null },
+      })
+    }
+    return
+  }
+
+  if (action.action === RuleActionType.FLAG_REVIEW) {
+    // Access-review creation is a worker sweep (B9.9); pipeline only names subjects.
+    const reason =
+      typeof action.params.reason === 'string' && action.params.reason.length > 0
+        ? action.params.reason
+        : 'Flagged by rule for review'
+    for (const memberId of target.memberIds) {
+      results.push({
+        action: action.action,
+        targetId: memberId,
+        status: ActionResultStatus.WOULD_APPLY,
+        message: null,
+        details: { reason, targetKind: 'member' },
+      })
+    }
+    for (const cardId of target.cardIds) {
+      results.push({
+        action: action.action,
+        targetId: cardId,
+        status: ActionResultStatus.WOULD_APPLY,
+        message: null,
+        details: { reason, targetKind: 'card' },
       })
     }
     return

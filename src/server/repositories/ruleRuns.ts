@@ -226,3 +226,63 @@ export async function findLatestRunForCard(
     .exec()
   return doc ? toRuleRun(doc) : null
 }
+
+export type FlagReviewActionCandidate = {
+  orgId: string
+  projectId: string | null
+  /** Member userId or card id — see targetKind. */
+  targetId: string
+  targetKind: 'member' | 'card'
+  reason: string
+  runId: string
+}
+
+/**
+ * Cross-tenant sweep: matched rule runs with WOULD_APPLY `flag.review` actions.
+ * allowCrossTenant — worker job only; keep greppable.
+ */
+export async function listFlagReviewActionCandidates(): Promise<FlagReviewActionCandidate[]> {
+  const docs = await RuleRunModel.find({
+    matched: true,
+    actions: {
+      $elemMatch: {
+        action: 'flag.review',
+        status: 'WOULD_APPLY',
+        targetId: { $ne: null },
+      },
+    },
+  })
+    .setOptions({ allowCrossTenant: true })
+    .sort({ startedAt: 1, _id: 1 })
+    .lean()
+    .exec()
+
+  const out: FlagReviewActionCandidate[] = []
+  for (const doc of docs) {
+    const raw = doc as Record<string, unknown>
+    const orgId = String(raw.orgId)
+    const projectId = raw.projectId == null ? null : String(raw.projectId)
+    const runId = String(raw._id)
+    const actions = (raw.actions ?? []) as ActionResult[]
+    for (const action of actions) {
+      if (action.action !== 'flag.review') continue
+      if (action.status !== 'WOULD_APPLY') continue
+      if (action.targetId == null) continue
+      const details = action.details ?? {}
+      const targetKind = details.targetKind === 'card' ? 'card' : 'member'
+      const reason =
+        typeof details.reason === 'string' && details.reason.length > 0
+          ? details.reason
+          : 'Flagged by rule for review'
+      out.push({
+        orgId,
+        projectId,
+        targetId: action.targetId,
+        targetKind,
+        reason,
+        runId,
+      })
+    }
+  }
+  return out
+}

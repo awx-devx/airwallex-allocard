@@ -239,3 +239,38 @@ export async function softRemoveProjectMember(
     .exec()
   return doc ? toProjectMember(doc) : null
 }
+
+/**
+ * Cross-tenant sweep: active members whose scope.validTo is in the past.
+ * allowCrossTenant — worker job only; keep greppable.
+ */
+export async function listMembersWithExpiredScopes(
+  now: Date = new Date(),
+): Promise<ProjectMember[]> {
+  const docs = await ProjectMemberModel.find({
+    removedAt: null,
+    'scope.validTo': { $lte: now },
+  })
+    .setOptions({ allowCrossTenant: true })
+    .sort({ orgId: 1, _id: 1 })
+    .lean()
+    .exec()
+  return docs.map((doc) => toProjectMember(doc))
+}
+
+/**
+ * Cross-tenant sweep: active members with no membership touch since `cutoff`
+ * (`updatedAt` older than cutoff). Proxy for inactive access — no lastLogin field.
+ * allowCrossTenant — worker job only; keep greppable.
+ */
+export async function listInactiveProjectMembers(cutoff: Date): Promise<ProjectMember[]> {
+  const docs = await ProjectMemberModel.find({
+    removedAt: null,
+    updatedAt: { $lte: cutoff },
+  })
+    .setOptions({ allowCrossTenant: true })
+    .sort({ orgId: 1, _id: 1 })
+    .lean()
+    .exec()
+  return docs.map((doc) => toProjectMember(doc))
+}

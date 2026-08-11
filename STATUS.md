@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.9 — Stale access sweep (access reviews)
-**Last green `pnpm verify`:** 2026-08-12 (B9.8)
+**Active task:** B9.10 — Events + audit + seed + budget:verify on closed project
+**Last green `pnpm verify`:** 2026-08-12 (B9.9)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 9 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 10 / 11 |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-B9.8 complete. Active: **B9.9** — stale/elevated access sweep (AccessReview rows; wire expire-access / worker).
+B9.9 complete. Active: **B9.10** — events + audit + seed + budget:verify on closed project.
+
+B9.9 notes: `INACTIVE_MEMBER_DAYS=30` — inactive = active `projectMember.updatedAt` older than 30d (no lastLogin). Sweep creates OPEN AccessReview for (1) scopes past `validTo`, (2) inactive members, (3) WOULD_APPLY `flag.review` actions (pipeline now resolves targets; B6 SKIPPED→WOULD_APPLY). Idempotent `(orgId, subjectId, reason)`. Worker `expire-access` → `sweepAccessReviews` (flag only; revoke stays B3 resolve). Audit `accessReview.flagged`.
 
 B9.8 notes: POST `/closure/complete` requires both `confirmCloseCards`+`confirmArchive` literals. Advances SETTLE/REVOKE; CLOSE_CARDS via `closeCard({confirm:true})` only (not rules); CLOSING→CLOSED→ARCHIVED via `transitionProject` (emits `project.closed` / `project.archived` — added `PROJECT_ARCHIVED`). Final report snapshot via `markComplete` (completedAt only when ARCHIVED); GET `/report/final` = `project.view`. Idempotent resume. CLEARING after CLOSED still records. Use `card_fixture_001` when freezing/closing in tests.
 

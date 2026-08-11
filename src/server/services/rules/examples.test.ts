@@ -699,7 +699,10 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
     ).toBe(ActionResultStatus.SKIPPED)
     expect(
       result.runs[0]?.actions.find((a) => a.action === RuleActionType.FLAG_REVIEW)?.status,
-    ).toBe(ActionResultStatus.SKIPPED)
+    ).toBe(ActionResultStatus.WOULD_APPLY)
+    expect(
+      result.runs[0]?.actions.find((a) => a.action === RuleActionType.FLAG_REVIEW)?.targetId,
+    ).toBe('user_member')
     expect(
       (await findCardById(ctx, card.id))?.appliedControls.transactionLimits.limits[0]?.amount,
     ).toBe(100_000) // min(150_000, 1_000_000 * 0.1)

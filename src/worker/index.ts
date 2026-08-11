@@ -9,6 +9,7 @@ import { handleDomainEventForRules } from '@/server/events/handlers/rules'
 import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
 import { escalateApprovals } from '@/server/services/approvals/escalate'
+import { sweepAccessReviews } from '@/server/services/accessReviews/sweep'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
 import { sweepMissingReceiptsAll } from '@/server/services/transactions/receiptSweep'
 import { syncTransactions } from '@/server/services/transactions/sync'
@@ -40,6 +41,8 @@ export type StartWorkerOptions = {
   sweepRules?: () => Promise<void>
   /** Test seam — replace the escalate-approvals body. */
   escalateApprovals?: () => Promise<void>
+  /** Test seam — replace the expire-access / access-review sweep body. */
+  expireAccess?: () => Promise<void>
 }
 
 function requireWorkerRole(role: string | undefined, allowWithoutRole?: boolean): void {
@@ -106,6 +109,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   const scheduler = createScheduler()
   const runSweep = options.sweepRules ?? (() => sweepScheduledRules().then(() => undefined))
   const runEscalate = options.escalateApprovals ?? (() => escalateApprovals().then(() => undefined))
+  const runExpireAccess = options.expireAccess ?? (() => sweepAccessReviews().then(() => undefined))
   scheduler.schedule({
     name: 'sweep-rules',
     everyMs: 5 * 60_000,
@@ -129,7 +133,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   scheduler.schedule({
     name: 'expire-access',
     everyMs: 60 * 60_000,
-    run: () => noopJob('expire-access'),
+    run: runExpireAccess,
   })
   scheduler.schedule({
     name: 'sync-transactions',
