@@ -129,7 +129,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.4 — Reports
 
-- [ ] **B9.4** — Project + organization reports
+- [x] **B9.4** — Project + organization reports
   - **Files:**
     - `src/server/services/reports/project.ts`
     - `src/server/services/reports/organization.ts`
@@ -142,6 +142,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     3. Permission `report.export`. Totals must match `projectBudget` / `budget:verify` for the project.
   - **Pattern:** `src/server/services/budget/projectProjection.ts`, `src/app/api/projects/[id]/budget/route.ts`
   - **Accept:** `pnpm test api/reports` — totals reconcile; matrix
+  - **Notes:** Totals always from `projectBudget(entries)`. Category/member actuals: ACTUAL ledger → `lifecycleId` → transaction → card → `categoryId` / `cardholder.userId` (ledger+transactions join; not transaction-sum alone). Org `currency` = `org.baseCurrency`; mixed-currency projects listed in `projects[]` but excluded from `totals`. MEMBER org report filtered to projects granting `report.export`.
 
 ### B9.5 — Closure model + repository
 

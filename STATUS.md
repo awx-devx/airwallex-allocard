@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.4 — Project + organization reports
-**Last green `pnpm verify`:** 2026-08-12 (B9.3)
+**Active task:** B9.5 — Closure model + repository
+**Last green `pnpm verify`:** 2026-08-12 (B9.4)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 4 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 5 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-B9.3 complete. Active: **B9.4** — project + organization reports.
+B9.4 complete. Active: **B9.5** — closure model + repository.
+
+B9.4 notes: Totals from `projectBudget(entries)`. Category/member actuals join ACTUAL ledger → lifecycleId → tx → card → categoryId / cardholder.userId. Org totals single-currency (`org.baseCurrency`); mixed-currency listed but excluded.
 
 B9.3 notes: Pull-based CSV stream (assert generated===1 after first data chunk); audit on stream complete; `amount_minor`; `REPORT_EXPORT` org-wide via membership.
 
