@@ -49,6 +49,31 @@ const eslintConfig = defineConfig([
       'src/app/(app)/**/*.{ts,tsx}',
     ],
     rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@/client/api',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+            {
+              name: '@/client/api/client',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+            {
+              name: '@/client/api/index',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+          ],
+        },
+      ],
       'no-restricted-syntax': [
         'error',
         {
