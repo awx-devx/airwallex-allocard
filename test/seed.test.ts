@@ -130,5 +130,18 @@ describe('pnpm seed idempotency', () => {
     expect(cards[0]?.purpose).toBe('MEMBER')
     expect(cards[0]?.status).toBe('ACTIVE')
     expect(cards[0]?.desiredControls).toEqual(cards[0]?.appliedControls)
+
+    const attributeDefs = await mongoose.connection
+      .collection('attributeDefinitions')
+      .countDocuments({ key: 'campaign.roas' })
+    expect(attributeDefs).toBe(1)
+    const attributeValues = await mongoose.connection
+      .collection('attributeValues')
+      .countDocuments({ key: 'campaign.roas' })
+    expect(attributeValues).toBe(1)
+    const rules = await mongoose.connection.collection('rules').countDocuments({ enabled: true })
+    expect(rules).toBeGreaterThanOrEqual(2)
+    const ruleRuns = await mongoose.connection.collection('ruleRuns').countDocuments({})
+    expect(ruleRuns).toBeGreaterThanOrEqual(1)
   })
 })

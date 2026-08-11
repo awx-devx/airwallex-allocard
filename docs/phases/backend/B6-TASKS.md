@@ -144,19 +144,19 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test rules/examples` (or equivalent) — all five green
   - **Notes:** `handleDomainEventForRules` feeds `evaluateAndApply`; worker default evaluate uses it. Example amounts use minor units (doc major ×100). Example D uses `activeToOffsetDays: 7` (B6.4). Example A/D `card.create` → `WOULD_APPLY`. Example E `access.grant` / `flag.review` → `SKIPPED`. Event-path regression included.
 
-- [ ] **B6.13** — Events + audit coverage for B6 mutations
+- [x] **B6.13** — Events + audit coverage for B6 mutations
   - **Files:** `test/events/rules.test.ts`, `test/audit/b6.test.ts`
   - **Do:** `rule.evaluated`, `attribute.updated`, `card.limit_updated` as applicable. One audit per mutating attribute/rule endpoint.
   - **Pattern:** `test/audit/b5.test.ts`
   - **Accept:** `pnpm test events/rules` and `pnpm test audit/b6`
-  - **Notes:**
+  - **Notes:** Events cover MANUAL put → `attribute.updated`; evaluateAndApply → `rule.evaluated` + `card.limit_updated`. Audits cover attribute definition create/update, value put, and rule create/update/enable/delete.
 
-- [ ] **B6.14** — Seed extension
+- [x] **B6.14** — Seed extension
   - **Files:** `scripts/seed.ts`, `test/seed.test.ts`
   - **Do:** `seedB6` — idempotent sample attributes (incl. one custom), at least two enabled rules on SEED-ACTIVE aligned with a worked example, one recorded RuleRun. Do not duplicate on re-run.
   - **Pattern:** `seedB5` in `scripts/seed.ts`
   - **Accept:** `pnpm test seed`
-  - **Notes:**
+  - **Notes:** Seeds `campaign.roas` MANUAL attribute, two enabled PROJECT rules (member limit formula + budget-floor freeze), one SUCCESS RuleRun. Re-run short-circuits when ≥2 project rules exist.
 
 ## Phase exit
 

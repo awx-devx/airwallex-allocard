@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B6 — Attributes & rules engine
-**Active task:** B6.13 — Events + audit coverage for B6 mutations
-**Last green `pnpm verify`:** 2026-08-11 (B6.12)
+**Active task:** B6 phase exit (review checklist) — stop; do not start B7 until exit is signed off
+**Last green `pnpm verify`:** 2026-08-11 (B6.14)
 **Blocked on:** nothing
 
 ---
@@ -19,7 +19,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **in progress** | 13 / 15 |
+| B     | B6 Rules engine         | **in progress** | 15 / 15 |
 | B     | B7 Requests & approvals | not started     | —       |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B6.13** — events + audit coverage for B6 mutations.
+Active: **B6 phase exit** — all implementation tasks done; review checklist not started.
 
 B6.0 locked policies (do not reopen):
 

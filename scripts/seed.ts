@@ -724,6 +724,213 @@ export async function seedB5(input: {
   }
 }
 
+/**
+ * B6 — sample attributes, two enabled rules on SEED-ACTIVE (budget floor +
+ * member-limit formula), and one recorded RuleRun. Idempotent.
+ */
+export async function seedB6(input: {
+  orgId: string
+  ownerId: string
+  activeProjectId: string
+  cardId: string
+}): Promise<{
+  attributeKey: string
+  ruleIds: string[]
+  ruleRunId: string | null
+  created: boolean
+}> {
+  const definitions = await import('../src/server/repositories/attributeDefinitions')
+  const values = await import('../src/server/repositories/attributeValues')
+  const rulesRepo = await import('../src/server/repositories/rules')
+  const runsRepo = await import('../src/server/repositories/ruleRuns')
+  const { AttributeScope } = await import('../src/shared/enums/attributeScope')
+  const { AttributeSource } = await import('../src/shared/enums/attributeSource')
+  const { AttributeSubjectType } = await import('../src/shared/enums/attributeSubjectType')
+  const { AttributeType } = await import('../src/shared/enums/attributeType')
+  const { ConditionOperator } = await import('../src/shared/enums/conditionOperator')
+  const { RuleActionType } = await import('../src/shared/enums/ruleActionType')
+  const { RuleScopeLevel } = await import('../src/shared/enums/ruleScopeLevel')
+  const { RuleTargetSelect } = await import('../src/shared/enums/ruleTargetSelect')
+  const { CardPurpose } = await import('../src/shared/enums/cardPurpose')
+  const { TransactionLimitInterval } = await import('../src/shared/enums/transactionLimitInterval')
+  const { ActorType } = await import('../src/shared/enums/audit')
+  const { RuleRunStatus } = await import('../src/shared/enums/ruleRunStatus')
+
+  const ctx = {
+    orgId: input.orgId,
+    userId: input.ownerId,
+    orgRole: OrgRole.OWNER,
+  }
+
+  const existingRules = await rulesRepo.listRules(ctx, {
+    projectId: input.activeProjectId,
+    pageSize: 10,
+  })
+  if (existingRules.total >= 2) {
+    const runs = await runsRepo.listRuleRuns(ctx, {
+      projectId: input.activeProjectId,
+      pageSize: 1,
+    })
+    return {
+      attributeKey: 'campaign.roas',
+      ruleIds: existingRules.items.map((rule) => rule.id),
+      ruleRunId: runs.items[0]?.id ?? null,
+      created: false,
+    }
+  }
+
+  const existingDef = await definitions.findAttributeDefinitionByKey(ctx, 'campaign.roas')
+  if (!existingDef) {
+    await definitions.createAttributeDefinition(ctx, {
+      key: 'campaign.roas',
+      label: 'Campaign ROAS',
+      type: AttributeType.NUMBER,
+      unit: 'ratio',
+      scope: AttributeScope.PROJECT,
+      source: AttributeSource.MANUAL,
+    })
+  }
+  await values.putAttributeValue(ctx, {
+    key: 'campaign.roas',
+    subjectType: AttributeSubjectType.PROJECT,
+    subjectId: input.activeProjectId,
+    value: 3.5,
+    source: AttributeSource.MANUAL,
+    ttlSec: 3600,
+  })
+
+  const limitRule = await rulesRepo.createRule(ctx, {
+    scope: { level: RuleScopeLevel.PROJECT, projectId: input.activeProjectId },
+    name: 'Member limits track remaining budget',
+    description: 'SEED — 10% of remaining budget (worked example C cousin)',
+    enabled: true,
+    priority: 50,
+    trigger: { events: ['budget.updated', 'attribute.updated'] },
+    when: { attr: 'project.budget.remaining', op: ConditionOperator.GT, value: 0 },
+    then: [
+      {
+        action: RuleActionType.CARD_SET_CONTROLS,
+        target: { select: RuleTargetSelect.PROJECT_CARDS, filter: { purpose: CardPurpose.MEMBER } },
+        params: {
+          transactionLimits: {
+            currency: SEED.orgBaseCurrency,
+            limits: [
+              {
+                interval: TransactionLimitInterval.MONTHLY,
+                amount: 'project.budget.remaining * 0.10',
+              },
+            ],
+          },
+        },
+      },
+    ],
+    createdBy: input.ownerId,
+  })
+  await rulesRepo.setRuleEnabled(ctx, limitRule.id, true)
+
+  const freezeRule = await rulesRepo.createRule(ctx, {
+    scope: { level: RuleScopeLevel.PROJECT, projectId: input.activeProjectId },
+    name: 'Freeze member cards when budget drops below 10%',
+    description: 'SEED — RULES-ENGINE §6 B',
+    enabled: true,
+    priority: 10,
+    trigger: { events: ['budget.updated'] },
+    when: {
+      attr: 'project.budget.utilisationPct',
+      op: ConditionOperator.CROSSED_ABOVE,
+      value: 90,
+    },
+    then: [
+      {
+        action: RuleActionType.CARD_FREEZE,
+        target: { select: RuleTargetSelect.PROJECT_CARDS, filter: { purpose: CardPurpose.MEMBER } },
+        params: { reason: 'Project budget below 10% remaining' },
+      },
+    ],
+    createdBy: input.ownerId,
+  })
+  await rulesRepo.setRuleEnabled(ctx, freezeRule.id, true)
+
+  const now = new Date()
+  const run = await runsRepo.createRuleRun(ctx, {
+    ruleId: limitRule.id,
+    triggeredBy: 'system',
+    triggeredByType: ActorType.SYSTEM,
+    triggerEvent: 'budget.updated',
+    inputs: [
+      {
+        key: 'project.budget.remaining',
+        subjectType: AttributeSubjectType.PROJECT,
+        subjectId: input.activeProjectId,
+        value: SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount,
+        observedAt: now.toISOString(),
+        ttlSec: null,
+        stale: false,
+      },
+    ],
+    matched: true,
+    desiredState: {
+      cards: [
+        {
+          cardId: input.cardId,
+          controls: {
+            transactionLimits: {
+              currency: SEED.orgBaseCurrency,
+              limits: [
+                {
+                  interval: TransactionLimitInterval.MONTHLY,
+                  amount: Math.trunc(
+                    (SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount) * 0.1,
+                  ),
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+    diff: {
+      cards: [
+        {
+          cardId: input.cardId,
+          before: { controls: null, cardStatus: null },
+          after: {
+            controls: {
+              transactionLimits: {
+                currency: SEED.orgBaseCurrency,
+                limits: [
+                  {
+                    interval: TransactionLimitInterval.MONTHLY,
+                    amount: Math.trunc(
+                      (SEED.budgetApprovedAmount + SEED.budgetAdjustmentAmount) * 0.1,
+                    ),
+                  },
+                ],
+              },
+            },
+            cardStatus: null,
+          },
+          changed: true,
+        },
+      ],
+    },
+    actions: [],
+    conflicts: [],
+    status: RuleRunStatus.SUCCESS,
+    durationMs: 12,
+    startedAt: now,
+    finishedAt: now,
+    projectId: input.activeProjectId,
+  })
+
+  return {
+    attributeKey: 'campaign.roas',
+    ruleIds: [limitRule.id, freezeRule.id],
+    ruleRunId: run.id,
+    created: true,
+  }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -767,7 +974,16 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
     `B5: card=${b5.cardId} individual=${b5.individualCardholderId} delegate=${b5.delegateCardholderId} created=${b5.created}`,
   )
 
-  // B6: await seedB6()
+  const b6 = await seedB6({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    activeProjectId: b2.activeId,
+    cardId: b5.cardId,
+  })
+  console.log(
+    `B6: attr=${b6.attributeKey} rules=${b6.ruleIds.length} run=${b6.ruleRunId} created=${b6.created}`,
+  )
+
   // B7: await seedB7()
   // B8: await seedB8()
   // B9: await seedB9()
