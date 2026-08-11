@@ -31,6 +31,8 @@ export const DomainEventType = {
   TRANSACTION_CLEARED: 'transaction.cleared',
   TRANSACTION_DECLINED: 'transaction.declined',
   TRANSACTION_REVERSED: 'transaction.reversed',
+  /** Enqueued after webhook HMAC accept — worker processes out of band. */
+  AIRWALLEX_WEBHOOK: 'airwallex.webhook',
   ATTRIBUTE_UPDATED: 'attribute.updated',
   RULE_EVALUATED: 'rule.evaluated',
   SCHEDULE_TICK: 'schedule.tick',

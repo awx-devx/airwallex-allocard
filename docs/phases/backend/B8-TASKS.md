@@ -69,7 +69,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.3 — Webhook HMAC + ingest
 
-- [ ] **B8.3** — Signature verify + `POST /api/webhooks/airwallex`
+- [x] **B8.3** — Signature verify + `POST /api/webhooks/airwallex`
   - **Files:** `src/server/services/webhooks/verify.ts`, `src/app/api/webhooks/airwallex/route.ts`, tests
   - **Do:** Four non-negotiables from the spec: HMAC raw body (`req.text()`), verify before `JSON.parse`, persist + `XADD` webhooks stream + `200` immediately, dedupe Redis `SET NX` + unique `eventId`. Sandbox test-event path uses payload `client-secret-key` header. Invalid sig → 400, persist nothing. Stale timestamp rejected.
   - **Pattern:** route-handler webhook exception in `.cursor/rules/route-handlers.mdc`; Redis `redisKeys.webhook`
