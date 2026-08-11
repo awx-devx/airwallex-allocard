@@ -156,6 +156,48 @@ export async function listRuleRuns(
   }
 }
 
+export type ListRuleRunsForFeedFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+  limit?: number
+}
+
+export type RuleRunFeedRow = {
+  run: RuleRun
+  projectId: string | null
+}
+
+/** Unpaginated newest-first slice for activity feed merge (B9.1). */
+export async function listRuleRunsForFeed(
+  ctx: OrgContext,
+  filter: ListRuleRunsForFeedFilter = {},
+): Promise<RuleRunFeedRow[]> {
+  const limit = filter.limit ?? 200
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const startedAt: Record<string, Date> = {}
+    if (filter.from !== undefined) startedAt.$gte = filter.from
+    if (filter.to !== undefined) startedAt.$lte = filter.to
+    query.startedAt = startedAt
+  }
+  const docs = await RuleRunModel.find(query)
+    .sort({ startedAt: -1, _id: -1 })
+    .limit(limit)
+    .lean()
+    .exec()
+  return docs.map((doc) => {
+    const raw = doc as Record<string, unknown>
+    return {
+      run: toRuleRun(doc),
+      projectId: raw.projectId == null ? null : String(raw.projectId),
+    }
+  })
+}
+
 /**
  * Most recent run for a rule — the previous-value source for `crossedAbove` /
  * `crossedBelow`. Optionally narrowed to one subject's runs.

@@ -178,6 +178,37 @@ export async function listTransactions(
   }
 }
 
+export type ListTransactionsForFeedFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+  limit?: number
+}
+
+/** Unpaginated newest-first slice for activity feed merge (B9.1). */
+export async function listTransactionsForFeed(
+  ctx: OrgContext,
+  filter: ListTransactionsForFeedFilter = {},
+): Promise<Transaction[]> {
+  const limit = filter.limit ?? 200
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const transactedAt: Record<string, Date> = {}
+    if (filter.from !== undefined) transactedAt.$gte = filter.from
+    if (filter.to !== undefined) transactedAt.$lte = filter.to
+    query.transactedAt = transactedAt
+  }
+  const docs = await TransactionModel.find(query)
+    .sort({ transactedAt: -1, _id: -1 })
+    .limit(limit)
+    .lean()
+    .exec()
+  return docs.map((doc) => toTransaction(doc))
+}
+
 export async function updateReceipt(
   ctx: OrgContext,
   id: string,

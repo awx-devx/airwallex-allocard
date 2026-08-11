@@ -226,6 +226,39 @@ export async function listPurchaseRequests(
   }
 }
 
+export type ListPurchaseRequestsForFeedFilter = {
+  projectId?: string
+  projectIds?: string[]
+  requestedBy?: string
+  from?: Date
+  to?: Date
+  limit?: number
+}
+
+/** Unpaginated newest-first slice for activity feed merge (B9.1). */
+export async function listPurchaseRequestsForFeed(
+  ctx: OrgContext,
+  filter: ListPurchaseRequestsForFeedFilter = {},
+): Promise<PurchaseRequest[]> {
+  const limit = filter.limit ?? 200
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.requestedBy !== undefined) query.requestedBy = filter.requestedBy
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const updatedAt: Record<string, Date> = {}
+    if (filter.from !== undefined) updatedAt.$gte = filter.from
+    if (filter.to !== undefined) updatedAt.$lte = filter.to
+    query.updatedAt = updatedAt
+  }
+  const docs = await PurchaseRequestModel.find(query)
+    .sort({ updatedAt: -1, _id: -1 })
+    .limit(limit)
+    .lean()
+    .exec()
+  return docs.map((doc) => toPurchaseRequest(doc))
+}
+
 /**
  * Approver queue: PENDING across the org, oldest first.
  * Optional excludeRequesterId drops the caller's own requests.

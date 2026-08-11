@@ -72,7 +72,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.1 — Activity feed service + HTTP
 
-- [ ] **B9.1** — Unified activity feed
+- [x] **B9.1** — Unified activity feed
   - **Files:**
     - `src/server/services/activity/feed.ts`
     - `src/app/api/activity/route.ts`
@@ -85,6 +85,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     4. Cross-org project → 404.
   - **Pattern:** `src/app/api/projects/[id]/requests/route.ts`, `src/shared/schemas/base.ts` cursor helpers
   - **Accept:** `pnpm test api/activity` — merge order; cursor stability; OWN filter; matrix rows that apply
+  - **Notes:** Feed merges transactions + purchaseRequests (+ embedded approvals) + auditLogs (`card.*` → CARD, `member.*` → ACCESS, residual → AUDIT) + ruleRuns. No new collection. Cursor = base64url `{ at, id }`.
 
 ### B9.2 — Audit query HTTP
 
