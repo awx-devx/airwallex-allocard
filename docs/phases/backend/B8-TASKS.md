@@ -61,7 +61,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.2 — Repositories
 
-- [ ] **B8.2** — WebhookEvent + Transaction repositories
+- [x] **B8.2** — WebhookEvent + Transaction repositories
   - **Files:** `src/server/repositories/webhookEvents.ts`, `src/server/repositories/transactions.ts`, tests
   - **Do:** `OrgContext` first on Transaction methods. `insertWebhookEvent` idempotent on `eventId` (duplicate → existing). `findByLifecycleId`, list/filter helpers for HTTP. Cross-org → null.
   - **Pattern:** `src/server/repositories/budgetEntries.ts`

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B8 — Webhooks, transactions & remote authorization
-**Active task:** B8.2 — WebhookEvent + Transaction repositories
-**Last green `pnpm verify`:** 2026-08-11 (B8.1)
+**Active task:** B8.3 — Signature verify + POST /api/webhooks/airwallex
+**Last green `pnpm verify`:** 2026-08-11 (B8.2)
 **Blocked on:** nothing
 
 ---
