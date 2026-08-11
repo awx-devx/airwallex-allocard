@@ -125,11 +125,11 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test api/rules`
   - **Notes:** Create defaults to `enabled: false`. Enable/disable does not bump `version`. Validate walks `when`/`then`/`else` formulas with the B6 dialect and returns `{ ok, errors[] }` without writing. Cross-org id → 404. Mutations audit `rule.created|updated|deleted|enabled|disabled`.
 
-- [ ] **B6.10** — Simulate + rule-runs + card explain endpoints
+- [x] **B6.10** — Simulate + rule-runs + card explain endpoints
   - **Files:** `src/app/api/rules/simulate/route.ts`, `src/app/api/rule-runs/**`, `src/app/api/cards/[id]/explain/route.ts`, tests
   - **Do:** Simulate dry-run. Rule-runs list/filter/get with enough detail for "why is my limit $X?". Explain: which rules govern the card, values used, how merge produced the number. `card.view` for explain; `control.edit` for runs/simulate.
   - **Accept:** `pnpm test api/rule-runs` and `pnpm test api/card-explain` and `pnpm test api/rules-simulate`
-  - **Notes:**
+  - **Notes:** Simulate returns `{ runs, cardDiffs, conflicts }` with zero writes. Explain re-runs the pure pipeline with `ignoreTrigger` for the card's project, re-merges contributions for that card alone (so multi-card explanations do not leak), and attaches `lastRuleRunId` from history. Attribute readings used by governing rules are projected into the `attributeValueSchema` shape with synthetic ids. Cross-org rule-run get → 404.
 
 - [ ] **B6.11** — Worker process (XREADGROUP consumers + debounce + SIGTERM)
   - **Files:** `src/worker/index.ts`, `consumers.ts`, `scheduler.ts`, `debounce.ts`, package.json scripts `dev:worker` / `worker`, tests
