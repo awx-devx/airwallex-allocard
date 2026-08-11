@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B8 — Webhooks, transactions & remote authorization
-**Active task:** B8 phase exit checklist (not started)
-**Last green `pnpm verify`:** 2026-08-11 (B8.10)
+**Active phase:** B9 — Activity, audit, reports & closure
+**Active task:** B9.0 — Schemas and contracts (stop for review after)
+**Last green `pnpm verify`:** 2026-08-11 (B8 phase exit)
 **Blocked on:** nothing
 
 ---
@@ -21,15 +21,15 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
-| B     | B8 Money in motion      | **in progress** | 11 / 11 |
-| B     | B9 Reporting & closure  | not started     | —       |
+| B     | B8 Money in motion      | **complete**    | 11 / 11 |
+| B     | B9 Reporting & closure  | **in progress** | 0 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0–B8 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B9 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,19 +60,22 @@ _None yet._
 
 ## Notes for the next session
 
-B8.6 simulator done. Active: **B8.7** — transaction HTTP API.
+B8 complete. Active: **B9.0** — activity/audit/export/report/closure contracts (policies locked below — implement B9.0 next).
 
-B8.0 locked policies (do not reopen):
+B9.0 locked policies (do not reopen):
 
-1. `WebhookEventStatus` = `RECEIVED | PROCESSED | FAILED`
-2. `TransactionType` = core trio + ledger subtypes (`PARTIAL_CLEARING`, `EXPIRED_AUTHORIZATION`, `CLEARING_REVERSAL`, …)
-3. `TransactionStatus` = card-transaction lifecycle (`AUTHORIZED | VERIFIED | CLEARED | REVERSED | EXPIRED | DECLINED`)
-4. `lifecycleId` required on Transaction
-5. Money boundary: remote-auth wire = Airwallex major floats; domain = minor ints — convert at boundary
-6. Fail-open: env config; `status_reason: policy_snapshot_unavailable`
-7. `transactionDetail.lifecycleEvents`; receipt upload `{ fileName, contentType, contentBase64 }`; simulator minor-unit input → same decide path
+1. Cursor = opaque `{ at, id }` base64url — never offset on feeds
+2. Export `output: z.void()` + streamed `text/csv`
+3. Separate `ProjectClosure` collection
+4. `CLOSING` only via `/closure/start`
+5. Org report single-currency totals; mixed-currency excluded from rollup
+6. Preflight fully blocking (`canStart` iff no blockers)
+7. Complete needs both confirm literals
+8. Access-review HTTP = B3; B9 = sweep only
 
-Read `docs/AIRWALLEX-INTEGRATION.md` and `docs/ARCHITECTURE.md` §5/§8/§10 before B8.1.
+B9 task file: `docs/phases/backend/B9-TASKS.md` (LOW tier).
+
+B8 locked policies (do not reopen): see B8.0 notes in B8-TASKS / prior STATUS notes.
 
 B7 locked policies (do not reopen):
 
@@ -85,12 +88,10 @@ B7 locked policies (do not reopen):
 
 B6 exit locked (do not reopen): see prior notes.
 
-B6.0 / B5 locked policies (do not reopen): see prior notes.
-
 Carried forward:
 
 - **`TODO(B7)`:** overview approval counts stub to 0 — clear when overview wires B7 queue count
-- **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance` — clear as B8 ships
+- **`TODO(B8)`:** transactions Airwallex stubs / funding balance — largely cleared as B8 shipped; residual stubs OK until live Airwallex
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A
 

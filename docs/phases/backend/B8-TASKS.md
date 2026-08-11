@@ -130,14 +130,14 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B8 endpoint
-- [ ] Raw-body HMAC verified before parse; 200 before processing
-- [ ] Dedup at Redis + unique index
-- [ ] `lifecycleId` on every ledger entry; releases find commitments
-- [ ] Out-of-order handling tested
-- [ ] Remote auth Redis-only; fail-open configurable and logged
-- [ ] Simulator and live share one handler
-- [ ] Spec's review checklist signed off
-- [ ] STATUS.md updated: active phase B9, generate B9-TASKS.md
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B8 endpoint
+- [x] Raw-body HMAC verified before parse; 200 before processing
+- [x] Dedup at Redis + unique index
+- [x] `lifecycleId` on every ledger entry; releases find commitments
+- [x] Out-of-order handling tested
+- [x] Remote auth Redis-only; fail-open configurable and logged
+- [x] Simulator and live share one handler
+- [x] Spec's review checklist signed off
+- [x] STATUS.md updated: active phase B9, generate B9-TASKS.md
