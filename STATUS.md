@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B8 — Webhooks, transactions & remote authorization
-**Active task:** B8.0 — Schemas and contracts (stop for review after)
-**Last green `pnpm verify`:** 2026-08-11 (B7 phase exit)
+**Active task:** B8.1 — WebhookEvent + Transaction models
+**Last green `pnpm verify`:** 2026-08-11 (B8.0)
 **Blocked on:** nothing
 
 ---
@@ -21,7 +21,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
-| B     | B8 Money in motion      | **in progress** | 0 / 11  |
+| B     | B8 Money in motion      | **in progress** | 1 / 11  |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
@@ -60,9 +60,19 @@ _None yet._
 
 ## Notes for the next session
 
-B7 complete. Active: **B8.0** — webhook/transaction/remote-auth contracts (STOP for review before implementing).
+B8.0 contracts reviewed and locked. Active: **B8.1** — WebhookEvent + Transaction models.
 
-Read `docs/AIRWALLEX-INTEGRATION.md` and `docs/ARCHITECTURE.md` §5/§8/§10 before B8.0.
+B8.0 locked policies (do not reopen):
+
+1. `WebhookEventStatus` = `RECEIVED | PROCESSED | FAILED`
+2. `TransactionType` = core trio + ledger subtypes (`PARTIAL_CLEARING`, `EXPIRED_AUTHORIZATION`, `CLEARING_REVERSAL`, …)
+3. `TransactionStatus` = card-transaction lifecycle (`AUTHORIZED | VERIFIED | CLEARED | REVERSED | EXPIRED | DECLINED`)
+4. `lifecycleId` required on Transaction
+5. Money boundary: remote-auth wire = Airwallex major floats; domain = minor ints — convert at boundary
+6. Fail-open: env config; `status_reason: policy_snapshot_unavailable`
+7. `transactionDetail.lifecycleEvents`; receipt upload `{ fileName, contentType, contentBase64 }`; simulator minor-unit input → same decide path
+
+Read `docs/AIRWALLEX-INTEGRATION.md` and `docs/ARCHITECTURE.md` §5/§8/§10 before B8.1.
 
 B7 locked policies (do not reopen):
 

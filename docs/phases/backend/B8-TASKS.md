@@ -10,13 +10,14 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ## Contracts first
 
-- [ ] **B8.0** — Schemas and contracts
+- [x] **B8.0** — Schemas and contracts
   - **Files:**
     - `src/shared/enums/webhookEventStatus.ts` — invent status set for ingest lifecycle (e.g. `RECEIVED | PROCESSED | FAILED`) — **STOP for review if unclear**
     - `src/shared/enums/transactionType.ts` — `AUTHORIZATION | CLEARING | REVERSAL_AUTH` (extend if integration docs add partial/refund types as domain enums)
     - `src/shared/enums/transactionStatus.ts` — mirror Airwallex statuses needed on the wire (inline from integration docs)
-    - `src/shared/schemas/webhookEvent.ts`, `src/shared/schemas/transaction.ts`
-    - `src/shared/types/webhookEvent.ts`, `src/shared/types/transaction.ts`
+    - `src/shared/enums/remoteAuthResponseStatus.ts` — `AUTHORIZED | DECLINED` (Airwallex `response_status`)
+    - `src/shared/schemas/webhookEvent.ts`, `src/shared/schemas/transaction.ts`, `src/shared/schemas/remoteAuth.ts`
+    - `src/shared/types/webhookEvent.ts`, `src/shared/types/transaction.ts`, `src/shared/types/remoteAuth.ts`
     - `src/shared/contracts/webhook.ts`, `src/shared/contracts/transaction.ts`, `src/shared/contracts/remoteAuth.ts` (split OK)
   - **Do:** Every endpoint in the spec's table gets a contract entry. Amounts = integer **minor units** + currency length 3. Inline:
     - `webhookEvent`: `id, eventId` (unique), `name`, `accountId` nullable, `payload` unknown/record, `receivedAt` ISO, `processedAt` nullable ISO, `status`, `attempts` int ≥ 0, `error` nullable string
@@ -38,6 +39,14 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
   - **Pattern:** `src/shared/contracts/card.ts`, `src/shared/schemas/budget.ts`
   - **STOP and get reviewed before implementing.** Highest-risk: ledger mapping table shapes, `lifecycleId` nullability, remote-auth fail-open config, webhook status enum, money major↔minor conversion boundary.
   - **Accept:** `pnpm typecheck`
+  - **Notes:** Locked in B8.0 (reviewed):
+    1. `WebhookEventStatus` = `RECEIVED | PROCESSED | FAILED` (ingest lifecycle only).
+    2. `TransactionType` extends the ARCHITECTURE trio with Airwallex subtypes needed for ledger mapping: `INCREMENTAL_AUTHORIZATION`, `PARTIAL_REVERSAL`, `PARTIAL_CLEARING`, `EXPIRED_AUTHORIZATION`, `CLEARING_REVERSAL`.
+    3. `TransactionStatus` mirrors card-transaction lifecycle statuses: `AUTHORIZED | VERIFIED | CLEARED | REVERSED | EXPIRED | DECLINED` (not legacy APPROVED/PENDING/FAILED).
+    4. `lifecycleId` is **required** (non-null) on Transaction; budget `lifecycleId` stays nullable until B8.4 writes it.
+    5. Money boundary: domain `transaction` amounts = integer minor units; `remoteAuthInput` keeps Airwallex **major-unit** floats on the wire — convert in decide/ingest (same as `controls.ts`). Never persist remote-auth floats.
+    6. Fail-open is env/config (not a schema field); missing/stale snapshot → `AUTHORIZED` + `status_reason: policy_snapshot_unavailable`, flag async.
+    7. Get-by-id returns `transactionDetail` = transaction + `lifecycleEvents[]`. Receipt upload = `{ fileName, contentType, contentBase64 }` (invented; B8.8 stores). Simulator input = minor-unit domain shape → same decide path.
 
 ## Implementation tasks
 

@@ -191,4 +191,26 @@ export type { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus
 export type { PolicyOutcome } from '@/shared/enums/policyOutcome'
 export type { ApprovalDecision } from '@/shared/enums/approvalDecision'
 export type { ApproverSelection } from '@/shared/enums/approverSelection'
+export type { WebhookEvent, AirwallexWebhookRawInput } from '@/shared/types/webhookEvent'
+export type {
+  Transaction,
+  TransactionDetail,
+  TransactionList,
+  TransactionMerchant,
+  ListTransactionsQuery,
+  ListProjectTransactionsQuery,
+  ListCardTransactionsQuery,
+  ListDeclinedTransactionsQuery,
+  UploadReceiptInput,
+} from '@/shared/types/transaction'
+export type {
+  RemoteAuthDecision,
+  RemoteAuthInput,
+  RemoteAuthMerchant,
+  SimulatePurchaseInput,
+} from '@/shared/types/remoteAuth'
+export type { WebhookEventStatus } from '@/shared/enums/webhookEventStatus'
+export type { TransactionType } from '@/shared/enums/transactionType'
+export type { TransactionStatus } from '@/shared/enums/transactionStatus'
+export type { RemoteAuthResponseStatus } from '@/shared/enums/remoteAuthResponseStatus'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'
