@@ -163,7 +163,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.4 — Pure `can()` + denial explanation
 
-- [ ] **F2.4** — `src/lib/permissions/can.ts`
+- [x] **F2.4** — `src/lib/permissions/can.ts`
   - **Files:**
     - `src/lib/permissions/can.ts`
     - `src/lib/permissions/can.test.ts`
@@ -187,7 +187,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
        - Build `MePermissions` rows manually: `{ projectId: 'p1', permissions: [Permission.CARD_MANAGE, ...], scope: { level: CARD, cardIds: ['card_x'] } }` then assert `can(...)` true/false.
   - **Pattern:** Pure module like F2.2; fixtures from `src/server/services/access/computeEffectivePermissions.test.ts` (F2.0 moved helpers). Me shape from `src/shared/schemas/mePermissions.ts`. F1 data loader remains `usePermissions` in `src/client/hooks/useSession.ts`.
   - **Accept:** `pnpm test lib/permissions`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** B3 scope fixtures ported; reasons optional. `pnpm verify` green.
 
 ### F2.5 — `useCan` + permission wrappers
 
