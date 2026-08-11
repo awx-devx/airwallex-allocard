@@ -3,33 +3,33 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F0 — Client foundation
-**Active task:** F0.0 reviewed — awaiting approval before F0.1
-**Last green `pnpm verify`:** 2026-08-12 (F0.0: typecheck + `http/errors`)
-**Blocked on:** F0.0 contract review (shared error envelope)
+**Active task:** Phase exit (F0.0–F0.16 complete — stop before exit checklist)
+**Last green `pnpm verify`:** 2026-08-12 (F0.16)
+**Blocked on:** nothing
 
 ---
 
 ## Progress
 
-| Track | Phase                   | Status          | Tasks   |
-| ----- | ----------------------- | --------------- | ------- |
-| B     | B0 Foundation           | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations | **complete**    | 15 / 15 |
-| B     | B2 Projects             | **complete**    | 12 / 12 |
-| B     | B3 Access control       | **complete**    | 14 / 14 |
-| B     | B4 Budget               | **complete**    | 16 / 16 |
-| B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **complete**    | 11 / 11 |
-| B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **complete**    | 11 / 11 |
-| F     | F0 Client foundation    | **in progress** | 1 / 17  |
-| F     | F1 Data layer           | not started     | —       |
-| F     | F2 Utils                | not started     | —       |
-| F     | F3 UI library           | not started     | —       |
-| A     | A1–A9 Application       | not started     | —       |
+| Track | Phase                   | Status          | Tasks    |
+| ----- | ----------------------- | --------------- | -------- |
+| B     | B0 Foundation           | **complete**    | 13 / 13  |
+| B     | B1 Auth & organisations | **complete**    | 15 / 15  |
+| B     | B2 Projects             | **complete**    | 12 / 12  |
+| B     | B3 Access control       | **complete**    | 14 / 14  |
+| B     | B4 Budget               | **complete**    | 16 / 16  |
+| B     | B5 Cards                | **complete**    | 15 / 15  |
+| B     | B6 Rules engine         | **complete**    | 15 / 15  |
+| B     | B7 Requests & approvals | **complete**    | 11 / 11  |
+| B     | B8 Money in motion      | **complete**    | 11 / 11  |
+| B     | B9 Reporting & closure  | **complete**    | 11 / 11  |
+| F     | F0 Client foundation    | **in progress** | 17 / 17* |
+| F     | F1 Data layer           | not started     | —        |
+| F     | F2 Utils                | not started     | —        |
+| F     | F3 UI library           | not started     | —        |
+| A     | A1–A9 Application       | not started     | —        |
 
-Task files are generated at the start of each phase. `F0-TASKS.md` exists. Generate the next phase's `-TASKS.md` from its spec when you reach it.
+\* F0.0–F0.16 implementation tasks complete; phase exit checklist not yet signed off.
 
 ---
 
@@ -60,14 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F0 in progress.** F0.0 (shared `errorEnvelopeSchema`) done — **stop for review** before F0.1.
+**F0 implementation complete (F0.0–F0.16).** Next: run **phase exit** checklist in `F0-TASKS.md` + review checklist in `F0-foundation.md` when asked. Then generate `F1-TASKS.md`.
 
-F0.0 locked shape:
-
-- `errorEnvelopeSchema`: `{ error: { code: ErrorCode, message: string min 1, details?: unknown } }`
-- Server still owns status mapping + `AppError` constructors; client will parse the same Zod schema in F0.2+
-
-B9 phase exit (2026-08-12): matrices completed for all B9 endpoints; `card.close` gated by `allowDestructive` (pipeline SKIPPED without flag; apply refuses CLOSED unless `allowDestructiveClose`); review + phase-exit checklists signed off.
+F0 delivered: shared `errorEnvelopeSchema`, typed `call()`, `ApiError` + behaviour map, QueryClient/providers, active org, server route guards, `(auth)/(onboarding)/(app)` groups, app shell slots, state primitives, `/dev/shell`, ESLint no-fetch/boundary proofs, me smoke test.
 
 B9.0 locked policies (do not reopen):
 
