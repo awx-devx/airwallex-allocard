@@ -284,7 +284,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.8 — Rules helpers (sentence + labels + highlighter)
 
-- [ ] **F2.8** — Rule DSL display helpers (no parser)
+- [x] **F2.8** — Rule DSL display helpers (no parser)
   - **Files:**
     - `src/lib/rules/operators.ts`
     - `src/lib/rules/operators.test.ts`
@@ -314,7 +314,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
        - Must **not** evaluate or import `src/server/lib/formula/*`.
   - **Pattern:** Enum exhaustiveness like F2.7 status maps; rule shapes from `src/shared/schemas/rule.ts`. F1 validation hooks stay the authority (`src/client/hooks/useRules.ts` — `useValidateRule` / `useValidateFormula`).
   - **Accept:** `pnpm test lib/rules`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Display-only sentence + formula highlighter; every operator/action covered. `pnpm verify` green.
 
 ### F2.9 — Misc hooks & pagination helpers
 
