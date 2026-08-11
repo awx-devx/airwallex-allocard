@@ -158,7 +158,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.10 — Route guards
 
-- [ ] **F0.10** — Server-side route guard helpers
+- [x] **F0.10** — Server-side route guard helpers
   - **Files:** `src/app/_lib/guards.ts`, `src/app/_lib/guards.test.ts`
   - **Do:** Server-only helpers used by layouts (this file may import `@/server/auth`). **A client redirect is not a guard.**
     - `GuardResult` = `{ ok: true; session: /* non-null auth session */ }` | `{ ok: false; redirectTo: string }`
@@ -170,11 +170,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     - Return paths: when redirecting anonymous users from `requireApp`, use `returnTo` only if the current path is a safe relative path (same rules as F0.5).
   - **Pattern:** `src/server/auth/index.ts` (`auth`) + onboarding rules in `src/server/auth/session.ts` + B1.4 notes
   - **Accept:** `pnpm test app/_lib/guards` — mock `auth()`; cover anonymous / onboarded / not-onboarded matrix for all three helpers
-  - **Notes:**
+  - **Notes:** `requireAnonymous` / `requireOnboarding` / `requireApp`; safe `returnTo`.
 
 ### F0.11 — Route groups
 
-- [ ] **F0.11** — Route groups + layouts
+- [x] **F0.11** — Route groups + layouts
   - **Files:**
     - `src/app/(auth)/layout.tsx`
     - `src/app/(auth)/sign-in/page.tsx`
@@ -191,11 +191,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     4. Placeholder pages: minimal text `"A1: sign-in"`, `"A1: sign-up"`, `"A1: onboarding"`, `"A2: dashboard"` — **no product UI**.
   - **Pattern:** route groups from F0 spec; `redirect` from `next/navigation`; guards from F0.10
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:**
+  - **Notes:** Route groups + placeholder pages; `/` redirects to `/dashboard`.
 
 ### F0.12 — App shell
 
-- [ ] **F0.12** — App shell (slots only)
+- [x] **F0.12** — App shell (slots only)
   - **Files:**
     - `src/client/shell/AppShell.tsx`
     - `src/client/shell/SideNav.tsx`
@@ -213,11 +213,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     7. Wire `AppShell` into `(app)/layout.tsx`. Prefer **mocked** props from a `mockShellData` constant so the shell works without DB. Real `call(authContracts.me)` waits for F1 `useSession`.
   - **Pattern:** `meResponseSchema` fields in `src/shared/schemas/auth.ts` / B1.0; `approvalsCountSchema` in `src/shared/schemas/purchaseRequest.ts`; architecture tree `client/` + shell description in F0 spec
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** Slots with `mockShellData`; ApprovalsBadge hides at 0.
 
 ### F0.13 — State conventions
 
-- [ ] **F0.13** — State convention primitives
+- [x] **F0.13** — State convention primitives
   - **Files:**
     - `src/client/states/types.ts`
     - `src/client/states/LoadingState.tsx`
@@ -231,11 +231,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     4. `PartialState`: props `{ children: ReactNode; observedAt: string /* iso datetime */; staleAfterMs?: number }` — when `Date.now() - Date.parse(observedAt) > (staleAfterMs ?? 15 * 60_000)`, show subtle “Updated {relative}” indicator; still render children. For attribute values carrying `observedAt` (`attributeValueSchema.observedAt: isoDateSchema` in `src/shared/schemas/attribute.ts`).
   - **Pattern:** F0 “State conventions” section; `observedAt` on `attributeValueSchema` in `src/shared/schemas/attribute.ts`
   - **Accept:** `pnpm typecheck`
-  - **Notes:**
+  - **Notes:** Loading/Empty/Error/Partial; stale default 15m.
 
 ### F0.14 — Dev shell gallery
 
-- [ ] **F0.14** — Dev shell gallery (all states)
+- [x] **F0.14** — Dev shell gallery (all states)
   - **Files:** `src/app/dev/shell/page.tsx`, `src/app/dev/shell/layout.tsx`
   - **Do:**
     1. Available only when `process.env.NODE_ENV !== 'production'` — in production layout `notFound()`.
@@ -243,11 +243,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     3. No auth guard required (dev only), but do not import `@/server/*` secrets.
   - **Pattern:** F3 kitchen-sink idea (`/dev/ui` in F3 spec) — this is the F0 equivalent for shell/states
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:**
+  - **Notes:** `/dev/shell` gallery; `notFound()` in production.
 
 ### F0.15 — ESLint boundary proofs
 
-- [ ] **F0.15** — ESLint boundary proof + no raw `fetch` in client UI
+- [x] **F0.15** — ESLint boundary proof + no raw `fetch` in client UI
   - **Files:** `eslint.config.mjs` (extend), temporary proof files deleted after
   - **Do:**
     1. Confirm existing rule: `src/client/**` cannot import `@/server/*` (B0.2). Add a temporary `src/client/_boundary_proof.ts` importing `@/server/env` — `pnpm lint` must fail. Delete the file.
@@ -255,11 +255,11 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     3. Prove a forbidden `fetch` in `src/client/shell/_fetch_proof.ts` fails lint; delete after.
   - **Pattern:** B0.2 in `docs/phases/backend/B0-TASKS.md` + `eslint.config.mjs`
   - **Accept:** Proof failures observed; proofs deleted; `pnpm lint` green afterward
-  - **Notes:**
+  - **Notes:** Boundary + no-fetch proofs observed then deleted; `no-restricted-syntax` on shell/states/(app).
 
 ### F0.16 — Me smoke test
 
-- [ ] **F0.16** — Integration smoke: `call(authContracts.me)` against test harness
+- [x] **F0.16** — Integration smoke: `call(authContracts.me)` against test harness
   - **Files:** `src/client/api/me.integration.test.ts` (or `test/client/me-call.test.ts`)
   - **Do:** Using existing API test helpers (`test/helpers/request.ts`, auth factories from B1), hit `GET /api/me` through the real route handler **and** assert the JSON parses with `meResponseSchema`. Separately assert `call(authContracts.me, { orgId })` builds the right request (mock fetch) — already partly in F0.4; here assert `output` matches `meResponseSchema` fields:
     - `user`: `id, email, name, image?, defaultOrgId?, createdAt`
@@ -268,7 +268,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     - `onboarded`: `boolean`
   - **Pattern:** `src/shared/contracts/auth.ts` + `pnpm test api/me` style from B1.6 + `test/helpers/contract.ts` `expectMatchesContract`
   - **Accept:** `pnpm test client/api/me` (or the path you chose)
-  - **Notes:**
+  - **Notes:** `test/client/me-call.test.ts` — route + `call(authContracts.me)` smoke.
 
 ## Phase exit
 
