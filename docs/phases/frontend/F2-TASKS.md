@@ -217,7 +217,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.6 — Forms: Zod RHF + server errors + dirty guard
 
-- [ ] **F2.6** — `useZodForm` + `applyServerErrors` + unsaved-changes guard
+- [x] **F2.6** — `useZodForm` + `applyServerErrors` + unsaved-changes guard
   - **Files:**
     - `src/client/lib/forms/useZodForm.ts`
     - `src/client/lib/forms/useZodForm.test.ts`
@@ -243,7 +243,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     4. Barrel `src/client/lib/forms/index.ts`.
   - **Pattern:** F0.5 `src/client/api/errorBehaviour.ts` for fieldErrors parsing; F2.1 deps; schema source `src/shared/schemas/project.ts` (`createProjectInput`). Hook file style `src/client/hooks/useCall.ts` (F1.1).
   - **Accept:** `pnpm test client/lib/forms`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** createZodFormConfig + syncBeforeUnload for tests; Zod 4 resolver cast `as never`. `pnpm verify` green.
 
 ### F2.7 — Formatting & display helpers
 
