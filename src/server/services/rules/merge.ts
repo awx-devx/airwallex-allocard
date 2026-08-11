@@ -55,6 +55,8 @@ export type CardContribution = {
   cardId: string
   controls?: ContributedControls
   cardStatus?: DesiredCardStatus
+  /** True when this contribution's card.close carried allowDestructive. */
+  allowDestructive?: boolean
 }
 
 export type MergeResult = {
@@ -368,6 +370,12 @@ export function mergeContributions(contributions: readonly CardContribution[]): 
     }
     if (cardStatus !== undefined) {
       state.cardStatus = cardStatus
+      if (cardStatus === DesiredCardStatus.CLOSED) {
+        // Close only when at least one CLOSED contribution opted in.
+        state.allowDestructiveClose = forCard.some(
+          (c) => c.cardStatus === DesiredCardStatus.CLOSED && c.allowDestructive === true,
+        )
+      }
     }
     cards.push(state)
   }

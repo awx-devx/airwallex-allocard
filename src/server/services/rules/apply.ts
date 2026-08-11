@@ -139,11 +139,19 @@ async function applyStatus(
   desired: DesiredCardStatus,
   current: CardStatus,
   deps: ApplyDeps,
+  options: { allowDestructiveClose?: boolean } = {},
 ): Promise<void> {
   if (desired === DesiredCardStatus.CLOSED) {
-    if (current !== CardStatus.CLOSED) {
-      await closeCard(ctx, cardId, { confirm: true }, deps)
+    if (current === CardStatus.CLOSED) {
+      return
     }
+    // Belt-and-suspenders: never push CLOSED from rules without the flag.
+    if (options.allowDestructiveClose !== true) {
+      throw AppError.conflict(
+        'card.close requires allowDestructive: true (refusing to close from rules)',
+      )
+    }
+    await closeCard(ctx, cardId, { confirm: true }, deps)
     return
   }
   if (desired === DesiredCardStatus.INACTIVE) {
@@ -216,7 +224,9 @@ export async function applyCard(
 
   try {
     if (desired.cardStatus) {
-      await applyStatus(ctx, desired.cardId, desired.cardStatus, card.status, deps)
+      await applyStatus(ctx, desired.cardId, desired.cardStatus, card.status, deps, {
+        allowDestructiveClose: desired.allowDestructiveClose === true,
+      })
     }
     if (desired.controls) {
       await reconcileCard(ctx, desired.cardId, deps)

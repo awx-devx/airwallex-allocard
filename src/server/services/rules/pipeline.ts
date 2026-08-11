@@ -314,6 +314,19 @@ function applyAction(
     return
   }
 
+  // Terminal close — require allowDestructive (AIRWALLEX-INTEGRATION / B9).
+  if (action.action === RuleActionType.CARD_CLOSE && action.params.allowDestructive !== true) {
+    for (const cardId of target.cardIds) {
+      results.push({
+        action: action.action,
+        targetId: cardId,
+        status: ActionResultStatus.SKIPPED,
+        message: 'card.close requires allowDestructive: true (use project closure or set the flag)',
+      })
+    }
+    return
+  }
+
   const status = STATUS_ACTIONS[action.action]
   const controls =
     action.action === RuleActionType.CARD_SET_CONTROLS
@@ -328,6 +341,7 @@ function applyAction(
       cardId,
       ...(controls ? { controls } : {}),
       ...(status ? { cardStatus: status } : {}),
+      ...(action.action === RuleActionType.CARD_CLOSE ? { allowDestructive: true } : {}),
     })
     results.push({
       action: action.action,

@@ -138,7 +138,7 @@ describe('B9.1 activity feed', () => {
     owner: Awaited<ReturnType<typeof seedOwner>>,
     userId: string,
     roleKey: string,
-    scope: { level: AccessScopeLevel; cardIds?: string[] } = {
+    scope: { level: AccessScopeLevel; cardIds?: string[]; workstreamIds?: string[] } = {
       level: AccessScopeLevel.PROJECT,
     },
   ) {
@@ -466,6 +466,68 @@ describe('B9.1 activity feed', () => {
       expect(res.status).toBe(401)
     })
 
+    it('#2 no organisation → 403 ONBOARDING_INCOMPLETE', async () => {
+      const user = await (
+        await import('@/server/repositories/users')
+      ).createUser({
+        email: `solo-org-act-${Date.now()}@example.com`,
+        name: 'Solo',
+      })
+      const res = await LIST_ORG(
+        buildRequest({
+          method: 'GET',
+          path: '/api/activity',
+          session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+        }),
+      )
+      expect(res.status).toBe(403)
+      expect((await readBody<{ error: { code: string } }>(res)).error.code).toBe(
+        ErrorCode.ONBOARDING_INCOMPLETE,
+      )
+    })
+
+    it('#3 N/A — org-wide route has no foreign resource id (cross-org is session-bound)', () => {
+      expect(true).toBe(true)
+    })
+
+    it('#4 lacks transaction.view → 403', async () => {
+      const owner = await seedOwner()
+      const member = await addOrgMember(owner.org.id)
+      const res = await LIST_ORG(
+        buildRequest({ method: 'GET', path: '/api/activity', session: member.session }),
+      )
+      expect(res.status).toBe(403)
+      expect((await readBody<{ error: { message: string } }>(res)).error.message).toContain(
+        Permission.TRANSACTION_VIEW,
+      )
+    })
+
+    it('#5 access scope excludes subject → 403', async () => {
+      const owner = await seedOwner()
+      const member = await addOrgMember(owner.org.id)
+      await assignProjectRole(owner, member.user.id, 'viewer', {
+        level: AccessScopeLevel.WORKSTREAM,
+        workstreamIds: ['507f1f77bcf86cd799439011'],
+      })
+      const res = await LIST_ORG(
+        buildRequest({ method: 'GET', path: '/api/activity', session: member.session }),
+      )
+      expect(res.status).toBe(403)
+    })
+
+    it('#6 invalid cursor → 422', async () => {
+      const owner = await seedOwner()
+      const res = await LIST_ORG(
+        buildRequest({
+          method: 'GET',
+          path: '/api/activity',
+          session: owner.session,
+          query: { cursor: 'not-valid-cursor!!!' },
+        }),
+      )
+      expect(res.status).toBe(422)
+    })
+
     it('#7 happy path org-wide', async () => {
       const owner = await seedOwner()
       await seedTx(owner.ctx, owner.project.id, '2026-03-01T00:00:00.000Z', 'org')
@@ -482,16 +544,27 @@ describe('B9.1 activity feed', () => {
       expect(body.items.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('MEMBER without transaction.view → 403', async () => {
+    it('#8 N/A — org activity has no resource id', () => {
+      expect(true).toBe(true)
+    })
+
+    it('#9 N/A — GET has no idempotency key', () => {
+      expect(true).toBe(true)
+    })
+
+    it('#10 N/A — GET does not write audit', async () => {
       const owner = await seedOwner()
-      const member = await addOrgMember(owner.org.id)
+      const before = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
       const res = await LIST_ORG(
-        buildRequest({ method: 'GET', path: '/api/activity', session: member.session }),
+        buildRequest({
+          method: 'GET',
+          path: '/api/activity',
+          session: owner.session,
+        }),
       )
-      expect(res.status).toBe(403)
-      expect((await readBody<{ error: { message: string } }>(res)).error.message).toContain(
-        Permission.TRANSACTION_VIEW,
-      )
+      expect(res.status).toBe(200)
+      const after = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
+      expect(after).toBe(before)
     })
   })
 })

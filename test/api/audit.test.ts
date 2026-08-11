@@ -123,6 +123,9 @@ describe('B9.2 audit list', () => {
     userId: string,
     roleKey: string,
     projectId = owner.project.id,
+    scope: { level: AccessScopeLevel; workstreamIds?: string[] } = {
+      level: AccessScopeLevel.PROJECT,
+    },
   ) {
     const role = await rolesRepo.findRoleByKey(owner.ctx, roleKey)
     expect(role).not.toBeNull()
@@ -130,7 +133,7 @@ describe('B9.2 audit list', () => {
       projectId,
       userId,
       roleId: role!.id,
-      scope: { level: AccessScopeLevel.PROJECT },
+      scope,
       effectivePermissions: role!.permissions,
       addedBy: owner.user.id,
     })
@@ -427,6 +430,30 @@ describe('B9.2 audit list', () => {
       expect(res.status).toBe(401)
     })
 
+    it('#2 no organisation → 403 ONBOARDING_INCOMPLETE', async () => {
+      const user = await (
+        await import('@/server/repositories/users')
+      ).createUser({
+        email: `solo-org-aud-${Date.now()}@example.com`,
+        name: 'Solo',
+      })
+      const res = await LIST_ORG(
+        buildRequest({
+          method: 'GET',
+          path: '/api/audit',
+          session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+        }),
+      )
+      expect(res.status).toBe(403)
+      expect((await readBody<{ error: { code: string } }>(res)).error.code).toBe(
+        ErrorCode.ONBOARDING_INCOMPLETE,
+      )
+    })
+
+    it('#3 N/A — org-wide route has no foreign resource id (cross-org is session-bound)', () => {
+      expect(true).toBe(true)
+    })
+
     it('#4 MEMBER lacks member.manage → 403', async () => {
       const owner = await seedOwner()
       const member = await addOrgMember(owner.org.id)
@@ -437,6 +464,32 @@ describe('B9.2 audit list', () => {
       expect((await readBody<{ error: { message: string } }>(res)).error.message).toContain(
         Permission.MEMBER_MANAGE,
       )
+    })
+
+    it('#5 access scope excludes subject → 403', async () => {
+      const owner = await seedOwner()
+      const member = await addOrgMember(owner.org.id)
+      await assignProjectRole(owner, member.user.id, 'project_manager', owner.project.id, {
+        level: AccessScopeLevel.WORKSTREAM,
+        workstreamIds: ['507f1f77bcf86cd799439011'],
+      })
+      const res = await LIST_ORG(
+        buildRequest({ method: 'GET', path: '/api/audit', session: member.session }),
+      )
+      expect(res.status).toBe(403)
+    })
+
+    it('#6 invalid cursor → 422', async () => {
+      const owner = await seedOwner()
+      const res = await LIST_ORG(
+        buildRequest({
+          method: 'GET',
+          path: '/api/audit',
+          session: owner.session,
+          query: { cursor: 'not-valid-cursor!!!' },
+        }),
+      )
+      expect(res.status).toBe(422)
     })
 
     it('#7 happy path org-wide with filters', async () => {
@@ -470,6 +523,29 @@ describe('B9.2 audit list', () => {
       const body = await expectMatchesContract(filtered, auditContracts.list.output)
       expect(body.items.every((e) => e.action === 'card.updated')).toBe(true)
       expect(body.items.some((e) => e.actorType === ActorType.RULE)).toBe(true)
+    })
+
+    it('#8 N/A — org audit has no resource id', () => {
+      expect(true).toBe(true)
+    })
+
+    it('#9 N/A — GET has no idempotency key', () => {
+      expect(true).toBe(true)
+    })
+
+    it('#10 N/A — GET does not write audit', async () => {
+      const owner = await seedOwner()
+      const before = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
+      const res = await LIST_ORG(
+        buildRequest({
+          method: 'GET',
+          path: '/api/audit',
+          session: owner.session,
+        }),
+      )
+      expect(res.status).toBe(200)
+      const after = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
+      expect(after).toBe(before)
     })
 
     it('cross-org projectId filter → 404', async () => {

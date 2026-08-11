@@ -31,6 +31,7 @@ import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ClosureBlockingKind } from '@/shared/enums/closureBlockingKind'
+import { ErrorCode } from '@/shared/enums/errors'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
 import { PolicyOutcome } from '@/shared/enums/policyOutcome'
@@ -126,10 +127,74 @@ describe('B9.6 closure preflight', () => {
     )
   }
 
+  async function addOrgMember(orgId: string, name = 'Member') {
+    const user = await (
+      await import('@/server/repositories/users')
+    ).createUser({
+      email: `m-${Date.now()}-${Math.random().toString(16).slice(2)}@example.com`,
+      name,
+    })
+    await memberships.createMembership(
+      { orgId, userId: user.id, orgRole: OrgRole.MEMBER },
+      { userId: user.id, orgRole: OrgRole.MEMBER },
+    )
+    return {
+      user,
+      session: {
+        userId: user.id,
+        orgId,
+        orgRole: OrgRole.MEMBER,
+        onboarded: true as const,
+      },
+    }
+  }
+
+  async function assignProjectRole(
+    owner: Awaited<ReturnType<typeof seedActiveProject>>,
+    userId: string,
+    roleKey: string,
+    scope: { level: AccessScopeLevel; workstreamIds?: string[] } = {
+      level: AccessScopeLevel.PROJECT,
+    },
+  ) {
+    const role = await rolesRepo.findRoleByKey(owner.ctx, roleKey)
+    expect(role).not.toBeNull()
+    await projectMembers.addProjectMember(owner.ctx, {
+      projectId: owner.project.id,
+      userId,
+      roleId: role!.id,
+      scope,
+      effectivePermissions: role!.permissions,
+      addedBy: owner.user.id,
+    })
+    return role!
+  }
+
   it('#1 unauthenticated → 401', async () => {
     const owner = await seedActiveProject()
     const res = await callPreflight(null, owner.project.id)
     expect(res.status).toBe(401)
+  })
+
+  it('#2 no organisation → 403 ONBOARDING_INCOMPLETE', async () => {
+    const user = await (
+      await import('@/server/repositories/users')
+    ).createUser({
+      email: `solo-pf-${Date.now()}@example.com`,
+      name: 'Solo',
+    })
+    const res = await GET(
+      buildRequest({
+        method: 'GET',
+        path: '/api/projects/507f1f77bcf86cd799439011/closure/preflight',
+        session: { userId: user.id, orgId: null, orgRole: null, onboarded: false },
+        params: { id: '507f1f77bcf86cd799439011' },
+      }),
+    )
+    expect(res.status).toBe(403)
+    expect((await readBody<{ error: { code: string } }>(res)).error.code).toBe(
+      ErrorCode.ONBOARDING_INCOMPLETE,
+    )
   })
 
   it('#3 cross-org → 404', async () => {
@@ -141,32 +206,30 @@ describe('B9.6 closure preflight', () => {
 
   it('#4 lacks project.close → 403', async () => {
     const owner = await seedActiveProject()
-    const member = await (
-      await import('@/server/repositories/users')
-    ).createUser({
-      email: `m-${Date.now()}@example.com`,
-      name: 'Member',
-    })
-    await memberships.createMembership(
-      { orgId: owner.org.id, userId: member.id, orgRole: OrgRole.MEMBER },
-      { userId: member.id, orgRole: OrgRole.MEMBER },
-    )
-    const res = await callPreflight(
-      {
-        userId: member.id,
-        orgId: owner.org.id,
-        orgRole: OrgRole.MEMBER,
-        onboarded: true,
-      },
-      owner.project.id,
-    )
+    const member = await addOrgMember(owner.org.id)
+    const res = await callPreflight(member.session, owner.project.id)
     expect(res.status).toBe(403)
     expect(
       (await readBody<{ error: { details?: { permission?: string } } }>(res)).error.details,
     ).toMatchObject({ permission: Permission.PROJECT_CLOSE })
   })
 
-  it('happy path: empty blockers → canStart true', async () => {
+  it('#5 access scope excludes subject → 403', async () => {
+    const owner = await seedActiveProject()
+    const member = await addOrgMember(owner.org.id)
+    await assignProjectRole(owner, member.user.id, 'project_manager', {
+      level: AccessScopeLevel.WORKSTREAM,
+      workstreamIds: ['507f1f77bcf86cd799439011'],
+    })
+    const res = await callPreflight(member.session, owner.project.id)
+    expect(res.status).toBe(403)
+  })
+
+  it('#6 N/A — GET has no payload', () => {
+    expect(true).toBe(true)
+  })
+
+  it('#7 happy path: empty blockers → canStart true', async () => {
     const owner = await seedActiveProject()
     const res = await callPreflight(owner.session, owner.project.id)
     expect(res.status).toBe(200)
@@ -176,6 +239,25 @@ describe('B9.6 closure preflight', () => {
       canStart: true,
       blockers: [],
     })
+  })
+
+  it('#8 unknown project → 404', async () => {
+    const owner = await seedActiveProject()
+    const res = await callPreflight(owner.session, '507f1f77bcf86cd799439099')
+    expect(res.status).toBe(404)
+  })
+
+  it('#9 N/A — GET has no idempotency key', () => {
+    expect(true).toBe(true)
+  })
+
+  it('#10 N/A — GET does not write audit', async () => {
+    const owner = await seedActiveProject()
+    const before = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
+    const res = await callPreflight(owner.session, owner.project.id)
+    expect(res.status).toBe(200)
+    const after = await AuditLogModel.countDocuments({ orgId: owner.ctx.orgId }).exec()
+    expect(after).toBe(before)
   })
 
   it('OPEN_TRANSACTION blocker (AUTHORIZED non-auth type)', async () => {

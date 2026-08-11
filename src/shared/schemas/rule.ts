@@ -190,6 +190,11 @@ export const ruleControlsParamsSchema = z.object({
   template: z.string().min(1).max(120).optional(),
   recompute: z.boolean().optional(),
   when: z.string().min(1).max(500).optional(),
+  /**
+   * Required for `card.close` (terminal). Without this flag the pipeline skips
+   * the close and apply never pushes CLOSED — AIRWALLEX-INTEGRATION / B9 lock.
+   */
+  allowDestructive: z.boolean().optional(),
 })
 
 export const ruleActionSchema = z.object({

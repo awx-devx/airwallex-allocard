@@ -231,6 +231,45 @@ describe('rules/apply', () => {
       expect((await findCardById(orgCtx, card.id))?.status).toBe(CardStatus.INACTIVE)
     })
 
+    it('refuses CLOSED without allowDestructiveClose (B9 / Airwallex lock)', async () => {
+      const orgCtx = ctx()
+      const card = await seedCard(orgCtx)
+      const update = vi.fn().mockResolvedValue({})
+
+      const outcome = await applyCard(
+        orgCtx,
+        { cardId: card.id, cardStatus: DesiredCardStatus.CLOSED },
+        { attributeValues, now: NOW },
+        { airwallex: mockClient(update) },
+      )
+
+      expect(outcome.status).toBe(ActionResultStatus.FAILED)
+      expect(outcome.message).toMatch(/allowDestructive/)
+      expect((await findCardById(orgCtx, card.id))?.status).toBe(CardStatus.ACTIVE)
+      expect(update).not.toHaveBeenCalled()
+    })
+
+    it('closes a card when allowDestructiveClose is true', async () => {
+      const orgCtx = ctx()
+      const card = await seedCard(orgCtx)
+      const update = vi.fn().mockResolvedValue({})
+
+      const outcome = await applyCard(
+        orgCtx,
+        {
+          cardId: card.id,
+          cardStatus: DesiredCardStatus.CLOSED,
+          allowDestructiveClose: true,
+        },
+        { attributeValues, now: NOW },
+        { airwallex: mockClient(update) },
+      )
+
+      expect(outcome.status).toBe(ActionResultStatus.APPLIED)
+      expect((await findCardById(orgCtx, card.id))?.status).toBe(CardStatus.CLOSED)
+      expect(update).toHaveBeenCalled()
+    })
+
     it('returns a failure instead of throwing for a card in another org', async () => {
       const orgCtx = ctx()
       const card = await seedCard(orgCtx)

@@ -259,6 +259,51 @@ describe('rules/pipeline', () => {
       expect(result.desiredState.cards[0]?.cardStatus).toBe(DesiredCardStatus.INACTIVE)
     })
 
+    it('skips card.close without allowDestructive and does not contribute CLOSED', () => {
+      const result = runPipeline(
+        pipelineInput({
+          rules: [
+            rule({
+              then: [
+                {
+                  action: RuleActionType.CARD_CLOSE,
+                  target: { select: RuleTargetSelect.PROJECT_CARDS },
+                  params: {},
+                },
+              ],
+            }),
+          ],
+        }),
+      )
+      const action = result.outcomes[0]?.actions[0]
+      expect(action?.status).toBe(ActionResultStatus.SKIPPED)
+      expect(action?.message).toMatch(/allowDestructive/)
+      expect(result.desiredState.cards.some((c) => c.cardStatus === DesiredCardStatus.CLOSED)).toBe(
+        false,
+      )
+    })
+
+    it('contributes CLOSED when card.close has allowDestructive: true', () => {
+      const result = runPipeline(
+        pipelineInput({
+          rules: [
+            rule({
+              then: [
+                {
+                  action: RuleActionType.CARD_CLOSE,
+                  target: { select: RuleTargetSelect.PROJECT_CARDS },
+                  params: { allowDestructive: true },
+                },
+              ],
+            }),
+          ],
+        }),
+      )
+      expect(result.outcomes[0]?.actions[0]?.status).toBe(ActionResultStatus.WOULD_APPLY)
+      expect(result.desiredState.cards[0]?.cardStatus).toBe(DesiredCardStatus.CLOSED)
+      expect(result.desiredState.cards[0]?.allowDestructiveClose).toBe(true)
+    })
+
     it('fires crossedAbove once, on the run that crosses the threshold', () => {
       const crossing = rule({
         when: {

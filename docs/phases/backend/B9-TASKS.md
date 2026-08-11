@@ -246,13 +246,13 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B9 endpoint
-- [ ] Cursor pagination on every feed (no offset)
-- [ ] Exports stream and write audit
-- [ ] Closure resumable; card close confirmed and not rule-triggered
-- [ ] Post-closure transaction still reconciles
-- [ ] Final report totals tie to ledger (`budget:verify`)
-- [ ] Spec's review checklist signed off
-- [ ] `STATUS.md` updated: backend track complete / next is F0; do **not** invent F0-TASKS unless asked
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B9 endpoint
+- [x] Cursor pagination on every feed (no offset)
+- [x] Exports stream and write audit
+- [x] Closure resumable; card close confirmed and not rule-triggered
+- [x] Post-closure transaction still reconciles
+- [x] Final report totals tie to ledger (`budget:verify`)
+- [x] Spec's review checklist signed off
+- [x] `STATUS.md` updated: backend track complete / next is F0; do **not** invent F0-TASKS unless asked

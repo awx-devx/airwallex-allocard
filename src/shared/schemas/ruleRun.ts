@@ -31,6 +31,11 @@ export const desiredCardStateSchema = z.object({
   cardId: idSchema,
   controls: cardControlsSchema.partial().optional(),
   cardStatus: z.enum(DesiredCardStatus).optional(),
+  /**
+   * Set when a `card.close` contribution carried `allowDestructive: true`.
+   * Apply refuses CLOSED unless this is true (B9 / Airwallex lock).
+   */
+  allowDestructiveClose: z.boolean().optional(),
 })
 
 export const desiredStateSchema = z.object({

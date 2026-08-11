@@ -43,29 +43,29 @@ An orchestrated flow, not a status flip:
 7. Archive        project → ARCHIVED, read-only
 ```
 
-Steps 3 and 5 are the sharp edges. A cancelled card still processes already-authorized, uncleared transactions, so closure must tolerate a transaction arriving *after* the card is closed. And because `CLOSED` is irreversible, step 5 requires explicit confirmation and must never be reachable from an automated rule without `allowDestructive`.
+Steps 3 and 5 are the sharp edges. A cancelled card still processes already-authorized, uncleared transactions, so closure must tolerate a transaction arriving _after_ the card is closed. And because `CLOSED` is irreversible, step 5 requires explicit confirmation and must never be reachable from an automated rule without `allowDestructive`.
 
 Make each step resumable. A closure interrupted between steps 3 and 5 must be restartable without redoing 1 and 2.
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/projects/:id/activity` | `transaction.view` scoped | Unified feed, cursor paginated |
-| `GET` | `/api/activity` | `transaction.view` | Org-wide |
-| `GET` | `/api/audit` | `member.manage` | Filterable, with diffs |
-| `GET` | `/api/projects/:id/audit` | `member.manage` | |
-| `POST` | `/api/exports/budget` | `report.export` | Streams CSV |
-| `POST` | `/api/exports/transactions` | `report.export` | |
-| `POST` | `/api/exports/cards` | `report.export` | |
-| `POST` | `/api/exports/audit` | `report.export` | |
-| `GET` | `/api/reports/project/:id` | `report.export` | Budget vs actual, spend by category and member |
-| `GET` | `/api/reports/organization` | `report.export` | Cross-project rollup |
-| `GET` | `/api/projects/:id/closure/preflight` | `project.close` | Blocking items |
-| `POST` | `/api/projects/:id/closure/start` | `project.close` | Enters `CLOSING`, freezes cards |
-| `GET` | `/api/projects/:id/closure/status` | `project.close` | Per-step progress |
-| `POST` | `/api/projects/:id/closure/complete` | `project.close` | Closes cards, generates report, archives |
-| `GET` | `/api/projects/:id/report/final` | `project.view` | Post-closure |
+| Method | Path                                  | Permission                | Notes                                          |
+| ------ | ------------------------------------- | ------------------------- | ---------------------------------------------- |
+| `GET`  | `/api/projects/:id/activity`          | `transaction.view` scoped | Unified feed, cursor paginated                 |
+| `GET`  | `/api/activity`                       | `transaction.view`        | Org-wide                                       |
+| `GET`  | `/api/audit`                          | `member.manage`           | Filterable, with diffs                         |
+| `GET`  | `/api/projects/:id/audit`             | `member.manage`           |                                                |
+| `POST` | `/api/exports/budget`                 | `report.export`           | Streams CSV                                    |
+| `POST` | `/api/exports/transactions`           | `report.export`           |                                                |
+| `POST` | `/api/exports/cards`                  | `report.export`           |                                                |
+| `POST` | `/api/exports/audit`                  | `report.export`           |                                                |
+| `GET`  | `/api/reports/project/:id`            | `report.export`           | Budget vs actual, spend by category and member |
+| `GET`  | `/api/reports/organization`           | `report.export`           | Cross-project rollup                           |
+| `GET`  | `/api/projects/:id/closure/preflight` | `project.close`           | Blocking items                                 |
+| `POST` | `/api/projects/:id/closure/start`     | `project.close`           | Enters `CLOSING`, freezes cards                |
+| `GET`  | `/api/projects/:id/closure/status`    | `project.close`           | Per-step progress                              |
+| `POST` | `/api/projects/:id/closure/complete`  | `project.close`           | Closes cards, generates report, archives       |
+| `GET`  | `/api/projects/:id/report/final`      | `project.view`            | Post-closure                                   |
 
 ## Events
 
@@ -90,13 +90,13 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] Cursor pagination, not offset, on every feed
-- [ ] Exports stream and are scope-filtered
-- [ ] Audit distinguishes actor types and renders a usable diff
-- [ ] Closure is a resumable state machine, not a status flip
-- [ ] Card closure is irreversible, confirmed, and never rule-triggered
-- [ ] Post-closure transactions are handled without error
-- [ ] Final report totals tie back to the ledger — run `budget:verify` against a closed project
+- [x] Cursor pagination, not offset, on every feed
+- [x] Exports stream and are scope-filtered
+- [x] Audit distinguishes actor types and renders a usable diff
+- [x] Closure is a resumable state machine, not a status flip
+- [x] Card closure is irreversible, confirmed, and never rule-triggered
+- [x] Post-closure transactions are handled without error
+- [x] Final report totals tie back to the ledger — run `budget:verify` against a closed project
 
 ## Out of scope
 
