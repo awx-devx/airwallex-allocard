@@ -37,7 +37,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.2 — ApiError
 
-- [ ] **F0.2** — `ApiError` class
+- [x] **F0.2** — `ApiError` class
   - **Files:** `src/client/api/errors.ts`, `src/client/api/errors.test.ts`
   - **Do:** Client-side error class mirroring the server envelope (do **not** import `@/server/*`).
     - Fields: `code: ErrorCode`, `message: string`, `details?: unknown`, `status: number` (HTTP status from the response)
@@ -46,7 +46,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     - `isApiError(e: unknown): e is ApiError`
   - **Pattern:** `src/server/http/errors.ts` (`AppError` + `serializeError` envelope) — mirror, do not import
   - **Accept:** `pnpm test client/api/errors`
-  - **Notes:**
+  - **Notes:** `fromResponse` uses shared `errorEnvelopeSchema`; bad body → INTERNAL.
 
 ### F0.3 — Path builder
 
