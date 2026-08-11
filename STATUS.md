@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B6 — Attributes & rules engine
-**Active task:** B6 phase exit (review checklist) — stop; do not start B7 until exit is signed off
-**Last green `pnpm verify`:** 2026-08-11 (B6.14)
+**Active phase:** B7 — Purchase requests & approvals
+**Active task:** B7.0 — Schemas and contracts (stop for review after)
+**Last green `pnpm verify`:** 2026-08-11 (B6 phase exit)
 **Blocked on:** nothing
 
 ---
@@ -19,8 +19,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B3 Access control       | **complete**    | 14 / 14 |
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
-| B     | B6 Rules engine         | **in progress** | 15 / 15 |
-| B     | B7 Requests & approvals | not started     | —       |
+| B     | B6 Rules engine         | **complete**    | 15 / 15 |
+| B     | B7 Requests & approvals | **in progress** | 0 / 11  |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0–B6 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B7 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,7 +60,14 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B6 phase exit** — all implementation tasks done; review checklist not started.
+Active: **B7.0** — write purchase-request / approval-rule schemas and contracts, then stop for review.
+
+B6 exit locked (do not reopen):
+
+1. `sweep-rules` calls `sweepScheduledRules` → `evaluateAndApply` with `SCHEDULED_SWEEP`; event-only rules ignored; healthy system records nothing
+2. Matrix: `#5` N/A for org-wide `control.edit`; `#9` idempotency N/A; ingest is secret-auth
+3. Freeze beats limit by restrictiveness; priority orders explanations only
+4. Impossible merge → `PARTIAL`, no Airwallex call
 
 B6.0 locked policies (do not reopen):
 
@@ -87,7 +94,7 @@ B5 locked policies (do not reopen):
 
 Carried forward:
 
-- **`TODO(B7)`:** overview approval counts stub to 0
+- **`TODO(B7)`:** overview approval counts stub to 0 — clear when B7 ships
 - **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance`
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A

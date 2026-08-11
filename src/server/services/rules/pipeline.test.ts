@@ -294,6 +294,43 @@ describe('rules/pipeline', () => {
       expect(at(96, 95).outcomes[0]?.matched).toBe(false)
     })
 
+    it('fires crossedBelow once, on the run that crosses the threshold', () => {
+      const crossing = rule({
+        when: {
+          attr: 'campaign.roas',
+          op: ConditionOperator.CROSSED_BELOW,
+          value: 2,
+        },
+        then: [
+          {
+            action: RuleActionType.CARD_SET_CONTROLS,
+            target: { select: RuleTargetSelect.PROJECT_CARDS },
+            params: {
+              transactionLimits: {
+                currency: 'USD',
+                limits: [{ interval: TransactionLimitInterval.WEEKLY, amount: 10_000 }],
+              },
+            },
+          },
+        ],
+      })
+      const at = (roas: number, previous?: number) =>
+        runPipeline(
+          pipelineInput({
+            rules: [crossing],
+            attributes: attributes([reading('campaign.roas', roas)]),
+            previousValues:
+              previous === undefined
+                ? undefined
+                : new Map([['rule_1', new Map([['campaign.roas', previous]])]]),
+          }),
+        )
+
+      expect(at(1.5).outcomes[0]?.matched).toBe(false)
+      expect(at(1.5, 2.5).outcomes[0]?.matched).toBe(true)
+      expect(at(1.4, 1.5).outcomes[0]?.matched).toBe(false)
+    })
+
     it('isolates a failing rule so the others still produce desired state', () => {
       const broken = rule({
         id: 'rule_broken',
@@ -483,6 +520,43 @@ describe('rules/pipeline', () => {
       expect(merged.desiredState.cards[0]?.controls?.transactionLimits?.limits[0]?.amount).toBe(
         400_000,
       )
+    })
+
+    it('freeze beats a limit regardless of which rule has the lower priority number', () => {
+      // Restrictiveness wins; priority only orders explanations (select.ts).
+      const freezeHigh = mergeContributions([
+        base({
+          ruleId: 'rule_limit',
+          priority: 10,
+          controls: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 50_000 }],
+            },
+          },
+          cardStatus: DesiredCardStatus.ACTIVE,
+        }),
+        base({ ruleId: 'rule_freeze', priority: 100, cardStatus: DesiredCardStatus.INACTIVE }),
+      ])
+      const freezeLow = mergeContributions([
+        base({
+          ruleId: 'rule_limit',
+          priority: 100,
+          controls: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 50_000 }],
+            },
+          },
+          cardStatus: DesiredCardStatus.ACTIVE,
+        }),
+        base({ ruleId: 'rule_freeze', priority: 10, cardStatus: DesiredCardStatus.INACTIVE }),
+      ])
+
+      expect(freezeHigh.desiredState.cards[0]?.cardStatus).toBe(DesiredCardStatus.INACTIVE)
+      expect(freezeLow.desiredState.cards[0]?.cardStatus).toBe(DesiredCardStatus.INACTIVE)
+      const statusExplain = freezeLow.explanations.find((entry) => entry.field === 'cardStatus')
+      expect(statusExplain?.contributions.map((c) => c.priority)).toEqual([10, 100])
     })
 
     it('is order independent — merge is commutative', () => {

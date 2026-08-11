@@ -94,6 +94,15 @@ export async function findOrganizationsByIds(orgIds: string[]): Promise<Organiza
   return docs.map((doc) => toOrganization(doc))
 }
 
+/**
+ * Worker sweeps iterate every tenant. Organisations are top-level (no `orgId`
+ * filter) — this is the intentional cross-tenant read for scheduled jobs.
+ */
+export async function listAllOrganizations(): Promise<Organization[]> {
+  const docs = await OrganizationModel.find({}).lean().exec()
+  return docs.map((doc) => toOrganization(doc))
+}
+
 export async function updateOrganization(
   orgId: string,
   patch: UpdateOrganizationInput,

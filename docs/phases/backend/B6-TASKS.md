@@ -160,18 +160,18 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B6 endpoint
-- [ ] Steps 1–6 pure — simulation makes no writes (proven by test)
-- [ ] Desired state recomputed wholesale, never patched
-- [ ] Empty-intersection / impossible-merge conflicts surfaced, never pushed
-- [ ] Event path is the mechanism; sweeps are backstop only
-- [ ] Redis policy snapshot written synchronously within evaluation
-- [ ] Every run recorded with enough detail for explain
-- [ ] `/api/cards/:id/explain` explains merge
-- [ ] Worker handles SIGTERM and releases locks
-- [ ] Formula sandbox reviewed adversarially again
-- [ ] Spec's review checklist signed off
-- [ ] Five RULES-ENGINE §6 examples green
-- [ ] STATUS.md updated: active phase B7, generate B7-TASKS.md
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B6 endpoint
+- [x] Steps 1–6 pure — simulation makes no writes (proven by test)
+- [x] Desired state recomputed wholesale, never patched
+- [x] Empty-intersection / impossible-merge conflicts surfaced, never pushed
+- [x] Event path is the mechanism; sweeps are backstop only
+- [x] Redis policy snapshot written synchronously within evaluation
+- [x] Every run recorded with enough detail for explain
+- [x] `/api/cards/:id/explain` explains merge
+- [x] Worker handles SIGTERM and releases locks
+- [x] Formula sandbox reviewed adversarially again
+- [x] Spec's review checklist signed off
+- [x] Five RULES-ENGINE §6 examples green
+- [x] STATUS.md updated: active phase B7, generate B7-TASKS.md

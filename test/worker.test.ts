@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DomainEventType, type DomainEvent } from '@/server/events/types'
 import {
   EVENTS_STREAM,
@@ -9,9 +9,40 @@ import {
 } from '@/server/events/stream'
 import { getRedis, redisKeys, resetRedis } from '@/server/redis'
 import { createDebouncer } from '@/worker/debounce'
-import { createConsumers, createDebouncedDispatcher } from '@/worker/consumers'
 import { startWorker } from '@/worker/index'
 import { createScheduler } from '@/worker/scheduler'
+import { useTestDb } from './helpers/db'
+import type { OrgContext } from '@/server/http/types'
+import { CardModel } from '@/server/models/Card'
+import { RuleModel } from '@/server/models/Rule'
+import { RuleRunModel } from '@/server/models/RuleRun'
+import { appendEntry } from '@/server/repositories/budgetEntries'
+import { upsertBudgetFields } from '@/server/repositories/budgets'
+import { createCard } from '@/server/repositories/cards'
+import { createCardholder } from '@/server/repositories/cardholders'
+import { createOrganization } from '@/server/repositories/organizations'
+import { createProject, updateStatus } from '@/server/repositories/projects'
+import { createRule, setRuleEnabled } from '@/server/repositories/rules'
+import { listRuleRuns } from '@/server/repositories/ruleRuns'
+import { sweepScheduledRules } from '@/server/services/rules/sweep'
+import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
+import { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
+import { BudgetEntrySourceType } from '@/shared/enums/budgetEntrySourceType'
+import { BudgetEntryType } from '@/shared/enums/budgetEntryType'
+import { CardPurpose } from '@/shared/enums/cardPurpose'
+import { CardStatus } from '@/shared/enums/cardStatus'
+import { CardholderStatus } from '@/shared/enums/cardholderStatus'
+import { CardholderType } from '@/shared/enums/cardholderType'
+import { ConditionOperator } from '@/shared/enums/conditionOperator'
+import { OrgRole } from '@/shared/enums/orgRole'
+import { ProjectStatus } from '@/shared/enums/projectStatus'
+import { RuleActionType } from '@/shared/enums/ruleActionType'
+import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
+import { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
+import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
+import type { CardControls } from '@/shared/types/cardControls'
+import { addProjectMember } from '@/server/repositories/projectMembers'
+import { createRole } from '@/server/repositories/roles'
 
 function event(overrides: Partial<DomainEvent> = {}): DomainEvent {
   return {
@@ -23,6 +54,23 @@ function event(overrides: Partial<DomainEvent> = {}): DomainEvent {
     payload: { key: 'campaign.roas' },
     emittedAt: new Date(),
     ...overrides,
+  }
+}
+
+function controls(): CardControls {
+  return {
+    allowedTransactionCount: AllowedTransactionCount.MULTIPLE,
+    transactionLimits: {
+      currency: 'USD',
+      limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 400_000 }],
+    },
+    activeFrom: null,
+    activeTo: null,
+    allowedCurrencies: null,
+    allowedMerchantCategories: null,
+    allowedMerchantCountries: null,
+    allowedMerchantBrands: null,
+    blockedTransactionUsages: [],
   }
 }
 
@@ -48,6 +96,7 @@ describe('worker', () => {
       const runtime = await startWorker({
         role: 'worker',
         evaluate: async () => {},
+        sweepRules: async () => {},
       })
       await runtime.stop()
     })
@@ -116,7 +165,7 @@ describe('worker', () => {
   })
 
   describe('consumers + SIGTERM', () => {
-    it('drains in-flight debounce work and releases locks on stop', async () => {
+    it('startWorker().stop drains in-flight work and releases the debounce lock', async () => {
       const stream = createMemoryEventStream()
       setEventStream(stream)
 
@@ -126,40 +175,35 @@ describe('worker', () => {
         resolveEval = resolve
       })
 
-      const debouncer = createDebouncer({ windowMs: 20 })
-      const dispatcher = createDebouncedDispatcher(debouncer, async () => {
-        evaluateCalls += 1
-        await evalGate
-      })
+      const lockRuleId = DomainEventType.ATTRIBUTE_UPDATED
+      const lockSubjectId = 'org_1:project_1'
 
-      let stopping = false
-      const consumers = createConsumers(dispatcher, {
+      const runtime = await startWorker({
+        role: 'worker',
         stream,
-        blockMs: 50,
-        shouldStop: () => stopping,
-        consumerName: 'test-consumer',
+        debounceWindowMs: 20,
+        sweepRules: async () => {},
+        evaluate: async () => {
+          evaluateCalls += 1
+          await evalGate
+        },
       })
-      const handle = consumers.startEvents()
 
       await stream.publish(EVENTS_STREAM, event())
-      // Wait until debounce fires and evaluate is in flight.
-      await new Promise((resolve) => setTimeout(resolve, 80))
-      expect(debouncer.pendingCount() + debouncer.inflightCount()).toBeGreaterThan(0)
 
-      stopping = true
-      handle.stop()
-      debouncer.stopAccepting()
-
-      // Finish the in-flight job, then flush.
-      resolveEval?.()
-      await debouncer.flush()
-      await getRedis().del(redisKeys.lockRule(DomainEventType.ATTRIBUTE_UPDATED, 'org_1:project_1'))
-
+      // Wait until the trailing debounce fires and evaluate is in flight.
+      const started = Date.now()
+      while (evaluateCalls === 0 && Date.now() - started < 2000) {
+        await new Promise((resolve) => setTimeout(resolve, 20))
+      }
       expect(evaluateCalls).toBe(1)
-      expect(await getRedis().get(redisKeys.lockRule('rule_1', 'subject_1'))).toBeNull()
+      expect(await getRedis().get(redisKeys.lockRule(lockRuleId, lockSubjectId))).toBe('1')
 
-      await stream.publish(EVENTS_STREAM, event({ subjectId: 'wake' }))
-      await Promise.race([handle.done, new Promise((resolve) => setTimeout(resolve, 500))])
+      const stopPromise = runtime.stop()
+      resolveEval?.()
+      await stopPromise
+
+      expect(await getRedis().get(redisKeys.lockRule(lockRuleId, lockSubjectId))).toBeNull()
     })
 
     it('acks stream entries after handling', async () => {
@@ -192,5 +236,204 @@ describe('worker', () => {
       expect(second).toHaveLength(0)
       expect(seen).toHaveLength(2)
     })
+  })
+})
+
+describe('sweepScheduledRules', () => {
+  useTestDb()
+
+  beforeAll(async () => {
+    await Promise.all([
+      CardModel.syncIndexes(),
+      RuleModel.syncIndexes(),
+      RuleRunModel.syncIndexes(),
+    ])
+  })
+
+  beforeEach(() => {
+    resetRedis()
+    vi.spyOn(console, 'info').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  async function seedOrgWithProject() {
+    const org = await createOrganization({
+      name: 'Sweep Org',
+      slug: `org-${Math.random().toString(36).slice(2)}`,
+      country: 'AU',
+      baseCurrency: 'USD',
+      createdBy: 'user_1',
+    })
+    const ctx: OrgContext = { orgId: org.id, userId: 'user_1', orgRole: OrgRole.OWNER }
+    const project = await createProject(ctx, { name: 'Sweep', code: 'SWP-1' })
+    await updateStatus(ctx, project.id, ProjectStatus.DRAFT, ProjectStatus.ACTIVE, {
+      approvedAt: new Date('2026-07-25T00:00:00.000Z'),
+    })
+    await upsertBudgetFields(ctx, project.id, { currency: 'USD', approvedAmount: 1_000_000 })
+    await appendEntry(ctx, {
+      projectId: project.id,
+      type: BudgetEntryType.APPROVAL,
+      amount: 1_000_000,
+      currency: 'USD',
+      sourceType: BudgetEntrySourceType.MANUAL,
+      sourceId: 'seed',
+      createdBy: 'user_1',
+    })
+    const role = await createRole(ctx, {
+      key: 'project_spender',
+      name: 'Spender',
+      permissions: [],
+      isTemplate: false,
+    })
+    await addProjectMember(ctx, {
+      projectId: project.id,
+      userId: 'user_member',
+      roleId: role.id,
+      scope: { level: AccessScopeLevel.OWN },
+      effectivePermissions: [],
+      addedBy: 'user_1',
+    })
+    const cardholder = await createCardholder(ctx, {
+      userId: 'user_member',
+      airwallexCardholderId: 'aw_ch_sweep',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.READY,
+    })
+    await createCard(ctx, {
+      projectId: project.id,
+      cardholderId: cardholder.id,
+      airwallexCardId: 'aw_card_sweep',
+      maskedNumber: '************9999',
+      nickName: 'Sweep',
+      purpose: CardPurpose.MEMBER,
+      status: CardStatus.ACTIVE,
+      desiredControls: controls(),
+      appliedControls: controls(),
+    })
+    return { ctx, project }
+  }
+
+  it('evaluates scheduled rules and ignores event-only rules', async () => {
+    const { ctx, project } = await seedOrgWithProject()
+
+    const scheduled = await createRule(ctx, {
+      scope: { level: RuleScopeLevel.PROJECT, projectId: project.id },
+      name: 'Hourly util check',
+      trigger: { schedule: '0 * * * *' },
+      when: { attr: 'project.budget.remaining', op: ConditionOperator.GT, value: 0 },
+      then: [
+        {
+          action: RuleActionType.CARD_SET_CONTROLS,
+          target: { select: RuleTargetSelect.PROJECT_CARDS },
+          params: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 77_000 }],
+            },
+          },
+        },
+      ],
+      createdBy: 'user_1',
+    })
+    await setRuleEnabled(ctx, scheduled.id, true)
+
+    const eventOnly = await createRule(ctx, {
+      scope: { level: RuleScopeLevel.PROJECT, projectId: project.id },
+      name: 'On budget update',
+      trigger: { events: ['budget.updated'] },
+      when: { attr: 'project.budget.remaining', op: ConditionOperator.GT, value: 0 },
+      then: [
+        {
+          action: RuleActionType.CARD_SET_CONTROLS,
+          target: { select: RuleTargetSelect.PROJECT_CARDS },
+          params: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 11_000 }],
+            },
+          },
+        },
+      ],
+      createdBy: 'user_1',
+    })
+    await setRuleEnabled(ctx, eventOnly.id, true)
+
+    const update = vi.fn().mockResolvedValue({})
+    const airwallex = {
+      accountId: null,
+      forAccount: () => airwallex,
+      request: vi.fn(),
+      cardholders: {} as never,
+      cards: {
+        create: vi.fn(),
+        get: vi.fn(),
+        list: vi.fn(),
+        listAllTenantsUnsafe: vi.fn(),
+        update,
+        limits: vi.fn(),
+        activate: vi.fn(),
+      },
+      transactions: {} as never,
+      config: {} as never,
+      panTokens: {} as never,
+    }
+
+    const result = await sweepScheduledRules({ airwallex })
+    expect(result.orgsVisited).toBeGreaterThanOrEqual(1)
+
+    const runs = await listRuleRuns(ctx)
+    expect(runs.items.some((run) => run.ruleId === scheduled.id)).toBe(true)
+    expect(runs.items.some((run) => run.ruleId === eventOnly.id)).toBe(false)
+    expect(runs.items.every((run) => run.triggerEvent === 'schedule')).toBe(true)
+  })
+
+  it('finds nothing to record when no scheduled rules exist', async () => {
+    const { ctx, project } = await seedOrgWithProject()
+    const eventOnly = await createRule(ctx, {
+      scope: { level: RuleScopeLevel.PROJECT, projectId: project.id },
+      name: 'Event only',
+      trigger: { events: ['budget.updated'] },
+      when: { attr: 'project.budget.remaining', op: ConditionOperator.GT, value: 0 },
+      then: [
+        {
+          action: RuleActionType.CARD_SET_CONTROLS,
+          target: { select: RuleTargetSelect.PROJECT_CARDS },
+          params: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 11_000 }],
+            },
+          },
+        },
+      ],
+      createdBy: 'user_1',
+    })
+    await setRuleEnabled(ctx, eventOnly.id, true)
+
+    await sweepScheduledRules({
+      airwallex: {
+        accountId: null,
+        forAccount: () => ({}) as never,
+        request: vi.fn(),
+        cardholders: {} as never,
+        cards: {
+          create: vi.fn(),
+          get: vi.fn(),
+          list: vi.fn(),
+          listAllTenantsUnsafe: vi.fn(),
+          update: vi.fn(),
+          limits: vi.fn(),
+          activate: vi.fn(),
+        },
+        transactions: {} as never,
+        config: {} as never,
+        panTokens: {} as never,
+      },
+    })
+
+    expect((await listRuleRuns(ctx)).total).toBe(0)
   })
 })

@@ -317,4 +317,66 @@ describe('rules/evaluateAndApply', () => {
       1_000_000,
     )
   })
+
+  it('records PARTIAL on an impossible merge and makes no Airwallex call', async () => {
+    const { ctx, project, card } = await seedWorld()
+
+    const usd = await createRule(
+      ctx,
+      limitRule(project.id, {
+        name: 'USD only',
+        then: [
+          {
+            action: RuleActionType.CARD_SET_CONTROLS,
+            target: { select: RuleTargetSelect.PROJECT_CARDS },
+            params: {
+              allowedCurrencies: ['USD'],
+              transactionLimits: {
+                currency: 'USD',
+                limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 100_000 }],
+              },
+            },
+          },
+        ],
+      }),
+    )
+    const eur = await createRule(
+      ctx,
+      limitRule(project.id, {
+        name: 'EUR only',
+        then: [
+          {
+            action: RuleActionType.CARD_SET_CONTROLS,
+            target: { select: RuleTargetSelect.PROJECT_CARDS },
+            params: {
+              allowedCurrencies: ['EUR'],
+              transactionLimits: {
+                currency: 'USD',
+                limits: [{ interval: TransactionLimitInterval.MONTHLY, amount: 100_000 }],
+              },
+            },
+          },
+        ],
+      }),
+    )
+    await setRuleEnabled(ctx, usd.id, true)
+    await setRuleEnabled(ctx, eur.id, true)
+
+    const update = vi.fn().mockResolvedValue({})
+    const result = await evaluateAndApply(
+      ctx,
+      { triggerEvent: 'budget.updated', projectId: project.id, now: NOW },
+      { airwallex: mockClient(update) },
+    )
+
+    expect(result.pipeline.conflicts.some((c) => c.kind === 'EMPTY_CURRENCY_INTERSECTION')).toBe(
+      true,
+    )
+    expect(result.runs.every((run) => run.status === RuleRunStatus.PARTIAL)).toBe(true)
+    expect(update).not.toHaveBeenCalled()
+    // Applied controls unchanged — conflict means nothing pushed.
+    expect(
+      (await findCardById(ctx, card.id))?.appliedControls.transactionLimits.limits[0]?.amount,
+    ).toBe(400_000)
+  })
 })

@@ -7,7 +7,8 @@
  */
 import { handleDomainEventForRules } from '@/server/events/handlers/rules'
 import { DomainEventType } from '@/server/events/types'
-import { EVENTS_STREAM, getEventStream } from '@/server/events/stream'
+import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
+import { sweepScheduledRules } from '@/server/services/rules/sweep'
 import { createDebouncer } from '@/worker/debounce'
 import { createConsumers, createDebouncedDispatcher } from '@/worker/consumers'
 import { createScheduler } from '@/worker/scheduler'
@@ -21,6 +22,12 @@ export type StartWorkerOptions = {
   /** Override for tests — skip the ROLE gate. */
   allowWithoutRole?: boolean
   evaluate?: (event: unknown) => Promise<void>
+  /** Test seam — shorter debounce so SIGTERM drain is observable. */
+  debounceWindowMs?: number
+  /** Test seam — inject the event stream used by consumers. */
+  stream?: EventStream
+  /** Test seam — replace the rules sweep body. */
+  sweepRules?: () => Promise<void>
 }
 
 function requireWorkerRole(role: string | undefined, allowWithoutRole?: boolean): void {
@@ -34,7 +41,7 @@ function requireWorkerRole(role: string | undefined, allowWithoutRole?: boolean)
   }
 }
 
-/** Job stubs — later phases fill the bodies. Sweeps must stay near-idle when healthy. */
+/** Job stubs for phases that own these bodies. Sweeps must stay near-idle when healthy. */
 async function noopJob(name: string): Promise<void> {
   console.info(`[worker] job ${name} (noop)`)
 }
@@ -44,7 +51,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   requireWorkerRole(role, options.allowWithoutRole)
 
   let stopping = false
-  const debouncer = createDebouncer({ windowMs: 1000 })
+  const debouncer = createDebouncer({ windowMs: options.debounceWindowMs ?? 1000 })
   const evaluate =
     options.evaluate ??
     (async (event) => {
@@ -53,6 +60,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
 
   const dispatcher = createDebouncedDispatcher(debouncer, evaluate)
   const consumers = createConsumers(dispatcher, {
+    ...(options.stream ? { stream: options.stream } : {}),
     blockMs: 500,
     shouldStop: () => stopping,
   })
@@ -61,10 +69,11 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   const webhooksConsumer = consumers.startWebhooks()
 
   const scheduler = createScheduler()
+  const runSweep = options.sweepRules ?? (() => sweepScheduledRules().then(() => undefined))
   scheduler.schedule({
     name: 'sweep-rules',
     everyMs: 5 * 60_000,
-    run: () => noopJob('sweep-rules'),
+    run: runSweep,
   })
   scheduler.schedule({
     name: 'reconcile-drift',
@@ -107,7 +116,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
     await debouncer.flush()
     await scheduler.waitForIdle()
     // Unblock any XREADGROUP waiters by publishing a wake event.
-    await getEventStream().publish(EVENTS_STREAM, {
+    await (options.stream ?? getEventStream()).publish(EVENTS_STREAM, {
       type: DomainEventType.ATTRIBUTE_UPDATED,
       orgId: '_shutdown',
       subjectType: 'system',

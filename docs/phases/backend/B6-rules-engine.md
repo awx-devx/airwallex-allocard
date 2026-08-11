@@ -12,12 +12,12 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) first — this phase imple
 
 ### Models
 
-| Model | Notes |
-| --- | --- |
-| `AttributeDefinition` | orgId, key, label, type, unit?, scope, source, connectorId?, refreshIntervalSec? |
-| `AttributeValue` | orgId, key, subjectType, subjectId, value, observedAt, source, ttlSec?; unique on `(orgId, key, subjectType, subjectId)` |
-| `Rule` | orgId, scope, name, enabled, priority, trigger, when, then[], else[]?, version |
-| `RuleRun` | orgId, ruleId, triggeredBy, triggerEvent, inputs, matched, desiredState, diff, actions[], status, durationMs |
+| Model                 | Notes                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `AttributeDefinition` | orgId, key, label, type, unit?, scope, source, connectorId?, refreshIntervalSec?                                         |
+| `AttributeValue`      | orgId, key, subjectType, subjectId, value, observedAt, source, ttlSec?; unique on `(orgId, key, subjectType, subjectId)` |
+| `Rule`                | orgId, scope, name, enabled, priority, trigger, when, then[], else[]?, version                                           |
+| `RuleRun`             | orgId, ruleId, triggeredBy, triggerEvent, inputs, matched, desiredState, diff, actions[], status, durationMs             |
 
 ### Attribute registry
 
@@ -63,24 +63,24 @@ The same pipeline, stopped after step 6, with optional attribute overrides. Retu
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `GET` | `/api/attributes` | `control.edit` | Registry |
-| `POST` | `/api/attributes` | `control.edit` | Define a custom attribute |
-| `PATCH` | `/api/attributes/:key` | `control.edit` | |
-| `GET` | `/api/attributes/values` | `control.edit` | Current values with `observedAt` |
-| `PUT` | `/api/attributes/values` | `control.edit` | Set a `MANUAL` value |
-| `POST` | `/api/attributes/ingest` | signed secret | External push; emits `attribute.updated` |
-| `GET` | `/api/rules` | `control.edit` | Org and project scoped |
-| `POST` | `/api/rules` | `control.edit` | |
-| `PATCH` | `/api/rules/:id` | `control.edit` | Bumps `version` |
-| `DELETE` | `/api/rules/:id` | `control.edit` | |
-| `POST` | `/api/rules/:id/enable` | `control.edit` | Enable / disable |
-| `POST` | `/api/rules/validate` | `control.edit` | Parses the DSL; powers inline builder validation |
-| `POST` | `/api/rules/simulate` | `control.edit` | Dry run, with optional attribute overrides |
-| `GET` | `/api/rule-runs` | `control.edit` | Automation history; filter by rule, card, project, status |
-| `GET` | `/api/rule-runs/:id` | `control.edit` | Inputs, matched conditions, diff, actions |
-| `GET` | `/api/cards/:id/explain` | `card.view` | **Which rules govern this card, which values they used, how the merge produced the number** |
+| Method   | Path                     | Permission     | Notes                                                                                       |
+| -------- | ------------------------ | -------------- | ------------------------------------------------------------------------------------------- |
+| `GET`    | `/api/attributes`        | `control.edit` | Registry                                                                                    |
+| `POST`   | `/api/attributes`        | `control.edit` | Define a custom attribute                                                                   |
+| `PATCH`  | `/api/attributes/:key`   | `control.edit` |                                                                                             |
+| `GET`    | `/api/attributes/values` | `control.edit` | Current values with `observedAt`                                                            |
+| `PUT`    | `/api/attributes/values` | `control.edit` | Set a `MANUAL` value                                                                        |
+| `POST`   | `/api/attributes/ingest` | signed secret  | External push; emits `attribute.updated`                                                    |
+| `GET`    | `/api/rules`             | `control.edit` | Org and project scoped                                                                      |
+| `POST`   | `/api/rules`             | `control.edit` |                                                                                             |
+| `PATCH`  | `/api/rules/:id`         | `control.edit` | Bumps `version`                                                                             |
+| `DELETE` | `/api/rules/:id`         | `control.edit` |                                                                                             |
+| `POST`   | `/api/rules/:id/enable`  | `control.edit` | Enable / disable                                                                            |
+| `POST`   | `/api/rules/validate`    | `control.edit` | Parses the DSL; powers inline builder validation                                            |
+| `POST`   | `/api/rules/simulate`    | `control.edit` | Dry run, with optional attribute overrides                                                  |
+| `GET`    | `/api/rule-runs`         | `control.edit` | Automation history; filter by rule, card, project, status                                   |
+| `GET`    | `/api/rule-runs/:id`     | `control.edit` | Inputs, matched conditions, diff, actions                                                   |
+| `GET`    | `/api/cards/:id/explain` | `card.view`    | **Which rules govern this card, which values they used, how the merge produced the number** |
 
 `/api/cards/:id/explain` turns the engine from a black box into a feature. Do not let it slip.
 
@@ -109,15 +109,15 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] Steps 1–6 are pure — verifiable by simulation making no writes
-- [ ] Desired state is recomputed wholesale, never patched
-- [ ] Empty-intersection and impossible-merge conflicts are surfaced, not pushed
-- [ ] The event path is the mechanism; sweeps find nothing in a healthy system
-- [ ] Redis snapshot writes are synchronous within evaluation
-- [ ] Every run is recorded with enough detail to answer "why is my limit $400?"
-- [ ] `/api/cards/:id/explain` genuinely explains, including the merge
-- [ ] The worker handles `SIGTERM` and releases locks
-- [ ] The formula sandbox has been reviewed adversarially, again
+- [x] Steps 1–6 are pure — verifiable by simulation making no writes
+- [x] Desired state is recomputed wholesale, never patched
+- [x] Empty-intersection and impossible-merge conflicts are surfaced, not pushed
+- [x] The event path is the mechanism; sweeps find nothing in a healthy system
+- [x] Redis snapshot writes are synchronous within evaluation
+- [x] Every run is recorded with enough detail to answer "why is my limit $400?"
+- [x] `/api/cards/:id/explain` genuinely explains, including the merge
+- [x] The worker handles `SIGTERM` and releases locks
+- [x] The formula sandbox has been reviewed adversarially, again
 
 ## Out of scope
 
