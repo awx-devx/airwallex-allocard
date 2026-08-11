@@ -143,5 +143,12 @@ describe('pnpm seed idempotency', () => {
     expect(rules).toBeGreaterThanOrEqual(2)
     const ruleRuns = await mongoose.connection.collection('ruleRuns').countDocuments({})
     expect(ruleRuns).toBeGreaterThanOrEqual(1)
+
+    const approvalRules = await mongoose.connection.collection('approvalRules').countDocuments({})
+    expect(approvalRules).toBe(1)
+    const pendingRequests = await mongoose.connection
+      .collection('purchaseRequests')
+      .countDocuments({ status: 'PENDING' })
+    expect(pendingRequests).toBe(1)
   })
 })

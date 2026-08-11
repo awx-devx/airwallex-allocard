@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7.10 — Events, audit coverage, seed
-**Last green `pnpm verify`:** 2026-08-11 (B7.9)
+**Active task:** B7 phase exit (not started — stop here until signed off)
+**Last green `pnpm verify`:** 2026-08-11 (B7.10)
 **Blocked on:** nothing
 
 ---
@@ -20,7 +20,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 10 / 11 |
+| B     | B7 Requests & approvals | **in progress** | 11 / 11 |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B7.10** — events, audit, seed.
+**B7.0–B7.10 complete.** Next is **B7 phase exit** (checklist in B7-TASKS.md) — do not start B8 until exit is signed off.
 
 B7.0 locked policies (do not reopen):
 
@@ -69,20 +69,13 @@ B7.0 locked policies (do not reopen):
 3. ApproverSelection discriminator shape for selection + escalateTo
 4. Ledger via existing B4 PURCHASE_REQUEST sourceType; APPROVED→COMMITMENT; REJECTED|CANCELLED|EXPIRED→RELEASE
 
-B6 exit locked (do not reopen):
+B6 exit locked (do not reopen): see prior notes.
 
-1. `sweep-rules` calls `sweepScheduledRules` → `evaluateAndApply` with `SCHEDULED_SWEEP`; event-only rules ignored; healthy system records nothing
-2. Matrix: `#5` N/A for org-wide `control.edit`; `#9` idempotency N/A; ingest is secret-auth
-3. Freeze beats limit by restrictiveness; priority orders explanations only
-4. Impossible merge → `PARTIAL`, no Airwallex call
-
-B6.0 locked policies (do not reopen): see prior notes.
-
-B5 locked policies (do not reopen): see prior notes.
+B6.0 / B5 locked policies (do not reopen): see prior notes.
 
 Carried forward:
 
-- **`TODO(B7)`:** overview approval counts stub to 0 — clear when B7 ships
+- **`TODO(B7)`:** overview approval counts stub to 0 — clear when B7 ships (phase exit / overview wiring)
 - **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance`
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A

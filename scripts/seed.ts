@@ -931,6 +931,72 @@ export async function seedB6(input: {
   }
 }
 
+/**
+ * B7 — one approval rule + one PENDING purchase request on SEED-ACTIVE.
+ * Idempotent: skips when a PENDING request already exists for the project.
+ */
+export async function seedB7(input: {
+  orgId: string
+  ownerId: string
+  activeProjectId: string
+}): Promise<{ requestId: string; ruleId: string; created: boolean }> {
+  const purchaseRequests = await import('../src/server/repositories/purchaseRequests')
+  const approvalRules = await import('../src/server/repositories/approvalRules')
+  const requests = await import('../src/server/services/approvals/requests')
+  const { ApproverSelection } = await import('../src/shared/enums/approverSelection')
+  const { PurchaseRequestStatus } = await import('../src/shared/enums/purchaseRequestStatus')
+
+  const ctx = {
+    orgId: input.orgId,
+    userId: input.ownerId,
+    orgRole: OrgRole.OWNER,
+  }
+
+  const existingPending = await purchaseRequests.listPendingForApprover(ctx, {
+    projectIds: [input.activeProjectId],
+    pageSize: 1,
+  })
+  if (existingPending.total > 0) {
+    const rules = await approvalRules.listApprovalRules(ctx, input.activeProjectId)
+    return {
+      requestId: existingPending.items[0]!.id,
+      ruleId: rules[0]?.id ?? '',
+      created: false,
+    }
+  }
+
+  const rules = await approvalRules.replaceProjectRules(ctx, input.activeProjectId, [
+    {
+      // Low enough that the seeded request (50_000) requires approval.
+      threshold: 10_000,
+      approverSelection: { type: ApproverSelection.PROJECT_OWNER },
+      requiredCount: 1,
+      escalationAfterMins: 240,
+      escalateTo: { type: ApproverSelection.ROLE, roleKey: 'approver' },
+    },
+  ])
+
+  const draft = await requests.createPurchaseRequest(ctx, input.activeProjectId, {
+    amount: 50_000,
+    currency: SEED.orgBaseCurrency,
+    vendor: 'Seed Vendor Co',
+    description: 'SEED — sample purchase awaiting approval',
+    justification: 'Demo pending request for SEED-ACTIVE',
+  })
+  const submitted = await requests.submitPurchaseRequest(ctx, draft.id)
+  if (submitted.status !== PurchaseRequestStatus.PENDING) {
+    throw new Error(
+      `seedB7 expected PENDING after submit, got ${submitted.status} (outcome=${submitted.policyDecision?.outcome})`,
+    )
+  }
+
+  return {
+    requestId: submitted.id,
+    ruleId: rules[0]!.id,
+    created: true,
+  }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -984,7 +1050,13 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
     `B6: attr=${b6.attributeKey} rules=${b6.ruleIds.length} run=${b6.ruleRunId} created=${b6.created}`,
   )
 
-  // B7: await seedB7()
+  const b7 = await seedB7({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    activeProjectId: b2.activeId,
+  })
+  console.log(`B7: request=${b7.requestId} rule=${b7.ruleId} created=${b7.created}`)
+
   // B8: await seedB8()
   // B9: await seedB9()
 }

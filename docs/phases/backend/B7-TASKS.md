@@ -129,7 +129,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.10 — Events + audit + seed
 
-- [ ] **B7.10** — Events, audit coverage, seed
+- [x] **B7.10** — Events, audit coverage, seed
   - **Files:** `test/events/b7.test.ts`, `test/audit/b7.test.ts`, extend `scripts/seed.ts`
   - **Do:** Emit `request.created | submitted | approved | rejected | escalated | cancelled`. Assert `request.approved` once and that B6 `handleDomainEventForRules` can consume it (fixture). Audit every mutation. Seed one pending request + one approval rule.
   - **Accept:** `pnpm test events/b7` && `pnpm test audit/b7` && `pnpm test seed`
