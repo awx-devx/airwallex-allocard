@@ -3,7 +3,7 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F1 — Data layer (TanStack Query)
-**Active task:** Generate F1-TASKS.md when starting F1 (do not invent until asked)
+**Active task:** F1.0 — query keys + invalidation map (not started; do not implement until asked)
 **Last green `pnpm verify`:** 2026-08-12 (F0 phase exit)
 **Blocked on:** nothing
 
@@ -24,12 +24,12 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B8 Money in motion      | **complete** | 11 / 11 |
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
-| F     | F1 Data layer           | not started  | —       |
+| F     | F1 Data layer           | tasks ready  | 0 / 15  |
 | F     | F2 Utils                | not started  | —       |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-Task files are generated at the start of each phase. `F0-TASKS.md` exists — generate `F1-TASKS.md` from the F1 spec when you reach it. Do **not** invent F1-TASKS unless asked.
+Task files are generated at the start of each phase. `F1-TASKS.md` exists and F1.0 policies are locked — next implement session starts at **F1.0**.
 
 ---
 
@@ -60,11 +60,17 @@ _None yet._
 
 ## Notes for the next session
 
-**F0 complete (2026-08-12).** Next: **F1** data layer — generate `docs/phases/frontend/F1-TASKS.md` from the F1 spec when starting; do **not** invent F1-TASKS until asked.
+**F1-TASKS ready (2026-08-12).** Policies locked; **do not start F1.0 until asked.** Next implement: F1.0 query keys + invalidation map (STOP for review before F1.1).
 
-F0 phase exit: review + exit checklists signed off. Typed `call()`, `ApiError` behaviours, providers, server guards, route groups, shell slots, state conventions, `/dev/shell`, ESLint boundary + no-fetch proofs.
+F1.0 locked policies (do not reopen):
 
-Fetch lint caveat (accepted at exit): `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — not all of `src/client`; empirically only `src/client/api/client.ts` calls `fetch`.
+1. Dual infinite pagination — cursor for activity/audit; page-based for transactions/rule runs; **no** contract migration
+2. No browser hooks for webhook, remote-auth decide, attribute ingest
+3. Extra endpoint → file table in `F1-TASKS.md` (incl. `useSimulatePurchase` in `useRules.ts`)
+4. Spec aliases map to real contracts (`useUpdateCard`, rule CRUD as save-rule invalidation, `useSetBudget` → put, `useSetAttributeValue` → putValue)
+5. Extra `qk.*` keys in F1.0; ephemeral mutations in map as `[]`; liberal `cards()` invalidation
+
+F0 phase exit (prior): typed `call()`, `ApiError` behaviours, providers, guards, route groups, shell, states, `/dev/shell`, ESLint boundary + no-fetch proofs. Fetch lint caveat: `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — empirically only `src/client/api/client.ts` calls `fetch`.
 
 B9.0 locked policies (do not reopen):
 
