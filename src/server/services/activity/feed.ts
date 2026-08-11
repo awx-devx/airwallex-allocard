@@ -8,6 +8,11 @@
 import { connectDb } from '@/server/db/connect'
 import { AppError } from '@/server/http/errors'
 import {
+  decodeOpaqueCursor,
+  encodeOpaqueCursor,
+  type OpaqueCursorPayload,
+} from '@/server/http/opaqueCursor'
+import {
   projectIdsGrantingPermission,
   shouldSeeOnlyOwnRequests,
 } from '@/server/http/requirePermission'
@@ -37,33 +42,10 @@ const MEMBER_ACTIONS = ['member.added', 'member.updated', 'member.removed'] as c
 
 const FETCH_LIMIT = 200
 
-type CursorPayload = { at: string; id: string }
+export { encodeOpaqueCursor as encodeActivityCursor, decodeOpaqueCursor as decodeActivityCursor }
 
 function isElevated(orgRole: OrgRole): boolean {
   return orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN
-}
-
-export function encodeActivityCursor(at: string, id: string): string {
-  return Buffer.from(JSON.stringify({ at, id } satisfies CursorPayload), 'utf8').toString(
-    'base64url',
-  )
-}
-
-export function decodeActivityCursor(cursor: string): CursorPayload {
-  try {
-    const parsed = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8')) as unknown
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      typeof (parsed as CursorPayload).at !== 'string' ||
-      typeof (parsed as CursorPayload).id !== 'string'
-    ) {
-      throw new Error('invalid')
-    }
-    return parsed as CursorPayload
-  } catch {
-    throw AppError.validationFailed({ cursor: ['Invalid cursor'] })
-  }
 }
 
 function compareDesc(a: ActivityItem, b: ActivityItem): number {
@@ -77,7 +59,7 @@ function compareDesc(a: ActivityItem, b: ActivityItem): number {
 }
 
 /** True when `item` is strictly older than the cursor (at desc, id desc). */
-function isBeforeCursor(item: ActivityItem, cursor: CursorPayload): boolean {
+function isBeforeCursor(item: ActivityItem, cursor: OpaqueCursorPayload): boolean {
   if (item.at !== cursor.at) {
     return item.at < cursor.at
   }
@@ -428,7 +410,7 @@ export async function listActivity(
   })
 
   if (query.cursor !== undefined) {
-    const cursor = decodeActivityCursor(query.cursor)
+    const cursor = decodeOpaqueCursor(query.cursor)
     items = items.filter((item) => isBeforeCursor(item, cursor))
   }
 
@@ -436,10 +418,7 @@ export async function listActivity(
   const pageItems = items.slice(0, limit)
   const nextCursor =
     items.length > limit
-      ? encodeActivityCursor(
-          pageItems[pageItems.length - 1]!.at,
-          pageItems[pageItems.length - 1]!.id,
-        )
+      ? encodeOpaqueCursor(pageItems[pageItems.length - 1]!.at, pageItems[pageItems.length - 1]!.id)
       : null
 
   return { items: pageItems, nextCursor }

@@ -89,7 +89,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.2 — Audit query HTTP
 
-- [ ] **B9.2** — Filterable audit list
+- [x] **B9.2** — Filterable audit list
   - **Files:**
     - `src/server/repositories/auditLogs.ts` (extend if list helpers missing — check existing first)
     - `src/server/services/audit/query.ts`
@@ -102,6 +102,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     3. Response includes `actorType` so RULE vs USER is visible; `before`/`after` passed through for diff UI.
   - **Pattern:** `src/server/services/audit/log.ts`, `src/app/api/projects/[id]/history/route.ts`
   - **Accept:** `pnpm test api/audit` — actorType present; rule vs human distinguishable; matrix
+  - **Notes:** Cursor shared via `opaqueCursor.ts` (`{ at, id }` base64url). Repo cursor keeps `orgId` top-level for `tenantScoped` (no wrapping `$and`).
 
 ### B9.3 — CSV export streaming
 

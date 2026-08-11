@@ -89,16 +89,12 @@ export async function listAuditLogs(
     query.at = at
   }
 
-  const and: Record<string, unknown>[] = [query]
+  // Keep orgId at the top level for tenantScoped — do not wrap the whole filter in $and.
   if (filter.cursor !== undefined && isValidObjectId(filter.cursor.id)) {
-    and.push(buildCursorClause(filter.cursor))
+    Object.assign(query, buildCursorClause(filter.cursor))
   }
 
-  const docs = await AuditLogModel.find(and.length === 1 ? query : { $and: and })
-    .sort({ at: -1, _id: -1 })
-    .limit(limit)
-    .lean()
-    .exec()
+  const docs = await AuditLogModel.find(query).sort({ at: -1, _id: -1 }).limit(limit).lean().exec()
 
   return docs.map((doc) => toAuditLog(doc))
 }

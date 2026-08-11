@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.2 — Filterable audit list
-**Last green `pnpm verify`:** 2026-08-12 (B9.1)
+**Active task:** B9.3 — Streaming exports
+**Last green `pnpm verify`:** 2026-08-12 (B9.2)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 2 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 3 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B9.1 complete. Active: **B9.2** — filterable audit list HTTP.
+B9.2 complete. Active: **B9.3** — streaming CSV exports.
 
 B9.0 locked policies (do not reopen):
 
