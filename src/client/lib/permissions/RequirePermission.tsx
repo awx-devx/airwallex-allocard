@@ -22,6 +22,33 @@ export type RequirePermissionProps = {
   children: ReactNode
 }
 
+export type RequirePermissionDecision =
+  | { kind: 'children'; children: ReactNode }
+  | { kind: 'fallback'; fallback: ReactNode; denialMessage: string; permission: Permission }
+  | { kind: 'null' }
+
+/** Pure gate decision — tested without React / TanStack Query. */
+export function decideRequirePermission(input: {
+  allowed: boolean
+  children: ReactNode
+  fallback?: ReactNode
+  denialMessage: string
+  permission: Permission
+}): RequirePermissionDecision {
+  if (input.allowed) {
+    return { kind: 'children', children: input.children }
+  }
+  if (input.fallback !== null && input.fallback !== undefined) {
+    return {
+      kind: 'fallback',
+      fallback: input.fallback,
+      denialMessage: input.denialMessage,
+      permission: input.permission,
+    }
+  }
+  return { kind: 'null' }
+}
+
 export function RequirePermission({
   projectId,
   permission,
@@ -31,15 +58,27 @@ export function RequirePermission({
   children,
 }: RequirePermissionProps) {
   const { can, explain } = useCan(projectId)
-  if (can(permission, subject)) {
-    return children
+  const decision = decideRequirePermission({
+    allowed: can(permission, subject),
+    children,
+    fallback,
+    denialMessage: explain(permission, subject, reasons),
+    permission,
+  })
+  switch (decision.kind) {
+    case 'children':
+      return decision.children
+    case 'fallback':
+      return (
+        <PermissionTooltip permission={decision.permission} message={decision.denialMessage}>
+          {decision.fallback}
+        </PermissionTooltip>
+      )
+    case 'null':
+      return null
+    default: {
+      const _exhaustive: never = decision
+      return _exhaustive
+    }
   }
-  if (fallback !== null && fallback !== undefined) {
-    return (
-      <PermissionTooltip permission={permission} message={explain(permission, subject, reasons)}>
-        {fallback}
-      </PermissionTooltip>
-    )
-  }
-  return null
 }

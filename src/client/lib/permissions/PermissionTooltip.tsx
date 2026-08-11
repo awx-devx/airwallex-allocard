@@ -15,13 +15,22 @@ export type PermissionTooltipProps = {
   children: ReactNode
 }
 
+/** Pure title resolution — tested without React. */
+export function resolvePermissionTooltipTitle(
+  permission: Permission,
+  message?: string,
+  reasons?: PermissionReason[],
+): string {
+  const fromReasons = reasons?.find((r) => r.permission === permission && !r.allowed)?.message
+  return message ?? fromReasons ?? `Missing ${permission}`
+}
+
 export function PermissionTooltip({
   permission,
   message,
   reasons,
   children,
 }: PermissionTooltipProps) {
-  const fromReasons = reasons?.find((r) => r.permission === permission && !r.allowed)?.message
-  const title = message ?? fromReasons ?? `Missing ${permission}`
+  const title = resolvePermissionTooltipTitle(permission, message, reasons)
   return <span title={title}>{children}</span>
 }

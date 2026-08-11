@@ -371,17 +371,17 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] No money arithmetic outside `src/lib/money.ts` (and server Airwallex mapping)
-- [ ] Zero-decimal currencies handled via shared `currencyExponent`
-- [ ] Form schemas imported from `shared`, never redefined in client forms
-- [ ] `can()` / `useCan` documented as non-authoritative
-- [ ] `can()` tested against the same scope fixtures as B3 (`scopeCoversSubject` cases)
-- [ ] No second formula or DSL parser in the client
-- [ ] Every helper shipped here has a test
-- [ ] Spec’s review checklist in `F2-utils.md` signed off
-- [ ] `STATUS.md` updated: active phase F3, generate `F3-TASKS.md` when starting F3
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] No money arithmetic outside `src/lib/money.ts` (and server Airwallex mapping)
+- [x] Zero-decimal currencies handled via shared `currencyExponent`
+- [x] Form schemas imported from `shared`, never redefined in client forms
+- [x] `can()` / `useCan` documented as non-authoritative
+- [x] `can()` tested against the same scope fixtures as B3 (`scopeCoversSubject` cases)
+- [x] No second formula or DSL parser in the client
+- [x] Every helper shipped here has a test
+- [x] Spec’s review checklist in `F2-utils.md` signed off
+- [ ] `STATUS.md` updated: active phase F3, generate `F3-TASKS.md` when starting F3 - _Held: do not advance to F3 until explicitly asked._
 
 ## Out of scope (do not do in F2)
 

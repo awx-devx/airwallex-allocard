@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F2 — Utils
-**Active task:** F2 phase exit (pending review)
-**Last green `pnpm verify`:** 2026-08-12 (F2.10)
-**Blocked on:** nothing
+**Active task:** F2 phase exit signed off (held before F3)
+**Last green `pnpm verify`:** 2026-08-12 (F2 exit — permission wrapper tests)
+**Blocked on:** nothing — awaiting explicit start of F3 (do not generate `F3-TASKS.md` until asked)
 
 ---
 
@@ -25,11 +25,11 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
-| F     | F2 Utils                | in progress  | 11 / 11 |
+| F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-Task file: `docs/phases/frontend/F2-TASKS.md`. Do **not** invent F3-TASKS until asked.
+F2 implementation + review/exit checklists signed off (except F3 cutover). Do **not** invent `F3-TASKS.md` until asked.
 
 ---
 
@@ -60,9 +60,11 @@ _None yet._
 
 ## Notes for the next session
 
-**F2 implementation tasks complete (2026-08-12).** Next: **phase exit** checklist in `F2-TASKS.md` (do not start F3 until exit is signed off).
+**F2 complete (2026-08-12), held before F3.** Exit + `F2-utils.md` review checklists signed off. Remaining unchecked exit item: advance `STATUS.md` to F3 / generate `F3-TASKS.md` — only when explicitly asked.
 
-F2.10: public barrels + money.boundary.test.ts scan of shell/states/(app).
+F2 exit follow-up: `decideRequirePermission` + `resolvePermissionTooltipTitle` tests closed the RequirePermission / PermissionTooltip coverage gap.
+
+F2.0 locked policies (do not reopen) — see `F2-TASKS.md`. Shared currency + scope; `useCan` (not F1 `usePermissions` rename); no `reasons[]` on me/permissions.
 
 F1.0 locked policies (do not reopen):
 

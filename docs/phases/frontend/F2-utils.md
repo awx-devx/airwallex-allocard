@@ -13,10 +13,10 @@ Every helper a screen will reach for, built and tested once. The test of this ph
 The backend stores integer minor units; the UI must never do arithmetic on displayed strings.
 
 ```ts
-formatMoney({ amount: 402350, currency: 'USD' })        // "$4,023.50"
+formatMoney({ amount: 402350, currency: 'USD' }) // "$4,023.50"
 formatMoneyCompact({ amount: 402350, currency: 'USD' }) // "$4.02K"
-parseMoneyInput('4,023.50', 'USD')                      // { amount: 402350, ... }
-percentOf(spent, total)                                 // integer-safe
+parseMoneyInput('4,023.50', 'USD') // { amount: 402350, ... }
+percentOf(spent, total) // integer-safe
 ```
 
 Locale-aware via `Intl.NumberFormat`. Zero-decimal currencies (JPY, KRW) must be handled — a hardcoded divide-by-100 is wrong for them, and it's the kind of bug that only shows up in a demo with a Japanese vendor.
@@ -40,12 +40,12 @@ A client mirror of the server's check, consuming `GET /api/me/permissions`:
 ```ts
 const { can } = usePermissions(projectId)
 can('card.create')
-can('card.manage', { cardId })   // scope-aware
+can('card.manage', { cardId }) // scope-aware
 ```
 
 **This is a convenience, never a control.** Hiding a button is UX; the server rejecting the mutation is security. Say so in the file header, because someone will eventually be tempted to lean on it.
 
-Pair it with a `<RequirePermission>` wrapper and a `<PermissionTooltip>` that explains *why* an action is unavailable, using the `reasons[]` from B3.
+Pair it with a `<RequirePermission>` wrapper and a `<PermissionTooltip>` that explains _why_ an action is unavailable, using the `reasons[]` from B3.
 
 ### Forms
 
@@ -82,13 +82,13 @@ Pure functions, so test them properly:
 
 ## Review checklist
 
-- [ ] No money arithmetic anywhere outside these helpers
-- [ ] Zero-decimal currencies handled
-- [ ] Form schemas are imported from `shared`, never redefined
-- [ ] `can()` is documented as non-authoritative
-- [ ] `can()` is tested against the same fixtures as the server's checker
-- [ ] No second formula or DSL parser exists in the client
-- [ ] Every helper has a test; none are added during Track A
+- [x] No money arithmetic anywhere outside these helpers
+- [x] Zero-decimal currencies handled
+- [x] Form schemas are imported from `shared`, never redefined
+- [x] `can()` is documented as non-authoritative
+- [x] `can()` is tested against the same fixtures as the server's checker
+- [x] No second formula or DSL parser exists in the client
+- [x] Every helper has a test; none are added during Track A - _(Track A not started — helper coverage confirmed for F2; Track A addendum is process going forward.)_
 
 ## Out of scope
 
