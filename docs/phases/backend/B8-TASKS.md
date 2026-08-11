@@ -100,7 +100,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.7 — Transaction HTTP API
 
-- [ ] **B8.7** — List/get transactions + declined
+- [x] **B8.7** — List/get transactions + declined
   - **Files:** `src/app/api/transactions/route.ts`, `src/app/api/transactions/[id]/route.ts`, `src/app/api/transactions/declined/route.ts`, `src/app/api/projects/[id]/transactions/route.ts`, `src/app/api/cards/[id]/transactions/route.ts`, matrix tests
   - **Do:** Permissions per spec. Scoped views. Get-by-id includes lifecycle event chain.
   - **Pattern:** `src/app/api/requests/` matrix style

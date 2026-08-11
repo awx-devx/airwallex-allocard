@@ -3,7 +3,7 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B8 — Webhooks, transactions & remote authorization
-**Active task:** B8.7 — List/get transactions + declined
+**Active task:** B8.8 — Receipt upload/delete + missing-receipt sweep
 **Last green `pnpm verify`:** 2026-08-11 (B8.6)
 **Blocked on:** nothing
 
@@ -21,7 +21,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
-| B     | B8 Money in motion      | **in progress** | 7 / 11  |
+| B     | B8 Money in motion      | **in progress** | 8 / 11  |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
