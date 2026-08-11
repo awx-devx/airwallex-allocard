@@ -127,6 +127,15 @@ async function emitTransitionEvents(
       type: DomainEventType.PROJECT_CLOSED,
       payload: { projectId: project.id, from, to },
     })
+    return
+  }
+
+  if (to === ProjectStatus.ARCHIVED) {
+    await publishEvent({
+      ...base,
+      type: DomainEventType.PROJECT_ARCHIVED,
+      payload: { projectId: project.id, from, to },
+    })
   }
 }
 

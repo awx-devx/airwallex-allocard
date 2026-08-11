@@ -9,6 +9,7 @@ export const DomainEventType = {
   PROJECT_LAUNCHED: 'project.launched',
   PROJECT_CLOSING: 'project.closing',
   PROJECT_CLOSED: 'project.closed',
+  PROJECT_ARCHIVED: 'project.archived',
   BUDGET_APPROVED: 'budget.approved',
   BUDGET_UPDATED: 'budget.updated',
   BUDGET_THRESHOLD_CROSSED: 'budget.threshold_crossed',

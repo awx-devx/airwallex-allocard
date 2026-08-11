@@ -34,6 +34,10 @@ export type UpdateClosureStepPatch = {
 }
 
 export type MarkCompleteClosureInput = {
+  /**
+   * When provided, marks the closure finished.
+   * Omit to only store/update `finalReportSnapshot` (e.g. FINAL_REPORT before ARCHIVE).
+   */
   completedAt?: Date
   finalReportSnapshot: FinalReport
 }
@@ -156,7 +160,7 @@ export async function updateStep(
 }
 
 /**
- * Mark closure finished and store the final report snapshot.
+ * Store the final report snapshot. Pass `completedAt` to mark the closure finished.
  * Cross-org / missing → null.
  */
 export async function markComplete(
@@ -164,14 +168,16 @@ export async function markComplete(
   projectId: string,
   input: MarkCompleteClosureInput,
 ): Promise<ProjectClosure | null> {
+  const $set: Record<string, unknown> = {
+    finalReportSnapshot: input.finalReportSnapshot,
+  }
+  if (input.completedAt !== undefined) {
+    $set.completedAt = input.completedAt
+  }
+
   const doc = await ProjectClosureModel.findOneAndUpdate(
     { orgId: ctx.orgId, projectId },
-    {
-      $set: {
-        completedAt: input.completedAt ?? new Date(),
-        finalReportSnapshot: input.finalReportSnapshot,
-      },
-    },
+    { $set },
     { returnDocument: 'after' },
   )
     .lean()

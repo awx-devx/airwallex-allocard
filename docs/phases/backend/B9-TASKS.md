@@ -197,7 +197,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.8 — Closure complete (close cards, report, archive)
 
-- [ ] **B9.8** — Complete closure
+- [x] **B9.8** — Complete closure
   - **Files:**
     - `src/server/services/closure/complete.ts`
     - `src/app/api/projects/[id]/closure/complete/route.ts`
@@ -211,6 +211,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     5. Resumable: re-calling complete skips DONE steps.
   - **Pattern:** `src/server/services/cards/` close, `src/server/services/projects/transition.ts`
   - **Accept:** `pnpm test api/closure-complete` — confirms required; resume; archived rejects PATCH; final report totals match ledger
+  - **Notes:** Both confirm literals required (422 otherwise). Complete advances SETTLE/REVOKE, closes cards via `closeCard({confirm:true})` only, CLOSING→CLOSED→ARCHIVED via `transitionProject` (emits `project.closed` / `project.archived`). Final report = project report + closedAt/archivedAt/transactionCount/accessHistoryCount (`getProjectAccessHistory`); `markComplete` stores snapshot (completedAt only when ARCHIVED). Resume/idempotent skip DONE. GET `/report/final` = `project.view`.
 
 ### B9.9 — Stale access sweep (access reviews)
 
