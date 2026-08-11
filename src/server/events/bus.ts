@@ -1,11 +1,12 @@
 import type { DomainEvent, DomainEventType } from '@/server/events/types'
+import { EVENTS_STREAM, getEventStream } from '@/server/events/stream'
 
 export type EventPublisher = (event: DomainEvent) => void | Promise<void>
 
 const published: DomainEvent[] = []
 let publisher: EventPublisher = defaultPublisher
 
-function defaultPublisher(event: DomainEvent): void {
+async function defaultPublisher(event: DomainEvent): Promise<void> {
   published.push(event)
   console.info('[events] publish', {
     type: event.type,
@@ -13,6 +14,8 @@ function defaultPublisher(event: DomainEvent): void {
     subjectType: event.subjectType,
     subjectId: event.subjectId,
   })
+  // Dual-write: in-memory capture for tests + stream for the worker.
+  await getEventStream().publish(EVENTS_STREAM, event)
 }
 
 /**

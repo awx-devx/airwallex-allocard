@@ -131,12 +131,12 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test api/rule-runs` and `pnpm test api/card-explain` and `pnpm test api/rules-simulate`
   - **Notes:** Simulate returns `{ runs, cardDiffs, conflicts }` with zero writes. Explain re-runs the pure pipeline with `ignoreTrigger` for the card's project, re-merges contributions for that card alone (so multi-card explanations do not leak), and attaches `lastRuleRunId` from history. Attribute readings used by governing rules are projected into the `attributeValueSchema` shape with synthetic ids. Cross-org rule-run get → 404.
 
-- [ ] **B6.11** — Worker process (XREADGROUP consumers + debounce + SIGTERM)
+- [x] **B6.11** — Worker process (XREADGROUP consumers + debounce + SIGTERM)
   - **Files:** `src/worker/index.ts`, `consumers.ts`, `scheduler.ts`, `debounce.ts`, package.json scripts `dev:worker` / `worker`, tests
   - **Do:** Per ARCHITECTURE §8: blocking consumers on events stream; trailing debounce per `(ruleId, subjectId)`; scheduled sweeps as backstop only; `SIGTERM` finishes in-flight job and releases locks; `ROLE=worker` gate. Twenty events → one evaluation (debounce test).
   - **Pattern:** `docs/ARCHITECTURE.md` §8 worker sketch; `redisKeys.lockRule` / `lockJob`
   - **Accept:** `pnpm test worker`
-  - **Notes:**
+  - **Notes:** Memory event stream for tests; `publishEvent` dual-writes to the in-memory list and the `events` stream. Debounce window 1s + `lock:rule` NX PX 5s. Scheduler jobs are noops until later phases fill them — B6.12 wires `evaluateAndApply`. `ROLE≠worker` refuses to start. Scripts: `dev:worker` / `worker` set `ROLE=worker`.
 
 - [ ] **B6.12** — Wire domain events → evaluation; five RULES-ENGINE §6 worked examples
   - **Files:** event handlers under `src/server/events/handlers/` or worker consumers; fixture-backed e2e tests
