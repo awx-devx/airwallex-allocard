@@ -147,7 +147,7 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
 
 ### F1.1 — useCall + CSV download helper
 
-- [ ] **F1.1** — `useCall` + export download (not JSON `call`)
+- [x] **F1.1** — `useCall` + export download (not JSON `call`)
   - **Files:**
     - `src/client/hooks/useCall.ts`
     - `src/client/hooks/useCall.test.ts`
@@ -165,11 +165,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     4. Unit-test `useCall` org injection by mocking `call` and `getActiveOrgId` / wrapping ActiveOrg if needed. Prefer testing a thin `withOrgId(args)` helper if React render is painful — do **not** add `@testing-library/react` unless a hook test truly cannot avoid it; prefer QueryClient + plain `queryFn` tests in later tasks.
   - **Pattern:** `src/client/api/client.ts` (`call`, `CallArgs`) + `src/client/providers/activeOrg.ts` (`getActiveOrgId`) + `src/shared/contracts/export.ts`
   - **Accept:** `pnpm test client/hooks/useCall` and `pnpm test client/api/download`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.2 — Hook conventions helper (copy template for all domains)
 
-- [ ] **F1.2** — Shared hook helpers + first-domain pattern doc in code
+- [x] **F1.2** — Shared hook helpers + first-domain pattern doc in code
   - **Files:**
     - `src/client/hooks/queryDefaults.ts`
     - `src/client/hooks/queryDefaults.test.ts`
@@ -183,11 +183,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Document in a 5-line comment at top of `queryDefaults.ts`: every hook uses `useCall()` / `call` + `qk.*`; mutations call `invalidateFor(qc, 'useX', ctx)` on settle; types are only `z.infer` from contracts — no manual response interfaces.
   - **Pattern:** `src/client/providers/queryClient.ts` + F1 “Query defaults” / “Special cases”
   - **Accept:** `pnpm test client/hooks/queryDefaults`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.3 — useSession
 
-- [ ] **F1.3** — `useSession.ts` (template for all later domain files)
+- [x] **F1.3** — `useSession.ts` (template for all later domain files)
   - **Files:** `src/client/hooks/useSession.ts`, `src/client/hooks/useSession.test.ts`
   - **Do:** One hook per contract below. Types = contract input/output only.
     | Hook                  | Kind     | Contract                         | Path / I/O                                                                                                                                                                                                                                                            |
@@ -201,11 +201,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - After successful `useMe`, if `activeOrg?.id` and no stored org, call `initActiveOrgId(activeOrg.id)` (F0.9).
   - **Pattern:** Copy structure from this task into F1.4+; wire via `useQuery`/`useMutation` + `useCall` + `qk` + `invalidateFor`. Tests: mock `call`, run `queryClient.fetchQuery` / `mutateAsync` with the same `queryFn`/`mutationFn` the hooks use (export the option factories if needed).
   - **Accept:** `pnpm test client/hooks/useSession`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.4 — useOrganizations
 
-- [ ] **F1.4** — `useOrganizations.ts` (orgs + invites)
+- [x] **F1.4** — `useOrganizations.ts` (orgs + invites)
   - **Files:** `src/client/hooks/useOrganizations.ts`, `src/client/hooks/useOrganizations.test.ts`
   - **Do:**
     | Hook                      | Contract                    | Method path                          | Input → Output                                                                                                                                                                                                                                       |
@@ -224,11 +224,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Invalidate per F1.0 map. Keys: `qk.org`, `orgMembers`, `invites`, `invitePreview`.
   - **Pattern:** `src/client/hooks/useSession.ts` (F1.3) + contracts `src/shared/contracts/organization.ts`, `invite.ts`
   - **Accept:** `pnpm test client/hooks/useOrganizations`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.5 — useProjects
 
-- [ ] **F1.5** — `useProjects.ts`
+- [x] **F1.5** — `useProjects.ts`
   - **Files:** `src/client/hooks/useProjects.ts`, `src/client/hooks/useProjects.test.ts`
   - **Do:**
     | Hook                    | Contract                | Notes                                                                                                                                                                              |
@@ -247,11 +247,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Keys: `qk.projects(f)`, `project(id)`, `workstreams(id)`, `projectHistory(id)`.
   - **Pattern:** `src/client/hooks/useSession.ts` + `src/shared/contracts/project.ts`
   - **Accept:** `pnpm test client/hooks/useProjects`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.6 — useMembers
 
-- [ ] **F1.6** — `useMembers.ts` (project members, roles, access reviews)
+- [x] **F1.6** — `useMembers.ts` (project members, roles, access reviews)
   - **Files:** `src/client/hooks/useMembers.ts`, `src/client/hooks/useMembers.test.ts`
   - **Do:**
     | Hook                        | Contract                      | I/O                                                                                                                                                       |
@@ -271,11 +271,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Keys: `qk.projectMembers`, `accessHistory`, `roles`, `accessReviews`.
   - **Pattern:** `src/client/hooks/useProjects.ts` + `src/shared/contracts/projectMember.ts`, `role.ts`, `accessReview.ts`
   - **Accept:** `pnpm test client/hooks/useMembers`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.7 — useBudget
 
-- [ ] **F1.7** — `useBudget.ts`
+- [x] **F1.7** — `useBudget.ts`
   - **Files:** `src/client/hooks/useBudget.ts`, `src/client/hooks/useBudget.test.ts`
   - **Do:**
     | Hook                                   | Contract               | I/O                                                                                                                                                                                        |
@@ -296,11 +296,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Money: integer minor units only — never float.
   - **Pattern:** `src/client/hooks/useProjects.ts` + `src/shared/contracts/budget.ts`
   - **Accept:** `pnpm test client/hooks/useBudget`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.8 — useCards
 
-- [ ] **F1.8** — `useCards.ts` (cards + cardholders + optimistic freeze)
+- [x] **F1.8** — `useCards.ts` (cards + cardholders + optimistic freeze)
   - **Files:** `src/client/hooks/useCards.ts`, `src/client/hooks/useCards.test.ts`
   - **Do:**
     | Hook                                  | Contract                   | Notes                                                                                                                                                         |
@@ -322,11 +322,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Optimistic updates **only** for freeze/unfreeze (and receipt in F1.11). Everything else waits for server.
   - **Pattern:** `src/client/hooks/useSession.ts` + `src/shared/contracts/card.ts`, `cardholder.ts`; optimistic: TanStack `onMutate` / `onError` / `onSettled` docs pattern — keep rollback explicit in tests
   - **Accept:** `pnpm test client/hooks/useCards` — assert freeze rollback on `ApiError`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.9 — useRules
 
-- [ ] **F1.9** — `useRules.ts` (attributes, rules, simulate, runs, explain)
+- [x] **F1.9** — `useRules.ts` (attributes, rules, simulate, runs, explain)
   - **Files:** `src/client/hooks/useRules.ts`, `src/client/hooks/useRules.test.ts`
   - **Do:**
     | Hook                          | Contract                               | Notes                                                                                                                                                                                        |
@@ -350,11 +350,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Do **not** hook `attributeContracts.ingest` or `remoteAuthContracts.decide`.
   - **Pattern:** `src/client/hooks/useCards.ts` + `src/shared/contracts/rule.ts`, `ruleRun.ts`, `attribute.ts`, `remoteAuth.ts`
   - **Accept:** `pnpm test client/hooks/useRules` — simulate hooks do not `setQueryData` for runs/transactions
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.10 — useRequests
 
-- [ ] **F1.10** — `useRequests.ts` (requests, policy, approvals, approval rules)
+- [x] **F1.10** — `useRequests.ts` (requests, policy, approvals, approval rules)
   - **Files:** `src/client/hooks/useRequests.ts`, `src/client/hooks/useRequests.test.ts`
   - **Do:**
     | Hook                              | Contract                                 | Notes                                                                                                                                                                    |
@@ -373,11 +373,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     | `usePutApprovalRules`             | `.put`                                   | `PUT`, body = approval rule array schema                                                                                                                                 |
   - **Pattern:** `src/client/hooks/useBudget.ts` + `src/shared/contracts/purchaseRequest.ts`, `approvalRule.ts`
   - **Accept:** `pnpm test client/hooks/useRequests`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.11 — useTransactions
 
-- [ ] **F1.11** — `useTransactions.ts` (lists, receipts optimistic; ledger-only — no demo purchase)
+- [x] **F1.11** — `useTransactions.ts` (lists, receipts optimistic; ledger-only — no demo purchase)
   - **Files:** `src/client/hooks/useTransactions.ts`, `src/client/hooks/useTransactions.test.ts`
   - **Do:**
     | Hook                                         | Contract                    | Notes                                                                                                                                                                                                                                      |
@@ -394,11 +394,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     - Only freeze/unfreeze (F1.8) and receipt attach/delete are optimistic in F1.
   - **Pattern:** `src/client/hooks/useCards.ts` (optimistic) + `src/shared/contracts/transaction.ts`
   - **Accept:** `pnpm test client/hooks/useTransactions`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.12 — useReports
 
-- [ ] **F1.12** — `useReports.ts` (activity, audit, reports, closure, exports)
+- [x] **F1.12** — `useReports.ts` (activity, audit, reports, closure, exports)
   - **Files:** `src/client/hooks/useReports.ts`, `src/client/hooks/useReports.test.ts`
   - **Do:**
     | Hook                                                                              | Contract                     | Notes                                                                                                                                                                                                                                                                                          |
@@ -417,11 +417,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     | `useExportBudget` / `useExportTransactions` / `useExportCards` / `useExportAudit` | —                            | thin wrappers calling `downloadExport` from F1.1 — **not** `useQuery`                                                                                                                                                                                                                          |
   - **Pattern:** `src/client/hooks/useTransactions.ts` (infinite) + `src/client/api/download.ts` + contracts `activity.ts`, `audit.ts`, `report.ts`, `closure.ts`, `export.ts`
   - **Accept:** `pnpm test client/hooks/useReports` — cursor `getNextPageParam` returns `nextCursor`; export helpers call `downloadExport` not `call`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.13 — Barrel + no direct `call` from UI surfaces
 
-- [ ] **F1.13** — Hooks barrel + ESLint: screens/shell must not call `call()`
+- [x] **F1.13** — Hooks barrel + ESLint: screens/shell must not call `call()`
   - **Files:**
     - `src/client/hooks/index.ts`
     - `eslint.config.mjs` (extend)
@@ -433,11 +433,11 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     4. Do **not** forbid `call` inside `src/client/hooks/**`.
   - **Pattern:** F0.15 in `docs/phases/frontend/F0-TASKS.md` + current `eslint.config.mjs`
   - **Accept:** Proof failure observed; proofs deleted; `pnpm lint` green
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ### F1.14 — Inventory completeness test
 
-- [ ] **F1.14** — Every browser-facing contract has exactly one hook
+- [x] **F1.14** — Every browser-facing contract has exactly one hook
   - **Files:** `src/client/hooks/contractCoverage.test.ts`
   - **Do:**
     1. Import all `*Contracts` objects from `src/shared/contracts` (except `webhookContracts`, `remoteAuthContracts.decide`, `attributeContracts.ingest` — listed exclusions).
@@ -446,7 +446,7 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
     4. Cross-check mutation names ⊆ `Object.keys(invalidationMap)` (ephemeral mutations that invalidate nothing must still appear with `[]`).
   - **Pattern:** `test/helpers/contract.ts` spirit — mechanical completeness, not HTTP
   - **Accept:** `pnpm test client/hooks/contractCoverage`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; `pnpm verify` green.
 
 ---
 

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F1 — Data layer (TanStack Query)
-**Active task:** F1.0 — query keys + invalidation map (not started; do not implement until asked)
-**Last green `pnpm verify`:** 2026-08-12 (F0 phase exit)
+**Active task:** Phase exit pending (F1.0–F1.14 complete)
+**Last green `pnpm verify`:** 2026-08-12 (F1.14)
 **Blocked on:** nothing
 
 ---
@@ -24,12 +24,12 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B8 Money in motion      | **complete** | 11 / 11 |
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
-| F     | F1 Data layer           | tasks ready  | 0 / 15  |
+| F     | F1 Data layer           | in progress  | 15 / 15 |
 | F     | F2 Utils                | not started  | —       |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-Task files are generated at the start of each phase. `F1-TASKS.md` exists and F1.0 policies are locked — next implement session starts at **F1.0**.
+Task files are generated at the start of each phase. F1 implementation tasks F1.0–F1.14 are complete — **phase exit checklist not run yet**.
 
 ---
 
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-**F1-TASKS ready (2026-08-12).** Policies locked; **do not start F1.0 until asked.** Next implement: F1.0 query keys + invalidation map (STOP for review before F1.1).
+**F1 implementation complete through F1.14 (2026-08-12).** Stopped before phase exit per request. Next: run F1 phase exit checklist + F1-data-layer review checklist; then generate `F2-TASKS.md`.
 
 F1.0 locked policies (do not reopen):
 
@@ -70,7 +70,7 @@ F1.0 locked policies (do not reopen):
 4. Spec aliases map to real contracts (`useUpdateCard`, rule CRUD as save-rule invalidation, `useSetBudget` → put, `useSetAttributeValue` → putValue)
 5. Extra `qk.*` keys in F1.0; ephemeral mutations in map as `[]`; liberal `cards()` invalidation
 
-F0 phase exit (prior): typed `call()`, `ApiError` behaviours, providers, guards, route groups, shell, states, `/dev/shell`, ESLint boundary + no-fetch proofs. Fetch lint caveat: `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — empirically only `src/client/api/client.ts` calls `fetch`.
+F0 phase exit (prior): typed `call()`, `ApiError` behaviours, providers, guards, route groups, shell, states, `/dev/shell`, ESLint boundary + no-fetch proofs. Fetch lint caveat: `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — empirically only `src/client/api/client.ts` calls `fetch` (plus F1 `download.ts` for CSV streams).
 
 B9.0 locked policies (do not reopen):
 
