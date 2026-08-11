@@ -10,7 +10,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ## Contracts first
 
-- [ ] **B7.0** — Schemas and contracts
+- [x] **B7.0** — Schemas and contracts
   - **Files:**
     - `src/shared/enums/purchaseRequestStatus.ts` — `DRAFT | PENDING | APPROVED | REJECTED | EXPIRED | CANCELLED`
     - `src/shared/enums/policyOutcome.ts` — `NO_APPROVAL_REQUIRED | APPROVAL_REQUIRED | NOT_PERMITTED`
@@ -47,6 +47,11 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
   - **Pattern:** `src/shared/contracts/budget.ts`, `src/shared/schemas/budget.ts`
   - **STOP and get reviewed before implementing.** Highest-risk: status enum (CANCELLED vs EXPIRED), create→DRAFT vs auto-PENDING, `approverSelection` shape, commitment/release pairing with B4 entry types.
   - **Accept:** `pnpm typecheck`
+  - **Notes:** Locked in B7.0 (awaiting review before B7.1):
+    1. Status includes both `CANCELLED` (user cancel from DRAFT/PENDING) and `EXPIRED` (system timeout terminal) — ARCHITECTURE sketch omitted CANCELLED; events require `request.cancelled`.
+    2. Create always → `DRAFT`; submit runs policy → `PENDING` / `APPROVED` / reject. No auto-PENDING on create.
+    3. `approverSelection` / `escalateTo` are discriminated `{ type: ROLE|NAMED_USERS|PROJECT_OWNER, roleKey?|userIds? }` — same shape for both.
+    4. Ledger pairing uses existing B4 `BudgetEntrySourceType.PURCHASE_REQUEST` + `COMMITMENT` on approve / matching `RELEASE` on REJECTED|CANCELLED|EXPIRED.
 
 ## Implementation tasks
 

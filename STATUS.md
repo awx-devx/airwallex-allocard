@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7.0 — Schemas and contracts (stop for review after)
-**Last green `pnpm verify`:** 2026-08-11 (B6 phase exit)
-**Blocked on:** nothing
+**Active task:** B7.1 — PurchaseRequest + ApprovalRule models (blocked on B7.0 review)
+**Last green `pnpm verify`:** 2026-08-11 (B7.0)
+**Blocked on:** B7.0 contract review — do not start B7.1 until signed off
 
 ---
 
@@ -20,7 +20,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 0 / 11  |
+| B     | B7 Requests & approvals | **in progress** | 1 / 11  |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -54,13 +54,25 @@ _None yet._
 
 ## Decisions pending user review
 
-_None yet._
+**B7.0 contracts — please confirm before B7.1:**
+
+1. Status enum: `DRAFT | PENDING | APPROVED | REJECTED | EXPIRED | CANCELLED` (CANCELLED added vs ARCHITECTURE sketch)
+2. Create always → `DRAFT`; policy runs only on submit (no auto-PENDING on create)
+3. Approver selector: discriminated `{ type: ROLE | NAMED_USERS | PROJECT_OWNER, roleKey? | userIds? }` for both `approverSelection` and `escalateTo`
+4. Commitment/release: B4 `PURCHASE_REQUEST` sourceType; APPROVED→COMMITMENT; REJECTED|CANCELLED|EXPIRED→RELEASE
 
 ---
 
 ## Notes for the next session
 
-Active: **B7.0** — write purchase-request / approval-rule schemas and contracts, then stop for review.
+Active: **B7.1** after B7.0 review sign-off — do not implement models until the decisions above are confirmed.
+
+B7.0 locked policies (pending review — do not reopen once signed off):
+
+1. Status includes both CANCELLED (user) and EXPIRED (system)
+2. Create → DRAFT only; submit runs policy
+3. ApproverSelection discriminator shape for selection + escalateTo
+4. Ledger via existing B4 PURCHASE_REQUEST sourceType
 
 B6 exit locked (do not reopen):
 

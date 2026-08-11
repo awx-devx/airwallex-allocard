@@ -167,4 +167,28 @@ export type {
   SimulateRulesInput,
   SimulateRulesOutput,
 } from '@/shared/types/ruleRun'
+export type {
+  ApprovalEntry,
+  ApprovalsCount,
+  CreatePurchaseRequestInput,
+  DecidePurchaseRequestInput,
+  ListApprovalsQuery,
+  ListPurchaseRequestsQuery,
+  PolicyDecision,
+  PolicyPreviewInput,
+  PurchaseRequest,
+  PurchaseRequestList,
+  UpdatePurchaseRequestInput,
+} from '@/shared/types/purchaseRequest'
+export type {
+  ApprovalRule,
+  ApprovalRuleBody,
+  ApprovalRuleList,
+  ApproverSelector,
+  PutApprovalRulesInput,
+} from '@/shared/types/approvalRule'
+export type { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
+export type { PolicyOutcome } from '@/shared/enums/policyOutcome'
+export type { ApprovalDecision } from '@/shared/enums/approvalDecision'
+export type { ApproverSelection } from '@/shared/enums/approverSelection'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'
