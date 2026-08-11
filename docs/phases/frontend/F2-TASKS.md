@@ -247,7 +247,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.7 — Formatting & display helpers
 
-- [ ] **F2.7** — `src/lib/format.ts` (+ MCC/country tables)
+- [x] **F2.7** — `src/lib/format.ts` (+ MCC/country tables)
   - **Files:**
     - `src/lib/format/status.ts`
     - `src/lib/format/status.test.ts`
@@ -280,7 +280,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
     6. **Truncate** — `truncate(text: string, maxLen: number): { text: string, truncated: boolean, title: string }` — if `text.length <= maxLen` return as-is with `truncated: false` and `title: text`; else slice to `maxLen - 1` + `…`, `truncated: true`, `title: text` (for `title` attribute).
   - **Pattern:** Exhaustive enum maps like F0.5’s `ErrorCode` switch; money purity like F2.2. Merchant/MCC appear on `transaction.merchant` in `src/shared/schemas/transaction.ts` (`name`, `mcc` max 8, `country` — typically ISO2).
   - **Accept:** `pnpm test lib/format`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Split under `src/lib/format/`; exhaustive status maps; MCC curated map. `pnpm verify` green.
 
 ### F2.8 — Rules helpers (sentence + labels + highlighter)
 
