@@ -138,11 +138,11 @@ Read [`../../RULES-ENGINE.md`](../../RULES-ENGINE.md) and [`../../ARCHITECTURE.m
   - **Accept:** `pnpm test worker`
   - **Notes:** Memory event stream for tests; `publishEvent` dual-writes to the in-memory list and the `events` stream. Debounce window 1s + `lock:rule` NX PX 5s. Scheduler jobs are noops until later phases fill them — B6.12 wires `evaluateAndApply`. `ROLE≠worker` refuses to start. Scripts: `dev:worker` / `worker` set `ROLE=worker`.
 
-- [ ] **B6.12** — Wire domain events → evaluation; five RULES-ENGINE §6 worked examples
+- [x] **B6.12** — Wire domain events → evaluation; five RULES-ENGINE §6 worked examples
   - **Files:** event handlers under `src/server/events/handlers/` or worker consumers; fixture-backed e2e tests
   - **Do:** Consume relevant events; run pipeline. Port the five worked examples from RULES-ENGINE §6 end-to-end against fixtures. Event path is the mechanism — sweeps find nothing when healthy.
   - **Accept:** `pnpm test rules/examples` (or equivalent) — all five green
-  - **Notes:**
+  - **Notes:** `handleDomainEventForRules` feeds `evaluateAndApply`; worker default evaluate uses it. Example amounts use minor units (doc major ×100). Example D uses `activeToOffsetDays: 7` (B6.4). Example A/D `card.create` → `WOULD_APPLY`. Example E `access.grant` / `flag.review` → `SKIPPED`. Event-path regression included.
 
 - [ ] **B6.13** — Events + audit coverage for B6 mutations
   - **Files:** `test/events/rules.test.ts`, `test/audit/b6.test.ts`

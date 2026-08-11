@@ -5,6 +5,7 @@
  * never run jobs. On SIGTERM: stop accepting, finish in-flight work, release
  * locks, then exit.
  */
+import { handleDomainEventForRules } from '@/server/events/handlers/rules'
 import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream } from '@/server/events/stream'
 import { createDebouncer } from '@/worker/debounce'
@@ -46,8 +47,8 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   const debouncer = createDebouncer({ windowMs: 1000 })
   const evaluate =
     options.evaluate ??
-    (async () => {
-      /* B6.12 wires evaluateAndApply */
+    (async (event) => {
+      await handleDomainEventForRules(event as Parameters<typeof handleDomainEventForRules>[0])
     })
 
   const dispatcher = createDebouncedDispatcher(debouncer, evaluate)
