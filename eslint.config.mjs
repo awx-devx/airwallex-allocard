@@ -42,6 +42,30 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: [
+      'src/client/shell/**/*.{ts,tsx}',
+      'src/client/states/**/*.{ts,tsx}',
+      'src/app/(app)/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+        {
+          selector: "CallExpression[callee.object.name='window'][callee.property.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+        {
+          selector: "CallExpression[callee.object.name='globalThis'][callee.property.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+      ],
+    },
+  },
 ])
 
 export default eslintConfig
