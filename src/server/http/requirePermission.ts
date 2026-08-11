@@ -11,6 +11,7 @@ import {
   listActiveProjectMembersForUser,
 } from '@/server/repositories/projectMembers'
 import { findRoleById } from '@/server/repositories/roles'
+import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
 import type { ProjectMember } from '@/shared/types/projectMember'
@@ -185,4 +186,22 @@ export async function projectIdsGrantingPermission(
     }
   }
   return ids
+}
+
+/**
+ * OWN-scoped project members see only their own purchase requests on list.
+ * OWNER/ADMIN never filter; missing membership → false (requirePermission will deny).
+ */
+export async function shouldSeeOnlyOwnRequests(
+  ctx: OrgContext,
+  projectId: string,
+): Promise<boolean> {
+  if (isOrgElevated(ctx.orgRole)) {
+    return false
+  }
+  const member = await findActiveProjectMember(ctx, projectId, ctx.userId)
+  if (!member) {
+    return false
+  }
+  return member.scope.level === AccessScopeLevel.OWN
 }

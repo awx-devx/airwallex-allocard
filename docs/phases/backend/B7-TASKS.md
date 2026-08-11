@@ -105,7 +105,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.7 — HTTP API (requests + policy)
 
-- [ ] **B7.7** — Request + policy routes
+- [x] **B7.7** — Request + policy routes
   - **Files:** `src/app/api/policy/preview/route.ts`, `src/app/api/projects/[id]/requests/route.ts`, `src/app/api/requests/[id]/route.ts`, `submit/route.ts`, `cancel/route.ts`, `decide/route.ts`
   - **Do:** Permissions per spec table. Scope-limited members see only their own requests on list/get. Matrix rows for every endpoint.
   - **Pattern:** `src/app/api/budget/change-requests/`

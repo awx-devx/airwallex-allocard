@@ -14,9 +14,11 @@ import {
   appendApproval,
   createPurchaseRequest as createPurchaseRequestRecord,
   findPurchaseRequestById,
+  listPurchaseRequests as listPurchaseRequestsRecord,
   setPurchaseRequestStatus,
   submitPurchaseRequest as submitPurchaseRequestRecord,
   updateDraftPurchaseRequest,
+  type ListPurchaseRequestsFilter,
 } from '@/server/repositories/purchaseRequests'
 import { audit } from '@/server/services/audit/log'
 import { evaluatePolicy } from '@/server/services/approvals/policy'
@@ -36,6 +38,7 @@ import type {
   PolicyDecision,
   PolicyPreviewInput,
   PurchaseRequest,
+  PurchaseRequestList,
   UpdatePurchaseRequestInput,
 } from '@/shared/types/purchaseRequest'
 
@@ -168,6 +171,26 @@ function requestPayload(request: PurchaseRequest) {
     status: request.status,
     requestedBy: request.requestedBy,
   }
+}
+
+/** Get by id — null when missing or cross-org (handler → 404). */
+export async function getPurchaseRequest(
+  ctx: OrgContext,
+  id: string,
+): Promise<PurchaseRequest | null> {
+  await connectDb()
+  return findPurchaseRequestById(ctx, id)
+}
+
+/** List requests for a project. Optional `requestedBy` for OWN-scope filtering. */
+export async function listPurchaseRequestsForProject(
+  ctx: OrgContext,
+  projectId: string,
+  filter: ListPurchaseRequestsFilter = {},
+): Promise<PurchaseRequestList> {
+  await connectDb()
+  await requireProject(ctx, projectId)
+  return listPurchaseRequestsRecord(ctx, projectId, filter)
 }
 
 /** Create always → DRAFT. */
