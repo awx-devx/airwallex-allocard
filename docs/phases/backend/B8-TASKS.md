@@ -115,7 +115,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.9 — Sync backstop + admin
 
-- [ ] **B8.9** — Wire `sync-transactions` + `POST /api/admin/sync-transactions`
+- [x] **B8.9** — Wire `sync-transactions` + `POST /api/admin/sync-transactions`
   - **Files:** `src/server/services/transactions/sync.ts`, update `src/worker/index.ts`, admin route, tests
   - **Do:** Replace noop with real job. OWNER+secret for admin trigger. Idempotent with webhook path.
   - **Pattern:** `src/server/services/approvals/escalate.ts`

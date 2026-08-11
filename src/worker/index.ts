@@ -11,6 +11,7 @@ import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events
 import { escalateApprovals } from '@/server/services/approvals/escalate'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
 import { sweepMissingReceiptsAll } from '@/server/services/transactions/receiptSweep'
+import { syncTransactions } from '@/server/services/transactions/sync'
 import { processAirwallexWebhook } from '@/server/services/webhooks/process'
 import { createDebouncer } from '@/worker/debounce'
 import {
@@ -133,7 +134,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   scheduler.schedule({
     name: 'sync-transactions',
     everyMs: 30 * 60_000,
-    run: () => noopJob('sync-transactions'),
+    run: () => syncTransactions().then(() => undefined),
   })
   scheduler.schedule({
     name: 'sweep-missing-receipts',
