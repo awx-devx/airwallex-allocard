@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F2 — Utils
-**Active task:** Generate F2-TASKS.md when starting F2 (do not invent until asked)
-**Last green `pnpm verify`:** 2026-08-12 (F1 phase exit)
+**Active task:** F2.1 — Add React Hook Form + Zod resolver
+**Last green `pnpm verify`:** 2026-08-12 (F2.0)
 **Blocked on:** nothing
 
 ---
@@ -25,11 +25,11 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
-| F     | F2 Utils                | not started  | —       |
+| F     | F2 Utils                | in progress  | 1 / 11  |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-Task files are generated at the start of each phase. `F1-TASKS.md` complete — generate `F2-TASKS.md` from the F2 spec when you reach it. Do **not** invent F2-TASKS unless asked.
+Task file: `docs/phases/frontend/F2-TASKS.md`. Do **not** invent F3-TASKS until asked.
 
 ---
 
@@ -60,9 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F1 complete (2026-08-12).** Next: **F2** utils — generate `docs/phases/frontend/F2-TASKS.md` from the F2 spec when starting; do **not** invent F2-TASKS until asked.
+**F2 in progress (2026-08-12).** Next: **F2.1** — React Hook Form + Zod resolver deps.
 
-F1 phase exit: review + exit checklists signed off. `qk` + `invalidationMap`, `useCall`/`downloadExport`, domain hooks (session→reports), barrel, ESLint `call()` ban on UI surfaces, contract coverage gate. Dual infinite pagination (cursor activity/audit; page transactions/rule runs). Optimistic freeze/unfreeze + receipts only.
+F2.0 locked policies (do not reopen) — see `F2-TASKS.md`. Shared currency + scope extracted; Vitest unit include for `src/lib/**` + shared currency/access tests.
 
 F1.0 locked policies (do not reopen):
 
