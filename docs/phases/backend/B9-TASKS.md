@@ -230,7 +230,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.10 — Events + audit + seed + budget:verify on closed project
 
-- [ ] **B9.10** — Events, audit, seed, reconcile
+- [x] **B9.10** — Events, audit, seed, reconcile
   - **Files:**
     - `test/events/b9.test.ts`
     - `test/audit/b9.test.ts`

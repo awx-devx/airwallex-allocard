@@ -189,6 +189,26 @@ export async function completeClosure(
     )
     if (!updated) throw AppError.notFound()
     closure = updated
+
+    await audit(ctx, {
+      action: 'report.final_generated',
+      subjectType: 'project',
+      subjectId: projectId,
+      projectId,
+      actorType: ActorType.USER,
+      actorId: ctx.userId,
+      before: null,
+      after: {
+        closedAt: finalReport.closedAt,
+        approved: finalReport.approved,
+        committed: finalReport.committed,
+        actual: finalReport.actual,
+        remaining: finalReport.remaining,
+        transactionCount: finalReport.transactionCount,
+        accessHistoryCount: finalReport.accessHistoryCount,
+      },
+      metadata: { step: ClosureStep.FINAL_REPORT },
+    })
   }
 
   if (stepStatus(closure, ClosureStep.ARCHIVE) !== ClosureStepStatus.DONE) {

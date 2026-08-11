@@ -58,6 +58,10 @@ describe('pnpm seed idempotency', () => {
       code: SEED.projectClosedCode,
       status: 'CLOSED',
     })
+    const archived = await mongoose.connection.collection('projects').countDocuments({
+      code: SEED.projectArchivedCode,
+      status: 'ARCHIVED',
+    })
     const roles = await mongoose.connection.collection('roles').countDocuments({
       isTemplate: true,
     })
@@ -84,11 +88,12 @@ describe('pnpm seed idempotency', () => {
     // owner + admin + member + approver + spender + contractor + procurement
     expect(memberships).toBe(7)
     expect(pendingInvites).toBe(1)
-    expect(projects).toBe(4)
+    expect(projects).toBe(5)
     expect(draft).toBe(1)
     expect(active).toBe(1)
     expect(closing).toBe(1)
     expect(closed).toBe(1)
+    expect(archived).toBe(1)
     expect(roles).toBe(7)
     // 7 on ACTIVE (all templates) + 1 viewer on DRAFT
     expect(projectMembers).toBe(8)
@@ -150,5 +155,38 @@ describe('pnpm seed idempotency', () => {
       .collection('purchaseRequests')
       .countDocuments({ status: 'PENDING' })
     expect(pendingRequests).toBe(1)
+
+    const projectClosures = await mongoose.connection
+      .collection('projectClosures')
+      .countDocuments({})
+    expect(projectClosures).toBe(2)
+    const closingClosure = await mongoose.connection.collection('projectClosures').findOne({
+      currentStep: 'SETTLE',
+      completedAt: null,
+    })
+    expect(closingClosure).toBeTruthy()
+    const archivedClosure = await mongoose.connection.collection('projectClosures').findOne({
+      currentStep: 'ARCHIVE',
+      completedAt: { $ne: null },
+    })
+    expect(archivedClosure?.finalReportSnapshot).toMatchObject({
+      currency: 'USD',
+      approved: 100_000,
+      actual: 25_000,
+      transactionCount: 1,
+    })
+
+    const b9Audits = await mongoose.connection.collection('auditLogs').countDocuments({
+      action: {
+        $in: ['project.closure_started', 'project.closure_completed', 'report.final_generated'],
+      },
+      'metadata.seedKey': { $exists: true },
+    })
+    expect(b9Audits).toBe(3)
+
+    const b9Tx = await mongoose.connection.collection('transactions').countDocuments({
+      airwallexTransactionId: 'awx_tx_seed_b9_archived_001',
+    })
+    expect(b9Tx).toBe(1)
   }, 30_000)
 })

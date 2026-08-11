@@ -45,6 +45,8 @@ export const SEED = {
   projectActiveCode: 'SEED-ACTIVE',
   projectClosingCode: 'SEED-CLOSING',
   projectClosedCode: 'SEED-CLOSED',
+  /** B9 — fully archived project with final report snapshot. */
+  projectArchivedCode: 'SEED-ARCHIVED',
   /** B3 persona emails (org MEMBER + project roles on SEED-ACTIVE). */
   approverEmail: 'approver@allocard.local',
   approverName: 'Seed Approver',
@@ -1098,6 +1100,343 @@ export async function seedB8(input: {
   return { transactionCount: 3, webhookCreated }
 }
 
+/**
+ * B9 — closure mid-flow + archived final report + sample activity sources.
+ * Idempotent on projectClosures `(orgId, projectId)` and project code SEED-ARCHIVED.
+ */
+export async function seedB9(input: {
+  orgId: string
+  ownerId: string
+  closingProjectId: string
+  activeProjectId: string
+  cardId: string
+}): Promise<{
+  closingClosureId: string | null
+  archivedProjectId: string
+  archivedClosureId: string | null
+  activitySources: number
+}> {
+  const { ClosureStep } = await import('../src/shared/enums/closureStep')
+  const { ClosureStepStatus } = await import('../src/shared/enums/closureStepStatus')
+  const { ActorType } = await import('../src/shared/enums/audit')
+
+  const projectClosures = mongoose.connection.collection('projectClosures')
+  const projects = mongoose.connection.collection('projects')
+  const auditLogs = mongoose.connection.collection('auditLogs')
+  const transactions = mongoose.connection.collection('transactions')
+  const ruleRuns = mongoose.connection.collection('ruleRuns')
+  const { TransactionStatus } = await import('../src/shared/enums/transactionStatus')
+  const { TransactionType } = await import('../src/shared/enums/transactionType')
+
+  const now = new Date()
+
+  // --- CLOSING mid-flow: PREFLIGHT+FREEZE DONE, currentStep SETTLE ---
+  let closingClosureId: string | null = null
+  const existingClosing = await projectClosures.findOne({
+    orgId: input.orgId,
+    projectId: input.closingProjectId,
+  })
+  if (existingClosing) {
+    closingClosureId = String(existingClosing._id)
+  } else {
+    const closingSteps = (
+      Object.values(ClosureStep) as Array<(typeof ClosureStep)[keyof typeof ClosureStep]>
+    ).map((step) => {
+      if (step === ClosureStep.PREFLIGHT || step === ClosureStep.FREEZE) {
+        return {
+          step,
+          status: ClosureStepStatus.DONE,
+          startedAt: now,
+          completedAt: now,
+          detail: null,
+        }
+      }
+      return {
+        step,
+        status: ClosureStepStatus.PENDING,
+        startedAt: null,
+        completedAt: null,
+        detail: null,
+      }
+    })
+    const _id = new mongoose.Types.ObjectId()
+    await projectClosures.insertOne({
+      _id,
+      orgId: input.orgId,
+      projectId: input.closingProjectId,
+      currentStep: ClosureStep.SETTLE,
+      steps: closingSteps,
+      startedBy: input.ownerId,
+      startedAt: now,
+      completedAt: null,
+      finalReportSnapshot: null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    closingClosureId = String(_id)
+  }
+
+  // --- ARCHIVED project with final report ---
+  let archivedProjectId: string
+  const existingArchived = await projects.findOne({
+    orgId: input.orgId,
+    code: SEED.projectArchivedCode,
+  })
+  if (existingArchived) {
+    archivedProjectId = String(existingArchived._id)
+  } else {
+    const _id = new mongoose.Types.ObjectId()
+    const startDate = new Date('2026-01-01T00:00:00.000Z')
+    const endDate = new Date('2026-06-30T00:00:00.000Z')
+    await projects.insertOne({
+      _id,
+      orgId: input.orgId,
+      name: 'Seed Archived Project',
+      code: SEED.projectArchivedCode,
+      description: 'Fully closed and archived demo project with final report',
+      status: 'ARCHIVED',
+      ownerId: input.ownerId,
+      costCentre: 'DEMO',
+      startDate,
+      endDate,
+      workstreams: [{ id: 'ws-demo', name: 'General' }],
+      cardStructure: defaultCardStructure,
+      approvedAt: now,
+      launchedAt: now,
+      closedAt: now,
+      budgetSnapshot: {
+        approved: 100_000,
+        committed: 0,
+        actual: 25_000,
+        remaining: 75_000,
+        utilisationPct: 25,
+        overCommitted: false,
+        updatedAt: now,
+      },
+      createdAt: now,
+      updatedAt: now,
+    })
+    archivedProjectId = String(_id)
+  }
+
+  let archivedClosureId: string | null = null
+  const existingArchivedClosure = await projectClosures.findOne({
+    orgId: input.orgId,
+    projectId: archivedProjectId,
+  })
+  if (existingArchivedClosure) {
+    archivedClosureId = String(existingArchivedClosure._id)
+  } else {
+    const archivedSteps = (
+      Object.values(ClosureStep) as Array<(typeof ClosureStep)[keyof typeof ClosureStep]>
+    ).map((step) => ({
+      step,
+      status: ClosureStepStatus.DONE,
+      startedAt: now,
+      completedAt: now,
+      detail: null,
+    }))
+    const finalReportSnapshot = {
+      projectId: archivedProjectId,
+      currency: 'USD',
+      approved: 100_000,
+      committed: 0,
+      actual: 25_000,
+      remaining: 75_000,
+      utilisationPct: 25,
+      byCategory: [],
+      byMember: [],
+      generatedAt: now.toISOString(),
+      closedAt: now.toISOString(),
+      archivedAt: now.toISOString(),
+      transactionCount: 1,
+      accessHistoryCount: 0,
+    }
+    const _id = new mongoose.Types.ObjectId()
+    await projectClosures.insertOne({
+      _id,
+      orgId: input.orgId,
+      projectId: archivedProjectId,
+      currentStep: ClosureStep.ARCHIVE,
+      steps: archivedSteps,
+      startedBy: input.ownerId,
+      startedAt: now,
+      completedAt: now,
+      finalReportSnapshot,
+      createdAt: now,
+      updatedAt: now,
+    })
+    archivedClosureId = String(_id)
+  }
+
+  // --- Sample activity sources (audit + cleared tx + rule run) ---
+  let activitySources = 0
+
+  const auditKey = 'seed_b9_closure_started'
+  const existingAudit = await auditLogs.findOne({
+    orgId: input.orgId,
+    action: 'project.closure_started',
+    subjectId: input.closingProjectId,
+    'metadata.seedKey': auditKey,
+  })
+  if (!existingAudit) {
+    await auditLogs.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      projectId: input.closingProjectId,
+      actorType: ActorType.USER,
+      actorId: input.ownerId,
+      action: 'project.closure_started',
+      subjectType: 'project',
+      subjectId: input.closingProjectId,
+      before: { status: 'ACTIVE' },
+      after: { status: 'CLOSING' },
+      metadata: { seedKey: auditKey, currentStep: 'SETTLE' },
+      at: now,
+    })
+    activitySources += 1
+  }
+
+  const archivedAuditKey = 'seed_b9_closure_completed'
+  const existingArchivedAudit = await auditLogs.findOne({
+    orgId: input.orgId,
+    action: 'project.closure_completed',
+    subjectId: archivedProjectId,
+    'metadata.seedKey': archivedAuditKey,
+  })
+  if (!existingArchivedAudit) {
+    await auditLogs.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      projectId: archivedProjectId,
+      actorType: ActorType.USER,
+      actorId: input.ownerId,
+      action: 'project.closure_completed',
+      subjectType: 'project',
+      subjectId: archivedProjectId,
+      before: { status: 'CLOSING' },
+      after: { status: 'ARCHIVED' },
+      metadata: {
+        seedKey: archivedAuditKey,
+        closedAt: now.toISOString(),
+        archivedAt: now.toISOString(),
+        transactionCount: 1,
+        accessHistoryCount: 0,
+      },
+      at: now,
+    })
+    activitySources += 1
+  }
+
+  const finalReportAuditKey = 'seed_b9_final_report'
+  const existingFinalAudit = await auditLogs.findOne({
+    orgId: input.orgId,
+    action: 'report.final_generated',
+    subjectId: archivedProjectId,
+    'metadata.seedKey': finalReportAuditKey,
+  })
+  if (!existingFinalAudit) {
+    await auditLogs.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      projectId: archivedProjectId,
+      actorType: ActorType.USER,
+      actorId: input.ownerId,
+      action: 'report.final_generated',
+      subjectType: 'project',
+      subjectId: archivedProjectId,
+      before: null,
+      after: {
+        approved: 100_000,
+        actual: 25_000,
+        remaining: 75_000,
+        transactionCount: 1,
+      },
+      metadata: { seedKey: finalReportAuditKey, step: 'FINAL_REPORT' },
+      at: now,
+    })
+    activitySources += 1
+  }
+
+  const seedTxId = 'awx_tx_seed_b9_archived_001'
+  const existingTx = await transactions.findOne({
+    orgId: input.orgId,
+    airwallexTransactionId: seedTxId,
+  })
+  if (!existingTx) {
+    await transactions.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      cardId: input.cardId,
+      projectId: archivedProjectId,
+      airwallexTransactionId: seedTxId,
+      cardTransactionId: 'ctx_seed_b9_001',
+      lifecycleId: 'lc_seed_b9_001',
+      type: TransactionType.CLEARING,
+      status: TransactionStatus.CLEARED,
+      amount: 25_000,
+      currency: 'USD',
+      billingAmount: 25_000,
+      billingCurrency: 'USD',
+      merchant: { name: 'Archived Seed Vendor', mcc: '5411', country: 'US' },
+      failureReason: null,
+      receiptFileId: null,
+      transactedAt: new Date('2026-05-01T12:00:00Z'),
+      createdAt: now,
+      updatedAt: now,
+    })
+    activitySources += 1
+  }
+
+  const { RuleRunStatus } = await import('../src/shared/enums/ruleRunStatus')
+  const seedRunKey = 'seed_b9_activity_run'
+  const existingRun = await ruleRuns.findOne({
+    orgId: input.orgId,
+    projectId: input.activeProjectId,
+    triggerEvent: seedRunKey,
+  })
+  if (!existingRun) {
+    // Prefer attaching to an existing seed rule when present.
+    const existingRule = await mongoose.connection.collection('rules').findOne({
+      orgId: input.orgId,
+      'scope.projectId': input.activeProjectId,
+    })
+    const ruleId = existingRule ? String(existingRule._id) : 'seed_b9_rule_placeholder'
+    await ruleRuns.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      ruleId,
+      triggeredBy: input.ownerId,
+      triggeredByType: ActorType.USER,
+      triggerEvent: seedRunKey,
+      inputs: [],
+      matched: false,
+      desiredState: {},
+      diff: {},
+      actions: [],
+      conflicts: [],
+      status: RuleRunStatus.SKIPPED,
+      skipReason: 'SEED activity sample',
+      failureReason: null,
+      durationMs: 1,
+      startedAt: now,
+      finishedAt: now,
+      cardIds: [input.cardId],
+      projectId: input.activeProjectId,
+      createdAt: now,
+      updatedAt: now,
+    })
+    activitySources += 1
+  }
+
+  return {
+    closingClosureId,
+    archivedProjectId,
+    archivedClosureId,
+    activitySources,
+  }
+}
+
 export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
   await connectDb(options)
 
@@ -1168,7 +1507,16 @@ export async function runSeed(options: ConnectDbOptions = {}): Promise<void> {
     `B8: transactions=${b8.transactionCount} webhook=${b8.webhookCreated ? 'created' : 'exists'}`,
   )
 
-  // B9: await seedB9()
+  const b9 = await seedB9({
+    orgId: b0.orgId,
+    ownerId: b0.userId,
+    closingProjectId: b2.closingId,
+    activeProjectId: b2.activeId,
+    cardId: b5.cardId,
+  })
+  console.log(
+    `B9: closingClosure=${b9.closingClosureId} archived=${b9.archivedProjectId} activitySources=${b9.activitySources}`,
+  )
 }
 
 async function main(): Promise<void> {

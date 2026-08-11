@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.10 — Events + audit + seed + budget:verify on closed project
-**Last green `pnpm verify`:** 2026-08-12 (B9.9)
+**Active task:** B9.10 done — stop before phase exit / ready for phase exit review
+**Last green `pnpm verify`:** 2026-08-12 (B9.10)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 10 / 11 |
+| B     | B9 Reporting & closure  | **in progress** | 11 / 11 |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-B9.9 complete. Active: **B9.10** — events + audit + seed + budget:verify on closed project.
+B9.10 done — stop before phase exit / ready for phase exit review. Phase exit checkboxes **not** ticked; do **not** invent F0-TASKS.
+
+B9.10 notes: Events `project.closing|closed|archived` once per successful path (resume no re-emit). Audits: `project.closure_started`, `project.closure_completed`, `report.final_generated`, `export.{budget|transactions|cards|audit}`. `seedB9`: CLOSING mid-flow ProjectClosure + SEED-ARCHIVED with final report + sample activity (audits/tx/ruleRun). `test/closure-reconcile.test.ts`: full closure → `verifyBudgets()` + final report match ledger.
 
 B9.9 notes: `INACTIVE_MEMBER_DAYS=30` — inactive = active `projectMember.updatedAt` older than 30d (no lastLogin). Sweep creates OPEN AccessReview for (1) scopes past `validTo`, (2) inactive members, (3) WOULD_APPLY `flag.review` actions (pipeline now resolves targets; B6 SKIPPED→WOULD_APPLY). Idempotent `(orgId, subjectId, reason)`. Worker `expire-access` → `sweepAccessReviews` (flag only; revoke stays B3 resolve). Audit `accessReview.flagged`.
 
