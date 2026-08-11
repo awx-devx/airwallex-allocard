@@ -106,3 +106,31 @@ export async function findAuditLogById(ctx: OrgContext, id: string): Promise<Aud
   const doc = await AuditLogModel.findOne({ _id: id, orgId: ctx.orgId }).lean().exec()
   return doc ? toAuditLog(doc) : null
 }
+
+export type IterateAuditLogsFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+}
+
+/** Streaming iterate (oldest first) for CSV export — does not buffer the full set. */
+export async function* iterateAuditLogs(
+  ctx: OrgContext,
+  filter: IterateAuditLogsFilter = {},
+): AsyncGenerator<AuditLog, void, unknown> {
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const at: Record<string, Date> = {}
+    if (filter.from !== undefined) at.$gte = filter.from
+    if (filter.to !== undefined) at.$lte = filter.to
+    query.at = at
+  }
+
+  const cursor = AuditLogModel.find(query).sort({ at: 1, _id: 1 }).lean().cursor()
+  for await (const doc of cursor) {
+    yield toAuditLog(doc)
+  }
+}

@@ -45,6 +45,8 @@ const ORG_WIDE_VIA_MEMBERSHIP = new Set<string>([
   Permission.BUDGET_EDIT,
   // Org-scoped control surfaces (attributes, rules) have no projectId on the wire.
   Permission.CONTROL_EDIT,
+  // Org-wide CSV exports (B9.3); still scope-filtered to granting projects in services.
+  Permission.REPORT_EXPORT,
 ])
 
 function isOrgElevated(orgRole: OrgRole): boolean {

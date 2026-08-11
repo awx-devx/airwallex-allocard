@@ -36,6 +36,13 @@ export type ListCardsFilter = {
   pageSize?: number
 }
 
+export type IterateCardsFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+}
+
 function controlsToStorage(controls: CardControls): CardControlsFields {
   return {
     allowedTransactionCount: controls.allowedTransactionCount,
@@ -328,4 +335,25 @@ export async function countNonClosedByProject(ctx: OrgContext, projectId: string
     projectId,
     status: { $ne: CardStatus.CLOSED },
   }).exec()
+}
+
+/** Streaming iterate (oldest first) for CSV export — does not buffer the full set. */
+export async function* iterateCards(
+  ctx: OrgContext,
+  filter: IterateCardsFilter = {},
+): AsyncGenerator<Card, void, unknown> {
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const createdAt: Record<string, Date> = {}
+    if (filter.from !== undefined) createdAt.$gte = filter.from
+    if (filter.to !== undefined) createdAt.$lte = filter.to
+    query.createdAt = createdAt
+  }
+
+  const cursor = CardModel.find(query).sort({ createdAt: 1, _id: 1 }).lean().cursor()
+  for await (const doc of cursor) {
+    yield toCard(doc)
+  }
 }

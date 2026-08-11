@@ -209,6 +209,34 @@ export async function listTransactionsForFeed(
   return docs.map((doc) => toTransaction(doc))
 }
 
+export type IterateTransactionsFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+}
+
+/** Streaming iterate (oldest first) for CSV export — does not buffer the full set. */
+export async function* iterateTransactions(
+  ctx: OrgContext,
+  filter: IterateTransactionsFilter = {},
+): AsyncGenerator<Transaction, void, unknown> {
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const transactedAt: Record<string, Date> = {}
+    if (filter.from !== undefined) transactedAt.$gte = filter.from
+    if (filter.to !== undefined) transactedAt.$lte = filter.to
+    query.transactedAt = transactedAt
+  }
+
+  const cursor = TransactionModel.find(query).sort({ transactedAt: 1, _id: 1 }).lean().cursor()
+  for await (const doc of cursor) {
+    yield toTransaction(doc)
+  }
+}
+
 export async function updateReceipt(
   ctx: OrgContext,
   id: string,

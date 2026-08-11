@@ -106,7 +106,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.3 — CSV export streaming
 
-- [ ] **B9.3** — Streaming exports
+- [x] **B9.3** — Streaming exports
   - **Files:**
     - `src/server/services/exports/csv.ts` — row serializer + async iterable → `ReadableStream`
     - `src/server/services/exports/budget.ts`
@@ -125,6 +125,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     4. Amounts in CSV = integer minor units (or a documented major-unit column with explicit header `amount_minor` — prefer `amount_minor` int).
   - **Pattern:** `src/server/services/audit/log.ts` for audit; route pattern from `src/app/api/reports/` if none — copy `withAuth` from B7 routes
   - **Accept:** `pnpm test api/exports` — stream headers; one audit per export; scope 403/404
+  - **Notes:** Pull-based `rowsToCsvStream` — after header + first data chunk, generator has yielded 1 of N (not all N). Audit `export.{kind}` written in stream `onComplete` after full consume. `amount_minor` on budget/transactions. `REPORT_EXPORT` added to org-wide via membership for org-scoped POST without projectId.
 
 ### B9.4 — Reports
 

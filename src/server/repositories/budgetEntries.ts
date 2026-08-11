@@ -145,3 +145,31 @@ export async function countEntriesReferencingCategory(
     categoryId,
   }).exec()
 }
+
+export type IterateBudgetEntriesFilter = {
+  projectId?: string
+  projectIds?: string[]
+  from?: Date
+  to?: Date
+}
+
+/** Streaming iterate (oldest first) for CSV export — does not buffer the full set. */
+export async function* iterateEntries(
+  ctx: OrgContext,
+  filter: IterateBudgetEntriesFilter = {},
+): AsyncGenerator<BudgetEntry, void, unknown> {
+  const query: Record<string, unknown> = { orgId: ctx.orgId }
+  if (filter.projectId !== undefined) query.projectId = filter.projectId
+  if (filter.projectIds !== undefined) query.projectId = { $in: filter.projectIds }
+  if (filter.from !== undefined || filter.to !== undefined) {
+    const createdAt: Record<string, Date> = {}
+    if (filter.from !== undefined) createdAt.$gte = filter.from
+    if (filter.to !== undefined) createdAt.$lte = filter.to
+    query.createdAt = createdAt
+  }
+
+  const cursor = BudgetEntryModel.find(query).sort({ createdAt: 1, _id: 1 }).lean().cursor()
+  for await (const doc of cursor) {
+    yield toEntry(doc)
+  }
+}
