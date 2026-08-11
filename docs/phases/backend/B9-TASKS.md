@@ -146,7 +146,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.5 — Closure model + repository
 
-- [ ] **B9.5** — Persist closure progress
+- [x] **B9.5** — Persist closure progress
   - **Files:**
     - `src/server/models/ProjectClosure.ts` (or embed `closure` on Project — **prefer separate collection** keyed by `projectId` for resumability)
     - `src/server/repositories/projectClosures.ts`
@@ -156,6 +156,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     2. `tenantScoped`. Methods: `upsertStart`, `findByProject`, `updateStep`, `markComplete`. Cross-org → null.
   - **Pattern:** `src/server/models/PurchaseRequest.ts`, `src/server/repositories/purchaseRequests.ts`
   - **Accept:** `pnpm test models/projectClosure` or `repositories/projectClosure`
+  - **Notes:** Separate `projectClosures` collection; unique `projectId`. `upsertStart` is insert-only (`$setOnInsert`) so resume does not reset steps.
 
 ### B9.6 — Closure preflight + start (freeze)
 

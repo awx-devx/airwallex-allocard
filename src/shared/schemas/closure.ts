@@ -4,6 +4,7 @@ import { ClosureStep } from '@/shared/enums/closureStep'
 import { ClosureStepStatus } from '@/shared/enums/closureStepStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { idSchema, isoDateSchema } from '@/shared/schemas/base'
+import { finalReportSchema } from '@/shared/schemas/report'
 
 export const closureBlockingItemSchema = z.object({
   kind: z.enum(ClosureBlockingKind),
@@ -35,6 +36,24 @@ export const closureStatusSchema = z.object({
   currentStep: z.enum(ClosureStep),
   steps: z.array(closureStepStateSchema),
   resumable: z.boolean(),
+})
+
+/**
+ * Persisted closure progress (separate collection, unique projectId).
+ * Wire status is `closureStatusSchema`; this is the storage/domain document.
+ */
+export const projectClosureSchema = z.object({
+  id: idSchema,
+  orgId: idSchema,
+  projectId: idSchema,
+  currentStep: z.enum(ClosureStep),
+  steps: z.array(closureStepStateSchema),
+  startedBy: idSchema,
+  startedAt: isoDateSchema,
+  completedAt: isoDateSchema.nullable(),
+  finalReportSnapshot: finalReportSchema.nullable(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema,
 })
 
 /** Empty body — enter CLOSING only via this path (not generic /transition). */

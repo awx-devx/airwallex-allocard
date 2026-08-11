@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.5 — Closure model + repository
-**Last green `pnpm verify`:** 2026-08-12 (B9.4)
+**Active task:** B9.6 — Closure preflight + start (freeze)
+**Last green `pnpm verify`:** 2026-08-12 (B9.5)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 5 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 6 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-B9.4 complete. Active: **B9.5** — closure model + repository.
+B9.5 complete. Active: **B9.6** — closure preflight + start (freeze).
+
+B9.5 notes: Separate `projectClosures` collection; unique `projectId`. Methods: `upsertStart` (insert-only resume), `findByProject`, `updateStep`, `markComplete`. Cross-org → null.
 
 B9.4 notes: Totals from `projectBudget(entries)`. Category/member actuals join ACTUAL ledger → lifecycleId → tx → card → categoryId / cardholder.userId. Org totals single-currency (`org.baseCurrency`); mixed-currency listed but excluded.
 
