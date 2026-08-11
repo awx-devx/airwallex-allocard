@@ -89,7 +89,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.5 — Request lifecycle services
 
-- [ ] **B7.5** — Create / update / submit / cancel / decide
+- [x] **B7.5** — Create / update / submit / cancel / decide
   - **Files:** `src/server/services/approvals/requests.ts` (+ tests)
   - **Do:** State machine. Submit runs policy. `NO_APPROVAL_REQUIRED` → APPROVED path (commitment + `request.approved`). `APPROVAL_REQUIRED` → PENDING + route. `NOT_PERMITTED` → reject create/submit with reasons. Decide: APPROVE increments approvals; when `requiredCount` met → APPROVED + COMMITMENT + emit `request.approved`; REJECT requires reason + RELEASE if commitment already written (usually not yet) + `request.rejected`. Cancel from DRAFT/PENDING → CANCELLED + RELEASE if committed + `request.cancelled`. Already-decided → 409. Exactly one audit entry per mutation. **Never call Airwallex.**
   - **Pattern:** `src/server/services/budget/changeRequests.ts`
