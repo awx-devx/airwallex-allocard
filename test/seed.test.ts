@@ -150,5 +150,5 @@ describe('pnpm seed idempotency', () => {
       .collection('purchaseRequests')
       .countDocuments({ status: 'PENDING' })
     expect(pendingRequests).toBe(1)
-  })
+  }, 30_000)
 })

@@ -123,7 +123,7 @@ Read [`../../AIRWALLEX-INTEGRATION.md`](../../AIRWALLEX-INTEGRATION.md) (webhook
 
 ### B8.10 — Events + audit + seed + budget:verify
 
-- [ ] **B8.10** — Events, audit, seed, projection reconcile
+- [x] **B8.10** — Events, audit, seed, projection reconcile
   - **Files:** `test/events/b8.test.ts`, `test/audit/b8.test.ts`, extend `scripts/seed.ts`, assert `budget:verify` (or equivalent script) after mixed sequence
   - **Do:** Emit `transaction.authorized | cleared | declined | reversed`; B6 consumes. Audit mutations. Seed sample transactions + one webhook fixture. Long mixed sequence still reconciles projection.
   - **Accept:** `pnpm test events/b8` && `pnpm test audit/b8` && `pnpm test seed`

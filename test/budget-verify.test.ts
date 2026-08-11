@@ -70,6 +70,60 @@ describe('budget:verify', () => {
     expect(result.drifts).toEqual([])
   })
 
+  it('passes after a mixed B8 sequence (approval + commitment + release + actual)', async () => {
+    const orgCtx = ctx('org_verify_b8')
+    const project = await projects.createProject(orgCtx, {
+      name: 'Verify B8 Mixed',
+      code: 'VFY-B8',
+    })
+    await budgets.upsertBudgetFields(orgCtx, project.id, {
+      currency: 'USD',
+      approvedAmount: 200_000,
+      thresholdPcts: [80, 100],
+    })
+    await appendBudgetEntry(orgCtx, project.id, {
+      type: BudgetEntryType.APPROVAL,
+      amount: 200_000,
+      currency: 'USD',
+      sourceType: BudgetEntrySourceType.MANUAL,
+      sourceId: 'budget_b8',
+      createdBy: orgCtx.userId,
+    })
+    await appendBudgetEntry(orgCtx, project.id, {
+      type: BudgetEntryType.COMMITMENT,
+      amount: 50_000,
+      currency: 'USD',
+      sourceType: BudgetEntrySourceType.TRANSACTION,
+      sourceId: 'tx_auth_001',
+      lifecycleId: 'lc_001',
+      createdBy: orgCtx.userId,
+    })
+    await appendBudgetEntry(orgCtx, project.id, {
+      type: BudgetEntryType.RELEASE,
+      amount: -50_000,
+      currency: 'USD',
+      sourceType: BudgetEntrySourceType.TRANSACTION,
+      sourceId: 'tx_clear_001',
+      lifecycleId: 'lc_001',
+      createdBy: orgCtx.userId,
+    })
+    await appendBudgetEntry(orgCtx, project.id, {
+      type: BudgetEntryType.ACTUAL,
+      amount: 50_000,
+      currency: 'USD',
+      sourceType: BudgetEntrySourceType.TRANSACTION,
+      sourceId: 'tx_clear_001',
+      lifecycleId: 'lc_001',
+      createdBy: orgCtx.userId,
+    })
+
+    const result = await verifyBudgets()
+    expect(result.ok).toBe(true)
+    const checked = result.checked
+    expect(checked).toBeGreaterThanOrEqual(1)
+    expect(result.drifts).toEqual([])
+  })
+
   it('fails when Mongo snapshot drifts from ledger', async () => {
     const orgCtx = ctx('org_verify_mongo')
     const project = await projects.createProject(orgCtx, {
