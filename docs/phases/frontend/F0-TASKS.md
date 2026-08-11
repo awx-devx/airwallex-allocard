@@ -63,7 +63,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
 
 ### F0.4 — Typed call()
 
-- [ ] **F0.4** — Typed `call()` client
+- [x] **F0.4** — Typed `call()` client
   - **Files:** `src/client/api/client.ts`, `src/client/api/client.test.ts`, `src/client/api/index.ts`
   - **Do:** Implement `call<C extends Contract>(contract, args?)` returning `Promise<z.infer<C['output']>>`.
     - Args: `params?: Record<string, string>`, `input?: z.infer<C['input']>`, `orgId?: string` (active org for tenancy — sent as `x-org-id`; omit when none), `signal?: AbortSignal`
@@ -78,7 +78,7 @@ No domain contracts task: F0 builds client machinery on existing `shared/contrac
     9. Never call a hand-written URL string from outside this module — consumers pass a contract.
   - **Pattern:** `src/shared/contracts/types.ts` (`Contract`, `defineContract`) + `src/shared/contracts/auth.ts` (`authContracts.me` as first consumer in tests) + `src/server/auth/session.ts` (`x-org-id`)
   - **Accept:** `pnpm test client/api/client` — mock `fetch`; assert URL, method, credentials, `x-org-id`, body, query, `ApiError` on envelope, output parse failure in non-production
-  - **Notes:**
+  - **Notes:** Dev output parse via `safeParse`; prod trusts server. Void/204 → undefined.
 
 ### F0.5 — Error behaviour map
 
