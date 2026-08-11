@@ -119,7 +119,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 
 ### F2.2 — Money helpers
 
-- [ ] **F2.2** — `src/lib/money.ts`
+- [x] **F2.2** — `src/lib/money.ts`
   - **Files:** `src/lib/money.ts`, `src/lib/money.test.ts`
   - **Do:**
     1. Import `Money` / `moneySchema` types from `@/shared/schemas/base` (`{ amount: number int, currency: string length 3 }`) and `currencyExponent` from `@/shared/constants/currency`.
@@ -138,7 +138,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
        - No `parseFloat` on the amount field itself in implementation (search the file)
   - **Pattern:** Pure-function module + vitest like `src/client/api/errorBehaviour.ts` + `errorBehaviour.test.ts` (F0.5). Currency list from F2.0 `src/shared/constants/currency.ts`. Server maths reference: `src/server/services/cards/controls.ts` `minorToMajor` / `majorToMinor`.
   - **Accept:** `pnpm test lib/money`
-  - **Notes:** _{filled on completion}_
+  - **Notes:** Implemented; USD/JPY/KRW + percentOf + round-trip; `pnpm verify` green.
 
 ### F2.3 — Date helpers
 

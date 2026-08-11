@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F2 — Utils
-**Active task:** F2.2 — `src/lib/money.ts`
-**Last green `pnpm verify`:** 2026-08-12 (F2.1)
+**Active task:** F2.3 — `src/lib/dates.ts`
+**Last green `pnpm verify`:** 2026-08-12 (F2.2)
 **Blocked on:** nothing
 
 ---
@@ -25,7 +25,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
-| F     | F2 Utils                | in progress  | 2 / 11  |
+| F     | F2 Utils                | in progress  | 3 / 11  |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
@@ -60,9 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F2 in progress (2026-08-12).** Next: **F2.2** — money helpers (`src/lib/money.ts`).
+**F2 in progress (2026-08-12).** Next: **F2.3** — date helpers.
 
-F2.1: `react-hook-form` 7.85.0 + `@hookform/resolvers` 5.7.1.
+F2.2: `src/lib/money.ts` — format/parse/percentOf/major↔minor; zero-decimal via shared exponent.
 
 F1.0 locked policies (do not reopen):
 
