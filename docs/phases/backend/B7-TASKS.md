@@ -113,7 +113,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.8 — Approvals queue + rules HTTP
 
-- [ ] **B7.8** — Approvals queue and approval-rules CRUD
+- [x] **B7.8** — Approvals queue and approval-rules CRUD
   - **Files:** `src/app/api/approvals/route.ts`, `src/app/api/approvals/count/route.ts`, `src/app/api/projects/[id]/approval-rules/route.ts`
   - **Do:** Queue is efficient across projects (indexed query). Count is shell badge hot path. PUT replaces project rules atomically.
   - **Pattern:** list endpoints from B3/B4

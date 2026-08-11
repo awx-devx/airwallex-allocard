@@ -46,6 +46,8 @@ export type ListPendingForApproverFilter = {
   pageSize?: number
   /** Exclude requests created by this user (self-approval guard at the queue). */
   excludeRequesterId?: string
+  /** When set, only PENDING in these projects (MEMBER approver scope). */
+  projectIds?: string[]
 }
 
 export type SubmitPurchaseRequestFields = {
@@ -241,6 +243,9 @@ export async function listPendingForApprover(
   }
   if (filter.excludeRequesterId !== undefined) {
     query.requestedBy = { $ne: filter.excludeRequesterId }
+  }
+  if (filter.projectIds !== undefined) {
+    query.projectId = { $in: filter.projectIds }
   }
 
   const [total, docs] = await Promise.all([
