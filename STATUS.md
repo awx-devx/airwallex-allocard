@@ -2,10 +2,10 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** F2 — Utils
-**Active task:** F2 phase exit signed off (held before F3)
-**Last green `pnpm verify`:** 2026-08-12 (F2 exit — permission wrapper tests)
-**Blocked on:** nothing — awaiting explicit start of F3 (do not generate `F3-TASKS.md` until asked)
+**Active phase:** F2 — Utils (**complete**)
+**Active task:** none — F3 starts in a separate session when asked
+**Last green `pnpm verify`:** 2026-08-12 (F2 exit)
+**Blocked on:** nothing
 
 ---
 
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-F2 implementation + review/exit checklists signed off (except F3 cutover). Do **not** invent `F3-TASKS.md` until asked.
+F2 fully closed (implementation + review + exit). **F3 is separate** — do not invent `F3-TASKS.md` until an F3 session explicitly starts.
 
 ---
 
@@ -60,9 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F2 complete (2026-08-12), held before F3.** Exit + `F2-utils.md` review checklists signed off. Remaining unchecked exit item: advance `STATUS.md` to F3 / generate `F3-TASKS.md` — only when explicitly asked.
+**F2 complete (2026-08-12).** Next work is **F3** (UI library) in a **separate session**: generate `docs/phases/frontend/F3-TASKS.md` from `F3-ui-library.md` when starting; do not invent F3-TASKS until asked.
 
-F2 exit follow-up: `decideRequirePermission` + `resolvePermissionTooltipTitle` tests closed the RequirePermission / PermissionTooltip coverage gap.
+F2 exit: all task checkboxes + `F2-utils.md` review checklist signed off. F3 cutover of active phase deferred by design (F3 taken separately).
 
 F2.0 locked policies (do not reopen) — see `F2-TASKS.md`. Shared currency + scope; `useCan` (not F1 `usePermissions` rename); no `reasons[]` on me/permissions.
 

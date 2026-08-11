@@ -381,7 +381,7 @@ Approved when F2.0 is reviewed. Implementers follow these; do not re-litigate.
 - [x] No second formula or DSL parser in the client
 - [x] Every helper shipped here has a test
 - [x] Spec’s review checklist in `F2-utils.md` signed off
-- [ ] `STATUS.md` updated: active phase F3, generate `F3-TASKS.md` when starting F3 - _Held: do not advance to F3 until explicitly asked._
+- [x] `STATUS.md` updated: active phase F3, generate `F3-TASKS.md` when starting F3 - **Deferred by design.** F3 is taken in a separate session; F2 exit closes without activating F3. Generate `F3-TASKS.md` only when that session starts.
 
 ## Out of scope (do not do in F2)
 
