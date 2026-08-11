@@ -160,7 +160,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.6 — Closure preflight + start (freeze)
 
-- [ ] **B9.6** — Preflight + start
+- [x] **B9.6** — Preflight + start
   - **Files:**
     - `src/server/services/closure/preflight.ts`
     - `src/server/services/closure/start.ts`
@@ -174,6 +174,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     3. Idempotent resume: if already `CLOSING` with closure doc, return status without re-freezing DONE steps.
   - **Pattern:** `src/server/services/projects/transition.ts`, `src/server/services/cards/` freeze
   - **Accept:** `pnpm test api/closure-preflight` && `pnpm test api/closure-start` — each blocker type; happy start; resume
+  - **Notes:** `canStart === (blockers.length === 0)`. ACTIVE_CARD = `CardStatus.ACTIVE` (freeze to INACTIVE before start; start reuses `freezeCard` for remaining non-CLOSED/non-INACTIVE). OPEN vs PENDING_AUTH partitioned by tx type. CLOSING only via `/closure/start` — generic `/transition` rejects CLOSING; ACTIVE→CLOSING removed from `canTransition`.
 
 ### B9.7 — Closure status + settle/revoke helpers
 

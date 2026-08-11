@@ -13,6 +13,7 @@ import * as memberships from '@/server/repositories/memberships'
 import * as organizations from '@/server/repositories/organizations'
 import * as users from '@/server/repositories/users'
 import { createProjectForOrg } from '@/server/services/projects/create'
+import { startClosure } from '@/server/services/closure/start'
 import { transitionProject } from '@/server/services/projects/transition'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -139,7 +140,7 @@ describe('events/projects', () => {
     await transitionProject(ctx, project.id, { to: ProjectStatus.ACTIVE })
     resetEventPublisher()
 
-    await transitionProject(ctx, project.id, { to: ProjectStatus.CLOSING })
+    await startClosure(ctx, project.id)
 
     const events = getPublishedEvents().filter((e) => e.type === DomainEventType.PROJECT_CLOSING)
     expect(events).toHaveLength(1)
@@ -162,7 +163,7 @@ describe('events/projects', () => {
     await withApprovedBudget(ctx, project.id)
     await transitionProject(ctx, project.id, { to: ProjectStatus.PENDING_APPROVAL })
     await transitionProject(ctx, project.id, { to: ProjectStatus.ACTIVE })
-    await transitionProject(ctx, project.id, { to: ProjectStatus.CLOSING })
+    await startClosure(ctx, project.id)
     resetEventPublisher()
 
     await transitionProject(ctx, project.id, { to: ProjectStatus.CLOSED })

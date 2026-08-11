@@ -29,7 +29,7 @@ const VALID: ReadonlyArray<{ from: ProjectStatus; to: ProjectStatus }> = [
   { from: ProjectStatus.DRAFT, to: ProjectStatus.PENDING_APPROVAL },
   { from: ProjectStatus.DRAFT, to: ProjectStatus.CANCELLED },
   { from: ProjectStatus.PENDING_APPROVAL, to: ProjectStatus.ACTIVE },
-  { from: ProjectStatus.ACTIVE, to: ProjectStatus.CLOSING },
+  // ACTIVE → CLOSING only via /closure/start (B9.0)
   { from: ProjectStatus.CLOSING, to: ProjectStatus.CLOSED },
   { from: ProjectStatus.CLOSED, to: ProjectStatus.ARCHIVED },
 ]
@@ -283,7 +283,7 @@ describe('/api/projects/:id/transition', () => {
     }
   }, 120_000)
 
-  it('emits approved+launched on → ACTIVE, closing on → CLOSING, closed on → CLOSED', async () => {
+  it('emits approved+launched on → ACTIVE and closed on → CLOSED', async () => {
     const { session, ctx } = await seedOwner()
     const project = await createReadyDraft(ctx, `EVT-${Date.now()}`)
 
@@ -298,12 +298,8 @@ describe('/api/projects/:id/transition', () => {
       getPublishedEvents().filter((e) => e.type === DomainEventType.PROJECT_LAUNCHED),
     ).toHaveLength(1)
 
-    resetEventPublisher()
-    await callTransition(session, project.id, ProjectStatus.CLOSING)
-    expect(
-      getPublishedEvents().filter((e) => e.type === DomainEventType.PROJECT_CLOSING),
-    ).toHaveLength(1)
-
+    // CLOSING is entered only via /closure/start — set status directly for CLOSED event.
+    await projectsRepo.updateStatus(ctx, project.id, ProjectStatus.ACTIVE, ProjectStatus.CLOSING)
     resetEventPublisher()
     await callTransition(session, project.id, ProjectStatus.CLOSED)
     expect(
@@ -353,33 +349,17 @@ describe('/api/projects/:id/transition', () => {
     })
   })
 
-  it('blocks ACTIVE→CLOSING while non-CLOSED cards exist', async () => {
+  it('rejects ACTIVE→CLOSING via generic /transition (use /closure/start)', async () => {
     const { session, ctx } = await seedOwner()
     const project = await createReadyDraft(ctx, `CARDS-${Date.now()}`)
     await advanceTo(ctx, project.id, ProjectStatus.ACTIVE)
-
-    const { createCardholderForOrg } = await import('@/server/services/cardholders/create')
-    const { createCardForProject } = await import('@/server/services/cards/create')
-    const { CardholderType } = await import('@/shared/enums/cardholderType')
-    const { CardholderStatus } = await import('@/shared/enums/cardholderStatus')
-    const { CardPurpose } = await import('@/shared/enums/cardPurpose')
-    const cardholdersRepo = await import('@/server/repositories/cardholders')
-    const { makeCardControls } = await import('../helpers/factories')
-
-    const ch = await createCardholderForOrg(ctx, { type: CardholderType.DELEGATE })
-    if (ch.status !== CardholderStatus.READY) {
-      await cardholdersRepo.updateCardholderStatus(ctx, ch.id, CardholderStatus.READY)
-    }
-    await createCardForProject(ctx, project.id, {
-      purpose: CardPurpose.SHARED,
-      cardholderId: ch.id,
-      desiredControls: makeCardControls(),
-    })
 
     const res = await callTransition(session, project.id, ProjectStatus.CLOSING)
     expect(res.status).toBe(409)
     const body = await readBody<{ error: { code: string; message: string } }>(res)
     expect(body.error.code).toBe(ErrorCode.CONFLICT)
-    expect(body.error.message).toMatch(/not CLOSED/)
+    expect(body.error.message).toMatch(/closure\/start/)
+    const after = await projectsRepo.findProjectById(ctx, project.id)
+    expect(after?.status).toBe(ProjectStatus.ACTIVE)
   })
 })

@@ -17,7 +17,7 @@ const VALID: ReadonlyArray<{
   },
   { from: ProjectStatus.DRAFT, to: ProjectStatus.CANCELLED, guards: [] },
   { from: ProjectStatus.PENDING_APPROVAL, to: ProjectStatus.ACTIVE, guards: [] },
-  { from: ProjectStatus.ACTIVE, to: ProjectStatus.CLOSING, guards: ['noActiveCards'] },
+  // ACTIVE → CLOSING is only via /closure/start (B9.0), not canTransition.
   { from: ProjectStatus.CLOSING, to: ProjectStatus.CLOSED, guards: [] },
   { from: ProjectStatus.CLOSED, to: ProjectStatus.ARCHIVED, guards: [] },
 ]

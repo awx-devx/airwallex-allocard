@@ -4,7 +4,7 @@ import { ProjectStatus } from '@/shared/enums/projectStatus'
  * Data-dependent checks the transition *service* must run before mutating.
  * `canTransition` stays pure — it only declares which checks apply.
  */
-export type TransitionGuard = 'readyForApproval' | 'noActiveCards'
+export type TransitionGuard = 'readyForApproval'
 
 export type TransitionResult =
   { ok: true; guards: readonly TransitionGuard[] } | { ok: false; reason: 'INVALID_TRANSITION' }
@@ -17,6 +17,9 @@ export type TransitionResult =
  *
  * CANCELLED attaches under DRAFT only (pre-submit abandon).
  * CLOSED and ARCHIVED (and CANCELLED) are terminal.
+ *
+ * **CLOSING is entered only via** `POST /api/projects/:id/closure/start`
+ * (B9.0 lock) — not via generic `/transition`. ACTIVE has no outgoing edge here.
  */
 const EDGES: Readonly<
   Record<ProjectStatus, ReadonlyArray<{ to: ProjectStatus; guards: readonly TransitionGuard[] }>>
@@ -26,7 +29,7 @@ const EDGES: Readonly<
     { to: ProjectStatus.CANCELLED, guards: [] },
   ],
   [ProjectStatus.PENDING_APPROVAL]: [{ to: ProjectStatus.ACTIVE, guards: [] }],
-  [ProjectStatus.ACTIVE]: [{ to: ProjectStatus.CLOSING, guards: ['noActiveCards'] }],
+  [ProjectStatus.ACTIVE]: [],
   [ProjectStatus.CLOSING]: [{ to: ProjectStatus.CLOSED, guards: [] }],
   [ProjectStatus.CLOSED]: [{ to: ProjectStatus.ARCHIVED, guards: [] }],
   [ProjectStatus.ARCHIVED]: [],
