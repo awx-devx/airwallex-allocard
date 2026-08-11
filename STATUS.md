@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7.4 — Resolve approvers
-**Last green `pnpm verify`:** 2026-08-11 (B7.3)
+**Active task:** B7.5 — Create / update / submit / cancel / decide
+**Last green `pnpm verify`:** 2026-08-11 (B7.4)
 **Blocked on:** nothing
 
 ---
@@ -20,7 +20,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 4 / 11  |
+| B     | B7 Requests & approvals | **in progress** | 5 / 11  |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B7.4** — resolve ROLE / NAMED_USERS / PROJECT_OWNER to distinct approver ids.
+Active: **B7.5** — request lifecycle services (create/update/submit/cancel/decide).
 
 B7.0 locked policies (do not reopen):
 

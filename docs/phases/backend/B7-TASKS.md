@@ -81,7 +81,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.4 — Approver selection
 
-- [ ] **B7.4** — Resolve approvers
+- [x] **B7.4** — Resolve approvers
   - **Files:** `src/server/services/approvals/routing.ts`, `routing.test.ts`
   - **Do:** Resolve ROLE / NAMED_USERS / PROJECT_OWNER to distinct user ids. `requiredCount` needs distinct approvers; duplicate approval from same user does not count twice. Requester can never appear in the resolved set for their own request.
   - **Pattern:** pure helpers + repo reads
