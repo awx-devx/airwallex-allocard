@@ -16,7 +16,6 @@ import { mockCaller } from '@/client/hooks/testHelpers'
 describe('useTransactions', () => {
   it('transactionsInfiniteQueryOptions invokes transactionContracts.list', async () => {
     vi.mocked(call).mockResolvedValue({ items: [], page: 1, pageSize: 20, total: 0 })
-    const qc = new QueryClient()
     const opts = transactionsInfiniteQueryOptions(undefined, mockCaller)
     await opts.queryFn({ pageParam: 1 })
     expect(call).toHaveBeenCalledWith(transactionContracts.list, {

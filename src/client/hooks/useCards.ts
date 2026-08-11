@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { z } from 'zod'
-import { ApiError } from '@/client/api/errors'
 import { invalidateFor } from '@/client/hooks/invalidationMap'
 import { cardLimitsQueryOptions } from '@/client/hooks/queryDefaults'
 import type { ContractCaller } from '@/client/hooks/useSession'
