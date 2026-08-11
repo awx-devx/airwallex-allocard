@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** F1 — Data layer (TanStack Query)
-**Active task:** Phase exit pending (F1.0–F1.14 complete)
-**Last green `pnpm verify`:** 2026-08-12 (F1.14)
+**Active phase:** F2 — Utils
+**Active task:** Generate F2-TASKS.md when starting F2 (do not invent until asked)
+**Last green `pnpm verify`:** 2026-08-12 (F1 phase exit)
 **Blocked on:** nothing
 
 ---
@@ -24,12 +24,12 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B8 Money in motion      | **complete** | 11 / 11 |
 | B     | B9 Reporting & closure  | **complete** | 11 / 11 |
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
-| F     | F1 Data layer           | in progress  | 15 / 15 |
+| F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | not started  | —       |
 | F     | F3 UI library           | not started  | —       |
 | A     | A1–A9 Application       | not started  | —       |
 
-Task files are generated at the start of each phase. F1 implementation tasks F1.0–F1.14 are complete — **phase exit checklist not run yet**.
+Task files are generated at the start of each phase. `F1-TASKS.md` complete — generate `F2-TASKS.md` from the F2 spec when you reach it. Do **not** invent F2-TASKS unless asked.
 
 ---
 
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F1 implementation complete through F1.14 (2026-08-12).** Stopped before phase exit per request. Next: run F1 phase exit checklist + F1-data-layer review checklist; then generate `F2-TASKS.md`.
+**F1 complete (2026-08-12).** Next: **F2** utils — generate `docs/phases/frontend/F2-TASKS.md` from the F2 spec when starting; do **not** invent F2-TASKS until asked.
+
+F1 phase exit: review + exit checklists signed off. `qk` + `invalidationMap`, `useCall`/`downloadExport`, domain hooks (session→reports), barrel, ESLint `call()` ban on UI surfaces, contract coverage gate. Dual infinite pagination (cursor activity/audit; page transactions/rule runs). Optimistic freeze/unfreeze + receipts only.
 
 F1.0 locked policies (do not reopen):
 
@@ -70,7 +72,7 @@ F1.0 locked policies (do not reopen):
 4. Spec aliases map to real contracts (`useUpdateCard`, rule CRUD as save-rule invalidation, `useSetBudget` → put, `useSetAttributeValue` → putValue)
 5. Extra `qk.*` keys in F1.0; ephemeral mutations in map as `[]`; liberal `cards()` invalidation
 
-F0 phase exit (prior): typed `call()`, `ApiError` behaviours, providers, guards, route groups, shell, states, `/dev/shell`, ESLint boundary + no-fetch proofs. Fetch lint caveat: `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — empirically only `src/client/api/client.ts` calls `fetch` (plus F1 `download.ts` for CSV streams).
+F0 phase exit (prior): typed `call()`, `ApiError` behaviours, providers, guards, route groups, shell, states, `/dev/shell`, ESLint boundary + no-fetch proofs. Fetch lint caveat: `no-restricted-syntax` covers `shell/**`, `states/**`, `(app)/**` — empirically `src/client/api/client.ts` + F1 `download.ts` call `fetch`.
 
 B9.0 locked policies (do not reopen):
 

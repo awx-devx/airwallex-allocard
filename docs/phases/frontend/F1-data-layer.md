@@ -15,31 +15,32 @@ One file, one authority. Ad-hoc key arrays scattered through hooks is how cache 
 ```ts
 // src/client/queryKeys.ts
 export const qk = {
-  me:            () => ['me'] as const,
-  permissions:   () => ['me', 'permissions'] as const,
+  me: () => ['me'] as const,
+  permissions: () => ['me', 'permissions'] as const,
 
-  projects:      (f?: ProjectFilter) => ['projects', f ?? {}] as const,
-  project:       (id: string)        => ['projects', id] as const,
-  projectMembers:(id: string)        => ['projects', id, 'members'] as const,
-  budget:        (id: string)        => ['projects', id, 'budget'] as const,
-  budgetEntries: (id: string, f?: EntryFilter) => ['projects', id, 'budget', 'entries', f ?? {}] as const,
+  projects: (f?: ProjectFilter) => ['projects', f ?? {}] as const,
+  project: (id: string) => ['projects', id] as const,
+  projectMembers: (id: string) => ['projects', id, 'members'] as const,
+  budget: (id: string) => ['projects', id, 'budget'] as const,
+  budgetEntries: (id: string, f?: EntryFilter) =>
+    ['projects', id, 'budget', 'entries', f ?? {}] as const,
 
-  cards:         (f?: CardFilter)    => ['cards', f ?? {}] as const,
-  card:          (id: string)        => ['cards', id] as const,
-  cardLimits:    (id: string)        => ['cards', id, 'limits'] as const,
-  cardExplain:   (id: string)        => ['cards', id, 'explain'] as const,
+  cards: (f?: CardFilter) => ['cards', f ?? {}] as const,
+  card: (id: string) => ['cards', id] as const,
+  cardLimits: (id: string) => ['cards', id, 'limits'] as const,
+  cardExplain: (id: string) => ['cards', id, 'explain'] as const,
 
-  rules:         (f?: RuleFilter)    => ['rules', f ?? {}] as const,
-  ruleRuns:      (f?: RunFilter)     => ['ruleRuns', f ?? {}] as const,
-  attributes:    ()                  => ['attributes'] as const,
+  rules: (f?: RuleFilter) => ['rules', f ?? {}] as const,
+  ruleRuns: (f?: RunFilter) => ['ruleRuns', f ?? {}] as const,
+  attributes: () => ['attributes'] as const,
 
-  requests:      (f?: RequestFilter) => ['requests', f ?? {}] as const,
-  approvals:     ()                  => ['approvals'] as const,
-  approvalCount: ()                  => ['approvals', 'count'] as const,
+  requests: (f?: RequestFilter) => ['requests', f ?? {}] as const,
+  approvals: () => ['approvals'] as const,
+  approvalCount: () => ['approvals', 'count'] as const,
 
-  transactions:  (f?: TxFilter)      => ['transactions', f ?? {}] as const,
-  activity:      (id?: string)       => ['activity', id ?? 'org'] as const,
-  audit:         (f?: AuditFilter)   => ['audit', f ?? {}] as const,
+  transactions: (f?: TxFilter) => ['transactions', f ?? {}] as const,
+  activity: (id?: string) => ['activity', id ?? 'org'] as const,
+  audit: (f?: AuditFilter) => ['audit', f ?? {}] as const,
 } as const
 ```
 
@@ -49,18 +50,18 @@ Hierarchical prefixes are deliberate: invalidating `['projects', id]` clears tha
 
 Grouped by domain, mirroring the backend phases:
 
-| File | Covers |
-| --- | --- |
-| `useSession.ts` | `me`, permissions, onboarding status |
-| `useOrganizations.ts` | Org CRUD, members, invites |
-| `useProjects.ts` | List, detail, create, update, transition, workstreams |
-| `useMembers.ts` | Project members, roles, scopes, **permission preview** |
-| `useBudget.ts` | Budget, categories, entries, change requests, formula validation |
-| `useCards.ts` | Cards, limits, lifecycle actions, PAN token |
-| `useRules.ts` | Attributes, rules, validate, **simulate**, rule runs, card explain |
-| `useRequests.ts` | Requests, policy preview, approvals queue |
-| `useTransactions.ts` | Transactions, declines, receipts |
-| `useReports.ts` | Activity, audit, exports, closure |
+| File                  | Covers                                                             |
+| --------------------- | ------------------------------------------------------------------ |
+| `useSession.ts`       | `me`, permissions, onboarding status                               |
+| `useOrganizations.ts` | Org CRUD, members, invites                                         |
+| `useProjects.ts`      | List, detail, create, update, transition, workstreams              |
+| `useMembers.ts`       | Project members, roles, scopes, **permission preview**             |
+| `useBudget.ts`        | Budget, categories, entries, change requests, formula validation   |
+| `useCards.ts`         | Cards, limits, lifecycle actions, PAN token                        |
+| `useRules.ts`         | Attributes, rules, validate, **simulate**, rule runs, card explain |
+| `useRequests.ts`      | Requests, policy preview, approvals queue                          |
+| `useTransactions.ts`  | Transactions, declines, receipts                                   |
+| `useReports.ts`       | Activity, audit, exports, closure                                  |
 
 Naming: `useProjects()` / `useProject(id)` for queries, `useCreateProject()` / `useUpdateProject()` for mutations. No exceptions — predictability is the point.
 
@@ -68,21 +69,21 @@ Naming: `useProjects()` / `useProject(id)` for queries, `useCreateProject()` / `
 
 Every mutation declares what it invalidates, in one reviewable table rather than buried in each hook. This is the artefact most worth reviewing carefully in this phase, because a missing entry produces a stale screen that looks like a backend bug.
 
-| Mutation | Invalidates |
-| --- | --- |
-| `useCreateProject` | `projects()` |
-| `useTransitionProject` | `project(id)`, `projects()`, `activity(id)` |
-| `useAddMember` | `projectMembers(id)`, `project(id)`, `permissions()` |
-| `useUpdateMemberRole` | `projectMembers(id)`, `permissions()`, `cards()` |
-| `useSetBudget` | `budget(id)`, `project(id)`, `cards()` — limits may move |
-| `useDecideChangeRequest` | `budget(id)`, `budgetEntries(id)`, `cards()` |
-| `useCreateCard` | `cards()`, `project(id)` |
-| `useFreezeCard` / `useUnfreezeCard` / `useCloseCard` | `card(id)`, `cards()` |
-| `useUpdateCardControls` | `card(id)`, `cardLimits(id)`, `cardExplain(id)` |
-| `useSaveRule` | `rules()`, `cards()`, `cardExplain(*)` |
-| `useSetAttributeValue` | `attributes()`, `cards()`, `ruleRuns()` |
-| `useDecideRequest` | `requests()`, `approvals()`, `approvalCount()`, `budget(id)`, `cards()` |
-| `useUploadReceipt` | `transactions()` |
+| Mutation                                             | Invalidates                                                             |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| `useCreateProject`                                   | `projects()`                                                            |
+| `useTransitionProject`                               | `project(id)`, `projects()`, `activity(id)`                             |
+| `useAddMember`                                       | `projectMembers(id)`, `project(id)`, `permissions()`                    |
+| `useUpdateMemberRole`                                | `projectMembers(id)`, `permissions()`, `cards()`                        |
+| `useSetBudget`                                       | `budget(id)`, `project(id)`, `cards()` — limits may move                |
+| `useDecideChangeRequest`                             | `budget(id)`, `budgetEntries(id)`, `cards()`                            |
+| `useCreateCard`                                      | `cards()`, `project(id)`                                                |
+| `useFreezeCard` / `useUnfreezeCard` / `useCloseCard` | `card(id)`, `cards()`                                                   |
+| `useUpdateCardControls`                              | `card(id)`, `cardLimits(id)`, `cardExplain(id)`                         |
+| `useSaveRule`                                        | `rules()`, `cards()`, `cardExplain(*)`                                  |
+| `useSetAttributeValue`                               | `attributes()`, `cards()`, `ruleRuns()`                                 |
+| `useDecideRequest`                                   | `requests()`, `approvals()`, `approvalCount()`, `budget(id)`, `cards()` |
+| `useUploadReceipt`                                   | `transactions()`                                                        |
 
 Note how often `cards()` appears. In this product almost any change can move a card limit, and being liberal with card invalidation is correct — a stale limit on screen undermines the entire premise.
 
@@ -105,13 +106,13 @@ Never retry a `4xx`. Per-hook overrides worth setting: card limits ~15s, approva
 
 ## Review checklist
 
-- [ ] Exactly one hook per endpoint; nothing calls `call()` directly from a screen
-- [ ] Every hook's types derive from the contract, with no manual annotations
-- [ ] The invalidation map is complete — walk every mutation against it
-- [ ] No `4xx` is retried
-- [ ] Infinite queries match the backend's cursor semantics
-- [ ] Optimistic updates are limited to the two safe cases and roll back on error
-- [ ] Removing an endpoint from a contract breaks the build in its hook
+- [x] Exactly one hook per endpoint; nothing calls `call()` directly from a screen
+- [x] Every hook's types derive from the contract, with no manual annotations
+- [x] The invalidation map is complete — walk every mutation against it
+- [x] No `4xx` is retried
+- [x] Infinite queries match the backend's cursor semantics
+- [x] Optimistic updates are limited to the two safe cases and roll back on error
+- [x] Removing an endpoint from a contract breaks the build in its hook
 
 ## Out of scope
 

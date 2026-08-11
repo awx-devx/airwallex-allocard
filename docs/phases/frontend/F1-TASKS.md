@@ -452,18 +452,18 @@ Approved 2026-08-12. Implementers follow these; do not re-litigate.
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Exactly one hook per browser-facing endpoint (F1.14 green)
-- [ ] Nothing under shell/states/(app) imports `call()` (F1.13)
-- [ ] Every hook’s types derive from contracts (no hand-written response interfaces)
-- [ ] Invalidation map complete vs mutation inventory
-- [ ] No `4xx` retried (still owned by `createAppQueryClient` — reconfirm `pnpm test client/providers/queryClient`)
-- [ ] Infinite queries: cursor for activity/audit; page-based for transactions/rule runs (F1.0 locked #1)
-- [ ] Optimistic updates only freeze/unfreeze + receipt upload/delete; rollback on error
-- [ ] Removing a field from a contract breaks the hook’s typecheck
-- [ ] Spec’s review checklist in `F1-data-layer.md` signed off
-- [ ] `STATUS.md` updated: active phase F2, generate `F2-TASKS.md` when starting F2
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Exactly one hook per browser-facing endpoint (F1.14 green)
+- [x] Nothing under shell/states/(app) imports `call()` (F1.13)
+- [x] Every hook’s types derive from contracts (no hand-written response interfaces)
+- [x] Invalidation map complete vs mutation inventory
+- [x] No `4xx` retried (still owned by `createAppQueryClient` — reconfirm `pnpm test client/providers/queryClient`)
+- [x] Infinite queries: cursor for activity/audit; page-based for transactions/rule runs (F1.0 locked #1)
+- [x] Optimistic updates only freeze/unfreeze + receipt upload/delete; rollback on error
+- [x] Removing a field from a contract breaks the hook’s typecheck
+- [x] Spec’s review checklist in `F1-data-layer.md` signed off
+- [x] `STATUS.md` updated: active phase F2, generate `F2-TASKS.md` when starting F2
 
 ## Out of scope (do not do in F1)
 
