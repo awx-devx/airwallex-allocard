@@ -214,3 +214,21 @@ export type { TransactionType } from '@/shared/enums/transactionType'
 export type { TransactionStatus } from '@/shared/enums/transactionStatus'
 export type { RemoteAuthResponseStatus } from '@/shared/enums/remoteAuthResponseStatus'
 export type { CursorPage, Id, IsoDate, Money, Pagination } from '@/shared/schemas/base'
+export type { ActivityItem, ActivityPage, ListActivityQuery } from '@/shared/types/activity'
+export type { AuditEntry, AuditPage, ListAuditQuery } from '@/shared/types/auditQuery'
+export type { ExportInput } from '@/shared/types/export'
+export type { FinalReport, OrganizationReport, ProjectReport } from '@/shared/types/report'
+export type {
+  ClosureBlockingItem,
+  ClosurePreflight,
+  ClosureStatus,
+  ClosureStepState,
+  CompleteClosureInput,
+  StartClosureInput,
+} from '@/shared/types/closure'
+export type { ActivityItemType } from '@/shared/enums/activityItemType'
+export type { ClosureStep } from '@/shared/enums/closureStep'
+export type { ClosureStepStatus } from '@/shared/enums/closureStepStatus'
+export type { ExportKind } from '@/shared/enums/exportKind'
+export type { ClosureBlockingKind } from '@/shared/enums/closureBlockingKind'
+export type { ActorType } from '@/shared/enums/audit'

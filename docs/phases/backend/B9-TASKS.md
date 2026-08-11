@@ -10,7 +10,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ## Contracts first
 
-- [ ] **B9.0** — Schemas and contracts
+- [x] **B9.0** — Schemas and contracts
   - **Files:**
     - `src/shared/enums/activityItemType.ts` — `TRANSACTION | PURCHASE_REQUEST | APPROVAL | CARD | ACCESS | RULE_RUN | AUDIT`
     - `src/shared/enums/closureStep.ts` — `PREFLIGHT | FREEZE | SETTLE | REVOKE | CLOSE_CARDS | FINAL_REPORT | ARCHIVE`

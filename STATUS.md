@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.0 — Schemas and contracts (stop for review after)
-**Last green `pnpm verify`:** 2026-08-11 (B8 phase exit)
+**Active task:** B9.1 — Unified activity feed
+**Last green `pnpm verify`:** 2026-08-12 (B9.0)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 0 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 1 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-B8 complete. Active: **B9.0** — activity/audit/export/report/closure contracts (policies locked below — implement B9.0 next).
+B9.0 complete (contracts + schemas). Active: **B9.1** — unified activity feed service + HTTP.
 
 B9.0 locked policies (do not reopen):
 
