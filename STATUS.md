@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B9 — Activity, audit, reports & closure
-**Active task:** B9.7 — Closure status + settle/revoke
-**Last green `pnpm verify`:** 2026-08-12 (B9.6)
+**Active task:** B9.8 — Closure complete (close cards, report, archive)
+**Last green `pnpm verify`:** 2026-08-12 (B9.7)
 **Blocked on:** nothing
 
 ---
@@ -22,7 +22,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
 | B     | B7 Requests & approvals | **complete**    | 11 / 11 |
 | B     | B8 Money in motion      | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure  | **in progress** | 7 / 11  |
+| B     | B9 Reporting & closure  | **in progress** | 8 / 11  |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
 | F     | F2 Utils                | not started     | —       |
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-B9.6 complete. Active: **B9.7** — closure status + settle/revoke.
+B9.7 complete. Active: **B9.8** — complete closure (close cards, final report, archive).
+
+B9.7 notes: GET `/closure/status` requires CLOSING + closure doc (409 if not CLOSING, 404 if missing doc/project). Status poll calls `settleClosure`. SETTLE DONE iff zero AUTHORIZED auth-type txs (AUTHORIZATION|INCREMENTAL_AUTHORIZATION); else BLOCKED with `N pending authorization(s)`; DONE advances currentStep → REVOKE. `revokeClosure` expires member `validTo` via `updateProjectMemberForProject`, strips `payment.make` via `rewriteEffectivePermissions` (OWNER/ADMIN widen), marks REVOKE DONE; advances to CLOSE_CARDS only when SETTLE DONE. Does not close cards.
 
 B9.6 notes: Preflight `canStart === (blockers.length === 0)`. ACTIVE_CARD = `CardStatus.ACTIVE`. Start reuses `freezeCard` for non-CLOSED/non-INACTIVE cards; marks PREFLIGHT+FREEZE DONE, currentStep SETTLE. CLOSING only via `/closure/start` (generic `/transition` rejects; ACTIVE→CLOSING removed from `canTransition`). Resume returns status without re-freeze/re-emit.
 

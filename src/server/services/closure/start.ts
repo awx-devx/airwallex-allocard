@@ -17,25 +17,15 @@ import { findProjectById, updateStatus } from '@/server/repositories/projects'
 import { audit } from '@/server/services/audit/log'
 import { freezeCard, type LifecycleDeps } from '@/server/services/cards/lifecycle'
 import { closurePreflight } from '@/server/services/closure/preflight'
+import { toClosureStatus } from '@/server/services/closure/status'
 import { ActorType } from '@/shared/enums/audit'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ClosureStep } from '@/shared/enums/closureStep'
 import { ClosureStepStatus } from '@/shared/enums/closureStepStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
-import type { ClosureStatus, ProjectClosure } from '@/shared/types/closure'
-import type { Project } from '@/shared/types/project'
+import type { ClosureStatus } from '@/shared/types/closure'
 
 export type StartClosureDeps = LifecycleDeps
-
-function toClosureStatus(project: Project, closure: ProjectClosure): ClosureStatus {
-  return {
-    projectId: project.id,
-    projectStatus: project.status,
-    currentStep: closure.currentStep,
-    steps: closure.steps,
-    resumable: project.status === ProjectStatus.CLOSING && closure.completedAt === null,
-  }
-}
 
 function startSteps(now: Date): Array<{
   step: ClosureStep

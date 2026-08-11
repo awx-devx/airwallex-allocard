@@ -178,7 +178,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
 
 ### B9.7 — Closure status + settle/revoke helpers
 
-- [ ] **B9.7** — Status + settle/revoke
+- [x] **B9.7** — Status + settle/revoke
   - **Files:**
     - `src/server/services/closure/status.ts`
     - `src/server/services/closure/settle.ts`
@@ -193,6 +193,7 @@ Read [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §5 (`auditLogs`, project 
     4. Do not close cards here.
   - **Pattern:** `src/server/services/projectMembers/`, access scope updates from B3
   - **Accept:** `pnpm test api/closure-status` && `pnpm test services/closure/settle`
+  - **Notes:** Status requires CLOSING + closure doc (else 409/404); polls `settleClosure`. SETTLE counts AUTHORIZED + AUTHORIZATION|INCREMENTAL_AUTHORIZATION only; BLOCKED detail = `N pending authorization(s)`; DONE → currentStep REVOKE. Revoke uses `updateProjectMemberForProject` to expire `validTo` + `rewriteEffectivePermissions` to strip `payment.make` (covers OWNER/ADMIN widen); advances to CLOSE_CARDS only when SETTLE already DONE. No card close.
 
 ### B9.8 — Closure complete (close cards, report, archive)
 
