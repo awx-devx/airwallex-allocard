@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7.6 — Ledger commitment / release pairing
-**Last green `pnpm verify`:** 2026-08-11 (B7.5)
+**Active task:** B7.7 — Request + policy HTTP routes
+**Last green `pnpm verify`:** 2026-08-11 (B7.6)
 **Blocked on:** nothing
 
 ---
@@ -20,7 +20,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 6 / 11  |
+| B     | B7 Requests & approvals | **in progress** | 7 / 11  |
 | B     | B8 Money in motion      | not started     | —       |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
@@ -60,7 +60,7 @@ _None yet._
 
 ## Notes for the next session
 
-Active: **B7.6** — commitment/release ledger pairing tests.
+Active: **B7.7** — request + policy HTTP routes.
 
 B7.0 locked policies (do not reopen):
 

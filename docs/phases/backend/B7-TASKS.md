@@ -97,7 +97,7 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ### B7.6 — Commitment / release pairing
 
-- [ ] **B7.6** — Ledger integration
+- [x] **B7.6** — Ledger integration
   - **Files:** wire through `appendBudgetEntry` (B4); tests for balance under every terminal path
   - **Do:** APPROVED → one COMMITMENT (`sourceType: PURCHASE_REQUEST`, `sourceId: requestId`). REJECTED / CANCELLED / EXPIRED → matching RELEASE. Two concurrent approvals against the same remaining budget cannot both commit past it (Redis budget lock).
   - **Pattern:** B4 ledger append
