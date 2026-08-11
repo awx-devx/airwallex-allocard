@@ -136,14 +136,14 @@ Read `docs/ARCHITECTURE.md` §5 purchaseRequests shape and §8 `escalate-approva
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Standard endpoint matrix passing for every B7 endpoint
-- [ ] `NOT_PERMITTED` always names the failing check
-- [ ] Policy preview and enforcement use the same function
-- [ ] Commitments and releases balance under every terminal path
-- [ ] Self-approval is impossible
-- [ ] B7 never calls Airwallex directly — it emits, B6 acts
-- [ ] Escalation is idempotent
-- [ ] Spec's review checklist signed off
-- [ ] STATUS.md updated: active phase B8, generate B8-TASKS.md
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Standard endpoint matrix passing for every B7 endpoint
+- [x] `NOT_PERMITTED` always names the failing check
+- [x] Policy preview and enforcement use the same function
+- [x] Commitments and releases balance under every terminal path
+- [x] Self-approval is impossible
+- [x] B7 never calls Airwallex directly — it emits, B6 acts
+- [x] Escalation is idempotent
+- [x] Spec's review checklist signed off
+- [x] STATUS.md updated: active phase B8, generate B8-TASKS.md

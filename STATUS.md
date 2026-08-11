@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** B7 — Purchase requests & approvals
-**Active task:** B7 phase exit (not started — stop here until signed off)
-**Last green `pnpm verify`:** 2026-08-11 (B7.10)
+**Active phase:** B8 — Webhooks, transactions & remote authorization
+**Active task:** B8.0 — Schemas and contracts (stop for review after)
+**Last green `pnpm verify`:** 2026-08-11 (B7 phase exit)
 **Blocked on:** nothing
 
 ---
@@ -20,8 +20,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 | B     | B4 Budget               | **complete**    | 16 / 16 |
 | B     | B5 Cards                | **complete**    | 15 / 15 |
 | B     | B6 Rules engine         | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals | **in progress** | 11 / 11 |
-| B     | B8 Money in motion      | not started     | —       |
+| B     | B7 Requests & approvals | **complete**    | 11 / 11 |
+| B     | B8 Money in motion      | **in progress** | 0 / 11  |
 | B     | B9 Reporting & closure  | not started     | —       |
 | F     | F0 Client foundation    | not started     | —       |
 | F     | F1 Data layer           | not started     | —       |
@@ -29,7 +29,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | not started     | —       |
 | A     | A1–A9 Application       | not started     | —       |
 
-Task files are generated at the start of each phase. B0–B7 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
+Task files are generated at the start of each phase. B0–B8 exist — generate the next phase's `-TASKS.md` from its spec when you reach it.
 
 ---
 
@@ -60,14 +60,18 @@ _None yet._
 
 ## Notes for the next session
 
-**B7.0–B7.10 complete.** Next is **B7 phase exit** (checklist in B7-TASKS.md) — do not start B8 until exit is signed off.
+B7 complete. Active: **B8.0** — webhook/transaction/remote-auth contracts (STOP for review before implementing).
 
-B7.0 locked policies (do not reopen):
+Read `docs/AIRWALLEX-INTEGRATION.md` and `docs/ARCHITECTURE.md` §5/§8/§10 before B8.0.
+
+B7 locked policies (do not reopen):
 
 1. Status includes both CANCELLED (user) and EXPIRED (system)
 2. Create → DRAFT only; submit runs policy
 3. ApproverSelection discriminator shape for selection + escalateTo
-4. Ledger via existing B4 PURCHASE_REQUEST sourceType; APPROVED→COMMITMENT; REJECTED|CANCELLED|EXPIRED→RELEASE
+4. Ledger via B4 PURCHASE_REQUEST sourceType; APPROVED→COMMITMENT; REJECTED|CANCELLED|EXPIRED→RELEASE
+5. Preview and submit share `runPolicyCheck` → `evaluatePolicy`
+6. Self-approval blocked in routing + decide; escalation idempotent via `markEscalated`
 
 B6 exit locked (do not reopen): see prior notes.
 
@@ -75,8 +79,8 @@ B6.0 / B5 locked policies (do not reopen): see prior notes.
 
 Carried forward:
 
-- **`TODO(B7)`:** overview approval counts stub to 0 — clear when B7 ships (phase exit / overview wiring)
-- **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance`
+- **`TODO(B7)`:** overview approval counts stub to 0 — clear when overview wires B7 queue count
+- **`TODO(B8)`:** transactions Airwallex stubs; `FundingSource.availableBalance` — clear as B8 ships
 - **Cancel graph:** `CANCELLED` only from `DRAFT`
 - **B2 matrix:** `#5` scope and `#9` idempotency N/A
 

@@ -10,10 +10,10 @@ A member can ask to spend, the system decides whether that needs approval, and a
 
 ### Models
 
-| Model | Notes |
-| --- | --- |
+| Model             | Notes                                                                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PurchaseRequest` | orgId, projectId, requestedBy, amount, currency, categoryId?, vendor, description, justification, policyDecision, status, cardId?, approvals[] |
-| `ApprovalRule` | orgId, projectId?, threshold, approverSelection, requiredCount, escalationAfterMins, escalateTo |
+| `ApprovalRule`    | orgId, projectId?, threshold, approverSelection, requiredCount, escalationAfterMins, escalateTo                                                |
 
 ### Policy check
 
@@ -23,7 +23,7 @@ A pure function producing one of three outcomes, with reasons:
 type PolicyOutcome = 'NO_APPROVAL_REQUIRED' | 'APPROVAL_REQUIRED' | 'NOT_PERMITTED'
 ```
 
-Evaluated in order: the member's role → their access scope → spending rules → thresholds. `NOT_PERMITTED` must state *which* check failed — "you can't do that" with no reason is the single most frustrating thing an internal tool does.
+Evaluated in order: the member's role → their access scope → spending rules → thresholds. `NOT_PERMITTED` must state _which_ check failed — "you can't do that" with no reason is the single most frustrating thing an internal tool does.
 
 Expose it as `POST /api/policy/preview` so the client can show the outcome **before** the member fills in the form.
 
@@ -45,20 +45,20 @@ On approval, emit `request.approved`. B6 rules react — typically creating a on
 
 ## Endpoints
 
-| Method | Path | Permission | Notes |
-| --- | --- | --- | --- |
-| `POST` | `/api/policy/preview` | authenticated | Outcome and reasons before submitting |
-| `GET` | `/api/projects/:id/requests` | `transaction.view` scoped | Own requests, or all with wider scope |
-| `POST` | `/api/projects/:id/requests` | `payment.make` | Creates `DRAFT` or `PENDING` |
-| `GET` | `/api/requests/:id` | scoped | Includes policy decision and approval trail |
-| `PATCH` | `/api/requests/:id` | requester, while `DRAFT` | |
-| `POST` | `/api/requests/:id/submit` | requester | Runs the policy check, routes |
-| `POST` | `/api/requests/:id/cancel` | requester | Releases the commitment |
-| `POST` | `/api/requests/:id/decide` | `request.approve` | `{ decision, reason }`; reason required on reject |
-| `GET` | `/api/approvals` | `request.approve` | The approver's queue across projects |
-| `GET` | `/api/approvals/count` | `request.approve` | Badge count for the shell |
-| `GET` | `/api/projects/:id/approval-rules` | `control.edit` | |
-| `PUT` | `/api/projects/:id/approval-rules` | `control.edit` | |
+| Method  | Path                               | Permission                | Notes                                             |
+| ------- | ---------------------------------- | ------------------------- | ------------------------------------------------- |
+| `POST`  | `/api/policy/preview`              | authenticated             | Outcome and reasons before submitting             |
+| `GET`   | `/api/projects/:id/requests`       | `transaction.view` scoped | Own requests, or all with wider scope             |
+| `POST`  | `/api/projects/:id/requests`       | `payment.make`            | Creates `DRAFT` or `PENDING`                      |
+| `GET`   | `/api/requests/:id`                | scoped                    | Includes policy decision and approval trail       |
+| `PATCH` | `/api/requests/:id`                | requester, while `DRAFT`  |                                                   |
+| `POST`  | `/api/requests/:id/submit`         | requester                 | Runs the policy check, routes                     |
+| `POST`  | `/api/requests/:id/cancel`         | requester                 | Releases the commitment                           |
+| `POST`  | `/api/requests/:id/decide`         | `request.approve`         | `{ decision, reason }`; reason required on reject |
+| `GET`   | `/api/approvals`                   | `request.approve`         | The approver's queue across projects              |
+| `GET`   | `/api/approvals/count`             | `request.approve`         | Badge count for the shell                         |
+| `GET`   | `/api/projects/:id/approval-rules` | `control.edit`            |                                                   |
+| `PUT`   | `/api/projects/:id/approval-rules` | `control.edit`            |                                                   |
 
 ## Events
 
@@ -83,13 +83,13 @@ Beyond the standard matrix:
 
 ## Review checklist
 
-- [ ] `NOT_PERMITTED` always names the failing check
-- [ ] Policy preview and enforcement use the same function
-- [ ] Commitments and releases balance under every terminal path
-- [ ] Self-approval is impossible
-- [ ] B7 never calls Airwallex directly — it emits, B6 acts
-- [ ] The approvals queue query is efficient across projects; it's on the shell's hot path
-- [ ] Escalation is idempotent
+- [x] `NOT_PERMITTED` always names the failing check
+- [x] Policy preview and enforcement use the same function
+- [x] Commitments and releases balance under every terminal path
+- [x] Self-approval is impossible
+- [x] B7 never calls Airwallex directly — it emits, B6 acts
+- [x] The approvals queue query is efficient across projects; it's on the shell's hot path
+- [x] Escalation is idempotent
 
 ## Out of scope
 
