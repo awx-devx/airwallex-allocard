@@ -455,7 +455,7 @@ All amounts integer minor units.
 
 ### F3.4 — Select, Combobox, Command
 
-- [ ] **F3.4** — Select, Combobox, Command
+- [x] **F3.4** — Select, Combobox, Command
   - **Files:**
     - `src/components/ui/select.tsx`
     - `src/components/ui/command.tsx`
@@ -467,7 +467,7 @@ All amounts integer minor units.
     3. Keyboard: type to filter; Enter selects; Escape closes (Radix/cmdk defaults).
   - **Pattern:** shadcn combobox example (Popover + Command) + Select from shadcn. Reuse `cn`.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Combobox = Popover + Command, filter by label. Command pulled in `dialog.tsx` (F3.6 reuses it).
 
 ### F3.5 — Date pickers
 

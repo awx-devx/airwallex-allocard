@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.4 — Select, Combobox, Command
-**Last green `pnpm verify`:** 2026-08-14 (F3.3 typecheck+lint)
+**Active task:** F3.5 — DatePicker + DateRangePicker
+**Last green `pnpm verify`:** 2026-08-14 (F3.4 typecheck)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 4 / 26  |
+| F     | F3 UI library           | in progress  | 5 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.3 complete** — form primitives. Next: F3.4 Select/Combobox/Command.
+F3 in progress. **F3.4 complete** — Select/Combobox/Command. Next: F3.5 date pickers.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.4 done (2026-08-14).** Combobox = Popover + Command. Dialog arrived as Command dependency.
 
 **F3.3 done (2026-08-14).** Input/Textarea/Label/Checkbox/Radio/Switch/Form. Money: text + parseMoneyInput, never type=number.
 
