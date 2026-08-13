@@ -6,11 +6,16 @@ import {
   budgetOver,
   budgetZero,
   budgetZeroWithSpend,
+  limitEmpty,
+  limitFull,
+  limitJpyMonthly,
+  limitOver,
   moneyJpy,
   moneyNegative,
   moneyUsd,
 } from '@/app/dev/ui/fixtures'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
+import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -63,6 +68,14 @@ export function PatternGallery() {
         <BudgetBar {...budgetZero} />
         <BudgetBar {...budgetZeroWithSpend} />
         <BudgetBar {...budgetFull} />
+      </section>
+
+      <section id="limit-meter" className="space-y-4">
+        <h3 className="font-medium">LimitMeter</h3>
+        <LimitMeter {...limitEmpty} />
+        <LimitMeter {...limitFull} />
+        <LimitMeter {...limitOver} />
+        <LimitMeter {...limitJpyMonthly} />
       </section>
     </>
   )

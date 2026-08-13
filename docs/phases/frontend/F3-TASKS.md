@@ -607,7 +607,7 @@ All amounts integer minor units.
 
 ### F3.12 — LimitMeter
 
-- [ ] **F3.12** — `LimitMeter`
+- [x] **F3.12** — `LimitMeter`
   - **Files:**
     - `src/components/patterns/limitMeterLayout.ts`
     - `src/components/patterns/limitMeterLayout.test.ts`
@@ -623,7 +623,7 @@ All amounts integer minor units.
     4. Kitchen sink: empty / full / over / JPY monthly fixture.
   - **Pattern:** F3.11 `budgetBarLayout`; `cardLimitEntrySchema` in `src/shared/schemas/card.ts` (`interval`, `amount` int nonnegative, `remaining` int); `TransactionLimitInterval` in `src/shared/enums/transactionLimitInterval.ts`.
   - **Accept:** `pnpm test components/patterns/limitMeterLayout`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** used = amount - remaining; usedPct via percentOf (may exceed 100). Interval title-cased from underscores.
 
 ### F3.13 — AttributeValue
 

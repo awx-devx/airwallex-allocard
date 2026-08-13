@@ -61,7 +61,6 @@ const PRIMITIVES = [
 ] as const
 
 const PATTERNS = [
-  'LimitMeter',
   'AttributeValue',
   'PermissionGate',
   'CardVisual',
