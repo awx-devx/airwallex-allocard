@@ -583,7 +583,7 @@ All amounts integer minor units.
 
 ### F3.11 — BudgetBar
 
-- [ ] **F3.11** — `BudgetBar`
+- [x] **F3.11** — `BudgetBar`
   - **Files:**
     - `src/components/patterns/budgetBarLayout.ts`
     - `src/components/patterns/budgetBarLayout.test.ts`
@@ -603,7 +603,7 @@ All amounts integer minor units.
     4. Kitchen sink: all locked budget fixtures.
   - **Pattern:** `percentOf` in `src/lib/money.ts` (F2.2). Projection shape `budgetProjectionSchema` in `src/shared/schemas/budget.ts` (`remaining` may be negative; never clamp — B4).
   - **Accept:** `pnpm test components/patterns/budgetBarLayout`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `percentOf` for segments; remaining not clamped. Fill scaled to min(100, actual+committed). Truncation means healthy sum is 98–100.
 
 ### F3.12 — LimitMeter
 

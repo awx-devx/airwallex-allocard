@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.11 — BudgetBar
-**Last green `pnpm verify`:** 2026-08-14 (F3.10)
+**Active task:** F3.12 — LimitMeter
+**Last green `pnpm verify`:** 2026-08-14 (F3.11)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 11 / 26 |
+| F     | F3 UI library           | in progress  | 12 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.10 complete** — MoneyDisplay + StatusBadge. Next: F3.11 BudgetBar.
+F3 in progress. **F3.11 complete** — BudgetBar. Next: F3.12 LimitMeter.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.11 done (2026-08-14).** BudgetBar layout via percentOf; remaining not clamped.
 
 **F3.10 done (2026-08-14).** MoneyDisplay + StatusBadge. Helper files `*Map.ts` to avoid case-clash.
 

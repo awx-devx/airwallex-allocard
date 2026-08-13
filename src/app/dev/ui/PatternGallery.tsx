@@ -1,6 +1,16 @@
 'use client'
 
-import { moneyJpy, moneyNegative, moneyUsd } from '@/app/dev/ui/fixtures'
+import {
+  budgetFull,
+  budgetHealthy,
+  budgetOver,
+  budgetZero,
+  budgetZeroWithSpend,
+  moneyJpy,
+  moneyNegative,
+  moneyUsd,
+} from '@/app/dev/ui/fixtures'
+import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -44,6 +54,15 @@ export function PatternGallery() {
             <StatusBadge key={`rr-${status}`} kind="ruleRun" status={status} />
           ))}
         </div>
+      </section>
+
+      <section id="budget-bar" className="space-y-4">
+        <h3 className="font-medium">BudgetBar</h3>
+        <BudgetBar {...budgetHealthy} />
+        <BudgetBar {...budgetOver} />
+        <BudgetBar {...budgetZero} />
+        <BudgetBar {...budgetZeroWithSpend} />
+        <BudgetBar {...budgetFull} />
       </section>
     </>
   )
