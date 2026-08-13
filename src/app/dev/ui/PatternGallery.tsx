@@ -18,6 +18,7 @@ import {
   moneyJpy,
   moneyNegative,
   moneyUsd,
+  timelineItems,
 } from '@/app/dev/ui/fixtures'
 import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
@@ -26,6 +27,7 @@ import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { Timeline } from '@/components/patterns/Timeline'
 import { toastStore } from '@/client/providers/toastStore'
 import { Button } from '@/components/ui/button'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -127,6 +129,16 @@ export function PatternGallery() {
             purpose={cardAws.purpose}
           />
         ))}
+      </section>
+
+      <section id="timeline" className="space-y-4">
+        <h3 className="font-medium">Timeline</h3>
+        <Timeline items={timelineItems} />
+        <Timeline items={[]} loading />
+        <Timeline
+          items={[]}
+          empty={{ title: 'No activity yet', description: 'Events will appear here.' }}
+        />
       </section>
     </>
   )

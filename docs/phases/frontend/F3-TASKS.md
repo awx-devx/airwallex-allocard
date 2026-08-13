@@ -679,7 +679,7 @@ All amounts integer minor units.
 
 ### F3.16 — Timeline
 
-- [ ] **F3.16** — `Timeline`
+- [x] **F3.16** — `Timeline`
   - **Files:**
     - `src/components/patterns/Timeline.tsx`
     - `src/app/dev/ui/page.tsx`
@@ -690,7 +690,7 @@ All amounts integer minor units.
     4. Kitchen sink: mixed actor fixtures; loading; empty (“No activity yet”).
   - **Pattern:** `activityItemSchema` in `src/shared/schemas/activity.ts` (`actorType`, `summary` max 500, `at`); `auditEntrySchema` in `src/shared/schemas/auditQuery.ts` (`action` as summary). `ActorType` enum in `src/shared/enums/audit.ts`. Dates F2.3.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Actor chips: User/Zap/Cog/CreditCard. RULE visually distinct (warning). LoadingState/EmptyState from F0 paths.
 
 ### F3.17 — RuleSentence + FormulaHighlight
 
