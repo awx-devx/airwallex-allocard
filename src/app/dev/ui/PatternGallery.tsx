@@ -1,6 +1,9 @@
 'use client'
 
 import {
+  attributeFresh,
+  attributeStale,
+  attributeTtlNull,
   budgetFull,
   budgetHealthy,
   budgetOver,
@@ -14,6 +17,7 @@ import {
   moneyNegative,
   moneyUsd,
 } from '@/app/dev/ui/fixtures'
+import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
@@ -76,6 +80,13 @@ export function PatternGallery() {
         <LimitMeter {...limitFull} />
         <LimitMeter {...limitOver} />
         <LimitMeter {...limitJpyMonthly} />
+      </section>
+
+      <section id="attribute-value" className="space-y-4">
+        <h3 className="font-medium">AttributeValue</h3>
+        <AttributeValue {...attributeFresh} />
+        <AttributeValue {...attributeStale} />
+        <AttributeValue {...attributeTtlNull} />
       </section>
     </>
   )

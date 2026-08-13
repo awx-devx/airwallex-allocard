@@ -627,7 +627,7 @@ All amounts integer minor units.
 
 ### F3.13 — AttributeValue
 
-- [ ] **F3.13** — `AttributeValue`
+- [x] **F3.13** — `AttributeValue`
   - **Files:**
     - `src/components/patterns/AttributeValue.tsx`
     - `src/components/patterns/attributeValue.test.ts`
@@ -641,7 +641,7 @@ All amounts integer minor units.
     6. Kitchen sink: fresh / stale / ttl-null fixtures.
   - **Pattern:** `isStale` + `formatRelative` in `src/lib/dates.ts` (F2.3). Shape `attributeValueSchema` in `src/shared/schemas/attribute.ts` (`value: number | string | boolean | null`, `observedAt: iso`, `ttlSec: int positive | null`). F0 `PartialState` is the older cousin — do not import its local formatter.
   - **Accept:** `pnpm test components/patterns/attributeValue`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Stale via F2 `isStale`; relative via `formatRelative`. Literals only — ROAS `3.2 x`.
 
 ### F3.14 — PermissionGate
 

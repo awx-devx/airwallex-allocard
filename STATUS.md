@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.13 — AttributeValue
-**Last green `pnpm verify`:** 2026-08-14 (F3.12)
+**Active task:** F3.14 — PermissionGate + Radix PermissionTooltip
+**Last green `pnpm verify`:** 2026-08-14 (F3.13)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 13 / 26 |
+| F     | F3 UI library           | in progress  | 14 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.12 complete** — LimitMeter. Next: F3.13 AttributeValue.
+F3 in progress. **F3.13 complete** — AttributeValue. Next: F3.14 PermissionGate.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.13 done (2026-08-14).** AttributeValue uses F2 isStale/formatRelative.
 
 **F3.12 done (2026-08-14).** LimitMeter empty/full/over + JPY.
 
