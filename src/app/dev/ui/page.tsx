@@ -60,7 +60,7 @@ const PRIMITIVES = [
   'Toast',
 ] as const
 
-const PATTERNS = ['DataTable'] as const
+const PATTERNS = [] as const
 
 function sectionId(name: string): string {
   return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()

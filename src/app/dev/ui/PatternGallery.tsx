@@ -23,6 +23,7 @@ import {
   moneyJpy,
   moneyNegative,
   moneyUsd,
+  tableProjects,
   timelineItems,
 } from '@/app/dev/ui/fixtures'
 import { AttributeValue } from '@/components/patterns/AttributeValue'
@@ -34,6 +35,7 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { StepWizard } from '@/components/patterns/StepWizard'
+import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -216,6 +218,7 @@ export function PatternGallery() {
       </section>
       <ConfirmDialogDemo />
       <StepWizardDemo />
+      <DataTableDemo />
     </>
   )
 }
@@ -297,6 +300,97 @@ function StepWizardDemo() {
       >
         <p className="text-sm">Current step: {active}</p>
       </StepWizard>
+    </section>
+  )
+}
+
+function DataTableDemo() {
+  const [sorting, setSorting] = useState<{ id: string; direction: 'asc' | 'desc' } | null>(null)
+  const [hidden, setHidden] = useState<string[]>([])
+  const [selected, setSelected] = useState<string[]>([])
+  const rows = [...tableProjects]
+  type ProjectRow = (typeof rows)[number]
+  const emptyRows: ProjectRow[] = []
+  return (
+    <section id="data-table" className="space-y-6">
+      <h3 className="font-medium">DataTable</h3>
+      <DataTable
+        columns={[
+          { id: 'name', header: 'Name', sortable: true, cell: (row) => row.name },
+          { id: 'code', header: 'Code', sortable: true, cell: (row) => row.code },
+          {
+            id: 'status',
+            header: 'Status',
+            cell: (row) => <StatusBadge kind="project" status={row.status} />,
+          },
+        ]}
+        rows={rows}
+        getRowId={(row) => row.id}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        pagination={{
+          mode: 'page',
+          page: 1,
+          pageSize: 20,
+          total: 3,
+          onPageChange: () => undefined,
+        }}
+        rowSelection={{ selectedIds: selected, onChange: setSelected }}
+        columnVisibility={{ hiddenIds: hidden, onChange: setHidden }}
+        empty={{ title: 'No projects', description: 'Create a project to get started.' }}
+      />
+      <DataTable
+        columns={[{ id: 'name', header: 'Name', cell: (row) => row.name }]}
+        rows={rows}
+        getRowId={(row) => row.id}
+        pagination={{
+          mode: 'cursor',
+          nextCursor: 'opaque-cursor',
+          onLoadMore: () => undefined,
+        }}
+        empty={{ title: 'No projects', description: 'Create a project to get started.' }}
+      />
+      <DataTable
+        columns={[{ id: 'name', header: 'Name', cell: (row) => row.name }]}
+        rows={emptyRows}
+        getRowId={(row) => row.id}
+        pagination={{
+          mode: 'page',
+          page: 1,
+          pageSize: 20,
+          total: 0,
+          onPageChange: () => undefined,
+        }}
+        empty={{ title: 'No projects', description: 'Create a project to get started.' }}
+      />
+      <DataTable
+        columns={[{ id: 'name', header: 'Name', cell: (row) => row.name }]}
+        rows={emptyRows}
+        getRowId={(row) => row.id}
+        loading
+        pagination={{
+          mode: 'page',
+          page: 1,
+          pageSize: 20,
+          total: 0,
+          onPageChange: () => undefined,
+        }}
+        empty={{ title: 'No projects', description: 'Create a project to get started.' }}
+      />
+      <DataTable
+        columns={[{ id: 'name', header: 'Name', cell: (row) => row.name }]}
+        rows={emptyRows}
+        getRowId={(row) => row.id}
+        error={{ message: 'Failed to load projects', onRetry: () => undefined }}
+        pagination={{
+          mode: 'page',
+          page: 1,
+          pageSize: 20,
+          total: 0,
+          onPageChange: () => undefined,
+        }}
+        empty={{ title: 'No projects', description: 'Create a project to get started.' }}
+      />
     </section>
   )
 }

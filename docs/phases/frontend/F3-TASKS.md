@@ -779,7 +779,7 @@ All amounts integer minor units.
 
 ### F3.22 — DataTable
 
-- [ ] **F3.22** — `DataTable`
+- [x] **F3.22** — `DataTable`
   - **Files:**
     - `src/components/patterns/DataTable.tsx`
     - `src/components/patterns/dataTable.test.ts`
@@ -794,7 +794,7 @@ All amounts integer minor units.
     7. Kitchen sink: project fixture rows with StatusBadge; page mode (`page: 1, pageSize: 20, total: 3`); a second table in cursor mode with `nextCursor: 'opaque-cursor'` and empty/loading/error states.
   - **Pattern:** `src/lib/pagination.ts` (F2.9); F1 dual pagination (cursor activity/audit; page transactions/rule runs). Table/Pagination from F3.7. Empty/Error/Loading from F3.19.
   - **Accept:** `pnpm test components/patterns/dataTable` and `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** nextSorting cycle. Dual pagination via pageNextParam/cursorNextParam. Column visibility does not hide selection.
 
 ### F3.23 — Restyle AppShell
 
