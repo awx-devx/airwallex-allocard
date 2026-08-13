@@ -529,7 +529,7 @@ All amounts integer minor units.
 
 ### F3.8 — Toast restyle
 
-- [ ] **F3.8** — Toast primitive + restyle F0 host
+- [x] **F3.8** — Toast primitive + restyle F0 host
   - **Files:**
     - `src/components/ui/toast.tsx` (presentational item)
     - `src/client/providers/ToastProvider.tsx` (restyle only)
@@ -542,7 +542,7 @@ All amounts integer minor units.
     5. Optional: `pnpm dlx shadcn@latest add sonner` is **forbidden** — do not replace `toastStore` with Sonner.
   - **Pattern:** `src/client/providers/ToastProvider.tsx` + `toastStore.ts` (F0.7). Clipboard already calls `toastStore.success('Copied')` in `src/client/lib/clipboard.ts` — must keep working.
   - **Accept:** `pnpm test client/providers/toast` and `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Kept toastStore API. Presentational Toast maps success/error/info to status tokens. `aria-live="polite"` + `role="status"` kept. No Sonner.
 
 ### F3.9 — Kitchen sink scaffold
 

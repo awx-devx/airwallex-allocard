@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react'
 import { toastStore } from '@/client/providers/toastStore'
+import { Toast } from '@/components/ui/toast'
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const toasts = useSyncExternalStore(toastStore.subscribe, toastStore.getSnapshot, () => [])
@@ -11,38 +12,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        style={{
-          position: 'fixed',
-          right: 16,
-          bottom: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 8,
-          zIndex: 9999,
-        }}
+        role="status"
+        className="fixed right-4 bottom-4 z-[var(--z-toast)] flex flex-col gap-2"
       >
         {toasts.map((toast) => (
-          <div
+          <Toast
             key={toast.id}
-            role="status"
-            data-kind={toast.kind}
-            style={{
-              background: '#111',
-              color: '#fff',
-              padding: '8px 12px',
-              borderRadius: 4,
-              maxWidth: 360,
-            }}
-          >
-            <span>{toast.message}</span>
-            <button
-              type="button"
-              onClick={() => toastStore.dismiss(toast.id)}
-              style={{ marginLeft: 12 }}
-            >
-              Dismiss
-            </button>
-          </div>
+            kind={toast.kind}
+            message={toast.message}
+            onDismiss={() => toastStore.dismiss(toast.id)}
+          />
         ))}
       </div>
     </>

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.8 — Toast primitive + restyle F0 host
-**Last green `pnpm verify`:** 2026-08-14 (F3.7 typecheck)
+**Active task:** F3.9 — `/dev/ui` route, jump nav, theme toggle, fixtures
+**Last green `pnpm verify`:** 2026-08-14 (F3.8)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 8 / 26  |
+| F     | F3 UI library           | in progress  | 9 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.7 complete** — layout primitives. Next: F3.8 toast restyle.
+F3 in progress. **F3.8 complete** — toast restyle. Next: F3.9 kitchen sink scaffold.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.8 done (2026-08-14).** Toast restyle onto status tokens; toastStore API unchanged.
 
 **F3.7 done (2026-08-14).** Tabs/Table/ScrollArea/Breadcrumb/Pagination/Avatar/Card/Alert.
 
