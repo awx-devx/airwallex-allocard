@@ -7,17 +7,4 @@ export type EmptyStateProps = {
   illustration?: ReactNode
 }
 
-export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
-  return (
-    <div style={{ textAlign: 'center', padding: 32 }}>
-      {illustration}
-      <h2>{title}</h2>
-      <p>{description}</p>
-      {action ? (
-        <button type="button" onClick={action.onClick}>
-          {action.label}
-        </button>
-      ) : null}
-    </div>
-  )
-}
+export { EmptyState } from '@/components/patterns/EmptyState'

@@ -725,7 +725,7 @@ All amounts integer minor units.
 
 ### F3.19 — Restyle F0 states
 
-- [ ] **F3.19** — EmptyState, ErrorState, LoadingState, PartialState onto tokens
+- [x] **F3.19** — EmptyState, ErrorState, LoadingState, PartialState onto tokens
   - **Files:**
     - `src/components/patterns/EmptyState.tsx` (visual)
     - `src/components/patterns/ErrorState.tsx` (visual)
@@ -743,7 +743,7 @@ All amounts integer minor units.
     5. `/dev/ui` + `/dev/shell` both show loading/empty/error/partial (fresh + stale). Error kitchen sink: retryable `UPSTREAM_ERROR` with Retry; `NOT_FOUND` without Retry; `PERMISSION_DENIED` without Retry.
   - **Pattern:** F0.13 files + F3 Button/Skeleton. `ErrorCode` in `src/shared/enums/errors.ts`. F0.5 retryable set: `RATE_LIMITED | UPSTREAM_ERROR | INTERNAL`.
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Visuals in patterns; F0 paths re-export. Error retry only for omitted code or RATE_LIMITED/UPSTREAM_ERROR/INTERNAL. Loading uses Skeleton. PartialState uses F2 formatRelative.
 
 ### F3.20 — ConfirmDialog
 

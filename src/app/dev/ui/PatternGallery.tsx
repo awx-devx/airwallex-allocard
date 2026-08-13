@@ -31,7 +31,11 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { DiffView } from '@/components/patterns/DiffView'
+import { EmptyState } from '@/components/patterns/EmptyState'
+import { ErrorState } from '@/components/patterns/ErrorState'
 import { FormulaHighlight } from '@/components/patterns/FormulaHighlight'
+import { LoadingState } from '@/components/patterns/LoadingState'
+import { PartialState } from '@/components/patterns/PartialState'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Timeline } from '@/components/patterns/Timeline'
 import { toastStore } from '@/client/providers/toastStore'
@@ -39,6 +43,7 @@ import { Button } from '@/components/ui/button'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
+import { ErrorCode } from '@/shared/enums/errors'
 import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 
 export function PatternGallery() {
@@ -161,6 +166,49 @@ export function PatternGallery() {
         <h3 className="font-medium">DiffView</h3>
         <DiffView before={diffAudit.before} after={diffAudit.after} />
         <DiffView before={diffCardControls.before} after={diffCardControls.after} />
+      </section>
+
+      <section id="empty-state" className="space-y-2">
+        <h3 className="font-medium">EmptyState</h3>
+        <EmptyState
+          title="No projects yet"
+          description="Create a project to get started."
+          action={{ label: 'Create project', onClick: () => undefined }}
+        />
+      </section>
+
+      <section id="error-state" className="space-y-4">
+        <h3 className="font-medium">ErrorState</h3>
+        <ErrorState
+          message="Airwallex is unavailable"
+          code={ErrorCode.UPSTREAM_ERROR}
+          onRetry={() => undefined}
+        />
+        <ErrorState
+          message="Project not found"
+          code={ErrorCode.NOT_FOUND}
+          onRetry={() => undefined}
+        />
+        <ErrorState
+          message="Missing card.create"
+          code={ErrorCode.PERMISSION_DENIED}
+          onRetry={() => undefined}
+        />
+      </section>
+
+      <section id="loading-state" className="space-y-2">
+        <h3 className="font-medium">LoadingState</h3>
+        <LoadingState rows={4} />
+      </section>
+
+      <section id="partial-state" className="space-y-4">
+        <h3 className="font-medium">PartialState</h3>
+        <PartialState observedAt="2026-08-14T10:50:00.000Z" asOf="2026-08-14T10:55:00.000Z">
+          <p>Headcount: 12</p>
+        </PartialState>
+        <PartialState observedAt="2026-08-14T09:00:00.000Z" asOf="2026-08-14T10:55:00.000Z">
+          <p>Headcount: 12</p>
+        </PartialState>
       </section>
     </>
   )
