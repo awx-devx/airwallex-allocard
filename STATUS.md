@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.2 — Button, Spinner, Badge, Skeleton, Progress, Separator
-**Last green `pnpm verify`:** 2026-08-14 (F3.1)
+**Active task:** F3.3 — Input, Textarea, Label, Checkbox, Radio, Switch, FormField
+**Last green `pnpm verify`:** 2026-08-14 (F3.2)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 2 / 26  |
+| F     | F3 UI library           | in progress  | 3 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.1 complete** — class dark mode via `next-themes` (`allocard:theme`). F3.0 tokens + pattern props reviewed. Visual direction: quiet chrome / loud numbers, `baseColor: slate`. Next: F3.2 primitives.
+F3 in progress. **F3.2 complete** — Button/Spinner/Badge/Skeleton/Progress/Separator. Next: F3.3 form primitives.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.2 done (2026-08-14).** Core primitives. Badge includes StatusVariant tokens. Progress clamps width, danger when > 100. One spinner.
 
 **F3.1 done (2026-08-14).** `ThemeProvider` inside Session / outside Query; `html` has `suppressHydrationWarning`. No `/dev/ui` yet. Do not reopen visual-direction: quiet chrome / loud numbers, `baseColor: slate`.
 

@@ -412,7 +412,7 @@ All amounts integer minor units.
 
 ### F3.2 — Core primitives
 
-- [ ] **F3.2** — Button, Spinner, Badge, Skeleton, Progress, Separator
+- [x] **F3.2** — Button, Spinner, Badge, Skeleton, Progress, Separator
   - **Files:**
     - `src/components/ui/button.tsx`
     - `src/components/ui/spinner.tsx`
@@ -430,7 +430,7 @@ All amounts integer minor units.
     7. Strip any leftover hex classes from the generated files.
   - **Pattern:** shadcn generated files + `cn` from `src/lib/utils.ts`. Badge extra variants exist to serve `src/lib/format/status.ts` `StatusVariant`.
   - **Accept:** `pnpm typecheck && pnpm lint`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** shadcn `radix-ui` unified package. Badge has StatusVariant tokens. Progress clamps bar width at 100 and uses `--status-danger` when `value > 100`. Spinner is Loader2-only.
 
 ### F3.3 — Form primitives
 
