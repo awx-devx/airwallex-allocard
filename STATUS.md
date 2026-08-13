@@ -3,9 +3,9 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** none — F3.0 complete; **STOP for review** before F3.1
-**Last green `pnpm verify`:** 2026-08-14 (F3.0)
-**Blocked on:** F3.0 review (tokens + pattern props)
+**Active task:** F3.2 — Button, Spinner, Badge, Skeleton, Progress, Separator
+**Last green `pnpm verify`:** 2026-08-14 (F3.1)
+**Blocked on:** _nothing_
 
 ---
 
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 1 / 26  |
+| F     | F3 UI library           | in progress  | 2 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.0 complete** — review tokens (`src/app/globals.css`) and pattern props (`src/components/patterns/types.ts`) before F3.1. Visual direction: quiet chrome / loud numbers, `baseColor: slate`, muted steel/forest/ochre/brick.
+F3 in progress. **F3.1 complete** — class dark mode via `next-themes` (`allocard:theme`). F3.0 tokens + pattern props reviewed. Visual direction: quiet chrome / loud numbers, `baseColor: slate`. Next: F3.2 primitives.
 
 ---
 
@@ -60,7 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F3.0 done (2026-08-14).** Review gate: slate tokens + `src/components/patterns/types.ts`. Do not start F3.1 until reviewed. Do not reopen visual-direction: quiet chrome / loud numbers, `baseColor: slate`.
+**F3.1 done (2026-08-14).** `ThemeProvider` inside Session / outside Query; `html` has `suppressHydrationWarning`. No `/dev/ui` yet. Do not reopen visual-direction: quiet chrome / loud numbers, `baseColor: slate`.
+
+F3.0 done (2026-08-14). Slate tokens + `src/components/patterns/types.ts` reviewed.
 
 F2 complete (2026-08-12). F2 exit: all task checkboxes + `F2-utils.md` review checklist signed off.
 

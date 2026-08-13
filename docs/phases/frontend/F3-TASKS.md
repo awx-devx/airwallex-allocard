@@ -396,7 +396,7 @@ All amounts integer minor units.
 
 ### F3.1 — Theme provider
 
-- [ ] **F3.1** — `ThemeProvider` + class dark mode
+- [x] **F3.1** — `ThemeProvider` + class dark mode
   - **Files:**
     - `src/client/providers/ThemeProvider.tsx`
     - `src/client/providers/AppProviders.tsx`
@@ -408,7 +408,7 @@ All amounts integer minor units.
     4. Do **not** build `/dev/ui` yet. No theme toggle UI except what next-themes needs.
   - **Pattern:** `src/client/providers/AppProviders.tsx` (F0.8) + `src/client/providers/SessionProvider.tsx`. Storage key style: `allocard:activeOrgId` in `src/client/providers/ActiveOrgProvider.tsx` → `allocard:theme`.
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `next-themes` class strategy, `storageKey="allocard:theme"`, inside Session / outside Query. `suppressHydrationWarning` on `<html>`. No `/dev/ui` yet.
 
 ### F3.2 — Core primitives
 
