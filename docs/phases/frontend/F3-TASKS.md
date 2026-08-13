@@ -434,7 +434,7 @@ All amounts integer minor units.
 
 ### F3.3 — Form primitives
 
-- [ ] **F3.3** — Input, Textarea, Label, Checkbox, Radio, Switch, FormField
+- [x] **F3.3** — Input, Textarea, Label, Checkbox, Radio, Switch, FormField
   - **Files:**
     - `src/components/ui/input.tsx`
     - `src/components/ui/textarea.tsx`
@@ -451,7 +451,7 @@ All amounts integer minor units.
     5. Each control: default, disabled, and invalid (`aria-invalid`) styles via tokens (`--destructive` / `--ring`).
   - **Pattern:** shadcn form + `src/client/lib/forms/useZodForm.ts` (F2.6). Server field errors already map via `applyServerErrors` — FormMessage displays RHF errors.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Form uses existing RHF + `useZodForm`. Input header forbids `type="number"` for money. shadcn overwrote Button — restored F3.2 loading/Spinner.
 
 ### F3.4 — Select, Combobox, Command
 
