@@ -1,5 +1,4 @@
 import { formatRelative, isStale } from '@/lib/dates'
-import type { AttributeValueProps } from '@/components/patterns/types'
 
 export function formatAttributeLiteral(
   value: number | string | boolean | null,

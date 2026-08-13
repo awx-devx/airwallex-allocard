@@ -1,10 +1,11 @@
 /**
  * Client permission helpers — convenience for UX only, never a security control.
- * Surfaces denial text via native `title` (no Radix until F3).
+ * Surfaces denial text via F3 Tooltip (not native `title`).
  */
 'use client'
 
 import type { ReactNode } from 'react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Permission } from '@/shared/enums/permissions'
 import type { PermissionReason } from '@/shared/types/projectMember'
 
@@ -32,5 +33,12 @@ export function PermissionTooltip({
   children,
 }: PermissionTooltipProps) {
   const title = resolvePermissionTooltipTitle(permission, message, reasons)
-  return <span title={title}>{children}</span>
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">{children}</span>
+      </TooltipTrigger>
+      <TooltipContent>{title}</TooltipContent>
+    </Tooltip>
+  )
 }

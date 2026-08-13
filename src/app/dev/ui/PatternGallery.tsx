@@ -21,7 +21,9 @@ import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { Button } from '@/components/ui/button'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
@@ -87,6 +89,23 @@ export function PatternGallery() {
         <AttributeValue {...attributeFresh} />
         <AttributeValue {...attributeStale} />
         <AttributeValue {...attributeTtlNull} />
+      </section>
+
+      <section id="permission-gate" className="space-y-4">
+        <h3 className="font-medium">PermissionGate</h3>
+        <PermissionGateView allowed denialMessage="unused">
+          <Button type="button">Create card</Button>
+        </PermissionGateView>
+        <PermissionGateView allowed={false} denialMessage="Missing card.create">
+          <Button type="button" disabled>
+            Create card
+          </Button>
+        </PermissionGateView>
+        <PermissionGateView allowed={false} denialMessage="Outside your access scope">
+          <Button type="button" disabled>
+            Create card
+          </Button>
+        </PermissionGateView>
       </section>
     </>
   )

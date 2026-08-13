@@ -645,7 +645,7 @@ All amounts integer minor units.
 
 ### F3.14 — PermissionGate
 
-- [ ] **F3.14** — `PermissionGate` + Radix `PermissionTooltip`
+- [x] **F3.14** — `PermissionGate` + Radix `PermissionTooltip`
   - **Files:**
     - `src/components/patterns/PermissionGate.tsx`
     - `src/components/patterns/permissionGate.test.ts`
@@ -659,7 +659,7 @@ All amounts integer minor units.
     5. Kitchen sink: use **View** with `allowed: true` (enabled Button “Create card”) and `allowed: false` with `denialMessage: 'Missing card.create'` and `denialMessage: 'Outside your access scope'`. Do not call live `usePermissions` on `/dev/ui`.
   - **Pattern:** `src/client/lib/permissions/RequirePermission.tsx` + `PermissionTooltip.tsx` (F2.5). `explainDenial` copy: `'No access to this project'` / `` `Missing ${permission}` `` / `'Outside your access scope'` from `src/lib/permissions/can.ts` (F2.4). Tooltip from F3.6.
   - **Accept:** `pnpm test components/patterns/permissionGate` and `pnpm test client/lib/permissions`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Gate always tooltips on deny (unlike RequirePermission null). PermissionTooltip uses F3 Tooltip. Decision helper in `decidePermissionGate.ts`.
 
 ### F3.15 — CardVisual
 
