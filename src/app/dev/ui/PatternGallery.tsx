@@ -15,6 +15,8 @@ import {
   limitFull,
   limitJpyMonthly,
   limitOver,
+  diffAudit,
+  diffCardControls,
   freezeOnUtilisationRule,
   moneyJpy,
   moneyNegative,
@@ -28,6 +30,7 @@ import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { DiffView } from '@/components/patterns/DiffView'
 import { FormulaHighlight } from '@/components/patterns/FormulaHighlight'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Timeline } from '@/components/patterns/Timeline'
@@ -152,6 +155,12 @@ export function PatternGallery() {
       <section id="formula-highlight" className="space-y-2">
         <h3 className="font-medium">FormulaHighlight</h3>
         <FormulaHighlight expression="project.budget.remaining / project.headcount" />
+      </section>
+
+      <section id="diff-view" className="space-y-4">
+        <h3 className="font-medium">DiffView</h3>
+        <DiffView before={diffAudit.before} after={diffAudit.after} />
+        <DiffView before={diffCardControls.before} after={diffCardControls.after} />
       </section>
     </>
   )

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.18 — DiffView
-**Last green `pnpm verify`:** 2026-08-14 (F3.17)
+**Active task:** F3.19 — EmptyState, ErrorState, LoadingState, PartialState onto tokens
+**Last green `pnpm verify`:** 2026-08-14 (F3.18)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 18 / 26 |
+| F     | F3 UI library           | in progress  | 19 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.17 complete** — RuleSentence + FormulaHighlight. Next: F3.18 DiffView.
+F3 in progress. **F3.18 complete** — DiffView. Next: F3.19 restyle F0 states.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.18 done (2026-08-14).** DiffView key-by-key; money-aware values.
 
 **F3.17 done (2026-08-14).** RuleSentence + FormulaHighlight (display only).
 

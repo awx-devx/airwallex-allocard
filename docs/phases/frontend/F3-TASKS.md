@@ -709,7 +709,7 @@ All amounts integer minor units.
 
 ### F3.18 — DiffView
 
-- [ ] **F3.18** — `DiffView`
+- [x] **F3.18** — `DiffView`
   - **Files:**
     - `src/components/patterns/DiffView.tsx`
     - `src/components/patterns/diffView.test.ts`
@@ -721,7 +721,7 @@ All amounts integer minor units.
     4. Kitchen sink: audit status diff; `cardControlsDiffSchema` fixture (show nested JSON is OK).
   - **Pattern:** `auditEntrySchema.before/after` (`z.unknown().nullable()`) in `src/shared/schemas/auditQuery.ts`; `cardControlsDiffSchema` in `src/shared/schemas/ruleRun.ts`.
   - **Accept:** `pnpm test components/patterns/diffView`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** diffEntries key-union; MoneyDisplay when value is money; changed keys warning tint.
 
 ### F3.19 — Restyle F0 states
 
