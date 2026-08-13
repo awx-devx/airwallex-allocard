@@ -1,6 +1,7 @@
 'use client'
 
 import { JumpNav } from '@/app/dev/ui/JumpNav'
+import { PatternGallery } from '@/app/dev/ui/PatternGallery'
 import { ThemeToggle } from '@/app/dev/ui/ThemeToggle'
 import { cn } from '@/lib/utils'
 
@@ -60,8 +61,6 @@ const PRIMITIVES = [
 ] as const
 
 const PATTERNS = [
-  'MoneyDisplay',
-  'StatusBadge',
   'BudgetBar',
   'LimitMeter',
   'AttributeValue',
@@ -123,6 +122,7 @@ export default function DevUiPage() {
 
       <section id="patterns" className="space-y-8">
         <h2 className="text-lg font-medium">Patterns</h2>
+        <PatternGallery />
         {PATTERNS.map((name) => (
           <section key={name} id={sectionId(name)} className="space-y-2">
             <h3 className="font-medium">{name}</h3>

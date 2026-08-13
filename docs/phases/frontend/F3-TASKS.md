@@ -566,7 +566,7 @@ All amounts integer minor units.
 
 ### F3.10 — MoneyDisplay + StatusBadge
 
-- [ ] **F3.10** — `MoneyDisplay` + `StatusBadge`
+- [x] **F3.10** — `MoneyDisplay` + `StatusBadge`
   - **Files:**
     - `src/components/patterns/MoneyDisplay.tsx`
     - `src/components/patterns/StatusBadge.tsx`
@@ -579,7 +579,7 @@ All amounts integer minor units.
     3. Kitchen sink: healthy USD, compact USD, JPY, negative remaining, and **every** enum value for all four kinds.
   - **Pattern:** `src/lib/money.ts` (F2.2) + `src/lib/format/status.ts` (F2.7). Badge from F3.2.
   - **Accept:** `pnpm test components/patterns/statusBadge` and `pnpm test components/patterns/moneyDisplay` (if tests exist) and `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Helpers in `moneyDisplayMap.ts` / `statusBadgeMap.ts` (avoid macOS case clash with PascalCase components). Exhaustive kind×status via F2 variants.
 
 ### F3.11 — BudgetBar
 
