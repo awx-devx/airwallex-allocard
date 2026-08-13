@@ -546,7 +546,7 @@ All amounts integer minor units.
 
 ### F3.9 — Kitchen sink scaffold
 
-- [ ] **F3.9** — `/dev/ui` route, jump nav, theme toggle, fixtures
+- [x] **F3.9** — `/dev/ui` route, jump nav, theme toggle, fixtures
   - **Files:**
     - `src/app/dev/ui/layout.tsx`
     - `src/app/dev/ui/page.tsx`
@@ -562,7 +562,7 @@ All amounts integer minor units.
     6. Tokens section: render swatches for every semantic token (status, budget, money) in the current theme — so reviewers see both palettes when they toggle.
   - **Pattern:** `src/app/dev/shell/page.tsx` + `layout.tsx` (F0.14). Fixtures style: `src/client/shell/mockShellData.ts`.
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `/dev/ui` production `notFound()`. Locked fixtures in `fixtures.ts`. Placeholder sections for every primitive/pattern. Token swatches + Light/Dark/System toggle.
 
 ### F3.10 — MoneyDisplay + StatusBadge
 
