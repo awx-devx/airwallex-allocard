@@ -27,7 +27,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ['src/client/**/*.{ts,tsx}'],
+    files: ['src/client/**/*.{ts,tsx}', 'src/components/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -35,7 +35,7 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               group: ['@/server', '@/server/*'],
-              message: 'src/client may not import from src/server',
+              message: 'src/client and src/components may not import from src/server',
             },
           ],
         },
@@ -47,6 +47,8 @@ const eslintConfig = defineConfig([
       'src/client/shell/**/*.{ts,tsx}',
       'src/client/states/**/*.{ts,tsx}',
       'src/app/(app)/**/*.{ts,tsx}',
+      'src/components/**/*.{ts,tsx}',
+      'src/app/dev/**/*.{ts,tsx}',
     ],
     rules: {
       'no-restricted-imports': [

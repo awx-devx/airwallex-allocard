@@ -36,6 +36,7 @@ export default defineConfig({
             'src/server/airwallex/**/*.test.ts',
             'src/client/**/*.test.ts',
             'src/lib/**/*.test.ts',
+            'src/components/**/*.test.ts',
             'src/shared/constants/**/*.test.ts',
             'src/shared/access/**/*.test.ts',
           ],

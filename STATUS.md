@@ -2,10 +2,10 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** F2 — Utils (**complete**)
-**Active task:** none — F3 starts in a separate session when asked
-**Last green `pnpm verify`:** 2026-08-12 (F2 exit)
-**Blocked on:** nothing
+**Active phase:** F3 — UI library
+**Active task:** none — F3.0 complete; **STOP for review** before F3.1
+**Last green `pnpm verify`:** 2026-08-14 (F3.0)
+**Blocked on:** F3.0 review (tokens + pattern props)
 
 ---
 
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | not started  | —       |
+| F     | F3 UI library           | in progress  | 1 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F2 fully closed (implementation + review + exit). **F3 is separate** — do not invent `F3-TASKS.md` until an F3 session explicitly starts.
+F3 in progress. **F3.0 complete** — review tokens (`src/app/globals.css`) and pattern props (`src/components/patterns/types.ts`) before F3.1. Visual direction: quiet chrome / loud numbers, `baseColor: slate`, muted steel/forest/ochre/brick.
 
 ---
 
@@ -60,9 +60,9 @@ _None yet._
 
 ## Notes for the next session
 
-**F2 complete (2026-08-12).** Next work is **F3** (UI library) in a **separate session**: generate `docs/phases/frontend/F3-TASKS.md` from `F3-ui-library.md` when starting; do not invent F3-TASKS until asked.
+**F3.0 done (2026-08-14).** Review gate: slate tokens + `src/components/patterns/types.ts`. Do not start F3.1 until reviewed. Do not reopen visual-direction: quiet chrome / loud numbers, `baseColor: slate`.
 
-F2 exit: all task checkboxes + `F2-utils.md` review checklist signed off. F3 cutover of active phase deferred by design (F3 taken separately).
+F2 complete (2026-08-12). F2 exit: all task checkboxes + `F2-utils.md` review checklist signed off.
 
 F2.0 locked policies (do not reopen) — see `F2-TASKS.md`. Shared currency + scope; `useCan` (not F1 `usePermissions` rename); no `reasons[]` on me/permissions.
 

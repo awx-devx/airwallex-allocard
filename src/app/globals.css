@@ -1,6 +1,202 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, sans-serif;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Quiet chrome, loud numbers — shadcn new-york slate + Allocard semantic tokens. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-neutral: hsl(var(--status-neutral));
+  --color-status-neutral-foreground: hsl(var(--status-neutral-foreground));
+  --color-status-info: hsl(var(--status-info));
+  --color-status-info-foreground: hsl(var(--status-info-foreground));
+  --color-status-success: hsl(var(--status-success));
+  --color-status-success-foreground: hsl(var(--status-success-foreground));
+  --color-status-warning: hsl(var(--status-warning));
+  --color-status-warning-foreground: hsl(var(--status-warning-foreground));
+  --color-status-danger: hsl(var(--status-danger));
+  --color-status-danger-foreground: hsl(var(--status-danger-foreground));
+  --color-budget-committed: hsl(var(--budget-committed));
+  --color-budget-actual: hsl(var(--budget-actual));
+  --color-budget-remaining: hsl(var(--budget-remaining));
+  --color-budget-over: hsl(var(--budget-over));
+  --color-money-positive: hsl(var(--money-positive));
+  --color-money-negative: hsl(var(--money-negative));
+  --color-money-zero: hsl(var(--money-zero));
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --z-index-sticky: var(--z-sticky);
+  --z-index-overlay: var(--z-overlay);
+  --z-index-dropdown: var(--z-dropdown);
+  --z-index-modal: var(--z-modal);
+  --z-index-tooltip: var(--z-tooltip);
+  --z-index-toast: var(--z-toast);
+  --font-sans: var(--font-sans-family);
+}
+
+:root {
+  --font-sans-family: system-ui, sans-serif;
+  --radius: 0.5rem;
+  --z-sticky: 20;
+  --z-overlay: 40;
+  --z-dropdown: 50;
+  --z-modal: 50;
+  --z-tooltip: 60;
+  --z-toast: 100;
+
+  /* shadcn slate (HSL) — cool chrome, near-black primary */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+  --primary: hsl(222.2 47.4% 11.2%);
+  --primary-foreground: hsl(210 40% 98%);
+  --secondary: hsl(210 40% 96.1%);
+  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  --accent: hsl(210 40% 96.1%);
+  --accent-foreground: hsl(222.2 47.4% 11.2%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(222.2 84% 4.9%);
+  --chart-1: hsl(12 76% 61%);
+  --chart-2: hsl(173 58% 39%);
+  --chart-3: hsl(197 37% 24%);
+  --chart-4: hsl(43 74% 66%);
+  --chart-5: hsl(27 87% 67%);
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(222.2 84% 4.9%);
+  --sidebar-primary: hsl(222.2 47.4% 11.2%);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
+  --sidebar-accent: hsl(210 40% 96.1%);
+  --sidebar-accent-foreground: hsl(222.2 47.4% 11.2%);
+  --sidebar-border: hsl(214.3 31.8% 91.4%);
+  --sidebar-ring: hsl(222.2 84% 4.9%);
+
+  /* Semantic — space-separated HSL (steel / forest / ochre / brick) */
+  --status-neutral: 215 10% 52%;
+  --status-neutral-foreground: 215 25% 12%;
+  --status-info: 215 38% 42%;
+  --status-info-foreground: 0 0% 100%;
+  --status-success: 158 28% 32%;
+  --status-success-foreground: 0 0% 100%;
+  --status-warning: 32 48% 42%;
+  --status-warning-foreground: 0 0% 100%;
+  --status-danger: 4 48% 44%;
+  --status-danger-foreground: 0 0% 100%;
+  --budget-committed: var(--status-info);
+  --budget-actual: 215 20% 18%;
+  --budget-remaining: 215 14% 91%;
+  --budget-over: var(--status-danger);
+  --money-positive: var(--status-success);
+  --money-negative: var(--status-danger);
+  --money-zero: 215 10% 42%;
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(210 40% 98%);
+  --primary-foreground: hsl(222.2 47.4% 11.2%);
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
+  --chart-1: hsl(220 70% 50%);
+  --chart-2: hsl(160 60% 45%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(340 75% 55%);
+  --sidebar: hsl(222.2 84% 4.9%);
+  --sidebar-foreground: hsl(210 40% 98%);
+  --sidebar-primary: hsl(210 40% 98%);
+  --sidebar-primary-foreground: hsl(222.2 47.4% 11.2%);
+  --sidebar-accent: hsl(217.2 32.6% 17.5%);
+  --sidebar-accent-foreground: hsl(210 40% 98%);
+  --sidebar-border: hsl(217.2 32.6% 17.5%);
+  --sidebar-ring: hsl(212.7 26.8% 83.9%);
+
+  --status-neutral: 215 10% 58%;
+  --status-neutral-foreground: 210 20% 98%;
+  --status-info: 214 40% 68%;
+  --status-info-foreground: 215 25% 12%;
+  --status-success: 158 25% 58%;
+  --status-success-foreground: 215 25% 10%;
+  --status-warning: 36 45% 58%;
+  --status-warning-foreground: 215 25% 10%;
+  --status-danger: 4 50% 68%;
+  --status-danger-foreground: 215 25% 10%;
+  --budget-committed: var(--status-info);
+  --budget-actual: 210 20% 92%;
+  --budget-remaining: 215 12% 18%;
+  --budget-over: var(--status-danger);
+  --money-positive: var(--status-success);
+  --money-negative: var(--status-danger);
+  --money-zero: 215 10% 62%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans-family);
+  }
 }
