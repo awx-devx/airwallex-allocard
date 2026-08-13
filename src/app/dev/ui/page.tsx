@@ -61,8 +61,6 @@ const PRIMITIVES = [
 ] as const
 
 const PATTERNS = [
-  'RuleSentence',
-  'FormulaHighlight',
   'DiffView',
   'EmptyState',
   'ErrorState',

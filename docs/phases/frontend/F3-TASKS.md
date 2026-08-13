@@ -694,7 +694,7 @@ All amounts integer minor units.
 
 ### F3.17 — RuleSentence + FormulaHighlight
 
-- [ ] **F3.17** — `RuleSentence` + `FormulaHighlight`
+- [x] **F3.17** — `RuleSentence` + `FormulaHighlight`
   - **Files:**
     - `src/components/patterns/RuleSentence.tsx`
     - `src/components/patterns/FormulaHighlight.tsx`
@@ -705,7 +705,7 @@ All amounts integer minor units.
     3. Kitchen sink: locked freeze-on-utilisation rule; formula e.g. `project.budget.remaining / project.headcount` (display only).
   - **Pattern:** `src/lib/rules/sentence.ts` + `formulaHighlight.ts` (F2.8). Stubs `stubActionForType` / `stubConditionForOperator` in tests/fixtures if constructing actions is awkward.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** ruleToSentence + highlightFormula display-only. Token colors via status/muted tokens.
 
 ### F3.18 — DiffView
 

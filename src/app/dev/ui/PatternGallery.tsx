@@ -15,6 +15,7 @@ import {
   limitFull,
   limitJpyMonthly,
   limitOver,
+  freezeOnUtilisationRule,
   moneyJpy,
   moneyNegative,
   moneyUsd,
@@ -27,6 +28,8 @@ import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { FormulaHighlight } from '@/components/patterns/FormulaHighlight'
+import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Timeline } from '@/components/patterns/Timeline'
 import { toastStore } from '@/client/providers/toastStore'
 import { Button } from '@/components/ui/button'
@@ -139,6 +142,16 @@ export function PatternGallery() {
           items={[]}
           empty={{ title: 'No activity yet', description: 'Events will appear here.' }}
         />
+      </section>
+
+      <section id="rule-sentence" className="space-y-2">
+        <h3 className="font-medium">RuleSentence</h3>
+        <RuleSentence rule={freezeOnUtilisationRule} />
+      </section>
+
+      <section id="formula-highlight" className="space-y-2">
+        <h3 className="font-medium">FormulaHighlight</h3>
+        <FormulaHighlight expression="project.budget.remaining / project.headcount" />
       </section>
     </>
   )
