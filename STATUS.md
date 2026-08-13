@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.15 — CardVisual
-**Last green `pnpm verify`:** 2026-08-14 (F3.14)
+**Active task:** F3.16 — Timeline
+**Last green `pnpm verify`:** 2026-08-14 (F3.15)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 15 / 26 |
+| F     | F3 UI library           | in progress  | 16 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.14 complete** — PermissionGate. Next: F3.15 CardVisual.
+F3 in progress. **F3.15 complete** — CardVisual. Next: F3.16 Timeline.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.15 done (2026-08-14).** CardVisual masked-only; reveal callback. PAN boundary test.
 
 **F3.14 done (2026-08-14).** PermissionGate always explains denial. PermissionTooltip uses Radix.
 

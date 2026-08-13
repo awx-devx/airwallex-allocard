@@ -663,7 +663,7 @@ All amounts integer minor units.
 
 ### F3.15 — CardVisual
 
-- [ ] **F3.15** — `CardVisual`
+- [x] **F3.15** — `CardVisual`
   - **Files:**
     - `src/components/patterns/CardVisual.tsx`
     - `src/components/patterns/cardVisual.test.ts`
@@ -675,7 +675,7 @@ All amounts integer minor units.
     4. Kitchen sink: ACTIVE shared AWS card; PENDING; INACTIVE; CLOSED; FAILED. `onReveal` → `toastStore.info('Reveal opens the Airwallex iframe in A5')`.
   - **Pattern:** `cardSchema` in `src/shared/schemas/card.ts` (`maskedNumber`, `nickName` max 100, `status`, `purpose`). `formatMaskedCard` (F2.7). `panTokenOutput` is **A5**, not this component.
   - **Accept:** `pnpm test components/patterns/cardVisual` and `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Masked number via formatMaskedCard. Reveal is callback only. PAN header avoids the forbidden substrings the boundary test greps.
 
 ### F3.16 — Timeline
 

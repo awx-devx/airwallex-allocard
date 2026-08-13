@@ -9,6 +9,8 @@ import {
   budgetOver,
   budgetZero,
   budgetZeroWithSpend,
+  cardAws,
+  cardStatuses,
   limitEmpty,
   limitFull,
   limitJpyMonthly,
@@ -19,10 +21,12 @@ import {
 } from '@/app/dev/ui/fixtures'
 import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
+import { CardVisual } from '@/components/patterns/CardVisual'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { toastStore } from '@/client/providers/toastStore'
 import { Button } from '@/components/ui/button'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -106,6 +110,23 @@ export function PatternGallery() {
             Create card
           </Button>
         </PermissionGateView>
+      </section>
+
+      <section id="card-visual" className="grid gap-4 sm:grid-cols-2">
+        <h3 className="font-medium sm:col-span-2">CardVisual</h3>
+        <CardVisual
+          {...cardAws}
+          onReveal={() => toastStore.info('Reveal opens the Airwallex iframe in A5')}
+        />
+        {cardStatuses.map((status) => (
+          <CardVisual
+            key={status}
+            nickName={cardAws.nickName}
+            maskedNumber={cardAws.maskedNumber}
+            status={status}
+            purpose={cardAws.purpose}
+          />
+        ))}
       </section>
     </>
   )

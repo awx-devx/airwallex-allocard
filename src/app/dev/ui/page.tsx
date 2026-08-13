@@ -61,7 +61,6 @@ const PRIMITIVES = [
 ] as const
 
 const PATTERNS = [
-  'CardVisual',
   'Timeline',
   'RuleSentence',
   'FormulaHighlight',
