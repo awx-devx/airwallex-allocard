@@ -764,7 +764,7 @@ All amounts integer minor units.
 
 ### F3.21 — StepWizard
 
-- [ ] **F3.21** — `StepWizard`
+- [x] **F3.21** — `StepWizard`
   - **Files:**
     - `src/components/patterns/StepWizard.tsx`
     - `src/app/dev/ui/page.tsx`
@@ -775,7 +775,7 @@ All amounts integer minor units.
     4. Kitchen sink: nine A2 steps (`details` … `launch`); mock `isStepValid` true for `details`+`budget`, false for `members` so Next disables there; toggle `isDirty`.
   - **Pattern:** `useUnsavedChangesGuard` (F2.6). A2 wizard steps listed in `docs/phases/app/A2-dashboard-projects.md`. Do not save drafts here (no `PATCH`).
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Nine A2 steps. Next disabled when `!isStepValid`. Dirty uses `useUnsavedChangesGuard`. Last Next labelled Continue.
 
 ### F3.22 — DataTable
 

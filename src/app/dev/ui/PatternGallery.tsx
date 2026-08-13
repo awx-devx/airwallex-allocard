@@ -33,6 +33,7 @@ import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { StepWizard } from '@/components/patterns/StepWizard'
 import { DiffView } from '@/components/patterns/DiffView'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -214,6 +215,7 @@ export function PatternGallery() {
         </PartialState>
       </section>
       <ConfirmDialogDemo />
+      <StepWizardDemo />
     </>
   )
 }
@@ -251,6 +253,50 @@ function ConfirmDialogDemo() {
         typeToConfirm={{ phrase: 'CLOSE', prompt: 'Type CLOSE to confirm' }}
         onConfirm={() => setCloseOpen(false)}
       />
+    </section>
+  )
+}
+
+const WIZARD_STEPS = [
+  { id: 'details', label: 'Details' },
+  { id: 'budget', label: 'Budget' },
+  { id: 'members', label: 'Members' },
+  { id: 'roles', label: 'Roles' },
+  { id: 'card-structure', label: 'Card structure' },
+  { id: 'controls', label: 'Controls' },
+  { id: 'approval-rules', label: 'Approval rules' },
+  { id: 'review', label: 'Review' },
+  { id: 'launch', label: 'Launch' },
+]
+
+function StepWizardDemo() {
+  const [active, setActive] = useState('details')
+  const [dirty, setDirty] = useState(false)
+  const index = WIZARD_STEPS.findIndex((step) => step.id === active)
+  return (
+    <section id="step-wizard" className="space-y-3">
+      <h3 className="font-medium">StepWizard</h3>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={dirty} onChange={(e) => setDirty(e.target.checked)} />
+        Dirty
+      </label>
+      <StepWizard
+        steps={WIZARD_STEPS}
+        activeStepId={active}
+        isStepValid={(id) => id === 'details' || id === 'budget'}
+        isDirty={dirty}
+        onNext={() => {
+          const next = WIZARD_STEPS[index + 1]
+          if (next) setActive(next.id)
+        }}
+        onBack={() => {
+          const prev = WIZARD_STEPS[index - 1]
+          if (prev) setActive(prev.id)
+        }}
+        onCancel={() => setActive('details')}
+      >
+        <p className="text-sm">Current step: {active}</p>
+      </StepWizard>
     </section>
   )
 }
