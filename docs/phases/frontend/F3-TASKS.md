@@ -488,7 +488,7 @@ All amounts integer minor units.
 
 ### F3.6 — Overlays
 
-- [ ] **F3.6** — Dialog, Sheet, Tooltip, DropdownMenu (Popover already in F3.4)
+- [x] **F3.6** — Dialog, Sheet, Tooltip, DropdownMenu (Popover already in F3.4)
   - **Files:**
     - `src/components/ui/dialog.tsx`
     - `src/components/ui/sheet.tsx`
@@ -503,7 +503,7 @@ All amounts integer minor units.
     6. z-index: use token `--z-modal` / `--z-tooltip` / `--z-dropdown` if easy; otherwise keep shadcn `z-50` and do not invent a third scale.
   - **Pattern:** shadcn overlays. Tooltip will replace native `title` in `src/client/lib/permissions/PermissionTooltip.tsx` (F3.14).
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Reused F3.4 dialog/popover. TooltipProvider in AppProviders. TooltipTrigger comment: wrap disabled buttons in a span.
 
 ### F3.7 — Layout & collection primitives
 

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.6 — Dialog, Sheet, Tooltip, DropdownMenu
-**Last green `pnpm verify`:** 2026-08-14 (F3.5 typecheck)
+**Active task:** F3.7 — Tabs, Table, ScrollArea, Breadcrumb, Pagination, Avatar, Card, Alert
+**Last green `pnpm verify`:** 2026-08-14 (F3.6 typecheck)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 6 / 26  |
+| F     | F3 UI library           | in progress  | 7 / 26  |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.5 complete** — DatePicker/DateRangePicker. Next: F3.6 overlays.
+F3 in progress. **F3.6 complete** — overlays. Next: F3.7 layout primitives.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.6 done (2026-08-14).** Dialog/Sheet/Tooltip/DropdownMenu. TooltipProvider in AppProviders.
 
 **F3.5 done (2026-08-14).** Date pickers store UTC midnight ISO; display via F2 formatDate/formatRange.
 
