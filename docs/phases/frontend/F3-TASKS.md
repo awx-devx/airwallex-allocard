@@ -471,7 +471,7 @@ All amounts integer minor units.
 
 ### F3.5 — Date pickers
 
-- [ ] **F3.5** — DatePicker + DateRangePicker
+- [x] **F3.5** — DatePicker + DateRangePicker
   - **Files:**
     - `src/components/ui/calendar.tsx`
     - `src/components/ui/date-picker.tsx`
@@ -484,7 +484,7 @@ All amounts integer minor units.
     5. Popover + Button trigger; calendar in the popover.
   - **Pattern:** shadcn date-picker example + `src/lib/dates.ts` (F2.3). Popover from F3.4.
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** UTC midnight ISO `YYYY-MM-DDT00:00:00.000Z`. Display via `formatDate` / `formatRange` (en-GB). react-day-picker v10 + date-fns already pulled by calendar.
 
 ### F3.6 — Overlays
 
