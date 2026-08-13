@@ -747,7 +747,7 @@ All amounts integer minor units.
 
 ### F3.20 — ConfirmDialog
 
-- [ ] **F3.20** — `ConfirmDialog`
+- [x] **F3.20** — `ConfirmDialog`
   - **Files:**
     - `src/components/patterns/matchesConfirmPhrase.ts`
     - `src/components/patterns/matchesConfirmPhrase.test.ts`
@@ -760,7 +760,7 @@ All amounts integer minor units.
     4. Kitchen sink: (a) simple freeze confirm, no type-to-confirm; (b) close card — `title: 'Close card'`, `phrase: 'CLOSE'`, `prompt: 'Type CLOSE to confirm'`, description **must** include that it is irreversible at Airwallex and pending transactions will still clear.
   - **Pattern:** `src/components/ui/dialog.tsx` (F3.6). A5 close: `closeCardInput` `{ confirm: z.literal(true) }` in `src/shared/schemas/card.ts` — this dialog does not POST. A9 closure reuses type-to-confirm.
   - **Accept:** `pnpm test components/patterns/matchesConfirmPhrase`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Case-sensitive trim match. Close-card copy: irreversible at Airwallex; pending tx still clear.
 
 ### F3.21 — StepWizard
 

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.20 — ConfirmDialog
-**Last green `pnpm verify`:** 2026-08-14 (F3.19 typecheck+build)
+**Active task:** F3.21 — StepWizard
+**Last green `pnpm verify`:** 2026-08-14 (F3.20)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 20 / 26 |
+| F     | F3 UI library           | in progress  | 21 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.19 complete** — F0 states on tokens. Next: F3.20 ConfirmDialog.
+F3 in progress. **F3.20 complete** — ConfirmDialog. Next: F3.21 StepWizard.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.20 done (2026-08-14).** ConfirmDialog type-to-confirm CLOSE is case-sensitive.
 
 **F3.19 done (2026-08-14).** Empty/Error/Loading/Partial on tokens; F0 paths re-export.
 

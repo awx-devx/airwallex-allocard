@@ -60,7 +60,7 @@ const PRIMITIVES = [
   'Toast',
 ] as const
 
-const PATTERNS = ['ConfirmDialog', 'StepWizard', 'DataTable'] as const
+const PATTERNS = ['StepWizard', 'DataTable'] as const
 
 function sectionId(name: string): string {
   return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()

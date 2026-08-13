@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import {
   attributeFresh,
   attributeStale,
@@ -26,6 +28,7 @@ import {
 import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { CardVisual } from '@/components/patterns/CardVisual'
+import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -210,6 +213,44 @@ export function PatternGallery() {
           <p>Headcount: 12</p>
         </PartialState>
       </section>
+      <ConfirmDialogDemo />
     </>
+  )
+}
+
+function ConfirmDialogDemo() {
+  const [freezeOpen, setFreezeOpen] = useState(false)
+  const [closeOpen, setCloseOpen] = useState(false)
+  return (
+    <section id="confirm-dialog" className="space-y-3">
+      <h3 className="font-medium">ConfirmDialog</h3>
+      <div className="flex gap-2">
+        <Button type="button" onClick={() => setFreezeOpen(true)}>
+          Freeze card
+        </Button>
+        <Button type="button" variant="destructive" onClick={() => setCloseOpen(true)}>
+          Close card
+        </Button>
+      </div>
+      <ConfirmDialog
+        open={freezeOpen}
+        onOpenChange={setFreezeOpen}
+        title="Freeze card"
+        description="The card will decline new authorizations until unfrozen."
+        confirmLabel="Freeze"
+        variant="default"
+        onConfirm={() => setFreezeOpen(false)}
+      />
+      <ConfirmDialog
+        open={closeOpen}
+        onOpenChange={setCloseOpen}
+        title="Close card"
+        description="This cannot be undone at Airwallex. Pending transactions will still clear."
+        confirmLabel="Close card"
+        variant="destructive"
+        typeToConfirm={{ phrase: 'CLOSE', prompt: 'Type CLOSE to confirm' }}
+        onConfirm={() => setCloseOpen(false)}
+      />
+    </section>
   )
 }
