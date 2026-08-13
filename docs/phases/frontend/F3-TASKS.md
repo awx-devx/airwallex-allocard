@@ -507,7 +507,7 @@ All amounts integer minor units.
 
 ### F3.7 — Layout & collection primitives
 
-- [ ] **F3.7** — Tabs, Table, ScrollArea, Breadcrumb, Pagination, Avatar, Card, Alert
+- [x] **F3.7** — Tabs, Table, ScrollArea, Breadcrumb, Pagination, Avatar, Card, Alert
   - **Files:**
     - `src/components/ui/tabs.tsx`
     - `src/components/ui/table.tsx`
@@ -525,7 +525,7 @@ All amounts integer minor units.
     5. Table: semantic `<table>`; DataTable builds on it. Do not add sorting logic here.
   - **Pattern:** shadcn. Card is the layout card, not `CardVisual` (pattern).
   - **Accept:** `pnpm typecheck`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Alert adds info/success/warning status tokens. Avatar composed with `src?`, `alt`, `name` → initials of first two words.
 
 ### F3.8 — Toast restyle
 
