@@ -10,7 +10,7 @@ Every visual element the app will use, built and reviewable on one page before a
 
 ### Design tokens
 
-Colour scales including semantic status colours, spacing, typography, radii, shadows, and z-index layers, as CSS variables with a dark mode mapping. Fix these first — retrofitting tokens after fifty components exist is a rewrite.
+Colour scales including semantic status colours, spacing, typography, radii, **gloss/elevation shadows**, and z-index layers, as CSS variables with a dark mode mapping. Visual recipe: [`../../VISUAL-DIRECTION.md`](../../VISUAL-DIRECTION.md) — sharp chrome, cool ice/steel tints, controlled gloss (supersedes the original quiet-chrome brief). Fix tokens first — retrofitting after fifty components exist is a rewrite.
 
 ### Primitives (`components/ui/`)
 
@@ -20,23 +20,23 @@ shadcn/ui-derived, adjusted to the tokens: Button, Input, Textarea, Select, Comb
 
 The composed, app-specific pieces — the ones worth reviewing closely because they encode product meaning:
 
-| Component        | Notes                                                                                            |
-| ---------------- | ------------------------------------------------------------------------------------------------ |
-| `DataTable`      | Sorting, filters, cursor pagination, row selection, empty and loading states, column visibility  |
-| `MoneyDisplay`   | Amount with currency, optional compact form, colour by sign                                      |
-| `BudgetBar`      | Approved / committed / actual / remaining as one stacked bar. Used everywhere; get it right once |
-| `StatusBadge`    | Variant per enum, one component for all of them                                                  |
-| `AttributeValue` | Value plus `observedAt`, with a staleness indicator                                              |
-| `PermissionGate` | Renders children, or an explanatory tooltip when denied                                          |
-| `CardVisual`     | Card representation with masked number, status, and reveal trigger                               |
-| `LimitMeter`     | Remaining versus total limit, per interval                                                       |
-| `Timeline`       | Activity and audit entries, with actor type distinguished                                        |
-| `RuleSentence`   | A rule rendered as readable prose                                                                |
-| `DiffView`       | Before/after for audit entries and rule runs                                                     |
-| `EmptyState`     | Illustration, explanation, primary action                                                        |
-| `ErrorState`     | Message plus retry, per F0's error taxonomy                                                      |
-| `ConfirmDialog`  | Destructive confirmation; requires typing to confirm for irreversible actions                    |
-| `StepWizard`     | Progress, validation per step, dirty guard — powers the A2 project wizard                        |
+| Component        | Notes                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------- |
+| `DataTable`      | Sorting, filters, cursor pagination, row selection, empty and loading states, column visibility     |
+| `MoneyDisplay`   | Amount with currency, optional compact form, colour by sign                                         |
+| `BudgetBar`      | Approved / committed / actual / remaining as one stacked bar. Used everywhere; get it right once    |
+| `StatusBadge`    | Variant per enum, one component for all of them                                                     |
+| `AttributeValue` | Value plus `observedAt`, with a staleness indicator                                                 |
+| `PermissionGate` | Renders children, or an explanatory tooltip when denied                                             |
+| `CardVisual`     | ID-1 plastic silhouette (masked number only); status; reveal trigger — no secret fields on the face |
+| `LimitMeter`     | Remaining versus total limit, per interval                                                          |
+| `Timeline`       | Activity and audit entries, with actor type distinguished                                           |
+| `RuleSentence`   | A rule rendered as readable prose                                                                   |
+| `DiffView`       | Before/after for audit entries and rule runs                                                        |
+| `EmptyState`     | Illustration, explanation, primary action                                                           |
+| `ErrorState`     | Message plus retry, per F0's error taxonomy                                                         |
+| `ConfirmDialog`  | Destructive confirmation; requires typing to confirm for irreversible actions                       |
+| `StepWizard`     | Progress, validation per step, dirty guard — powers the A2 project wizard                           |
 
 `ConfirmDialog`'s type-to-confirm mode is specifically for closing a card, which is irreversible at Airwallex.
 
@@ -65,14 +65,15 @@ Dialog already caps at `max-w-[calc(100%-2rem)]`. Do not add `min-w-[800px]` on 
 
 ## Review checklist
 
-- [ ] `/dev/ui` renders every component in every state, in both themes
-- [ ] No hardcoded colours or spacing — tokens only
-- [ ] One spinner, one skeleton style, one date format, one empty state pattern
-- [ ] `BudgetBar` and `LimitMeter` are correct at the boundaries: zero, full, over-budget
-- [ ] `ConfirmDialog` requires typed confirmation for irreversible actions
-- [ ] Keyboard-only navigation works across the page
-- [ ] Track A can be built without adding a new primitive — walk each A-phase's screens against this list
-- [ ] Layout recipe is `docs/RESPONSIVENESS.md` — F3 adds no extra breakpoint and no mobile-only components. Shell collapse is A2 using existing `Sheet`
+- [x] `/dev/ui` renders every component in every state, in both themes
+- [x] No hardcoded colours or spacing — tokens only (`docs/VISUAL-DIRECTION.md`)
+- [x] Gloss/elevation come from `--shadow-*` / `--gloss-highlight`, not ad-hoc per screen
+- [x] One spinner, one skeleton style, one date format, one empty state pattern
+- [x] `BudgetBar` and `LimitMeter` are correct at the boundaries: zero, full, over-budget
+- [x] `ConfirmDialog` requires typed confirmation for irreversible actions
+- [x] Keyboard-only navigation works across the page
+- [x] Track A can be built without adding a new primitive — walk each A-phase's screens against this list
+- [x] Layout recipe is `docs/RESPONSIVENESS.md` — F3 adds no extra breakpoint and no mobile-only components. Shell collapse is A2 using existing `Sheet`
 
 ## Out of scope
 

@@ -131,8 +131,8 @@ export function PatternGallery() {
         </PermissionGateView>
       </section>
 
-      <section id="card-visual" className="grid gap-4 sm:grid-cols-2">
-        <h3 className="font-medium sm:col-span-2">CardVisual</h3>
+      <section id="card-visual" className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <h3 className="font-medium md:col-span-2">CardVisual</h3>
         <CardVisual
           {...cardAws}
           onReveal={() => toastStore.info('Reveal opens the Airwallex iframe in A5')}

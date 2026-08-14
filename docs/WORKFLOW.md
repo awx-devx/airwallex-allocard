@@ -37,7 +37,7 @@ Expect roughly 150–200 tasks across the whole build. Most are a two-minute rev
 | **F0** Client foundation     | Med      | Sets the client-side patterns the way B0 set the server's.                                                                            |
 | **F1** Data layer            | **Low**  | The cheapest phase in the build — hooks derive mechanically from contracts. If it isn't mechanical, a contract is wrong.              |
 | **F2** Utils                 | Low      | Pure functions with obvious tests.                                                                                                    |
-| **F3** UI library            | Med      | Needs design judgment, and every screen inherits from it. Review the `/dev/ui` page yourself.                                         |
+| **F3** UI library            | Med      | Needs design judgment, and every screen inherits from it. Review `/dev/ui` + `docs/VISUAL-DIRECTION.md`.                              |
 | **A1** Auth & onboarding     | Low–Med  |                                                                                                                                       |
 | **A2** Dashboard & projects  | Med      | The creation wizard has real state complexity.                                                                                        |
 | **A3** People & access       | Low      |                                                                                                                                       |

@@ -44,8 +44,8 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="flex w-56 shrink-0 flex-col gap-4 border-r border-border p-4">
-        <div className="text-sm font-semibold">Allocard</div>
+      <aside className="flex w-56 shrink-0 flex-col gap-4 border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm">
+        <div className="text-sm font-semibold tracking-tight">Allocard</div>
         <OrgSwitcher
           memberships={memberships}
           activeOrgId={activeOrgId}
@@ -54,7 +54,7 @@ export function AppShell({
         <SideNav items={items} />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <header className="flex items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
           <ProjectContext project={project} />
           <div className="flex items-center gap-3">
             <ApprovalsBadge count={approvalsCount} />

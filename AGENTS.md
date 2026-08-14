@@ -55,5 +55,6 @@ Commit once per task, with the task ID first in the message. `git log` is the re
 | `docs/AIRWALLEX-INTEGRATION.md` | Anything calling Airwallex (B5, B8)                                                     |
 | `docs/PRD.md`                   | Product intent, personas, user journeys                                                 |
 | `docs/RESPONSIVENESS.md`        | Track A layout: one breakpoint, shell Sheet, tables scroll inside                       |
+| `docs/VISUAL-DIRECTION.md`      | Sharp / tinted / gloss tokens — F3 chrome and Track A inheritance                       |
 
 Read the referenced section. Do not infer its contents from its title.

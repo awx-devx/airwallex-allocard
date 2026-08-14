@@ -15,7 +15,7 @@ export function SideNav({ items }: { items: SideNavItem[] }) {
           <li key={item.href}>
             <Link
               href={item.href}
-              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
               {item.label}
               {item.badge !== undefined && item.badge > 0 ? (

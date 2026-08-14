@@ -16,16 +16,17 @@ B1 is the backend pattern-setter. For F3, the equivalent copy sources are **F0**
 
 Approved when F3.0 is reviewed. Implementers follow these; do not re-litigate.
 
-**Visual direction — quiet chrome, loud numbers.** Internal finance/procurement tool (PRD personas), not a consumer fintech site and not Airwallex/Stripe brand. Chrome stays cool and quiet so **money, status, and budget segments** carry the colour. Do not “make it pop.”
+**Visual direction — sharp chrome, cool tints, controlled gloss.** Internal finance/procurement tool (PRD personas), not a consumer fintech site and not Airwallex/Stripe brand. Surfaces carry ice/steel tint and a structural gloss; **money, status, and budget segments** still own meaning colour. Full recipe: [`docs/VISUAL-DIRECTION.md`](../../VISUAL-DIRECTION.md). _(Supersedes 2026-08-14 “quiet chrome / loud numbers” — retuned same day.)_
 
-- **Genre:** dense ops dashboard (Ramp / Brex / Stripe Dashboard chrome) — not Linear indigo, not purple SaaS, not orange startup.
-- **Base:** shadcn **new-york** + **`slate`** (cool grey, slightly blue). Primary actions are near-black slate, not a coloured brand button.
+- **Genre:** dense ops dashboard with character (sharp edges, cyan-steel accents) — not Linear indigo, not purple SaaS, not orange startup, not flat grey chrome.
+- **Base:** shadcn **new-york** + **slate structure**, retuned: ice-mist canvas, deep slate-teal primary (cyan primary in dark), cyan accent wash.
 - **Type:** `system-ui, sans-serif`. No display/serif/Google font.
-- **Radius:** keep shadcn new-york `--radius` (≈ `0.5rem`). No pill-everything (`rounded-full` only on avatars/badges that already use it).
-- **Colour is meaning:** status, money sign, budget bar, actor type. Decorative colour on nav/cards/buttons is a bug.
-- **Chroma stays low.** Saturated `bg-blue-600` / emerald-400 / fire-engine red on a page of badges reads as an alert storm. Use the muted HSL table below.
-- **BudgetBar:** actual = slate ink (weight of spend); committed = steel info; remaining = empty track; over = brick danger. Do not use a rainbow stacked chart.
-- **Forbidden:** indigo/violet primary, gradients, neon dark-mode, copying Airwallex’s marketing palette, warm stone/cream backgrounds.
+- **Radius:** `--radius` ≈ `0.375rem` (sharper than stock new-york). No pill-everything (`rounded-full` only on avatars/badges that already use it).
+- **Gloss:** use `--shadow-gloss-primary`, `--shadow-elevated`, `--shadow-inset-field`, and `--gloss-highlight` from `globals.css`. Do not invent per-screen glow stacks.
+- **Colour is meaning + tinted chrome:** status, money sign, budget bar, actor type carry chroma; chrome may use cool tint / accent wash. Decorative rainbow on nav is still a bug.
+- **Chroma is medium.** Status tokens are punchier than the original desaturated table, still not Tailwind `blue-500` / `emerald-400` / fire-engine red as page chrome.
+- **BudgetBar:** actual = slate ink (weight of spend); committed = info/steel-cyan; remaining = empty track; over = brick danger. Do not use a rainbow stacked chart.
+- **Forbidden:** indigo/violet primary, neon dark-mode, copying Airwallex’s marketing palette, warm stone/cream backgrounds, ad-hoc page gradients outside the body wash in `globals.css`.
 
 1. **Layout (ARCHITECTURE tree, not `src/client/components/`)**
    - Primitives → `src/components/ui/` — **shadcn default lowercase filenames** (`button.tsx`, `dialog.tsx`).
@@ -52,10 +53,11 @@ Approved when F3.0 is reviewed. Implementers follow these; do not re-litigate.
    - `prefix` → `""`
 
 4. **Tokens**
-   - **Keep** whatever base `--background`, `--foreground`, `--primary`, `--destructive`, `--border`, `--input`, `--ring`, `--radius`, `--card`, `--popover`, `--muted`, `--accent`, `--secondary` block current shadcn **slate** generates (oklch or hsl — do not rewrite the base block).
+   - Base chrome tokens (`--background`, `--primary`, …) follow slate **structure** but values are the retuned ice/steel palette in `globals.css` / `docs/VISUAL-DIRECTION.md` — not stock flat white/near-black.
    - **Append** the semantic tokens in the F3.0 table (names **and** values). Dark mapping lives under `.dark { }`. Alias budget/money tokens with `var(--status-*)` where the table says so — do not duplicate a second HSL that can drift.
+   - Include gloss tokens: `--gloss-highlight`, `--shadow-gloss-primary`, `--shadow-elevated`, `--shadow-inset-field`.
    - Dark mode is **class** `.dark` on `<html>`, not `prefers-color-scheme` alone — `/dev/ui` must toggle both themes.
-   - Components use Tailwind token classes (`bg-background`, `text-destructive`, `bg-[var(--status-success)]`) — **never** raw `#hex`, `rgb()`, `hsl()` literals, or palette classes like `bg-red-500` / `text-gray-900` / `bg-[#fff]` in `src/components/**`, `src/client/shell/**`, `src/client/states/**`, `src/app/dev/**`.
+   - Components use Tailwind token classes (`bg-background`, `text-destructive`, `bg-status-success`, `shadow-[var(--shadow-elevated)]`) — **never** raw `#hex`, `rgb()`, `hsl()` literals, or palette classes like `bg-red-500` / `text-gray-900` / `bg-[#fff]` in `src/components/**`, `src/client/shell/**`, `src/client/states/**`, `src/app/dev/**`.
    - One spinner (`src/components/ui/spinner.tsx`), one skeleton (`src/components/ui/skeleton.tsx`), one date format (`formatDate` / `formatDateTime` / `formatRelative` / `formatRange` from `src/lib/dates.ts`, default locale **en-GB**), one empty-state pattern (`EmptyState`).
 
 5. **Money, PAN, permissions (never reopen F2 policies)**
@@ -105,58 +107,60 @@ Approved when F3.0 is reviewed. Implementers follow these; do not re-litigate.
 
 Use HSL space-separated components (no `hsl()` wrapper) so they compose as `hsl(var(--status-success))` **or** map them in `@theme inline` the same way shadcn maps `--primary`. If the generated shadcn file uses oklch for **base** slate tokens, **keep oklch for base**; still define these semantic tokens as HSL variables and wire `--color-status-success: hsl(var(--status-success));` etc. in `@theme inline`.
 
-HSL are **desaturated on purpose** (steel / forest / ochre / brick). Do not substitute Tailwind `blue-500` / `green-500` / `red-500`.
+HSL are **medium chroma on purpose** (steel-cyan / teal / ochre / brick). Do not substitute Tailwind `blue-500` / `green-500` / `red-500`. Gloss/elevation shadows live as `--shadow-*` in `globals.css` (not duplicated per component).
 
 **Light (`:root`)**
 
-| Token                         | Value                   | Used by                                 |
-| ----------------------------- | ----------------------- | --------------------------------------- |
-| `--status-neutral`            | `215 10% 52%`           | `StatusVariant 'neutral'`               |
-| `--status-neutral-foreground` | `215 25% 12%`           | text on neutral badge                   |
-| `--status-info`               | `215 38% 42%`           | `'info'`; steel, not Twitter blue       |
-| `--status-info-foreground`    | `0 0% 100%`             |                                         |
-| `--status-success`            | `158 28% 32%`           | `'success'`; forest/teal, not lime      |
-| `--status-success-foreground` | `0 0% 100%`             |                                         |
-| `--status-warning`            | `32 48% 42%`            | `'warning'`; ochre                      |
-| `--status-warning-foreground` | `0 0% 100%`             |                                         |
-| `--status-danger`             | `4 48% 44%`             | `'danger'`; brick, not neon             |
-| `--status-danger-foreground`  | `0 0% 100%`             |                                         |
-| `--budget-committed`          | `var(--status-info)`    | committed segment                       |
-| `--budget-actual`             | `215 20% 18%`           | spent = slate ink (not a traffic light) |
-| `--budget-remaining`          | `215 14% 91%`           | unfilled track                          |
-| `--budget-over`               | `var(--status-danger)`  | remaining `< 0`                         |
-| `--money-positive`            | `var(--status-success)` |                                         |
-| `--money-negative`            | `var(--status-danger)`  |                                         |
-| `--money-zero`                | `215 10% 42%`           | muted                                   |
-| `--z-sticky`                  | `20`                    |                                         |
-| `--z-overlay`                 | `40`                    |                                         |
-| `--z-dropdown`                | `50`                    |                                         |
-| `--z-modal`                   | `50`                    |                                         |
-| `--z-tooltip`                 | `60`                    |                                         |
-| `--z-toast`                   | `100`                   |                                         |
-| `--font-sans`                 | `system-ui, sans-serif` | keep F0 `globals.css` family            |
+| Token                         | Value                   | Used by                                |
+| ----------------------------- | ----------------------- | -------------------------------------- |
+| `--status-neutral`            | `215 14% 46%`           | `StatusVariant 'neutral'`              |
+| `--status-neutral-foreground` | `0 0% 100%`             | text on neutral badge                  |
+| `--status-info`               | `199 62% 38%`           | `'info'`; steel-cyan                   |
+| `--status-info-foreground`    | `0 0% 100%`             |                                        |
+| `--status-success`            | `162 46% 30%`           | `'success'`; teal                      |
+| `--status-success-foreground` | `0 0% 100%`             |                                        |
+| `--status-warning`            | `34 78% 40%`            | `'warning'`; ochre                     |
+| `--status-warning-foreground` | `0 0% 100%`             |                                        |
+| `--status-danger`             | `4 68% 44%`             | `'danger'`; brick                      |
+| `--status-danger-foreground`  | `0 0% 100%`             |                                        |
+| `--budget-committed`          | `var(--status-info)`    | committed segment                      |
+| `--budget-actual`             | `215 32% 16%`           | spent = slate ink                      |
+| `--budget-remaining`          | `210 24% 88%`           | unfilled track                         |
+| `--budget-over`               | `var(--status-danger)`  | remaining `< 0`                        |
+| `--money-positive`            | `var(--status-success)` |                                        |
+| `--money-negative`            | `var(--status-danger)`  |                                        |
+| `--money-zero`                | `215 12% 40%`           | muted                                  |
+| `--gloss-highlight`           | `0 0% 100%`             | inset sheen (compose with `/ opacity`) |
+| `--z-sticky`                  | `20`                    |                                        |
+| `--z-overlay`                 | `40`                    |                                        |
+| `--z-dropdown`                | `50`                    |                                        |
+| `--z-modal`                   | `50`                    |                                        |
+| `--z-tooltip`                 | `60`                    |                                        |
+| `--z-toast`                   | `100`                   |                                        |
+| `--font-sans`                 | `system-ui, sans-serif` | keep F0 `globals.css` family           |
 
-**Dark (`.dark`)** — same names; lift lightness, keep chroma low:
+**Dark (`.dark`)** — same names; lift lightness, keep medium chroma:
 
 | Token                         | Dark value              |
 | ----------------------------- | ----------------------- |
-| `--status-neutral`            | `215 10% 58%`           |
-| `--status-neutral-foreground` | `210 20% 98%`           |
-| `--status-info`               | `214 40% 68%`           |
-| `--status-info-foreground`    | `215 25% 12%`           |
-| `--status-success`            | `158 25% 58%`           |
-| `--status-success-foreground` | `215 25% 10%`           |
-| `--status-warning`            | `36 45% 58%`            |
-| `--status-warning-foreground` | `215 25% 10%`           |
-| `--status-danger`             | `4 50% 68%`             |
-| `--status-danger-foreground`  | `215 25% 10%`           |
+| `--status-neutral`            | `215 12% 58%`           |
+| `--status-neutral-foreground` | `222 40% 10%`           |
+| `--status-info`               | `199 70% 58%`           |
+| `--status-info-foreground`    | `222 40% 10%`           |
+| `--status-success`            | `162 45% 52%`           |
+| `--status-success-foreground` | `222 40% 8%`            |
+| `--status-warning`            | `36 78% 56%`            |
+| `--status-warning-foreground` | `222 40% 8%`            |
+| `--status-danger`             | `4 72% 62%`             |
+| `--status-danger-foreground`  | `222 40% 8%`            |
 | `--budget-committed`          | `var(--status-info)`    |
-| `--budget-actual`             | `210 20% 92%`           |
-| `--budget-remaining`          | `215 12% 18%`           |
+| `--budget-actual`             | `210 30% 90%`           |
+| `--budget-remaining`          | `217 22% 16%`           |
 | `--budget-over`               | `var(--status-danger)`  |
 | `--money-positive`            | `var(--status-success)` |
 | `--money-negative`            | `var(--status-danger)`  |
-| `--money-zero`                | `215 10% 62%`           |
+| `--money-zero`                | `215 12% 62%`           |
+| `--gloss-highlight`           | `0 0% 100%`             |
 
 Z-index and `--font-sans` are the same in dark.
 
@@ -377,7 +381,7 @@ All amounts integer minor units.
     3. Write `components.json` per policy #3 (`style: "new-york"`, `baseColor: "slate"`, `cssVariables: true`, `rsc: true`, aliases listed).
     4. `src/lib/utils.ts`: `export function cn(...inputs: ClassValue[]): string { return twMerge(clsx(inputs)) }` — copy the standard shadcn snippet; `ClassValue` from `clsx`.
     5. Replace `src/app/globals.css` (today: `html, body { margin:0; font-family: system-ui }`):
-       - `@import "tailwindcss";` and shadcn’s **slate** CSS-variable block (copy from current shadcn new-york slate + Tailwind v4 docs / `pnpm dlx shadcn@latest init` **non-interactive** if it only writes CSS — if init is interactive, **do not** run it; paste from shadcn’s published slate CSS). Follow the visual-direction block: quiet chrome, no indigo primary.
+       - `@import "tailwindcss";` and slate-structured CSS variables retuned per `docs/VISUAL-DIRECTION.md` (ice tint, gloss shadows — no indigo primary).
        - `body { @apply bg-background text-foreground; font-family: var(--font-sans); }`
        - Append the semantic token tables (light + `.dark`) from locked policies.
        - Map semantic tokens into `@theme inline` so `bg-status-success` **or** `bg-[var(--status-success)]` works. Prefer `@theme inline { --color-status-success: hsl(var(--status-success)); … }` mirroring how shadcn maps `--primary`.
@@ -675,7 +679,7 @@ All amounts integer minor units.
     4. Kitchen sink: ACTIVE shared AWS card; PENDING; INACTIVE; CLOSED; FAILED. `onReveal` → `toastStore.info('Reveal opens the Airwallex iframe in A5')`.
   - **Pattern:** `cardSchema` in `src/shared/schemas/card.ts` (`maskedNumber`, `nickName` max 100, `status`, `purpose`). `formatMaskedCard` (F2.7). `panTokenOutput` is **A5**, not this component.
   - **Accept:** `pnpm test components/patterns/cardVisual` and `pnpm typecheck`
-  - **Notes:** Masked number via formatMaskedCard. Reveal is callback only. PAN header avoids the forbidden substrings the boundary test greps.
+  - **Notes:** Physical ID-1 silhouette (aspect 1.586, chip + contactless mark, gloss face). Masked number via formatMaskedCard + 4-char grouping for display. Reveal is callback only. PAN header avoids the forbidden substrings the boundary test greps.
 
 ### F3.16 — Timeline
 
@@ -861,18 +865,18 @@ All amounts integer minor units.
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] `/dev/ui` renders every primitive and pattern in default/disabled/loading/error/empty (as applicable) and both themes
-- [ ] No hardcoded colours or spacing in components/shell/states/dev — tokens only (F3.25 proof)
-- [ ] One spinner, one skeleton style, one date format (`src/lib/dates.ts` en-GB), one empty-state pattern
-- [ ] `BudgetBar` and `LimitMeter` correct at zero, full, and over-budget (unit tests)
-- [ ] `ConfirmDialog` requires typed confirmation for irreversible close (`CLOSE`)
-- [ ] Keyboard-only navigation works on `/dev/ui` (Radix defaults + visible focus rings)
-- [ ] Track A walk table filled — no new primitive required
-- [ ] Layout: no new F3 mobile primitives. Shell collapse (sidebar → `Sheet`) is A2. `docs/RESPONSIVENESS.md`
-- [ ] Spec’s review checklist in `F3-ui-library.md` signed off
-- [ ] `STATUS.md` updated: active phase A1, generate `A1-TASKS.md` when starting A1
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] `/dev/ui` renders every primitive and pattern in default/disabled/loading/error/empty (as applicable) and both themes
+- [x] No hardcoded colours or spacing in components/shell/states/dev — tokens only (F3.25 proof)
+- [x] One spinner, one skeleton style, one date format (`src/lib/dates.ts` en-GB), one empty-state pattern
+- [x] `BudgetBar` and `LimitMeter` correct at zero, full, and over-budget (unit tests)
+- [x] `ConfirmDialog` requires typed confirmation for irreversible close (`CLOSE`)
+- [x] Keyboard-only navigation works on `/dev/ui` (Radix defaults + visible focus rings)
+- [x] Track A walk table filled — no new primitive required
+- [x] Layout: no new F3 mobile primitives. Shell collapse (sidebar → `Sheet`) is A2. `docs/RESPONSIVENESS.md`
+- [x] Spec’s review checklist in `F3-ui-library.md` signed off
+- [x] `STATUS.md` updated: active phase A1, generate `A1-TASKS.md` when starting A1
 
 ## Out of scope (do not do in F3)
 
