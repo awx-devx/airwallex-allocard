@@ -2,6 +2,7 @@
 
 import { JumpNav } from '@/app/dev/ui/JumpNav'
 import { PatternGallery } from '@/app/dev/ui/PatternGallery'
+import { PrimitiveGallery } from '@/app/dev/ui/sections/primitives'
 import { ThemeToggle } from '@/app/dev/ui/ThemeToggle'
 import { cn } from '@/lib/utils'
 
@@ -24,47 +25,6 @@ const TOKEN_SWATCHES: { name: string; className: string }[] = [
   { name: '--money-negative', className: 'bg-money-negative' },
   { name: '--money-zero', className: 'bg-money-zero' },
 ]
-
-const PRIMITIVES = [
-  'Button',
-  'Spinner',
-  'Badge',
-  'Skeleton',
-  'Progress',
-  'Separator',
-  'Input',
-  'Textarea',
-  'Label',
-  'Checkbox',
-  'Radio',
-  'Switch',
-  'FormField',
-  'Select',
-  'Combobox',
-  'Command',
-  'DatePicker',
-  'DateRangePicker',
-  'Dialog',
-  'Sheet',
-  'Popover',
-  'Tooltip',
-  'DropdownMenu',
-  'Tabs',
-  'Table',
-  'ScrollArea',
-  'Breadcrumb',
-  'Pagination',
-  'Avatar',
-  'Card',
-  'Alert',
-  'Toast',
-] as const
-
-const PATTERNS = [] as const
-
-function sectionId(name: string): string {
-  return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
-}
 
 export default function DevUiPage() {
   return (
@@ -93,27 +53,12 @@ export default function DevUiPage() {
 
       <section id="primitives" className="space-y-8">
         <h2 className="text-lg font-medium">Primitives</h2>
-        {PRIMITIVES.map((name) => (
-          <section key={name} id={sectionId(name)} className="space-y-2">
-            <h3 className="font-medium">{name}</h3>
-            <p className="text-sm text-muted-foreground">
-              Placeholder — filled in a later F3 task.
-            </p>
-          </section>
-        ))}
+        <PrimitiveGallery />
       </section>
 
       <section id="patterns" className="space-y-8">
         <h2 className="text-lg font-medium">Patterns</h2>
         <PatternGallery />
-        {PATTERNS.map((name) => (
-          <section key={name} id={sectionId(name)} className="space-y-2">
-            <h3 className="font-medium">{name}</h3>
-            <p className="text-sm text-muted-foreground">
-              Placeholder — filled in a later F3 task.
-            </p>
-          </section>
-        ))}
       </section>
     </div>
   )

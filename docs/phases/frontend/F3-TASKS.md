@@ -817,7 +817,7 @@ All amounts integer minor units.
 
 ### F3.24 — Kitchen sink complete
 
-- [ ] **F3.24** — `/dev/ui` every component, every state, both themes
+- [x] **F3.24** — `/dev/ui` every component, every state, both themes
   - **Files:**
     - `src/app/dev/ui/page.tsx`
     - `src/app/dev/ui/sections/*.tsx` (split if `page.tsx` exceeds ~200 lines)
@@ -828,7 +828,7 @@ All amounts integer minor units.
     3. Realistic data only — no lorem ipsum, no `100/100/100` as the sole BudgetBar.
   - **Pattern:** F0.14 `/dev/shell` gallery completeness, scaled up. Fixtures from F3.0.
   - **Accept:** `pnpm typecheck && pnpm build`. Manually: open `/dev/ui` in `pnpm dev` (reviewer). Implementer: do not skip sections — if a primitive is missing from the page, the task is not done.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Primitives in `src/app/dev/ui/sections/primitives.tsx`. Patterns remain in PatternGallery (boundaries, ConfirmDialog CLOSE, DataTable empty/loading/error). Realistic fixtures; ThemeToggle for both themes.
 
 ### F3.25 — Proofs + Track A walk
 
