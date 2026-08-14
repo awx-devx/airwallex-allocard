@@ -4,15 +4,15 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/projects/[id]/controls` | Rules governing this project, plus spending controls |
-| `/settings/rules` | Org-wide rules |
-| `/settings/rules/[id]` | Rule builder |
-| `/settings/rules/[id]/simulate` | What-if simulation |
-| `/settings/attributes` | Attribute registry and current values |
-| `/automation` | Automation history — every rule run |
-| `/cards/[id]/explain` | "Why is this limit what it is?" |
+| Route                           | Purpose                                              |
+| ------------------------------- | ---------------------------------------------------- |
+| `/projects/[id]/controls`       | Rules governing this project, plus spending controls |
+| `/settings/rules`               | Org-wide rules                                       |
+| `/settings/rules/[id]`          | Rule builder                                         |
+| `/settings/rules/[id]/simulate` | What-if simulation                                   |
+| `/settings/attributes`          | Attribute registry and current values                |
+| `/automation`                   | Automation history — every rule run                  |
+| `/cards/[id]/explain`           | "Why is this limit what it is?"                      |
 
 **This is the phase that sells the product.** Everything before it is competent spend management; this is the part nobody else has.
 
@@ -20,7 +20,7 @@
 
 Trigger picker → condition builder → action list with target selection. Render the rule as prose alongside the form using F2's `RuleSentence`, so the user reads "When remaining budget drops below 10%, freeze member cards" rather than parsing a form.
 
-Show a live match preview: *"With today's values, this rule matches 4 cards and would set the monthly limit to $412."* One call to `POST /api/rules/validate` plus a simulate, and it transforms the builder from abstract to concrete.
+Show a live match preview: _"With today's values, this rule matches 4 cards and would set the monthly limit to $412."_ One call to `POST /api/rules/validate` plus a simulate, and it transforms the builder from abstract to concrete.
 
 Formula fields need syntax highlighting, attribute autocomplete, and inline validation against the server. Never build a second parser in the client.
 
@@ -29,6 +29,10 @@ Formula fields need syntax highlighting, attribute autocomplete, and inline vali
 Override attribute values, run the pipeline, show the resulting per-card diff. Make the overrides obviously temporary and the results obviously hypothetical — a simulation mistaken for reality is worse than no simulation.
 
 This is the most persuasive screen in the demo. Give it room: side-by-side current versus simulated, per-card, with the reasoning visible.
+
+## Layout
+
+Desktop may be side-by-side; narrow **stacks**. Builder: form, then `RuleSentence` preview below (`flex-col md:flex-row`). Simulation: current, then simulated (`grid-cols-1 md:grid-cols-2`) — both panes fully visible, just not adjacent. Automation history is a `DataTable` that scrolls inside. Do not hide the match preview or the explainer on narrow — they are the product. [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
 
 ## Automation history
 
@@ -56,3 +60,4 @@ For a given card: which rules govern it, what attribute values they consumed, an
 - [ ] Automation history makes failures and conflicts prominent
 - [ ] The card explainer genuinely explains, including the merge
 - [ ] No formula or DSL parsing happens client-side
+- [ ] 375px and 768px: no page-level horizontal scrollbar; builder, simulate, and explainer content all reachable (stacked, not hidden)

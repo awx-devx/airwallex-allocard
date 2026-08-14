@@ -1,0 +1,34 @@
+---
+description: Don't-break layout — desktop-first, one breakpoint, no page overflow
+globs: src/app/**/*.tsx,src/client/shell/**/*.tsx,src/components/**/*.tsx
+alwaysApply: false
+---
+
+# Layout
+
+Desktop is `md:` (768px). Narrower must work and show everything; it does not have to look good. Full recipe: `docs/RESPONSIVENESS.md`.
+
+```tsx
+// ✅ stack, then desktop grid
+<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+// ✅ flex child that holds a table / long text
+<div className="min-w-0 flex-1">
+
+// ✅ table may scroll inside; the page may not
+<div className="overflow-x-auto"><DataTable … /></div>
+
+// ❌ page overflow
+<div className="flex whitespace-nowrap">
+<div className="min-w-[800px]">
+```
+
+## Rules
+
+- **One breakpoint: `md`.** Do not add `sm:` / `lg:` / `xl:` layouts.
+- **Never `hidden` a control** on narrow unless the same action is in the nav `Sheet` or a wrapping menu.
+- **Shell collapse is A2.** `hidden md:flex` on the aside; `md:hidden` button opens F3 `Sheet` with the existing `SideNav`. Do not build a second nav.
+- Toolbars and tabs: `flex flex-wrap gap-2`.
+- No `100vw`, no page-level `min-w-[…]`.
+
+A Track A screen is not done if 375px shows a page-level horizontal scrollbar or an unreachable action.

@@ -60,6 +60,8 @@ _None yet._
 
 ## Notes for the next session
 
+**Layout (2026-08-14, docs only).** Desktop-first don't-break added. Recipe: `docs/RESPONSIVENESS.md`. F0/F3 not reopened. **A2 owns `AppShell` collapse** (sidebar → existing `Sheet`). Invariant 10 in `AGENTS.md`. When generating A1–A9 TASKS files, include the 375px / 768px check per `TASKS-TEMPLATE.md`.
+
 **F3.25 done (2026-08-14).** Token boundary test; proofs observed then deleted. Track A walk: no new primitive. Stopped before phase exit.
 
 **F3.24 done (2026-08-14).** `/dev/ui` primitives in `sections/primitives.tsx`; patterns already in PatternGallery.

@@ -1,6 +1,6 @@
 # Build Workflow
 
-How to actually drive this build. The specs say *what* to build; this says *how to run the sessions*.
+How to actually drive this build. The specs say _what_ to build; this says _how to run the sessions_.
 
 ---
 
@@ -22,31 +22,31 @@ Expect roughly 150–200 tasks across the whole build. Most are a two-minute rev
 
 **Tiers:** High = Opus 5 thinking · Medium = Sonnet 5 thinking or GPT-5.6 · Low = Composer 2.5 fast or Grok 4.5 fast
 
-| Phase | Tier | What's different about this phase |
-| --- | --- | --- |
-| **B0** Foundation | **High** | Sets every pattern that follows. `models/base.ts`, the test harness, and the three guards are worth real money. Don't economise. |
-| **B1** Auth & orgs | **High** | The second pattern-setter — B2 onward is "do what B1 did." Also security-critical. Review `meResponse` carefully. |
-| **B2** Projects | Low | Pure CRUD copying B1. The phase that proves whether B1 was a good enough template. If a low model struggles here, B1 needs work. |
-| **B3** Access control | Med–High | Permission computation is subtle and a mistake is a security hole, not a bug. Use High if the effective-permission merge looks hairy. |
-| **B4** Budget | Low–Med | Append-only ledger plus derived projections. Pattern is clear; the arithmetic must be exact. |
-| **B5** Cards | Med | First external API, plus the PCI boundary. Fixtures keep it honest. |
-| **B6** Rules engine | **High** | This *is* the product. Merge semantics, evaluation order, event fan-out. Budget the most time here. |
-| **B7** Requests & approvals | Low–Med | State machine over established patterns. |
-| **B8** Money in motion | Med–High | Webhooks, idempotency, ledger mapping. Bugs here mean wrong money, and they're quiet. |
-| **B9** Reporting & closure | Low | Read-mostly aggregations and exports. |
-| **F0** Client foundation | Med | Sets the client-side patterns the way B0 set the server's. |
-| **F1** Data layer | **Low** | The cheapest phase in the build — hooks derive mechanically from contracts. If it isn't mechanical, a contract is wrong. |
-| **F2** Utils | Low | Pure functions with obvious tests. |
-| **F3** UI library | Med | Needs design judgment, and every screen inherits from it. Review the `/dev/ui` page yourself. |
-| **A1** Auth & onboarding | Low–Med | |
-| **A2** Dashboard & projects | Med | The creation wizard has real state complexity. |
-| **A3** People & access | Low | |
-| **A4** Budget | Low–Med | |
-| **A5** Cards | Med | Airwallex iframe integration is fiddly and easy to get subtly wrong. |
-| **A6** Controls & automation | **High** | The rule builder and simulator are the demo centrepiece. This is what people will actually look at. |
-| **A7** Approvals | Low | |
-| **A8** Activity | Low | |
-| **A9** Reports & closure | Low–Med | |
+| Phase                        | Tier     | What's different about this phase                                                                                                     |
+| ---------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **B0** Foundation            | **High** | Sets every pattern that follows. `models/base.ts`, the test harness, and the three guards are worth real money. Don't economise.      |
+| **B1** Auth & orgs           | **High** | The second pattern-setter — B2 onward is "do what B1 did." Also security-critical. Review `meResponse` carefully.                     |
+| **B2** Projects              | Low      | Pure CRUD copying B1. The phase that proves whether B1 was a good enough template. If a low model struggles here, B1 needs work.      |
+| **B3** Access control        | Med–High | Permission computation is subtle and a mistake is a security hole, not a bug. Use High if the effective-permission merge looks hairy. |
+| **B4** Budget                | Low–Med  | Append-only ledger plus derived projections. Pattern is clear; the arithmetic must be exact.                                          |
+| **B5** Cards                 | Med      | First external API, plus the PCI boundary. Fixtures keep it honest.                                                                   |
+| **B6** Rules engine          | **High** | This _is_ the product. Merge semantics, evaluation order, event fan-out. Budget the most time here.                                   |
+| **B7** Requests & approvals  | Low–Med  | State machine over established patterns.                                                                                              |
+| **B8** Money in motion       | Med–High | Webhooks, idempotency, ledger mapping. Bugs here mean wrong money, and they're quiet.                                                 |
+| **B9** Reporting & closure   | Low      | Read-mostly aggregations and exports.                                                                                                 |
+| **F0** Client foundation     | Med      | Sets the client-side patterns the way B0 set the server's.                                                                            |
+| **F1** Data layer            | **Low**  | The cheapest phase in the build — hooks derive mechanically from contracts. If it isn't mechanical, a contract is wrong.              |
+| **F2** Utils                 | Low      | Pure functions with obvious tests.                                                                                                    |
+| **F3** UI library            | Med      | Needs design judgment, and every screen inherits from it. Review the `/dev/ui` page yourself.                                         |
+| **A1** Auth & onboarding     | Low–Med  |                                                                                                                                       |
+| **A2** Dashboard & projects  | Med      | The creation wizard has real state complexity.                                                                                        |
+| **A3** People & access       | Low      |                                                                                                                                       |
+| **A4** Budget                | Low–Med  |                                                                                                                                       |
+| **A5** Cards                 | Med      | Airwallex iframe integration is fiddly and easy to get subtly wrong.                                                                  |
+| **A6** Controls & automation | **High** | The rule builder and simulator are the demo centrepiece. This is what people will actually look at.                                   |
+| **A7** Approvals             | Low      |                                                                                                                                       |
+| **A8** Activity              | Low      |                                                                                                                                       |
+| **A9** Reports & closure     | Low–Med  |                                                                                                                                       |
 
 **Rule of thumb:** upgrade a tier when the phase invents a pattern, involves money correctness, or is a security boundary. Downgrade when it copies an existing file.
 
@@ -79,6 +79,10 @@ docs/phases/backend/B2-TASKS.md following docs/phases/TASKS-TEMPLATE.md.
 Target model tier for execution: LOW. So name every file explicitly, inline
 every schema field with its type and constraints, and point each task at the
 equivalent B1 file to copy.
+
+For Track A, also read docs/RESPONSIVENESS.md. Each screen task must name
+the layout (stack vs md:grid, wrap vs Sheet) and include the 375px / 768px
+don't-break check in Accept. A2 must include the AppShell collapse task.
 
 Write the task file only — no implementation code. Then stop; I'll review it.
 ```
@@ -143,7 +147,8 @@ You cannot review 200 diffs carefully. Four moments carry most of the risk:
 1. **The contracts task at each phase start.** Five minutes. Every field name you approve here gets baked into a model, a handler, a test, a hook, and a screen. Fixing it now is a rename; fixing it in Track A is five files across three phases.
 2. **Any time the model says it's blocked.** `AGENTS.md` tells it to stop rather than guess. When it does, that's the system working — answer properly rather than saying "just pick one."
 3. **Phase exit.** Run the exit checklist before moving on. A phase that leaks into the next one is how a two-week build becomes a five-week one.
-4. **B0.2, B0.5, B0.11 — the three guards.** Each has an acceptance criterion requiring you to prove a *failure*: a bad import must fail lint, `tenantScoped` must throw, a real network call must fail the test run. Actually watch those fail. They're what catches cheap-model mistakes for the remaining 190 tasks.
+4. **B0.2, B0.5, B0.11 — the three guards.** Each has an acceptance criterion requiring you to prove a _failure_: a bad import must fail lint, `tenantScoped` must throw, a real network call must fail the test run. Actually watch those fail. They're what catches cheap-model mistakes for the remaining 190 tasks.
+5. **A2 shell collapse.** First product use of `AppShell`. Confirm the aside is `hidden md:flex` and the same `SideNav` opens in F3's `Sheet` below `md`. After that, every A-phase is copy-the-four-patterns from `docs/RESPONSIVENESS.md`.
 
 Everything else can be a quick skim of the diff plus a green `pnpm verify`.
 

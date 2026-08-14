@@ -15,6 +15,7 @@ Per `STATUS.md`, B2, B4, B7, B9 and most of Track A run on a cheap model. For th
 - **Make acceptance a command.** `pnpm test projects/transition` is checkable; "transitions work correctly" is not.
 - **Point at the file to copy.** "Follow `src/server/models/Project.ts`" beats any description of the pattern. Cheap models pattern-match far better than they design.
 - **One task = one commit = one session.** If a task needs more than ~5 files, split it.
+- **Track A screens: name the layout.** `grid-cols-1 md:grid-cols-N`, `flex-wrap`, `min-w-0`, table `overflow-x-auto`. Accept includes: 375px and 768px, no page-level horizontal scrollbar, primary actions reachable. Recipe: `docs/RESPONSIVENESS.md`. One breakpoint (`md`) only.
 
 For strong-model phases (B0, B1, B6) you can reference the spec section instead of inlining it.
 
@@ -59,12 +60,12 @@ For strong-model phases (B0, B1, B6) you can reference the spec section instead 
 
 ## Task states
 
-| Mark | Meaning |
-| --- | --- |
-| `- [ ]` | Not started |
+| Mark    | Meaning                                                        |
+| ------- | -------------------------------------------------------------- |
+| `- [ ]` | Not started                                                    |
 | `- [~]` | Started, incomplete — **must** have a note saying what remains |
-| `- [x]` | Complete, committed, verify green |
-| `- [!]` | Blocked — note names the blocker and what's needed |
+| `- [x]` | Complete, committed, verify green                              |
+| `- [!]` | Blocked — note names the blocker and what's needed             |
 
 A `[~]` or `[!]` without a note is a bug in the process. The note is what makes a lost session recoverable.
 

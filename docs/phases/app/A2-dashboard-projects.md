@@ -4,12 +4,12 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/dashboard` | Home: active projects, pending approvals, recent activity, alerts |
-| `/projects` | Filterable, sortable project list |
-| `/projects/new` | The multi-step creation wizard |
-| `/projects/[id]` | Workspace shell with tabs — shell only; tabs land in A3–A9 |
+| Route            | Purpose                                                           |
+| ---------------- | ----------------------------------------------------------------- |
+| `/dashboard`     | Home: active projects, pending approvals, recent activity, alerts |
+| `/projects`      | Filterable, sortable project list                                 |
+| `/projects/new`  | The multi-step creation wizard                                    |
+| `/projects/[id]` | Workspace shell with tabs — shell only; tabs land in A3–A9        |
 
 ## The wizard
 
@@ -27,6 +27,17 @@ The workspace shell owns the tab layout and project context for A3–A9. Get the
 
 Dashboard cards should link into filtered views rather than being dead summaries.
 
+## Layout
+
+**This phase owns the shell collapse.** `AppShell`'s `w-56` aside is `hidden md:flex`; a `md:hidden` menu button opens F3 `Sheet` (`side="left"`) with the same `SideNav` and `OrgSwitcher`. Do not build a second nav. Do this in the first A2 task that mounts the shell.
+
+- Dashboard summaries: `grid-cols-1 md:grid-cols-2` (or 3). Every card is a link.
+- Project list: `DataTable` with `overflow-x-auto` on its root (add it here so A3–A9 inherit).
+- Wizard: step rail `flex-wrap`, or a `<select>` of steps below `md`. Step content is one column.
+- Workspace tabs (shell for A3–A9): `flex flex-wrap`.
+
+Recipe: [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md). One breakpoint: `md`.
+
 ## States to handle
 
 - Zero projects — an empty state that leads into creation
@@ -42,3 +53,5 @@ Dashboard cards should link into filtered views rather than being dead summaries
 - [ ] Launch surfaces what happened, not just success
 - [ ] The shell renders the header from cache while tabs load
 - [ ] List filters map to B2's query parameters without client-side refiltering
+- [ ] `AppShell` sidebar is a `Sheet` below `md`; same `SideNav`, no second nav
+- [ ] 375px and 768px: no page-level horizontal scrollbar; wizard Next/Launch and list actions reachable

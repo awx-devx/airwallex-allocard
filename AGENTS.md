@@ -22,6 +22,7 @@ Do not start a task that isn't the next unchecked one. Do not batch tasks.
 7. **Mongoose documents never leave `src/server/repositories`.** Services and handlers receive plain domain objects. `HydratedDocument` appears only inside a repository file.
 8. **Empty allowlist means "allow everything" at Airwallex.** `[]`, `null`, and absent are identical to Airwallex for `allowed_currencies`, `allowed_merchant_categories`, and every other allowlist. A computed empty intersection is a **conflict** to surface, never a value to push.
 9. **No `any`.** No `@ts-expect-error` without a comment explaining why. `src/shared` may not import from `src/server` or `src/client`.
+10. **Layout does not break.** Desktop (`md`, 768px) is the product. Narrower widths must still show and reach everything — no page-level horizontal scrollbar, no overlapping chrome, no control hidden without a replacement. They do not have to look good. One breakpoint, four copy-paste patterns: `docs/RESPONSIVENESS.md`.
 
 ## Stop and ask — do not decide
 
@@ -47,11 +48,12 @@ Commit once per task, with the task ID first in the message. `git log` is the re
 
 ## Reference docs
 
-| Doc | When |
-| --- | --- |
-| `docs/ARCHITECTURE.md` | Type system (§4), model pattern (§5), tenancy (§6), background work (§8), testing (§13) |
-| `docs/RULES-ENGINE.md` | Anything in phase B6 or A6 |
-| `docs/AIRWALLEX-INTEGRATION.md` | Anything calling Airwallex (B5, B8) |
-| `docs/PRD.md` | Product intent, personas, user journeys |
+| Doc                             | When                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------- |
+| `docs/ARCHITECTURE.md`          | Type system (§4), model pattern (§5), tenancy (§6), background work (§8), testing (§13) |
+| `docs/RULES-ENGINE.md`          | Anything in phase B6 or A6                                                              |
+| `docs/AIRWALLEX-INTEGRATION.md` | Anything calling Airwallex (B5, B8)                                                     |
+| `docs/PRD.md`                   | Product intent, personas, user journeys                                                 |
+| `docs/RESPONSIVENESS.md`        | Track A layout: one breakpoint, shell Sheet, tables scroll inside                       |
 
 Read the referenced section. Do not infer its contents from its title.

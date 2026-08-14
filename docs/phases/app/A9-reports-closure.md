@@ -4,15 +4,15 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/reports` | Report catalogue and exports |
-| `/reports/project/[id]` | Budget versus actual, spend by category and member |
-| `/reports/organization` | Cross-project rollup |
-| `/audit` | Audit log with filters and diffs |
-| `/projects/[id]/closure` | The closure flow |
-| `/projects/[id]/report/final` | Post-closure report |
-| `/settings/access-reviews` | Access review queue |
+| Route                         | Purpose                                            |
+| ----------------------------- | -------------------------------------------------- |
+| `/reports`                    | Report catalogue and exports                       |
+| `/reports/project/[id]`       | Budget versus actual, spend by category and member |
+| `/reports/organization`       | Cross-project rollup                               |
+| `/audit`                      | Audit log with filters and diffs                   |
+| `/projects/[id]/closure`      | The closure flow                                   |
+| `/projects/[id]/report/final` | Post-closure report                                |
+| `/settings/access-reviews`    | Access review queue                                |
 
 ## Notes
 
@@ -25,6 +25,10 @@ Card closure inside this flow is irreversible at Airwallex. Use type-to-confirm,
 The audit view is where the system's accountability becomes visible. Distinguish rule actors from human ones, render before/after with `DiffView`, and make filtering by subject easy — "show me everything that happened to this card" is the common question.
 
 Exports stream. Show progress for large ones and don't block the UI.
+
+## Layout
+
+Closure is already a `StepWizard` — same wrapping step rail as A2. Report and audit tables scroll inside. Filter bars wrap. Do not give the final report a fixed width. [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
 
 ## States to handle
 
@@ -44,3 +48,4 @@ Exports stream. Show progress for large ones and don't block the UI.
 - [ ] Archived projects reject every mutation in the UI as well as the API
 - [ ] Exports stream without blocking
 - [ ] Final report totals match the budget tab exactly
+- [ ] 375px and 768px: no page-level horizontal scrollbar; closure Next / confirm reachable; report tables may scroll internally

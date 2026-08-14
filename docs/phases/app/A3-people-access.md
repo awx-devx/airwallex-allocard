@@ -4,13 +4,13 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
+| Route                           | Purpose                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
 | `/projects/[id]` (overview tab) | Status, remaining budget, spent, active cards, pending approvals, recent activity, alerts |
-| `/projects/[id]/people` | Member list with role and scope |
-| `/projects/[id]/people/add` | Add member: select user, role, scope, preview, confirm |
-| `/settings/roles` | Role templates and custom roles, permission matrix editor |
-| `/settings/access-reviews` | Flagged access awaiting review |
+| `/projects/[id]/people`         | Member list with role and scope                                                           |
+| `/projects/[id]/people/add`     | Add member: select user, role, scope, preview, confirm                                    |
+| `/settings/roles`               | Role templates and custom roles, permission matrix editor                                 |
+| `/settings/access-reviews`      | Flagged access awaiting review                                                            |
 
 ## The permission preview
 
@@ -32,6 +32,10 @@ The overview tab is the most-visited screen in the product. Everything on it lin
 
 Scope selection is the hardest control here. Six levels with different sub-selections needs progressive disclosure — pick a level, then only the relevant sub-picker appears. A form showing all six at once is unusable.
 
+## Layout
+
+Permission matrix and member `DataTable`: scroll inside (`overflow-x-auto`), do not restyle as cards. Sticky first column is optional; a sideways table inside the page is the intended narrow behaviour. Add-member form + live preview: `flex-col md:flex-row`. Scope picker already progressive — keep it one column. Tabs wrap (`flex-wrap`). [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
+
 ## States to handle
 
 - A member whose time-bounded scope has expired — shown as inactive with the reason
@@ -47,3 +51,4 @@ Scope selection is the hardest control here. Six levels with different sub-selec
 - [ ] Role edits warn about affected members
 - [ ] Every overview element links somewhere useful
 - [ ] `can()` gates actions, and the server still rejects them if bypassed
+- [ ] 375px and 768px: no page-level horizontal scrollbar; matrix may scroll internally; Add / Save reachable

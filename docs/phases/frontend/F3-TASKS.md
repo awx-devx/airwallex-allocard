@@ -870,6 +870,7 @@ All amounts integer minor units.
 - [ ] `ConfirmDialog` requires typed confirmation for irreversible close (`CLOSE`)
 - [ ] Keyboard-only navigation works on `/dev/ui` (Radix defaults + visible focus rings)
 - [ ] Track A walk table filled — no new primitive required
+- [ ] Layout: no new F3 mobile primitives. Shell collapse (sidebar → `Sheet`) is A2. `docs/RESPONSIVENESS.md`
 - [ ] Spec’s review checklist in `F3-ui-library.md` signed off
 - [ ] `STATUS.md` updated: active phase A1, generate `A1-TASKS.md` when starting A1
 
@@ -883,3 +884,4 @@ All amounts integer minor units.
 - Porting `src/server/lib/formula/*` to the client
 - Replacing `toastStore` with Sonner
 - Touching PAN/CVV/expiry anywhere
+- A mobile design system, extra breakpoints, or collapsing the app shell — A2 uses existing `Sheet` per `docs/RESPONSIVENESS.md`

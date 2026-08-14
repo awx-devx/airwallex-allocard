@@ -20,6 +20,10 @@ An invite link opened by a signed-out user should preserve the token through sig
 
 An invite whose email doesn't match the signed-in user must explain the mismatch clearly and offer to sign in as the right account — the raw `403` from B1 is correct but useless to a human.
 
+## Layout
+
+No `AppShell`. A centred column: `max-w-md w-full px-4`. Google and password actions `flex-col gap-2`. That is the whole narrow layout — see [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
+
 ## States to handle
 
 - Sign-up with an existing email — a neutral message that doesn't confirm account existence
@@ -35,3 +39,4 @@ An invite whose email doesn't match the signed-in user must explain the mismatch
 - [ ] Every invite failure mode has a distinct, human message
 - [ ] Password fields never appear in any log or error report
 - [ ] Return paths are validated against an allowlist, not reflected blindly
+- [ ] 375px and 768px: no page-level horizontal scrollbar; sign-in and Google actions reachable without sideways scroll

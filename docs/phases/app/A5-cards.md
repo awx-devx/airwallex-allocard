@@ -4,12 +4,12 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/cards` | Org-wide card list, filterable by project, purpose, status, holder |
-| `/projects/[id]/cards` | Project cards |
-| `/cards/[id]` | Detail: status, limits, controls, holder, access list, transactions |
-| `/cards/[id]/reveal` | Secure iframe for number, expiry, CVV |
+| Route                  | Purpose                                                             |
+| ---------------------- | ------------------------------------------------------------------- |
+| `/cards`               | Org-wide card list, filterable by project, purpose, status, holder  |
+| `/projects/[id]/cards` | Project cards                                                       |
+| `/cards/[id]`          | Detail: status, limits, controls, holder, access list, transactions |
+| `/cards/[id]/reveal`   | Secure iframe for number, expiry, CVV                               |
 
 Plus the card-structure step of the A2 wizard.
 
@@ -24,6 +24,10 @@ Show remaining limits from `GET /api/cards/:id/limits` — live from Airwallex, 
 **Destructive actions need proportionate friction.** Freeze is reversible and can be a simple confirm. Close is irreversible at Airwallex, so use `ConfirmDialog`'s type-to-confirm mode and say plainly that it cannot be undone and that pending transactions will still clear.
 
 Cards created by rules should say so, linking to the governing rule. A user who sees a card they didn't create needs an immediate answer to "where did this come from?"
+
+## Layout
+
+Card list: `grid-cols-1 md:grid-cols-2`, or `DataTable` with internal scroll — pick one per page, don't mix. Detail: stack `CardVisual`, limits, actions; actions `flex-wrap`. Reveal iframe is `w-full`; never a fixed pixel width. [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
 
 ## States to handle
 
@@ -42,3 +46,4 @@ Cards created by rules should say so, linking to the governing rule. A user who 
 - [ ] Close uses type-to-confirm and explains irreversibility
 - [ ] Rule-created cards link to the rule that created them
 - [ ] Desired-versus-applied divergence is visible rather than silently hidden
+- [ ] 375px and 768px: no page-level horizontal scrollbar; Freeze / Close / Reveal reachable; iframe not wider than the viewport

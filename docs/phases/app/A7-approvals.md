@@ -4,14 +4,14 @@
 
 ## Screens
 
-| Route | Purpose |
-| --- | --- |
-| `/requests` | The member's own requests |
-| `/requests/new` | Create a request |
-| `/requests/[id]` | Detail, policy decision, approval trail |
-| `/approvals` | The approver's queue across projects |
-| `/approvals/[id]` | Review and decide |
-| `/projects/[id]/controls` (approval rules) | Threshold and approver configuration |
+| Route                                      | Purpose                                 |
+| ------------------------------------------ | --------------------------------------- |
+| `/requests`                                | The member's own requests               |
+| `/requests/new`                            | Create a request                        |
+| `/requests/[id]`                           | Detail, policy decision, approval trail |
+| `/approvals`                               | The approver's queue across projects    |
+| `/approvals/[id]`                          | Review and decide                       |
+| `/projects/[id]/controls` (approval rules) | Threshold and approver configuration    |
 
 ## Notes
 
@@ -22,6 +22,10 @@
 The approver queue is a working surface, not a list. Each item needs enough context to decide without navigating away: amount, vendor, justification, the requester, remaining project budget, and the requester's recent spend. Rejection requires a reason, and that reason is shown to the requester.
 
 After approval, show what it unlocked — the card created or the limit lifted. This connects the approval to its effect and reinforces that the system acted.
+
+## Layout
+
+Queue items are stacked cards or a `DataTable` with internal scroll. Decision actions `flex-wrap`. Do not put amount, vendor, and remaining budget on one `whitespace-nowrap` row — wrap. Policy preview sits above the submit button in the same column. [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
 
 ## States to handle
 
@@ -41,3 +45,4 @@ After approval, show what it unlocked — the card created or the limit lifted. 
 - [ ] Self-approval is impossible in the UI as well as the API
 - [ ] Approval shows what it unlocked
 - [ ] Multi-approver progress is visible
+- [ ] 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable without sideways window scroll

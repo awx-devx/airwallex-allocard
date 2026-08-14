@@ -16,6 +16,7 @@ Airwallex supplies the card infrastructure and enforcement. Allocard supplies th
 | [`AIRWALLEX-INTEGRATION.md`](./AIRWALLEX-INTEGRATION.md) | Concrete API mapping, webhooks, remote authorization, PCI handling                      |
 | [`phases/`](./phases/)                                   | Per-phase specs, deliverables, tests, and review checklists — the build plan            |
 | [`WORKFLOW.md`](./WORKFLOW.md)                           | How to run the build: per-phase model tiers, the prompt library, where to pay attention |
+| [`RESPONSIVENESS.md`](./RESPONSIVENESS.md)               | Desktop-first layout: one breakpoint, four patterns, Track A don't-break check          |
 
 ## How the build runs
 
@@ -36,6 +37,7 @@ Repo state lives in [`../STATUS.md`](../STATUS.md); the invariants an agent may 
 - **One shared Airwallex sandbox account, not one connected account per organisation.** Tenant separation is Allocard's job — `metadata.orgId` on every card, an `orgId` filter on every read. Rationale, risks, and the seven measures that keep a future migration mechanical are in [`AIRWALLEX-INTEGRATION.md`](./AIRWALLEX-INTEGRATION.md) §2.
 - **Remote authorization ships as a simulator**, with live mode behind a config flag.
 - **Auth is Auth.js with Credentials + Google**, not Clerk and not GitHub. Google because the personas are finance and procurement staff on Google Workspace. Credentials stay because demo personas must be seedable and sign-innable without real Google accounts. Clerk was rejected because its hosted organisations duplicate the `Organization` / `Membership` models that drive `computeEffectivePermissions` in B3 — it would replace two of B1's fifteen tasks while adding a webhook sync path directly beneath the tenancy invariant.
+- **Layout is desktop-first and must not break narrower.** One breakpoint (`md`, 768px). No mobile app, no second IA. Recipe in [`RESPONSIVENESS.md`](./RESPONSIVENESS.md). F0/F3 already shipped; shell collapse (sidebar → existing `Sheet`) is A2.
 
 ## Source material
 

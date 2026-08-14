@@ -61,6 +61,8 @@ The guard runs server-side in each group's layout. **A client-side redirect is n
 
 Left navigation, org switcher, project context, user menu, and badge counts for pending approvals. Slots only — the screens fill them in Track A.
 
+**Narrow widths are A2, not F0.** The F0 shell shipped a persistent `w-56` sidebar. That is correct for desktop and overflows a phone. When A2 first mounts `AppShell` on product routes, collapse it: `hidden md:flex` on the aside, a `md:hidden` menu button that opens F3's `Sheet` with the **same** `SideNav` / `OrgSwitcher`. Do not build a second nav. Recipe in [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md).
+
 ### State conventions
 
 Four states for every data-driven surface, decided now so screens don't each invent their own: **loading** (skeleton, matching final layout to avoid shift), **empty** (illustration, explanation, primary action), **error** (message plus retry), **partial** (data present but stale or degraded, shown with a subtle indicator rather than hidden).

@@ -279,6 +279,7 @@ The demo should be able to show, live:
 | **PCI**                 | The application never receives, stores, or logs a PAN. Sensitive card details are rendered exclusively through Airwallex-hosted iframes.                                                                                                                                                                                               |
 | **Secrets**             | Airwallex client ID and API key live server-side only, are never exposed to the client bundle, and are scoped per environment.                                                                                                                                                                                                         |
 | **Observability**       | Structured logs on every rule run and Airwallex call, correlated by request ID.                                                                                                                                                                                                                                                        |
+| **Layout**              | Desktop (`md`, 768px) is the product. Narrower widths must still show and reach everything — no page-level horizontal overflow, no overlapping chrome, no control hidden without a replacement. They do not have to look good. One breakpoint, four patterns: [`RESPONSIVENESS.md`](./RESPONSIVENESS.md). No mobile app.               |
 
 ## 10. Decisions
 
