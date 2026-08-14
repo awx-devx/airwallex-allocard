@@ -1,3 +1,4 @@
+export * from '@/client/lib/auth'
 export * from '@/client/lib/forms'
 export * from '@/client/lib/permissions'
 export * from '@/client/lib/hooks'

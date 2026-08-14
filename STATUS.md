@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A1 — Auth & onboarding
-**Active task:** A1.0 — Auth helpers + geo constants
-**Last green `pnpm verify`:** 2026-08-14 (F3 phase exit)
+**Active task:** A1.1 — Auth chrome (layouts + invite route group)
+**Last green `pnpm verify`:** 2026-08-15 (A1.0)
 **Blocked on:** _nothing_
 
 ---
@@ -27,10 +27,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | in progress  | 0 / 8   |
+| A     | A1 Auth & onboarding    | in progress  | 1 / 8   |
 | A     | A2–A9 Application       | not started  | —       |
 
-A1 **in progress** — `docs/phases/app/A1-TASKS.md` generated and locked policies approved (2026-08-15). Next: A1.0 helpers + geo. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A1 **in progress** — A1.0 helpers + geo landed (STOP for review). Next: A1.1 centred auth/onboarding/invite layouts. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,7 +61,9 @@ _None yet._
 
 ## Notes for the next session
 
-**A1-TASKS locked (2026-08-15).** Policies approved: no accept-from-fork endpoint (list + email link); geo combobox AU/CA/DE/FR/GB/HK/IE/JP/NL/NZ/SG/US + AUD/CAD/EUR/GBP/HKD/JPY/NZD/SGD/USD; product URL `/invite/[token]` (retarget B1 log in A1.4); preview 404 stays collapsed, distinguishable codes on accept only. AppShell collapse remains A2. Next: A1.0.
+**A1.0 done (2026-08-15).** `src/client/lib/auth.ts` + `src/shared/constants/geo.ts`. Invite `?invite=` wins over `returnTo`; `isSafeCallbackUrl` dest allowlist. STOP for helper-API review before A1.1 screens. `pnpm verify` green (1530 tests).
+
+**A1-TASKS locked (2026-08-15).** Policies approved: no accept-from-fork endpoint (list + email link); geo combobox AU/CA/DE/FR/GB/HK/IE/JP/NL/NZ/SG/US + AUD/CAD/EUR/GBP/HKD/JPY/NZD/SGD/USD; product URL `/invite/[token]` (retarget B1 log in A1.4); preview 404 stays collapsed, distinguishable codes on accept only. AppShell collapse remains A2.
 
 **F3 exit (2026-08-14).** Phase exit + `F3-ui-library.md` review checklist signed off. `pnpm verify` green (1505 tests).
 

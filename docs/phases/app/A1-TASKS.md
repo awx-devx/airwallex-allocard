@@ -178,7 +178,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ## Contracts first
 
-- [ ] **A1.0** — Auth helpers + geo constants (STOP for review)
+- [x] **A1.0** — Auth helpers + geo constants (STOP for review)
   - **Files:**
     - `src/shared/constants/geo.ts`
     - `src/shared/constants/geo.test.ts`
@@ -202,7 +202,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Pattern:** `src/client/api/errorBehaviour.ts` + `src/client/api/errorBehaviour.test.ts` (allowlist + exhaustive maps). Geo file style: `src/shared/constants/currency.ts`. `countryName`: `src/lib/format/country.ts`.
   - **STOP and get this reviewed before A1.1+.** Wrong allowlist or invite-query name after screens land is a rewrite.
   - **Accept:** `pnpm test client/lib/auth` and `pnpm test shared/constants/geo` — cover: unsafe `returnTo` (`//evil.com`, `https://evil.com`, `dashboard`) dropped; invite wins over `returnTo`; invalid invite tokens dropped; `isSafeCallbackUrl` rejects `/invite/../../x` and `/sign-in?returnTo=https://evil.com`; every invite `ErrorCode` in §6 mapped; country/currency sets exact.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Helpers in `src/client/lib/auth.ts` (re-exported from `src/client/lib/index.ts`); geo allowlist in `src/shared/constants/geo.ts`. Invite query wins over `returnTo`. STOP — review helper API before A1.1 screens.
 
 ---
 
