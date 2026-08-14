@@ -74,6 +74,12 @@ const eslintConfig = defineConfig([
                 'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
             },
           ],
+          patterns: [
+            {
+              group: ['@/server', '@/server/*'],
+              message: 'src/client and src/components may not import from src/server',
+            },
+          ],
         },
       ],
       'no-restricted-syntax': [

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** F3 — UI library
-**Active task:** F3.25 — Proofs + Track A walk
-**Last green `pnpm verify`:** 2026-08-14 (F3.24)
+**Active task:** F3 phase exit (stop — awaiting review)
+**Last green `pnpm verify`:** 2026-08-14 (F3.25)
 **Blocked on:** _nothing_
 
 ---
@@ -26,10 +26,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F0 Client foundation    | **complete** | 17 / 17 |
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | in progress  | 25 / 26 |
+| F     | F3 UI library           | in progress  | 26 / 26 |
 | A     | A1–A9 Application       | not started  | —       |
 
-F3 in progress. **F3.24 complete** — `/dev/ui` kitchen sink. Next: F3.25 proofs.
+F3 tasks complete. **F3.25 done** — token boundary + Track A walk. Stopped before phase exit.
 
 ---
 
@@ -59,6 +59,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**F3.25 done (2026-08-14).** Token boundary test; proofs observed then deleted. Track A walk: no new primitive. Stopped before phase exit.
 
 **F3.24 done (2026-08-14).** `/dev/ui` primitives in `sections/primitives.tsx`; patterns already in PatternGallery.
 

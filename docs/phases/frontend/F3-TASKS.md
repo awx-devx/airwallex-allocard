@@ -832,7 +832,7 @@ All amounts integer minor units.
 
 ### F3.25 — Proofs + Track A walk
 
-- [ ] **F3.25** — No hardcoded colours; a11y smoke; Track A primitive walk
+- [x] **F3.25** — No hardcoded colours; a11y smoke; Track A primitive walk
   - **Files:**
     - `src/components/tokens.boundary.test.ts`
     - temporary proof files deleted after
@@ -846,7 +846,16 @@ All amounts integer minor units.
     6. ESLint: prove `src/components/_server_proof.ts` importing `@/server/env` fails lint; delete after (copy F0.15).
   - **Pattern:** F0.15 / F2.10 boundary proofs. Track A table in this file’s locked policies.
   - **Accept:** Proof failures observed; proofs deleted; `pnpm test components/tokens.boundary` (or chosen name) green; `pnpm lint` green; `pnpm typecheck`
-  - **Notes:** _{filled in on completion — include the A-walk file list}_
+  - **Notes:** Color proof `_color_proof.tsx` (`bg-[#fff]`) failed then deleted. Server proof `_server_proof.ts` failed lint then deleted (UI `no-restricted-imports` now keeps `@/server` alongside the `call()` ban). One spinner, one skeleton; no `toLocaleDateString` in patterns. Dialog/Sheet Radix focus trap; `/dev/ui` icon button has `aria-label="Add member"`; `ToastProvider` keeps `aria-live="polite"`. No a11y exceptions. Track A walk — no gap:
+    - A1: `button.tsx`, `input.tsx`, `label.tsx`, `form.tsx`, `checkbox.tsx`, `card.tsx`, `alert.tsx`, `EmptyState.tsx`, `ErrorState.tsx`
+    - A2: `DataTable.tsx`, `StatusBadge.tsx`, `StepWizard.tsx`, `EmptyState.tsx`, `PermissionGate.tsx`, `MoneyDisplay.tsx`, `BudgetBar.tsx`
+    - A3: `DataTable.tsx`, `PermissionGate.tsx`, `StatusBadge.tsx`, `BudgetBar.tsx`, `Timeline.tsx`, `ConfirmDialog.tsx`, `tabs.tsx`
+    - A4: `BudgetBar.tsx`, `MoneyDisplay.tsx`, `AttributeValue.tsx`, `DataTable.tsx`, `ConfirmDialog.tsx`, `FormulaHighlight.tsx`
+    - A5: `CardVisual.tsx`, `LimitMeter.tsx`, `StatusBadge.tsx`, `ConfirmDialog.tsx`, `DataTable.tsx`, `DiffView.tsx`
+    - A6: `RuleSentence.tsx`, `FormulaHighlight.tsx`, `AttributeValue.tsx`, `DiffView.tsx`, `DataTable.tsx`, `StatusBadge.tsx`
+    - A7: `DataTable.tsx`, `MoneyDisplay.tsx`, `StatusBadge.tsx`, `ConfirmDialog.tsx`, `BudgetBar.tsx`
+    - A8: `Timeline.tsx`, `DataTable.tsx`, `MoneyDisplay.tsx`, `StatusBadge.tsx`, `EmptyState.tsx`
+    - A9: `DiffView.tsx`, `Timeline.tsx`, `StepWizard.tsx`, `ConfirmDialog.tsx`, `DataTable.tsx`, `MoneyDisplay.tsx`
 
 ---
 
