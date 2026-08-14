@@ -43,18 +43,9 @@ export function AppShell({
   )
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside
-        style={{
-          width: 220,
-          borderRight: '1px solid #ddd',
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700 }}>Allocard</div>
+    <div className="flex min-h-screen bg-background text-foreground">
+      <aside className="flex w-56 shrink-0 flex-col gap-4 border-r border-border p-4">
+        <div className="text-sm font-semibold">Allocard</div>
         <OrgSwitcher
           memberships={memberships}
           activeOrgId={activeOrgId}
@@ -62,24 +53,15 @@ export function AppShell({
         />
         <SideNav items={items} />
       </aside>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <header
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '1px solid #ddd',
-            padding: '12px 16px',
-            gap: 12,
-          }}
-        >
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
           <ProjectContext project={project} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="flex items-center gap-3">
             <ApprovalsBadge count={approvalsCount} />
             <UserMenu user={user} onSignOut={onSignOut ?? (() => undefined)} />
           </div>
         </header>
-        <main style={{ padding: 16, flex: 1 }}>{children}</main>
+        <main className="flex-1 p-4">{children}</main>
       </div>
     </div>
   )

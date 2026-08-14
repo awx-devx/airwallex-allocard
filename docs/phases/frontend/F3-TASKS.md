@@ -798,7 +798,7 @@ All amounts integer minor units.
 
 ### F3.23 — Restyle AppShell
 
-- [ ] **F3.23** — App shell onto tokens
+- [x] **F3.23** — App shell onto tokens
   - **Files:**
     - `src/client/shell/AppShell.tsx`
     - `src/client/shell/SideNav.tsx`
@@ -813,7 +813,7 @@ All amounts integer minor units.
     3. No `fetch`, no `call()`, no `@/server/*`.
   - **Pattern:** F0.12 files + F3 primitives. `/dev/shell` is the regression gallery.
   - **Accept:** `pnpm typecheck && pnpm build`
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Token Tailwind; Select/Avatar/DropdownMenu/Badge/StatusBadge. ProjectStatus → StatusBadge; unknown status muted. `/dev/shell` still works.
 
 ### F3.24 — Kitchen sink complete
 

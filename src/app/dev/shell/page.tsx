@@ -20,15 +20,15 @@ export default function DevShellPage() {
       approvalsCount={mockShellData.approvalsCount}
       project={{ ...mockShellData.project }}
     >
-      <h1>Dev shell gallery</h1>
+      <h1 className="mb-6 text-xl font-medium">Dev shell gallery</h1>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Loading</h2>
+      <section className="mb-6 space-y-2">
+        <h2 className="text-lg font-medium">Loading</h2>
         <LoadingState rows={4} />
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Empty</h2>
+      <section className="mb-6 space-y-2">
+        <h2 className="text-lg font-medium">Empty</h2>
         <EmptyState
           title="No projects yet"
           description="Create a project to get started."
@@ -36,20 +36,20 @@ export default function DevShellPage() {
         />
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Error</h2>
+      <section className="mb-6 space-y-2">
+        <h2 className="text-lg font-medium">Error</h2>
         <ErrorState message="Upstream error" onRetry={() => undefined} />
       </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Partial (fresh)</h2>
+      <section className="mb-6 space-y-2">
+        <h2 className="text-lg font-medium">Partial (fresh)</h2>
         <PartialState observedAt={FRESH_OBSERVED} asOf={AS_OF}>
           <p>Headcount: 12</p>
         </PartialState>
       </section>
 
-      <section>
-        <h2>Partial (stale)</h2>
+      <section className="space-y-2">
+        <h2 className="text-lg font-medium">Partial (stale)</h2>
         <PartialState observedAt={STALE_OBSERVED} asOf={AS_OF}>
           <p>Headcount: 12</p>
         </PartialState>
