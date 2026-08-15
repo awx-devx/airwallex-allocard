@@ -304,7 +304,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.1 — AppShell collapse (first product-shell task)
 
-- [ ] **A2.1** — Sidebar `hidden md:flex`; same nav in F3 `Sheet`; live `useMe` / `useApprovalCount`
+- [x] **A2.1** — Sidebar `hidden md:flex`; same nav in F3 `Sheet`; live `useMe` / `useApprovalCount`
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit)
     - `src/client/shell/AppShellFrame.tsx` (create, `'use client'`)
@@ -322,7 +322,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** wrap vs Sheet. Desktop `md:flex` aside; narrow Sheet `side="left"`. Header + main `min-w-0` unchanged. No `sm:` / `lg:`.
   - **Pattern:** snippet in `docs/RESPONSIVENESS.md` §1. `Sheet` API: `src/components/ui/sheet.tsx` (F3.6). `AppShell` props: `src/client/shell/AppShell.tsx` (F0.12 / F3.23). Live session: `useMe` in `src/client/hooks/useSession.ts`; `useApprovalCount` in `src/client/hooks/useRequests.ts`. Sign-out: `src/app/(auth)/sign-in/SignInForm.tsx` uses `next-auth/react` (A1.3) — copy the import style, not the form.
   - **Accept:** `pnpm verify`. 375px: aside not in layout flow (no page-level horizontal scrollbar from `w-56`); Menu button visible; opening Sheet shows Dashboard/Projects links and OrgSwitcher; those links reachable. 768px: aside visible; Menu button not shown; no Sheet required to navigate. `/dev/shell` still renders.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Aside `hidden … md:flex`; Menu + left `Sheet` reuses `OrgSwitcher`/`SideNav`. Sheet closes when pathname changes (open tied to path, not `useEffect` setState). `AppShellFrame` wires `useMe` / `useActiveOrg` / `useApprovalCount` / `signOut({ callbackUrl: '/sign-in' })`. `/dev/shell` still uses `mockShellData`. `pnpm verify` green (1561 tests).
 
 ### A2.2 — Dashboard
 
