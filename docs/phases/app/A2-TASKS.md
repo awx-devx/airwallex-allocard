@@ -374,7 +374,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.4 — Wizard shell + details
 
-- [ ] **A2.4** — `/projects/new` details step (create DRAFT, PATCH, resume)
+- [x] **A2.4** — `/projects/new` details step (create DRAFT, PATCH, resume)
   - **Files:**
     - `src/app/(app)/projects/new/page.tsx` (create)
     - `src/app/(app)/projects/new/ProjectWizard.tsx` (`'use client'`)
@@ -397,7 +397,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** wizard rail `flex-wrap` (already in `StepWizard`). Step body `flex flex-col gap-4` one column. No `md:grid`. No Sheet. DateRangePicker trigger `w-full`.
   - **Pattern:** A1.6 `CreateOrganizationForm.tsx` (useZodForm + Combobox + Alert). `DateRangePicker`: `src/components/ui/date-range-picker.tsx` (F3.5). `StepWizard`: `src/components/patterns/StepWizard.tsx` (F3.21) + `WIZARD_STEPS` in PatternGallery. `createProjectInput`: `src/shared/schemas/project.ts`. Hooks: `useCreateProject` / `useUpdateProject` / `useCreateWorkstream` in `src/client/hooks/useProjects.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; Next / Cancel / Add workstream reachable; step rail wraps instead of overflowing the page. Creating without `draftId` produces a `DRAFT` and the URL gains `draftId`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `/projects/new` StepWizard; details create/PATCH/resume; later steps stub `{label} — not built yet` with Next disabled on required unfinished ids. Dirty cancel ConfirmDialog. `pnpm verify` green (1561 tests).
 
 ### A2.5 — Budget step
 

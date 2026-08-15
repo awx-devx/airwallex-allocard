@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.4 — Wizard shell + details
-**Last green `pnpm verify`:** 2026-08-15 (A2.3)
+**Active task:** A2.5 — Budget step
+**Last green `pnpm verify`:** 2026-08-15 (A2.4)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 4 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 5 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — A2.3 project list done. Next = **Wizard details** (A2.4). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.4 wizard details done. Next = **Budget step** (A2.5). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.4 done (2026-08-15).** `/projects/new` details step creates/PATCHes DRAFT, resumes via `draftId`, dirty Cancel ConfirmDialog. Later steps stubbed. `pnpm verify` green (1561 tests). Next: **A2.5** budget step.
 
 **A2.3 done (2026-08-15).** `/projects` DataTable with URL filters (no client refilter), `overflow-x-auto`, gated Create, §8 row actions. `pnpm verify` green (1561 tests). Next: **A2.4** wizard details.
 
