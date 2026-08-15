@@ -210,7 +210,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.1 — Auth chrome (layouts + invite route group)
 
-- [ ] **A1.1** — Centred column on auth / onboarding / invite layouts
+- [x] **A1.1** — Centred column on auth / onboarding / invite layouts
   - **Files:**
     - `src/app/(auth)/layout.tsx` (edit)
     - `src/app/(onboarding)/layout.tsx` (edit)
@@ -226,7 +226,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack, centred `max-w-md w-full px-4`. No `md:grid`. No `Sheet`.
   - **Pattern:** `src/app/(auth)/layout.tsx` and `src/app/(onboarding)/layout.tsx` (F0.11) for guards; chrome is the snippet in policy §3 / `docs/RESPONSIVENESS.md` “Auth screens (A1)”. ESLint copy: `eslint.config.mjs` `(app)` block (F0.15 / F3.0).
   - **Accept:** `pnpm lint && pnpm typecheck`. 375px and 768px: no page-level horizontal scrollbar on `/sign-in` placeholder (inner column ≤ 448px + `px-4`). Primary actions (when they exist in later tasks) stay inside the column.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Centred `max-w-md px-4` on `(auth)` / `(onboarding)` / `(invite)`. Invite group has no guard. `call()` + `fetch` bans copied onto those globs; `@/server` still allowed.
 
 ### A1.2 — Sign-up
 

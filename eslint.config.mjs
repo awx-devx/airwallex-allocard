@@ -99,6 +99,55 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: [
+      'src/app/(auth)/**/*.{ts,tsx}',
+      'src/app/(onboarding)/**/*.{ts,tsx}',
+      'src/app/(invite)/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@/client/api',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+            {
+              name: '@/client/api/client',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+            {
+              name: '@/client/api/index',
+              importNames: ['call'],
+              message:
+                'Use a domain hook from @/client/hooks — do not import call() in UI surfaces',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+        {
+          selector: "CallExpression[callee.object.name='window'][callee.property.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+        {
+          selector: "CallExpression[callee.object.name='globalThis'][callee.property.name='fetch']",
+          message: 'Use call() from @/client/api — do not call fetch directly',
+        },
+      ],
+    },
+  },
 ])
 
 export default eslintConfig
