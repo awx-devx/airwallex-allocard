@@ -33,7 +33,7 @@ import { createProjectInput } from '@/shared/schemas/project'
 import type { Project, ProjectDetail } from '@/shared/types/project'
 
 export type DetailsStepHandle = {
-  submit: () => Promise<boolean>
+  submit: () => Promise<string | null>
 }
 
 export type DetailsStepProps = {
@@ -98,8 +98,8 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
     })
   }, [form, project, user.id])
 
-  async function submit(): Promise<boolean> {
-    if (launched) return false
+  async function submit(): Promise<string | null> {
+    if (launched) return null
     setErrorMessage(null)
     const values = form.getValues()
     try {
@@ -116,7 +116,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
           ...(values.endDate ? { endDate: values.endDate } : {}),
         })
         router.replace(draftWizardHref(created.id))
-        return true
+        return created.id
       }
       await update.mutateAsync({
         id: draftId,
@@ -129,14 +129,14 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
           endDate: values.endDate ?? null,
         },
       })
-      return true
+      return draftId
     } catch (error) {
       if (isApiError(error) && error.code === ErrorCode.VALIDATION_FAILED) {
         applyServerErrorsFromApiError(form as unknown as UseFormReturn<FieldValues>, error)
-        return false
+        return null
       }
       setErrorMessage(isApiError(error) ? error.message : 'Unable to save project')
-      return false
+      return null
     }
   }
 

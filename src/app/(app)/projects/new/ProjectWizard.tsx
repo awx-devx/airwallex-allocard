@@ -18,6 +18,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { StepWizard } from '@/components/patterns/StepWizard'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { DetailsStep, type DetailsStepHandle } from '@/app/(app)/projects/new/steps/DetailsStep'
+import { BudgetStep, type BudgetStepHandle } from '@/app/(app)/projects/new/steps/BudgetStep'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 
@@ -27,14 +28,19 @@ export function ProjectWizard() {
   const router = useRouter()
   const params = useSearchParams()
   const me = useMe()
-  const draftId = parseDraftId({ draftId: params.get('draftId') ?? undefined })
-  const projectQuery = useProject(draftId ?? '')
   const detailsRef = useRef<DetailsStepHandle>(null)
+  const budgetRef = useRef<BudgetStepHandle>(null)
   const [activeStepId, setActiveStepId] = useState('details')
+  const [localDraftId, setLocalDraftId] = useState<string | null>(null)
   const [detailsValid, setDetailsValid] = useState(false)
+  const [budgetValid, setBudgetValid] = useState(false)
   const [detailsDirty, setDetailsDirty] = useState(false)
+  const [budgetDirty, setBudgetDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
+  const urlDraftId = parseDraftId({ draftId: params.get('draftId') ?? undefined })
+  const draftId = urlDraftId ?? localDraftId
+  const projectQuery = useProject(draftId ?? '')
 
   const project = projectQuery.data
   const launched = project !== undefined && project.status !== ProjectStatus.DRAFT
@@ -43,6 +49,7 @@ export function ProjectWizard() {
     const step = WIZARD_STEPS.find((item) => item.id === id)
     if (step?.optional) return true
     if (id === 'details') return detailsValid && !saving && !launched
+    if (id === 'budget') return budgetValid && !saving && !launched && draftId !== null
     return false
   }
 
@@ -50,8 +57,28 @@ export function ProjectWizard() {
     if (activeStepId === 'details') {
       setSaving(true)
       try {
-        const ok = await detailsRef.current?.submit()
-        if (ok) setActiveStepId('budget')
+        const id = await detailsRef.current?.submit()
+        if (id) {
+          setLocalDraftId(id)
+          setActiveStepId('budget')
+        }
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
+    if (activeStepId === 'budget') {
+      if (!draftId) {
+        setActiveStepId('details')
+        return
+      }
+      setSaving(true)
+      try {
+        const ok = await budgetRef.current?.submit()
+        if (ok) {
+          const next = nextWizardStepId('budget')
+          if (next) setActiveStepId(next)
+        }
       } finally {
         setSaving(false)
       }
@@ -71,7 +98,7 @@ export function ProjectWizard() {
   }
 
   function handleCancel() {
-    if (detailsDirty) {
+    if (detailsDirty || budgetDirty) {
       setDiscardOpen(true)
       return
     }
@@ -119,7 +146,7 @@ export function ProjectWizard() {
         steps={STEPS}
         activeStepId={activeStepId}
         isStepValid={isStepValid}
-        isDirty={detailsDirty}
+        isDirty={detailsDirty || budgetDirty}
         onNext={() => void handleNext()}
         onBack={handleBack}
         onCancel={handleCancel}
@@ -134,6 +161,16 @@ export function ProjectWizard() {
             onValidChange={setDetailsValid}
             onDirtyChange={setDetailsDirty}
           />
+        ) : activeStepId === 'budget' && draftId ? (
+          <BudgetStep
+            ref={budgetRef}
+            draftId={draftId}
+            project={project}
+            onValidChange={setBudgetValid}
+            onDirtyChange={setBudgetDirty}
+          />
+        ) : activeStepId === 'budget' && !draftId ? (
+          <p>Budget needs a draft — go back to Details.</p>
         ) : (
           <p>{stepLabel} — not built yet</p>
         )}

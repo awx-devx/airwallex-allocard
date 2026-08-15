@@ -401,7 +401,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.5 — Budget step
 
-- [ ] **A2.5** — Wizard `budget` step (`PUT` approved amount)
+- [x] **A2.5** — Wizard `budget` step (`PUT` approved amount)
   - **Files:**
     - `src/app/(app)/projects/new/steps/BudgetStep.tsx` (`'use client'`)
     - `src/app/(app)/projects/new/ProjectWizard.tsx` (edit — render BudgetStep; `isStepValid('budget')`)
@@ -417,7 +417,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** one column `flex flex-col gap-4`. `BudgetBar` already stacks figures — do not add breakpoints. No `type="number"`.
   - **Pattern:** F3.3 money input rule on `src/components/ui/input.tsx` header. `parseMoneyInput` / `formatMoney`: `src/lib/money.ts`. `BudgetBar`: `src/components/patterns/BudgetBar.tsx`. `useSetBudget`: `src/client/hooks/useBudget.ts`. `putBudgetInput`: `src/shared/schemas/budget.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: amount field, Next, and Back reachable; no page-level horizontal scrollbar. JPY (0-decimal) still goes through `parseMoneyInput` — no `.` fraction.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Budget step PUTs `approvedAmount` + org `baseCurrency` via `parseMoneyInput`; Next disabled until amount > 0 or existing `hasBudgetFrom`. `pnpm verify` green (1561 tests).
 
 ### A2.6 — Card structure, deferred steps, review
 
