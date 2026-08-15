@@ -348,7 +348,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.3 — Project list + table overflow
 
-- [ ] **A2.3** — `/projects` + `overflow-x-auto` on `DataTable` root
+- [x] **A2.3** — `/projects` + `overflow-x-auto` on `DataTable` root
   - **Files:**
     - `src/components/patterns/DataTable.tsx` (edit — add `overflow-x-auto` on the table wrapper so A3–A9 inherit)
     - `src/app/(app)/projects/page.tsx` (create)
@@ -370,7 +370,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** table scrolls **inside**; page does not. Toolbar `flex-wrap`. No `md:grid`. No second card-list layout below `md`.
   - **Pattern:** `DataTable` `src/components/patterns/DataTable.tsx` (F3.22) + kitchen sink in `src/app/dev/ui/PatternGallery.tsx`. `Select`: `src/components/ui/select.tsx`. `formatDate`: `src/lib/dates.ts`. Form/filter URL: helpers from A2.0. Transition hook: `useTransitionProject` in `src/client/hooks/useProjects.ts`. `PermissionGate`: `src/components/patterns/PermissionGate.tsx`.
   - **Accept:** `pnpm verify` and `pnpm test components/patterns/dataTable`. 375px: page has no horizontal scrollbar; table may scroll inside; Create / filters / pagination reachable (wrap or in-table scroll). 768px: same, aside visible from A2.1. `/projects?status=ACTIVE` must hit the API with `status=ACTIVE` (no extra client filter).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** DataTable wraps `<Table>` in `overflow-x-auto`; toolbar `flex-wrap`. List filters are URL search params → `useProjects` with no client refilter. Status/cost-centre Selects, gated Create, §8 row actions + cancel ConfirmDialog. `pnpm verify` green (1561 tests).
 
 ### A2.4 — Wizard shell + details
 
