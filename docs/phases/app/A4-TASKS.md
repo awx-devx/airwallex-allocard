@@ -491,7 +491,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.8 — Wizard link
 
-- [ ] **A4.8** — Budget step points at categories
+- [x] **A4.8** — Budget step points at categories
   - **Files:**
     - `src/app/(app)/projects/new/steps/BudgetStep.tsx` (edit)
   - **Do:**
@@ -501,7 +501,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** one column (already). No Sheet. No `md:grid`.
   - **Pattern:** A2.5 this same file. Href helper from A4.0. A3 Cancel-as-Link: `src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx`.
   - **Accept:** `pnpm verify`. 375px and 768px: wizard Next and the new Link reachable; no page-level horizontal scrollbar. `BudgetStep.tsx` still has no `type="number"` and no `parseFloat`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Wizard budget step Link to categories when `draftId` is set. `pnpm verify` green (1618 tests).
 
 ### A4.9 — Don’t-break + invariant proofs
 

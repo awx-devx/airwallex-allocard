@@ -3,15 +3,18 @@
 /**
  * A4 may replace this step with categories and formulas. A2 only PUTs approvedAmount + currency.
  */
+import Link from 'next/link'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useBudget, useSetBudget } from '@/client/hooks/useBudget'
 import { useMe } from '@/client/hooks/useSession'
+import { budgetCategoriesHref } from '@/client/lib/budget'
 import { hasBudgetFrom } from '@/client/lib/projects'
 import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { currencyExponent } from '@/shared/constants/currency'
@@ -174,6 +177,14 @@ export const BudgetStep = forwardRef<BudgetStepHandle, BudgetStepProps>(function
           utilisationPct={projection.utilisationPct}
           overCommitted={projection.overCommitted}
         />
+      ) : null}
+      {draftId.length >= 1 ? (
+        <Link
+          href={budgetCategoriesHref(draftId)}
+          className={buttonVariants({ variant: 'outline' })}
+        >
+          Add categories on the project budget tab.
+        </Link>
       ) : null}
     </div>
   )
