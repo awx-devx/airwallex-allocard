@@ -310,7 +310,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.6 — Create organisation
 
-- [ ] **A1.6** — `/onboarding/create-organization`
+- [x] **A1.6** — `/onboarding/create-organization`
   - **Files:**
     - `src/app/(onboarding)/onboarding/create-organization/page.tsx` (create)
     - `src/app/(onboarding)/onboarding/create-organization/CreateOrganizationForm.tsx` (`'use client'`)
@@ -328,7 +328,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack `flex flex-col gap-4`. Comboboxes full width of the `max-w-md` column (`Combobox` already `w-full` trigger). Chips `flex flex-wrap gap-2`. No `md:grid`. No `Sheet`. Money is not collected here (base currency is a code, not an amount) — do not use `type="number"`.
   - **Pattern:** FormField demo `src/app/dev/ui/sections/primitives.tsx`. Combobox `src/components/ui/combobox.tsx` (`ComboboxOption`: `{ value: string, label: string }`). `createOrganizationInput` `src/shared/schemas/organization.ts`. Hook `useCreateOrganization` `src/client/hooks/useOrganizations.ts`. Geo `src/shared/constants/geo.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; Create / Add cost centre reachable; Combobox popover not required to look good, but the trigger must be visible without sideways scroll.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Form omits slug. Country/currency comboboxes use geo allowlist. Session `update()` before `/dashboard`.
 
 ### A1.7 — Gate + password proofs
 

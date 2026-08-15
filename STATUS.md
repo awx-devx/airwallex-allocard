@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A1 — Auth & onboarding
-**Active task:** A1.6 — Create organisation
-**Last green `pnpm verify`:** 2026-08-15 (A1.5)
+**Active task:** A1.7 — Gate + password proofs
+**Last green `pnpm verify`:** 2026-08-15 (A1.6)
 **Blocked on:** _nothing_
 
 ---
@@ -27,10 +27,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | in progress  | 6 / 8   |
+| A     | A1 Auth & onboarding    | in progress  | 7 / 8   |
 | A     | A2–A9 Application       | not started  | —       |
 
-A1 **in progress** — A1.5 onboarding fork landed. Next: A1.6 create organisation. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A1 **in progress** — A1.6 create organisation landed. Next: A1.7 gate + password proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -60,6 +60,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A1.6 done (2026-08-15).** Create-org form with geo comboboxes; `update()` before dashboard.
 
 **A1.5 done (2026-08-15).** `/onboarding` lists pending invites without accept; create is secondary. Client redirect if already onboarded.
 
