@@ -17,6 +17,8 @@ import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { projectReadyForApproval } from '@/shared/schemas/project'
 import type { Project, TransitionProjectInput } from '@/shared/types/project'
 
+export { permissionForTransition } from '@/shared/projectLifecycle'
+
 function zodToFieldErrors(error: z.ZodError): FieldErrors {
   const fieldErrors: FieldErrors = {}
   for (const issue of error.issues) {
@@ -25,26 +27,6 @@ function zodToFieldErrors(error: z.ZodError): FieldErrors {
     fieldErrors[key] = [...existing, issue.message]
   }
   return fieldErrors
-}
-
-/**
- * Permission required to transition *to* the given status.
- * Submit / draft-cancel → edit; approve+launch → request.approve; lifecycle end → close.
- */
-export function permissionForTransition(to: ProjectStatus): string {
-  switch (to) {
-    case ProjectStatus.PENDING_APPROVAL:
-    case ProjectStatus.CANCELLED:
-      return 'project.edit'
-    case ProjectStatus.ACTIVE:
-      return 'request.approve'
-    case ProjectStatus.CLOSING:
-    case ProjectStatus.CLOSED:
-    case ProjectStatus.ARCHIVED:
-      return 'project.close'
-    default:
-      return 'project.edit'
-  }
 }
 
 async function applyReadyForApproval(ctx: OrgContext, project: Project): Promise<void> {

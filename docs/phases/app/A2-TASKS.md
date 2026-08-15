@@ -256,7 +256,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ## Contracts first
 
-- [ ] **A2.0** — Project helpers + shared lifecycle (STOP for review)
+- [x] **A2.0** — Project helpers + shared lifecycle (STOP for review)
   - **Files:**
     - `src/shared/projectLifecycle.ts` (create)
     - `src/shared/projectLifecycle.test.ts` (create)
@@ -296,7 +296,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Pattern:** `src/client/lib/auth.ts` + `src/client/lib/auth.test.ts` (A1.0 allowlists). Lifecycle move: `src/shared/access/scope.ts` (F2 extracted pure server helpers; server re-imports). `canTransition` source: `src/server/services/projects/transitions.ts`. `permissionForTransition` source: `src/server/services/projects/transition.ts`. `listProjectsQuery`: `src/shared/schemas/project.ts`.
   - **STOP and get this reviewed before A2.1+.** Wrong launch graph or create-gate after screens land is a rewrite.
   - **Accept:** `pnpm test client/lib/projects` and `pnpm test shared/projectLifecycle` and `pnpm test projects/transitions` — cover: every `(from, to)` pair still matches the server matrix; `ACTIVE → CLOSING` is **not** ok; OWNER + empty `me.projects` **can** create; MEMBER without `project.create` **cannot**; unsafe/unknown list params dropped; `draftId` arrays use `[0]`; `sortingToProjectSort` ignores unknown column ids; `isReadyForApprovalInput` false when `ownerId` or dates null or `hasBudget` false; `cardStructureReviewLines` length 4.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Helpers in `src/shared/projectLifecycle.ts` (server `transitions.ts` re-exports) and `src/client/lib/projects.ts`. Graph unchanged; OWNER + empty `me.projects` can create. `pnpm verify` green (1561 tests).
 
 ---
 

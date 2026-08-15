@@ -39,6 +39,7 @@ export default defineConfig({
             'src/components/**/*.test.ts',
             'src/shared/constants/**/*.test.ts',
             'src/shared/access/**/*.test.ts',
+            'src/shared/projectLifecycle.test.ts',
           ],
         },
       },

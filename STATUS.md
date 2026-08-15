@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.0 — project helpers + shared lifecycle (policies locked)
-**Last green `pnpm verify`:** 2026-08-15 (A1 phase exit)
+**Active task:** A2.1 — AppShell collapse (`hidden md:flex` aside + Sheet)
+**Last green `pnpm verify`:** 2026-08-15 (A2.0)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 0 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 1 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — `A2-TASKS.md` locked. First implementation = **A2.0 helpers**. First product-shell task after that = **AppShell collapse** (A2.1). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.0 helpers done. Next = **AppShell collapse** (A2.1). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.0 done (2026-08-15).** `canTransition` / `permissionForTransition` in `src/shared/projectLifecycle.ts`; screen helpers in `src/client/lib/projects.ts`. Server re-exports; `pnpm verify` green (1561 tests). Next: **A2.1** AppShell collapse (`hidden md:flex` aside + `Sheet`).
 
 **A2-TASKS locked (2026-08-15).** Policies approved: Launch is two hops (`DRAFT → PENDING_APPROVAL` then `→ ACTIVE`), no new graph edge; `canTransition` / `permissionForTransition` relocate to `src/shared/projectLifecycle.ts`; create-gate uses org role + `PermissionGateView`; A2 wizard owns details/budget-minimum/card-structure-booleans/review/launch; deferred steps are explicit “lands in A{n}” alerts; review shows card kinds + budget, not invented limits; no Settings tab; A2.7 may add `nextLabel` on `StepWizard`. Next: **A2.0** helpers, then A2.1 AppShell collapse.
 
