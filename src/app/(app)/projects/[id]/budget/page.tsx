@@ -1,5 +1,5 @@
-import { ComingSoonTab } from '@/app/(app)/projects/[id]/ComingSoonTab'
+import { BudgetHome } from '@/app/(app)/projects/[id]/budget/BudgetHome'
 
 export default function ProjectBudgetPage() {
-  return <ComingSoonTab tab="Budget" phase="A4" />
+  return <BudgetHome />
 }

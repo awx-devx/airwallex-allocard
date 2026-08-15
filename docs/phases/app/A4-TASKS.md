@@ -375,7 +375,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.2 — Budget home (read)
 
-- [ ] **A4.2** — `/projects/[id]/budget` four figures, states, recent entries
+- [x] **A4.2** — `/projects/[id]/budget` four figures, states, recent entries
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/page.tsx` (replace `ComingSoonTab`)
     - `src/app/(app)/projects/[id]/budget/BudgetHome.tsx` (`'use client'`)
@@ -392,7 +392,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** stack. No `md:grid` on the page (figures are inside BudgetBar). Toolbar `flex-wrap`. Table scrolls **inside**; page does not. No Sheet.
   - **Pattern:** A3.1 `src/app/(app)/projects/[id]/ProjectOverview.tsx`. DataTable: A2.3 `src/app/(app)/projects/ProjectList.tsx`. Hooks: `src/client/hooks/useBudget.ts` (B4). `BudgetBar` `src/components/patterns/BudgetBar.tsx`. `MoneyDisplay` F3.10.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; four figures visible by vertical scroll (2×2 below `md`); pending-CR `Review requests` reachable when shown; table may scroll inside. `BudgetHome.tsx` does not contain `parseFloat` or `type="number"`. No `PAN` / `cvv` / `card_number`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Read-only home: `BudgetBar` passthrough, over-committed + pending-CR alerts, entries DataTable. Mutations stubbed TODO(A4.3). `pnpm verify` green (1618 tests).
 
 ### A4.3 — Set approved, adjust, limits moved
 
