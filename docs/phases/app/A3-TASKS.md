@@ -465,7 +465,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.5 — Edit / remove member
 
-- [ ] **A3.5** — People row Edit `Sheet` + Remove + last-admin gate
+- [x] **A3.5** — People row Edit `Sheet` + Remove + last-admin gate
   - **Files:**
     - `src/app/(app)/projects/[id]/people/PeopleList.tsx` (edit — add actions)
     - `src/app/(app)/projects/[id]/people/EditMemberSheet.tsx` (`'use client'`)
@@ -478,7 +478,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** wrap vs Sheet. Sheet `side="right"`; body `flex flex-col gap-4 min-w-0`. Do not `hidden` Edit on narrow. Toolbar still `flex-wrap`.
   - **Pattern:** A2.1 Sheet usage in `src/client/shell/AppShell.tsx` (`Sheet` / `SheetContent` / `SheetHeader` / `SheetTitle`). ConfirmDialog: A2.3 cancel on `ProjectList.tsx`. Hooks: `useUpdateMember` / `useRemoveMember` `src/client/hooks/useMembers.ts`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/access`. 375px and 768px: Edit/Remove reachable; Sheet does not force page-level horizontal scroll; last manager’s Remove is visible but disabled with the locked tooltip.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Edit Sheet + live preview; last access manager Remove disabled with locked tooltip. `pnpm verify` green (1589 tests).
 
 ### A3.6 — Settings chrome + SideNav
 

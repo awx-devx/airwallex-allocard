@@ -2,23 +2,29 @@
 
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useCardholders, useProjectCards } from '@/client/hooks/useCards'
-import { useAccessHistory, useProjectMembers } from '@/client/hooks/useMembers'
+import { useAccessHistory, useProjectMembers, useRemoveMember } from '@/client/hooks/useMembers'
 import { useCan } from '@/client/lib/permissions/useCan'
 import {
   addMemberDenialMessage,
   addMemberHref,
+  isLastAccessManager,
+  lastAccessManagerDenialMessage,
   memberAccessState,
   memberHasCards,
   SCOPE_LEVEL_LABELS,
   toAccessHistoryTimelineItem,
 } from '@/client/lib/access'
+import { EditMemberSheet } from '@/app/(app)/projects/[id]/people/EditMemberSheet'
+import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Timeline } from '@/components/patterns/Timeline'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Permission } from '@/shared/enums/permissions'
@@ -50,8 +56,12 @@ export function PeopleList() {
   const cards = useProjectCards(id, { page: 1, pageSize: 100 })
   const cardholders = useCardholders({ page: 1, pageSize: 100 })
   const history = useAccessHistory(id)
+  const removeMember = useRemoveMember()
   const { can } = useCan(id)
   const now = new Date()
+  const [editing, setEditing] = useState<ProjectMemberDetail | null>(null)
+  const [removing, setRemoving] = useState<ProjectMemberDetail | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   if (!id) {
     return <ErrorState message="This project is not available." />
@@ -115,11 +125,56 @@ export function PeopleList() {
           </Link>
         ),
     },
-    // TODO(A3.5): Edit / Remove actions
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: (row) => {
+        const lastManager = isLastAccessManager(members.data ?? [], row.userId, now)
+        return (
+          <div className="flex flex-wrap gap-2">
+            <PermissionGateView allowed={canManage} denialMessage={addMemberDenialMessage()}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!canManage}
+                onClick={() => setEditing(row)}
+              >
+                Edit
+              </Button>
+            </PermissionGateView>
+            {lastManager ? (
+              <PermissionGateView allowed={false} denialMessage={lastAccessManagerDenialMessage()}>
+                <Button type="button" size="sm" variant="outline" disabled>
+                  Remove
+                </Button>
+              </PermissionGateView>
+            ) : (
+              <PermissionGateView allowed={canManage} denialMessage={addMemberDenialMessage()}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!canManage}
+                  onClick={() => setRemoving(row)}
+                >
+                  Remove
+                </Button>
+              </PermissionGateView>
+            )}
+          </div>
+        )
+      },
+    },
   ]
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
+      {actionError ? (
+        <Alert variant="destructive">
+          <AlertDescription>{actionError}</AlertDescription>
+        </Alert>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         <AddMemberControl projectId={id} />
       </div>
@@ -163,6 +218,35 @@ export function PeopleList() {
           <Timeline items={historyItems} />
         )}
       </div>
+      <EditMemberSheet
+        projectId={id}
+        member={editing}
+        members={members.data ?? []}
+        open={editing !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null)
+        }}
+      />
+      <ConfirmDialog
+        open={removing !== null}
+        onOpenChange={(open) => {
+          if (!open) setRemoving(null)
+        }}
+        title={removing ? `Remove ${removing.user.name} from this project?` : 'Remove member?'}
+        description="They will lose project access immediately."
+        confirmLabel="Remove"
+        variant="destructive"
+        loading={removeMember.isPending}
+        onConfirm={() => {
+          if (removing === null) return
+          const row = removing
+          setRemoving(null)
+          setActionError(null)
+          void removeMember.mutateAsync({ id, userId: row.userId }).catch((error: unknown) => {
+            setActionError(isApiError(error) ? error.message : 'Unable to remove member')
+          })
+        }}
+      />
     </div>
   )
 }
