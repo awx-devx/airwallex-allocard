@@ -123,7 +123,9 @@ describe('isSafeCallbackUrl', () => {
   it('rejects open redirects and non-dest paths', () => {
     expect(isSafeCallbackUrl('//evil.com')).toBe(false)
     expect(isSafeCallbackUrl('https://evil.com')).toBe(false)
+    expect(isSafeCallbackUrl('javascript:alert(1)')).toBe(false)
     expect(isSafeCallbackUrl('/invite/../../x')).toBe(false)
+    expect(isSafeCallbackUrl('/invite/foo/../../../sign-in')).toBe(false)
     expect(isSafeCallbackUrl('/sign-in?returnTo=https://evil.com')).toBe(false)
     expect(isSafeCallbackUrl('/sign-in')).toBe(false)
   })
@@ -158,6 +160,22 @@ describe('inviteErrorCopy', () => {
     expect(inviteErrorCopy(ErrorCode.CONFLICT)).toBeNull()
     expect(inviteErrorCopy(ErrorCode.RATE_LIMITED)).toBeNull()
     expect(inviteErrorCopy(ErrorCode.UNAUTHENTICATED)).toBeNull()
+  })
+
+  it('never puts password in invite or CONFLICT copy', () => {
+    const conflictCopy = 'Unable to complete sign-up'
+    expect(conflictCopy.toLowerCase()).not.toContain('password')
+    for (const code of [
+      ErrorCode.INVITE_EXPIRED,
+      ErrorCode.INVITE_REVOKED,
+      ErrorCode.INVITE_ALREADY_ACCEPTED,
+      ErrorCode.NOT_FOUND,
+      ErrorCode.PERMISSION_DENIED,
+    ]) {
+      const copy = inviteErrorCopy(code)
+      expect(copy).not.toBeNull()
+      expect(copy?.message.toLowerCase()).not.toContain('password')
+    }
   })
 })
 

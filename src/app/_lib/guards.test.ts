@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import type { Session } from 'next-auth'
 
 const authMock = vi.fn<() => Promise<Session | null>>()
@@ -87,5 +89,13 @@ describe('requireApp', () => {
     const s = session({ userId: 'u1', onboarded: true })
     authMock.mockResolvedValue(s)
     await expect(requireApp()).resolves.toEqual({ ok: true, session: s })
+  })
+})
+
+describe('app layout gate', () => {
+  it('still calls requireApp so the product is unreachable without an organisation', () => {
+    const src = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(src).toContain('requireApp()')
+    expect(src).not.toMatch(/collapse/)
   })
 })

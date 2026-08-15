@@ -332,7 +332,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.7 — Gate + password proofs
 
-- [ ] **A1.7** — Onboarding gate is unavoidable; passwords stay off the wire in UI code
+- [x] **A1.7** — Onboarding gate is unavoidable; passwords stay off the wire in UI code
   - **Files:**
     - `src/app/_lib/guards.test.ts` (extend if any case is missing — do not weaken)
     - `src/client/lib/auth.test.ts` (extend)
@@ -350,7 +350,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** n/a (proof task).
   - **Pattern:** `src/app/_lib/guards.test.ts` (F0.10). `src/client/api/errorBehaviour.test.ts` open-redirect cases.
   - **Accept:** `pnpm test app/_lib/guards` and `pnpm test client/lib/auth` and `pnpm verify`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Guard matrix already covered; added `javascript:` / traversal callback rejects, password-free copy proof, and `(app)/layout.tsx` still calls `requireApp()`. AppShell untouched.
 
 ---
 
