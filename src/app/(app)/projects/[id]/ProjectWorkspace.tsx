@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { type ReactNode, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useTransitionProject } from '@/client/hooks/useProjects'
-import { draftWizardHref, projectFromListCache } from '@/client/lib/projects'
+import { draftWizardHref, projectFromListCache, WORKSPACE_TAB_HREFS } from '@/client/lib/projects'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -19,19 +19,6 @@ import { permissionForTransition } from '@/shared/projectLifecycle'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { Project } from '@/shared/types/project'
-
-export const WORKSPACE_TABS = [
-  { tab: 'Overview', segment: '', phase: 'A3' },
-  { tab: 'People', segment: 'people', phase: 'A3' },
-  { tab: 'Budget', segment: 'budget', phase: 'A4' },
-  { tab: 'Cards', segment: 'cards', phase: 'A5' },
-  { tab: 'Controls', segment: 'controls', phase: 'A6' },
-  { tab: 'Activity', segment: 'activity', phase: 'A8' },
-] as const
-
-export function workspaceTabHref(id: string, segment: string): string {
-  return segment.length > 0 ? `/projects/${id}/${segment}` : `/projects/${id}`
-}
 
 export function ProjectWorkspace({ children }: { children: ReactNode }) {
   const raw = useParams().id
@@ -137,12 +124,12 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
         ) : null}
       </div>
       <nav className="flex flex-wrap gap-2" aria-label="Project">
-        {WORKSPACE_TABS.map((item) => {
-          const href = workspaceTabHref(id, item.segment)
-          const active =
-            item.segment === ''
-              ? pathname === href
-              : pathname === href || pathname.startsWith(`${href}/`)
+        {WORKSPACE_TAB_HREFS.map((item) => {
+          const href = item.href(id)
+          const overview = item.tab === 'Overview'
+          const active = overview
+            ? pathname === href
+            : pathname === href || pathname.startsWith(`${href}/`)
           return (
             <Link
               key={item.tab}

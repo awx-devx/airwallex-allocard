@@ -485,7 +485,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.9 — Lifecycle + don’t-break proofs
 
-- [ ] **A2.9** — Invalid transitions not offered; 375/768 shell+list+wizard; no PAN
+- [x] **A2.9** — Invalid transitions not offered; 375/768 shell+list+wizard; no PAN
   - **Files:**
     - `src/client/lib/projects.test.ts` (extend)
     - `src/shared/projectLifecycle.test.ts` (extend if needed)
@@ -499,7 +499,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** n/a (proof task) plus the manual resize check.
   - **Pattern:** A1.7 `src/app/_lib/guards.test.ts` + `src/client/lib/auth.test.ts`.
   - **Accept:** `pnpm test client/lib/projects` and `pnpm test shared/projectLifecycle` and `pnpm test projects/transitions` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on dashboard, list, wizard, workspace; Menu/Sheet works below `md`; wizard Next/Launch and list Create reachable.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `offeredTransitions` matches the graph; `ACTIVE → CLOSING` never offered. `WORKSPACE_TAB_HREFS` is the six §2 routes, no Settings. Denial copy has no password; projects/dashboard sources have no PAN/cvv/card_number. `(app)/layout` still `requireApp` + `AppShellFrame`. `pnpm verify` green (1565 tests). Stopped before phase exit.
 
 ---
 

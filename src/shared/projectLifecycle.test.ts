@@ -95,4 +95,21 @@ describe('shared/projectLifecycle', () => {
       ProjectStatus.CANCELLED,
     ])
   })
+
+  it('offeredTransitions matches the A2 graph for every status and never CLOSING from ACTIVE', () => {
+    const expected: Record<ProjectStatus, ProjectStatus[]> = {
+      [ProjectStatus.DRAFT]: [ProjectStatus.PENDING_APPROVAL, ProjectStatus.CANCELLED],
+      [ProjectStatus.PENDING_APPROVAL]: [ProjectStatus.ACTIVE],
+      [ProjectStatus.ACTIVE]: [],
+      [ProjectStatus.CLOSING]: [ProjectStatus.CLOSED],
+      [ProjectStatus.CLOSED]: [ProjectStatus.ARCHIVED],
+      [ProjectStatus.ARCHIVED]: [],
+      [ProjectStatus.CANCELLED]: [],
+    }
+    for (const status of ALL_STATUSES) {
+      expect(offeredTransitions(status)).toEqual(expected[status])
+      expect(offeredTransitions(status)).not.toContain(ProjectStatus.CLOSING)
+    }
+    expect(offeredTransitions(ProjectStatus.ACTIVE)).not.toContain(ProjectStatus.CLOSING)
+  })
 })

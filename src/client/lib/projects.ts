@@ -281,3 +281,13 @@ export function cardStructureReviewLines(cs: {
     cs.oneTime ? 'Will issue one-time cards.' : 'Not issuing one-time cards.',
   ]
 }
+
+/** Workspace route tabs — exactly these six; no Settings. */
+export const WORKSPACE_TAB_HREFS = [
+  { tab: 'Overview', href: (id: string) => `/projects/${id}`, phase: 'A3' },
+  { tab: 'People', href: (id: string) => `/projects/${id}/people`, phase: 'A3' },
+  { tab: 'Budget', href: (id: string) => `/projects/${id}/budget`, phase: 'A4' },
+  { tab: 'Cards', href: (id: string) => `/projects/${id}/cards`, phase: 'A5' },
+  { tab: 'Controls', href: (id: string) => `/projects/${id}/controls`, phase: 'A6' },
+  { tab: 'Activity', href: (id: string) => `/projects/${id}/activity`, phase: 'A8' },
+] as const

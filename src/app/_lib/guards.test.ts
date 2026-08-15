@@ -96,6 +96,7 @@ describe('app layout gate', () => {
   it('still calls requireApp so the product is unreachable without an organisation', () => {
     const src = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
     expect(src).toContain('requireApp()')
+    expect(src).toContain('AppShellFrame')
     expect(src).not.toMatch(/collapse/)
   })
 })

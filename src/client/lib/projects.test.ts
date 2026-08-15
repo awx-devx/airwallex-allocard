@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { ActorType } from '@/shared/enums/audit'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { OrgRole } from '@/shared/enums/orgRole'
@@ -25,6 +27,7 @@ import {
   sortingToProjectSort,
   toTimelineItem,
   wizardStepIndex,
+  WORKSPACE_TAB_HREFS,
 } from '@/client/lib/projects'
 
 const EMPTY_ME: MePermissions = { projects: [] }
@@ -275,5 +278,61 @@ describe('cardStructureReviewLines', () => {
       'Will issue vendor cards.',
       'Not issuing one-time cards.',
     ])
+  })
+})
+
+describe('WORKSPACE_TAB_HREFS', () => {
+  it('is exactly the six A2 workspace tabs and has no settings', () => {
+    const id = 'proj_1'
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id))).toEqual([
+      '/projects/proj_1',
+      '/projects/proj_1/people',
+      '/projects/proj_1/budget',
+      '/projects/proj_1/cards',
+      '/projects/proj_1/controls',
+      '/projects/proj_1/activity',
+    ])
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.tab)).toEqual([
+      'Overview',
+      'People',
+      'Budget',
+      'Cards',
+      'Controls',
+      'Activity',
+    ])
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
+  })
+})
+
+describe('createProjectDenialMessage copy', () => {
+  it('does not mention password', () => {
+    expect(createProjectDenialMessage().toLowerCase()).not.toContain('password')
+  })
+})
+
+describe('A2 screens never mention PAN', () => {
+  it('has no PAN, cvv, or card_number under projects or dashboard', () => {
+    function walk(dir: string): string[] {
+      return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const path = join(dir, entry.name)
+        return entry.isDirectory() ? walk(path) : [path]
+      })
+    }
+
+    const roots = [
+      join(process.cwd(), 'src/app/(app)/projects'),
+      join(process.cwd(), 'src/app/(app)/dashboard'),
+    ]
+    const files = roots.flatMap(walk)
+    expect(files.length).toBeGreaterThan(0)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8').replace(
+        /Card structure flags only — never a PAN\./g,
+        '',
+      )
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
   })
 })
