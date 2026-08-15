@@ -315,6 +315,15 @@ describe('createProjectDenialMessage copy', () => {
   })
 })
 
+describe('A4.9 workspace tabs unchanged', () => {
+  it('still includes /budget and has no settings', () => {
+    const id = 'proj_1'
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id))).toContain('/projects/proj_1/budget')
+    expect(WORKSPACE_TAB_HREFS).toHaveLength(6)
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
+  })
+})
+
 describe('A2 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or dashboard', () => {
     function walk(dir: string): string[] {

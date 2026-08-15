@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A4 — Budget
-**Active task:** A4.9 — Don’t-break + invariant proofs
-**Last green `pnpm verify`:** 2026-08-16 (A4.8)
+**Active task:** A4 phase exit
+**Last green `pnpm verify`:** 2026-08-16 (A4.9)
 **Blocked on:** _nothing_
 
 ---
@@ -30,10 +30,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4 Budget               | in progress  | 9 / 10  |
+| A     | A4 Budget               | in progress  | 10 / 10 |
 | A     | A5–A9 Application       | not started  | —       |
 
-A4 **in progress**. A4.8 wizard link. Next: **A4.9** don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A4 **in progress**. A4.9 proofs done. Next: **A4 phase exit** — do not start A5. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -63,6 +63,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A4.9 done (2026-08-16).** Remaining unclamped, formula context `{ approvedAmount }`, PAN scan, shell unchanged, `BudgetBar` `md:grid-cols-4`. `pnpm verify` green (1625 tests). Next: **A4 phase exit** — do not start A5.
 
 **A4.8 done (2026-08-16).** Wizard budget step Link to categories. `pnpm verify` green (1618 tests). Next: **A4.9** don’t-break proofs.
 

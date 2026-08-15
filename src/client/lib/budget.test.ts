@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { ActorType } from '@/shared/enums/audit'
 import {
   BUDGET_NAV,
@@ -325,5 +327,92 @@ describe('attributeValueForIdent', () => {
     ]
     expect(attributeValueForIdent('headcount', values)?.value).toBe(8)
     expect(attributeValueForIdent('missing', values)).toBeUndefined()
+  })
+})
+
+describe('A4.9 invariant proofs', () => {
+  it('does not clamp remaining: -200', () => {
+    const props = projectionToBudgetBarProps(
+      {
+        approved: 100,
+        committed: 200,
+        actual: 100,
+        remaining: -200,
+        utilisationPct: 300,
+        overCommitted: true,
+      },
+      'USD',
+    )
+    expect(props.remaining).toBe(-200)
+  })
+
+  it('formulaContextFromBudget is { approvedAmount } only', () => {
+    expect(formulaContextFromBudget(42)).toEqual({ approvedAmount: 42 })
+    expect(Object.keys(formulaContextFromBudget(42))).toEqual(['approvedAmount'])
+  })
+
+  it('BUDGET_NAV labels are locked and Overview is not a prefix of /categories', () => {
+    expect(BUDGET_NAV.map((item) => item.label)).toEqual([
+      'Overview',
+      'Categories',
+      'History',
+      'Requests',
+    ])
+    expect(isBudgetNavActive('/projects/p/budget/categories', 'p', '')).toBe(false)
+  })
+
+  it('MONTHLY 100 → 80 is one money-object DiffView row', () => {
+    const diffs = diffCardTransactionLimits(
+      snapshotCardTransactionLimits([CARD]),
+      snapshotCardTransactionLimits([
+        {
+          ...CARD,
+          desiredControls: {
+            transactionLimits: {
+              currency: 'USD',
+              limits: [{ interval: 'MONTHLY', amount: 80 }],
+            },
+          },
+        },
+      ]),
+    )
+    expect(diffs).toHaveLength(1)
+    const view = cardLimitDiffToDiffView(diffs)
+    const key = 'Ops ************1234 MONTHLY'
+    expect(view.before[key]).toEqual({ amount: 100, currency: 'USD' })
+    expect(view.after[key]).toEqual({ amount: 80, currency: 'USD' })
+  })
+
+  it('budget screens and BudgetStep never mention PAN, cvv, or card_number', () => {
+    function walk(dir: string): string[] {
+      return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const path = join(dir, entry.name)
+        return entry.isDirectory() ? walk(path) : [path]
+      })
+    }
+
+    const files = [
+      ...walk(join(process.cwd(), 'src/app/(app)/projects/[id]/budget')),
+      join(process.cwd(), 'src/app/(app)/projects/new/steps/BudgetStep.tsx'),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, and BudgetBar md:grid-cols-4', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    const bar = readFileSync(join(process.cwd(), 'src/components/patterns/BudgetBar.tsx'), 'utf8')
+    expect(bar).toContain('md:grid-cols-4')
+    expect(bar).not.toContain('sm:grid-cols-4')
   })
 })

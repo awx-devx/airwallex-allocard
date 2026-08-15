@@ -505,7 +505,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.9 — Don’t-break + invariant proofs
 
-- [ ] **A4.9** — Four figures, live formula gate, limits moved, 375/768, no PAN, shell unchanged
+- [x] **A4.9** — Four figures, live formula gate, limits moved, 375/768, no PAN, shell unchanged
   - **Files:**
     - `src/client/lib/budget.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (read-only assert `WORKSPACE_TAB_HREFS` still has no settings and still includes `/budget`)
