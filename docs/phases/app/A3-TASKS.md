@@ -383,7 +383,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.1 — Overview tab
 
-- [ ] **A3.1** — `/projects/[id]` overview; every tile links
+- [x] **A3.1** — `/projects/[id]` overview; every tile links
   - **Files:**
     - `src/app/(app)/projects/[id]/page.tsx` (replace `ComingSoonTab`)
     - `src/app/(app)/projects/[id]/ProjectOverview.tsx` (`'use client'`)
@@ -401,7 +401,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** stack on narrow, `md:grid-cols-2`. Cards stack their rows (`flex flex-col gap-2`). No Sheet. No `DataTable`. Workspace tabs already wrap.
   - **Pattern:** A2.2 `src/app/(app)/dashboard/DashboardHome.tsx` (linked Cards + Empty/Error/Loading). `MoneyDisplay` / `StatusBadge` / `Timeline`: F3. Hooks: `useProject` `src/client/hooks/useProjects.ts`; `useBudget` `src/client/hooks/useBudget.ts`; `useProjectCards` `src/client/hooks/useCards.ts`; `useRequests` `src/client/hooks/useRequests.ts`; `useAccessReviews` / `useProjectMembers` `src/client/hooks/useMembers.ts`; `useProjectActivity` `src/client/hooks/useReports.ts`. B3 overview counts: `src/shared/schemas/project.ts` `projectOverviewSchema` (do not redeclare; do not trust stubbed member/alert/pending counts).
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; all tiles visible by scrolling **vertically**; Add-member is not on this page (People tab). Every tile title is an `<a>`/`Link`. No `PAN` / `cvv` / `card_number` in these two files.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Overview tiles from F1 hooks (not stubbed member/alert/pending counts). Linked Cards + MoneyDisplay/StatusBadge/Timeline. `pnpm verify` green (1589 tests).
 
 ### A3.2 — People list
 

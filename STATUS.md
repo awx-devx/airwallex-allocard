@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A3 — Project overview, people & access
-**Active task:** A3.1 — overview tab (STOP: A3.0 helpers reviewed)
-**Last green `pnpm verify`:** 2026-08-15 (A3.0)
+**Active task:** A3.2 — people list
+**Last green `pnpm verify`:** 2026-08-15 (A3.1)
 **Blocked on:** _nothing_
 
 ---
@@ -29,10 +29,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3 People & access      | in progress  | 1 / 10  |
+| A     | A3 People & access      | in progress  | 2 / 10  |
 | A     | A4–A9 Application       | not started  | —       |
 
-A3.0 **done**. Next: **A3.1** overview (after helper review). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A3.1 **done**. Next: **A3.2** people list. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -62,6 +62,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A3.1 done (2026-08-15).** `/projects/[id]` overview tiles all link; counts from F1 hooks not stubbed `overview.*`. `pnpm verify` green (1589 tests). Next: **A3.2** people list.
 
 **A3.0 done (2026-08-15).** Access helpers in `src/client/lib/access.ts`; `isScopeActive` re-exported from shared. `pnpm verify` green (1589 tests). STOP — review helpers before **A3.1** overview screens.
 
