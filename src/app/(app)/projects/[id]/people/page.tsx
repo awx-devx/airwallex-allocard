@@ -1,5 +1,5 @@
-import { ComingSoonTab } from '@/app/(app)/projects/[id]/ComingSoonTab'
+import { PeopleList } from '@/app/(app)/projects/[id]/people/PeopleList'
 
 export default function ProjectPeoplePage() {
-  return <ComingSoonTab tab="People" phase="A3" />
+  return <PeopleList />
 }

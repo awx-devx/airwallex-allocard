@@ -405,7 +405,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.2 — People list
 
-- [ ] **A3.2** — `/projects/[id]/people` DataTable + access history
+- [x] **A3.2** — `/projects/[id]/people` DataTable + access history
   - **Files:**
     - `src/app/(app)/projects/[id]/people/page.tsx` (replace `ComingSoonTab`)
     - `src/app/(app)/projects/[id]/people/PeopleList.tsx` (`'use client'`)
@@ -421,7 +421,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** table scrolls **inside**; page does not. Toolbar `flex-wrap`. History is a column. No `md:grid`. No Sheet in this task.
   - **Pattern:** A2.3 `src/app/(app)/projects/ProjectList.tsx`. `DataTable` `src/components/patterns/DataTable.tsx`. Hooks: `src/client/hooks/useMembers.ts` (B3 contracts). Card/cardholder hooks: `src/client/hooks/useCards.ts`.
   - **Accept:** `pnpm verify`. 375px: page has no horizontal scrollbar; table may scroll inside; Add member reachable. 768px: same, aside visible. Inactive expired members show the locked expired/not-yet copy. `No cards yet` appears when `memberHasCards` is false.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** DataTable of members with Inactive + locked window copy; `No cards yet` links to cards tab; Add gated `member.manage`. Actions deferred to A3.5. `pnpm verify` green (1589 tests).
 
 ### A3.3 — Scope picker
 
