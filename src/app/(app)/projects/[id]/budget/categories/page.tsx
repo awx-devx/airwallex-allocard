@@ -1,3 +1,5 @@
+import { CategoryList } from '@/app/(app)/projects/[id]/budget/categories/CategoryList'
+
 export default function BudgetCategoriesPage() {
-  return <main className="min-w-0">Categories — not built yet</main>
+  return <CategoryList />
 }

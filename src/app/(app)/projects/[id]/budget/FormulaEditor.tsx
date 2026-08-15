@@ -29,6 +29,7 @@ export type FormulaEditorProps = {
   projectId: string
   disabled?: boolean
   onValidityChange?: (ok: boolean) => void
+  onValidatedValue?: (value: number | null) => void
 }
 
 type LastResult = {
@@ -50,6 +51,7 @@ export function FormulaEditor({
   projectId,
   disabled,
   onValidityChange,
+  onValidatedValue,
 }: FormulaEditorProps) {
   const validate = useValidateFormula()
   const attributes = useAttributeValues({
@@ -59,6 +61,7 @@ export function FormulaEditor({
     pageSize: 100,
   })
   const generation = useRef(0)
+  const onValidatedValueRef = useRef(onValidatedValue)
   const [lastResult, setLastResult] = useState<LastResult | null>(null)
   const [lastSuccess, setLastSuccess] = useState<number | null>(null)
   const lastError =
@@ -69,6 +72,10 @@ export function FormulaEditor({
   const empty = isFormulaExpressionEmpty(expression)
   const ok = isValidForExpression(expression, lastResult)
   const idents = formulaIdentTokens(expression).filter((ident) => ident !== 'approvedAmount')
+
+  useEffect(() => {
+    onValidatedValueRef.current = onValidatedValue
+  }, [onValidatedValue])
 
   useEffect(() => {
     onValidityChange?.(ok)
@@ -87,7 +94,12 @@ export function FormulaEditor({
           onSuccess: (output) => {
             if (gen !== generation.current) return
             setLastResult({ expression, output })
-            if (output.ok) setLastSuccess(output.value)
+            if (output.ok) {
+              setLastSuccess(output.value)
+              onValidatedValueRef.current?.(output.value)
+            } else {
+              onValidatedValueRef.current?.(null)
+            }
           },
         },
       )

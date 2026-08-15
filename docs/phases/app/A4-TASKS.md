@@ -435,7 +435,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.5 — Categories
 
-- [ ] **A4.5** — `/projects/[id]/budget/categories` list + Sheet + formula save gate
+- [x] **A4.5** — `/projects/[id]/budget/categories` list + Sheet + formula save gate
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/categories/page.tsx` (replace placeholder)
     - `src/app/(app)/projects/[id]/budget/categories/CategoryList.tsx` (`'use client'`)
@@ -453,7 +453,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** table scrolls inside; toolbar wrap. Sheet body `flex flex-col gap-4 min-w-0`. Inside Sheet, form + formula preview `flex flex-col gap-4 md:flex-row` with both columns `min-w-0 flex-1`. Do not `hidden` Add/Edit/Delete on narrow.
   - **Pattern:** A3.5 `EditMemberSheet.tsx` + A3.2 `PeopleList.tsx`. `Select` `src/components/ui/select.tsx`. `RadioGroup` `src/components/ui/radio-group.tsx`. Hooks: `src/client/hooks/useBudget.ts`. Workstreams: `src/client/hooks/useProjects.ts` `useWorkstreams`. B4 categories: `src/shared/contracts/budget.ts` `createCategory` / `updateCategory` / `deleteCategory`. ConfirmDialog F3.20.
   - **Accept:** `pnpm verify`. Saving with an invalid formula is impossible (button disabled). 375px and 768px: no page-level horizontal scrollbar; Add / Save / Delete reachable; Sheet does not force window sideways scroll; table may scroll inside; at `md` form and formula preview sit in a row inside the Sheet. `FormulaEditor` mutate context is still `{ approvedAmount }` only.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Categories DataTable + right Sheet; formula Save gated; over-allocation blocked client-side; CardLimitMoves after CUD. `pnpm verify` green (1618 tests).
 
 ### A4.6 — History
 
