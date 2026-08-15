@@ -502,7 +502,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.7 — Permission matrix
 
-- [ ] **A3.7** — Roles vs permissions grid; affected-member warning; `force`
+- [x] **A3.7** — Roles vs permissions grid; affected-member warning; `force`
   - **Files:**
     - `src/app/(app)/settings/roles/RoleMatrix.tsx` (`'use client'`)
     - `src/app/(app)/settings/roles/page.tsx` (edit — render matrix)
@@ -517,7 +517,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** table scrolls **inside**; page does not. Save/Delete `flex flex-wrap gap-2`. No `md:grid` of the matrix. No Sheet required (ConfirmDialog / Dialog already portal).
   - **Pattern:** F3 `Table` `src/components/ui/table.tsx`. `Checkbox` `src/components/ui/checkbox.tsx`. Kitchen sink tables: `src/app/dev/ui/PatternGallery.tsx`. `projectMembersQueryOptions` `src/client/hooks/useMembers.ts`. B3 force: `src/shared/schemas/role.ts` `updateRoleInput.force`. ConfirmDialog F3.20.
   - **Accept:** `pnpm verify`. Saving a template that `countMembersHoldingRole > 0` opens `Update this template?` and the mutation includes `force: true`. 375px: page has no horizontal scrollbar; matrix may scroll inside; Save reachable. 768px: same. Checkboxes for all 19 permissions × each role are reachable via internal scroll.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Local checkbox state; template-in-use Save uses `force: true` after `Update this template?`. Matrix scrolls inside. `pnpm verify` green (1589 tests).
 
 ### A3.8 — Access reviews
 
