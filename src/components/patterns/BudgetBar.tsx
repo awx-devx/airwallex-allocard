@@ -1,3 +1,4 @@
+import { BUDGET_TERM_TOOLTIPS } from '@/client/lib/budget'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { budgetBarFillWidths, budgetBarLayout } from '@/components/patterns/budgetBarLayout'
 import type { BudgetBarProps } from '@/components/patterns/types'
@@ -31,9 +32,16 @@ export function BudgetBar(props: BudgetBarProps) {
           />
         ) : null}
       </div>
-      <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
         <div>
-          <dt className="text-muted-foreground">Approved</dt>
+          <dt className="text-muted-foreground">
+            <Tooltip>
+              <TooltipTrigger className="underline-offset-4 hover:underline">
+                Approved
+              </TooltipTrigger>
+              <TooltipContent>{BUDGET_TERM_TOOLTIPS.approved}</TooltipContent>
+            </Tooltip>
+          </dt>
           <dd>
             <MoneyDisplay money={{ amount: approved, currency }} colorBySign={false} />
           </dd>
@@ -44,7 +52,7 @@ export function BudgetBar(props: BudgetBarProps) {
               <TooltipTrigger className="underline-offset-4 hover:underline">
                 Committed
               </TooltipTrigger>
-              <TooltipContent>Approved but not yet spent</TooltipContent>
+              <TooltipContent>{BUDGET_TERM_TOOLTIPS.committed}</TooltipContent>
             </Tooltip>
           </dt>
           <dd>
@@ -52,13 +60,25 @@ export function BudgetBar(props: BudgetBarProps) {
           </dd>
         </div>
         <div>
-          <dt className="text-muted-foreground">Actual</dt>
+          <dt className="text-muted-foreground">
+            <Tooltip>
+              <TooltipTrigger className="underline-offset-4 hover:underline">Actual</TooltipTrigger>
+              <TooltipContent>{BUDGET_TERM_TOOLTIPS.actual}</TooltipContent>
+            </Tooltip>
+          </dt>
           <dd>
             <MoneyDisplay money={{ amount: actual, currency }} colorBySign={false} />
           </dd>
         </div>
         <div>
-          <dt className="text-muted-foreground">Remaining</dt>
+          <dt className="text-muted-foreground">
+            <Tooltip>
+              <TooltipTrigger className="underline-offset-4 hover:underline">
+                Remaining
+              </TooltipTrigger>
+              <TooltipContent>{BUDGET_TERM_TOOLTIPS.remaining}</TooltipContent>
+            </Tooltip>
+          </dt>
           <dd>
             <MoneyDisplay money={{ amount: remaining, currency }} />
           </dd>

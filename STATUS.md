@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A4 — Budget
-**Active task:** A4.0 STOP — review helpers before A4.1
-**Last green `pnpm verify`:** 2026-08-16 (A4.0)
+**Active task:** A4.2 — Budget home (read)
+**Last green `pnpm verify`:** 2026-08-16 (A4.1)
 **Blocked on:** _nothing_
 
 ---
@@ -30,10 +30,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4 Budget               | in progress  | 1 / 10  |
+| A     | A4 Budget               | in progress  | 2 / 10  |
 | A     | A5–A9 Application       | not started  | —       |
 
-A4 **in progress**. A4-TASKS locked; A4.0 helpers done. STOP — review helpers before **A4.1** screens. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A4 **in progress**. A4.1 chrome + `BudgetBar` `md:grid-cols-4`. Next: **A4.2** budget home (read). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -63,6 +63,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A4.1 done (2026-08-16).** Budget chrome wrap-Links; nested placeholders; `BudgetBar` `md:grid-cols-4` + four term tooltips. `pnpm verify` green (1618 tests). Next: **A4.2** budget home (read).
 
 **A4.0 done (2026-08-16).** Helpers in `src/client/lib/budget.ts`. Formula context `{ approvedAmount }` only; remaining not clamped; card-limit diffs from `desiredControls.transactionLimits`. `pnpm verify` green (1618 tests). STOP — review helpers before **A4.1** chrome / BudgetBar.
 

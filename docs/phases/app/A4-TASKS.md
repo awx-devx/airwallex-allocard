@@ -355,7 +355,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.1 — Budget chrome + BudgetBar one-breakpoint
 
-- [ ] **A4.1** — Sub-nav wrap Links; `BudgetBar` `md:grid-cols-4` + four tooltips
+- [x] **A4.1** — Sub-nav wrap Links; `BudgetBar` `md:grid-cols-4` + four tooltips
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/layout.tsx` (create)
     - `src/app/(app)/projects/[id]/budget/BudgetChrome.tsx` (`'use client'`)
@@ -371,7 +371,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** sub-nav `flex-wrap`. `BudgetBar` figures `grid-cols-2 md:grid-cols-4`. No Sheet. Shell collapse unchanged.
   - **Pattern:** A3.6 `src/app/(app)/settings/SettingsChrome.tsx`. Workspace prefix-active: `src/app/(app)/projects/[id]/ProjectWorkspace.tsx`. `BudgetBar` current file. B4 figures: `src/shared/schemas/budget.ts` `budgetProjectionSchema`.
   - **Accept:** `pnpm verify`. `/projects/[id]/budget/categories`, `/history`, `/requests` are not 404. `BudgetBar.tsx` contains `md:grid-cols-4` and does **not** contain `sm:grid-cols-4`. 375px and 768px: no page-level horizontal scrollbar; Overview/Categories/History/Requests reachable (wrap); at 375px the four figures stack 2×2; at 768px they are four across; Menu/Sheet still works below `md`. Aside still `hidden md:flex`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Budget chrome wrap-Links (`buttonVariants`, no `Button asChild`). Nested `/categories` `/history` `/requests` placeholders. `BudgetBar` `md:grid-cols-4` + four `BUDGET_TERM_TOOLTIPS`. `pnpm verify` green (1618 tests).
 
 ### A4.2 — Budget home (read)
 
