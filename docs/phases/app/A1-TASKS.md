@@ -293,7 +293,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.5 — Onboarding fork
 
-- [ ] **A1.5** — `/onboarding`
+- [x] **A1.5** — `/onboarding`
   - **Files:**
     - `src/app/(onboarding)/onboarding/page.tsx` (replace placeholder)
     - `src/app/(onboarding)/onboarding/OnboardingFork.tsx` (`'use client'`)
@@ -306,7 +306,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack (`flex flex-col gap-4`). Invite cards stacked, not `md:grid-cols-2`. Secondary create below. No `Sheet`.
   - **Pattern:** `EmptyState` `src/components/patterns/EmptyState.tsx`. Card/Alert/Button: F3. Hook: `useOnboardingStatus` in `src/client/hooks/useSession.ts`. `formatDate` `src/lib/dates.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; create CTA reachable. Hitting `/onboarding` while onboarded still ends on `/dashboard` (layout test already in `src/app/_lib/guards.test.ts` — do not weaken it).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Fork lists pending invites with no accept button (policy §8). Empty state leads with create.
 
 ### A1.6 — Create organisation
 

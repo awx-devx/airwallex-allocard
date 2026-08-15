@@ -1,3 +1,5 @@
+import { OnboardingFork } from '@/app/(onboarding)/onboarding/OnboardingFork'
+
 export default function OnboardingPage() {
-  return <main>A1: onboarding</main>
+  return <OnboardingFork />
 }
