@@ -482,7 +482,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.6 — Settings chrome + SideNav
 
-- [ ] **A3.6** — Settings tab Links; SideNav Roles + Access reviews; roles list chrome
+- [x] **A3.6** — Settings tab Links; SideNav Roles + Access reviews; roles list chrome
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/app/(app)/settings/layout.tsx` (create)
@@ -498,7 +498,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** settings tabs `flex-wrap`. Create dialog stacked fields. No `md:grid`. Shell collapse unchanged (Sheet already from A2.1).
   - **Pattern:** A2.8 `ProjectWorkspace.tsx` tab Links. `DEFAULT_NAV` in `src/client/shell/AppShell.tsx`. `Dialog` F3.6 `src/components/ui/dialog.tsx`. `useRoles` / `useCreateRole` `src/client/hooks/useMembers.ts`. B3 `src/shared/contracts/role.ts`.
   - **Accept:** `pnpm verify`. `/settings/roles` and `/settings/access-reviews` are not 404. SideNav at 768px shows Roles + Access reviews; at 375px they appear inside the existing Menu Sheet (same `SideNav`). 375px and 768px: no page-level horizontal scrollbar; Create role reachable. Aside still `hidden md:flex` (do not regress A2.1).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** SideNav appends Roles + Access reviews after Reports; settings wrap Links; create-role Dialog. Aside still `hidden md:flex`. `pnpm verify` green (1589 tests).
 
 ### A3.7 — Permission matrix
 
