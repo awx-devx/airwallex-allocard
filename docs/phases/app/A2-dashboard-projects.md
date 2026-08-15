@@ -47,11 +47,11 @@ Recipe: [`../../RESPONSIVENESS.md`](../../RESPONSIVENESS.md). One breakpoint: `m
 
 ## Review checklist
 
-- [ ] The wizard saves per step and is resumable
-- [ ] Invalid lifecycle transitions aren't offered in the UI, and are handled if attempted
-- [ ] The review step shows the cards and limits that Launch will create
-- [ ] Launch surfaces what happened, not just success
-- [ ] The shell renders the header from cache while tabs load
-- [ ] List filters map to B2's query parameters without client-side refiltering
-- [ ] `AppShell` sidebar is a `Sheet` below `md`; same `SideNav`, no second nav
-- [ ] 375px and 768px: no page-level horizontal scrollbar; wizard Next/Launch and list actions reachable
+- [x] The wizard saves per step and is resumable
+- [x] Invalid lifecycle transitions aren't offered in the UI, and are handled if attempted
+- [x] The review step shows the cards and limits that Launch will create
+- [x] Launch surfaces what happened, not just success
+- [x] The shell renders the header from cache while tabs load
+- [x] List filters map to B2's query parameters without client-side refiltering
+- [x] `AppShell` sidebar is a `Sheet` below `md`; same `SideNav`, no second nav
+- [x] 375px and 768px: no page-level horizontal scrollbar; wizard Next/Launch and list actions reachable

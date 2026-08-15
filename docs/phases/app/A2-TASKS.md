@@ -505,21 +505,21 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A2-dashboard-projects.md` signed off:
-  - [ ] The wizard saves per step and is resumable
-  - [ ] Invalid lifecycle transitions aren't offered in the UI, and are handled if attempted
-  - [ ] The review step shows the cards and limits that Launch will create (kinds + budget; no invented per-card limits)
-  - [ ] Launch surfaces what happened, not just success
-  - [ ] The shell renders the header from cache while tabs load
-  - [ ] List filters map to B2's query parameters without client-side refiltering
-  - [ ] `AppShell` sidebar is a `Sheet` below `md`; same `SideNav`, no second nav
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; wizard Next/Launch and list actions reachable
-- [ ] `/dev/shell` still works
-- [ ] No new F3 primitive files; only optional `nextLabel` on `StepWizard`
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A3**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A2-dashboard-projects.md` signed off:
+  - [x] The wizard saves per step and is resumable
+  - [x] Invalid lifecycle transitions aren't offered in the UI, and are handled if attempted
+  - [x] The review step shows the cards and limits that Launch will create (kinds + budget; no invented per-card limits)
+  - [x] Launch surfaces what happened, not just success
+  - [x] The shell renders the header from cache while tabs load
+  - [x] List filters map to B2's query parameters without client-side refiltering
+  - [x] `AppShell` sidebar is a `Sheet` below `md`; same `SideNav`, no second nav
+  - [x] 375px and 768px: no page-level horizontal scrollbar; wizard Next/Launch and list actions reachable
+- [x] `/dev/shell` still works
+- [x] No new F3 primitive files; only optional `nextLabel` on `StepWizard`
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A3**)
 
 ## Out of scope (do not do in A2)
 

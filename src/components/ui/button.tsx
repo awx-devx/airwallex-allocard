@@ -50,13 +50,31 @@ function Button({
     loading?: boolean
   }) {
   const Comp = asChild && !loading ? Slot.Root : 'button'
+  const classNameMerged = cn(buttonVariants({ variant, size }), className)
+
+  // Slot.Root requires exactly one element child. A `null` spinner sibling
+  // throws "Slot failed to slot onto its children" (Create/Resume asChild Links).
+  if (asChild && !loading) {
+    return (
+      <Comp
+        data-slot="button"
+        data-variant={variant}
+        data-size={size}
+        className={classNameMerged}
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </Comp>
+    )
+  }
 
   return (
     <Comp
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={classNameMerged}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...props}

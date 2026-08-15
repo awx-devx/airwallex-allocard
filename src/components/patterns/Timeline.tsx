@@ -21,13 +21,13 @@ function TimelineRow({ item }: { item: TimelineItem }) {
   const actor = ACTOR[item.actorType]
   const Icon = actor.icon
   return (
-    <li className="flex gap-3 py-3">
-      <Badge variant={actor.variant} className="gap-1">
+    <li className="flex min-w-0 flex-wrap items-start gap-2 py-3">
+      <Badge variant={actor.variant} className="gap-1 self-start">
         <Icon className="size-3" />
         {actor.label}
       </Badge>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm">{item.summary}</p>
+      <div className="min-w-0 flex-1 basis-48">
+        <p className="text-sm wrap-anywhere">{item.summary}</p>
         <p className="text-xs text-muted-foreground">
           {item.actorName ? `${item.actorName} · ` : null}
           {formatDateTime(item.at)}
@@ -43,7 +43,7 @@ export function Timeline({ items, loading, empty }: TimelineProps) {
     return <EmptyState title={empty.title} description={empty.description} action={empty.action} />
   }
   return (
-    <ol className="divide-y divide-border">
+    <ol className="min-w-0 divide-y divide-border">
       {items.map((item) => (
         <TimelineRow key={item.id} item={item} />
       ))}

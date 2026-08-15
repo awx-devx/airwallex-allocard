@@ -105,8 +105,8 @@ export function DashboardHome() {
   const count = approvalCount.data?.count ?? 0
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <Card>
+    <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
             <Link href="/projects?status=ACTIVE" className="hover:underline">
@@ -148,7 +148,7 @@ export function DashboardHome() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
             <Link href="/approvals" className="hover:underline">
@@ -178,7 +178,7 @@ export function DashboardHome() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
             <Link href="/activity" className="hover:underline">
@@ -197,7 +197,7 @@ export function DashboardHome() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
             <Link href="/projects?status=DRAFT" className="hover:underline">
