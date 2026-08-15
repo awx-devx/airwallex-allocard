@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.2 — Dashboard (`/dashboard` four cards)
-**Last green `pnpm verify`:** 2026-08-15 (A2.1)
+**Active task:** A2.3 — Project list + table overflow
+**Last green `pnpm verify`:** 2026-08-15 (A2.2)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 2 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 3 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — A2.1 AppShell collapse done. Next = **Dashboard** (A2.2). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.2 dashboard done. Next = **Project list** (A2.3). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.2 done (2026-08-15).** `/dashboard` four linked cards (ACTIVE, approvals, activity, DRAFT/PENDING alerts). Gated Create on empty ACTIVE. Placeholders `/approvals` and `/activity`. `pnpm verify` green (1561 tests). Next: **A2.3** project list + DataTable overflow.
 
 **A2.1 done (2026-08-15).** Aside `hidden md:flex`; Menu opens F3 `Sheet` with the same `OrgSwitcher`/`SideNav`. `AppShellFrame` uses live `useMe` / `useApprovalCount`. `/dev/shell` still mock. `pnpm verify` green (1561 tests). Next: **A2.2** Dashboard.
 

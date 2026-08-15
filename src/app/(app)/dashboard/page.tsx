@@ -1,3 +1,5 @@
+import { DashboardHome } from '@/app/(app)/dashboard/DashboardHome'
+
 export default function DashboardPage() {
-  return <main>A2: dashboard</main>
+  return <DashboardHome />
 }

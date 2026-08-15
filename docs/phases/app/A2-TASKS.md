@@ -326,7 +326,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.2 — Dashboard
 
-- [ ] **A2.2** — `/dashboard`
+- [x] **A2.2** — `/dashboard`
   - **Files:**
     - `src/app/(app)/dashboard/page.tsx` (replace placeholder)
     - `src/app/(app)/dashboard/DashboardHome.tsx` (`'use client'`)
@@ -344,7 +344,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** stack on narrow, `md:grid-cols-2`. Cards stack their rows (`flex flex-col gap-2`). No Sheet (shell already has it). No `DataTable` on the dashboard.
   - **Pattern:** Card/Empty/Error/Loading: A1.5 `OnboardingFork.tsx`. `StatusBadge`: `src/components/patterns/StatusBadge.tsx`. `Timeline`: `src/components/patterns/Timeline.tsx`. `MoneyDisplay`: `src/components/patterns/MoneyDisplay.tsx`. Hooks: `src/client/hooks/useProjects.ts`, `useRequests.ts` (`useApprovals`, `useApprovalCount`), `useReports.ts` (`useActivity`). Helpers: `src/client/lib/projects.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; all four cards visible by scrolling **vertically**; Create / project links reachable without sideways window scroll. Dashboard cards are `<a>`/`Link`, not static `<div>` summaries.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Four linked cards (`grid-cols-1 md:grid-cols-2`): ACTIVE projects, approvals count+list, activity timeline, DRAFT/PENDING alerts. Zero ACTIVE uses locked EmptyState + gated Create. Placeholders `/approvals` and `/activity`. `pnpm verify` green (1561 tests).
 
 ### A2.3 — Project list + table overflow
 
