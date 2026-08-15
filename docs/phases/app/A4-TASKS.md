@@ -473,7 +473,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.7 — Change requests
 
-- [ ] **A4.7** — `/projects/[id]/budget/requests` create + decide
+- [x] **A4.7** — `/projects/[id]/budget/requests` create + decide
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/requests/page.tsx` (replace placeholder)
     - `src/app/(app)/projects/[id]/budget/requests/ChangeRequestList.tsx` (`'use client'`)
@@ -487,7 +487,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** table scrolls inside; toolbar wrap. Dialog stacked. No `md:grid`. Do not `hidden` Approve/Reject on narrow.
   - **Pattern:** A3.8 `AccessReviewList.tsx` (row actions + ConfirmDialog, **but** no URL filters — API has none). Hooks: `useCreateChangeRequest` / `useDecideChangeRequest` `src/client/hooks/useBudget.ts`. B4: `src/shared/contracts/budget.ts` `createChangeRequest` / `decideChangeRequest`. Decide path param is change-request id: `src/app/api/budget/change-requests/[id]/decide/route.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; Request change / Approve / Reject reachable when offered. Approving a request shows DiffView or `No card limits moved.` Home pending banner (A4.2) still uses the same list’s `PENDING` rows. No `DISMISS`. No fake `?status=` API mapping.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Create dialog + decide ConfirmDialogs; DiffView on APPROVE only. `pnpm verify` green (1618 tests).
 
 ### A4.8 — Wizard link
 

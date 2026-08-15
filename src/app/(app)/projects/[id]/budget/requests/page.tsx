@@ -1,3 +1,5 @@
+import { ChangeRequestList } from '@/app/(app)/projects/[id]/budget/requests/ChangeRequestList'
+
 export default function BudgetRequestsPage() {
-  return <main className="min-w-0">Requests — not built yet</main>
+  return <ChangeRequestList />
 }
