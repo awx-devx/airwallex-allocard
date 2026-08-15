@@ -443,7 +443,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.4 — Add member + live preview
 
-- [ ] **A3.4** — `/projects/[id]/people/add` form + `reasons[]` preview
+- [x] **A3.4** — `/projects/[id]/people/add` form + `reasons[]` preview
   - **Files:**
     - `src/app/(app)/projects/[id]/people/add/page.tsx` (create)
     - `src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx` (`'use client'`)
@@ -461,7 +461,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** `flex flex-col gap-6 md:flex-row`. Form column `min-w-0 flex-1`; preview column `min-w-0 flex-1`. On narrow, form **above** preview (stack). Buttons `flex flex-wrap gap-2`. No Sheet. Scope picker stays one column.
   - **Pattern:** A1.6 form + A1.4 invite preview (read-only pane). `Combobox` `src/components/ui/combobox.tsx`. `Select` `src/components/ui/select.tsx`. `usePreviewMember` / `useAddMember` `src/client/hooks/useMembers.ts`. B3 preview: `src/shared/contracts/projectMember.ts` `preview`. `applyServerErrorsFromApiError` `src/client/lib/forms/applyServerErrors.ts`.
   - **Accept:** `pnpm verify`. Changing role or scope refetches preview (inspect that `mutate` runs). Preview text includes `Can`/`Cannot` and a `reasons[].message`. 375px and 768px: no page-level horizontal scrollbar; Add / Cancel / role / scope radios reachable; at `md` form and preview sit in a row. Confirm disabled when `CATEGORY` has zero boxes checked.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Live `usePreviewMember` with generation counter; `reasons[]` via `formatPermissionReason`; Confirm disabled until user+role+complete scope. `pnpm verify` green (1589 tests).
 
 ### A3.5 — Edit / remove member
 
