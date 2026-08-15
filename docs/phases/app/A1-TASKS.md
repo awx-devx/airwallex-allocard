@@ -230,7 +230,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.2 — Sign-up
 
-- [ ] **A1.2** — `/sign-up`
+- [x] **A1.2** — `/sign-up`
   - **Files:**
     - `src/app/(auth)/sign-up/page.tsx` (server — replace placeholder)
     - `src/app/(auth)/sign-up/SignUpForm.tsx` (`'use client'`)
@@ -248,7 +248,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack. Centred column already from layout. Actions `flex-col gap-2`. No `md:grid`. No `Sheet`.
   - **Pattern:** FormField demo in `src/app/dev/ui/sections/primitives.tsx` (`ValidFormFieldDemo`) + `src/components/ui/form.tsx` + `src/client/lib/forms/useZodForm.ts` + `applyServerErrorsFromApiError` in `src/client/lib/forms/applyServerErrors.ts`. Card/Alert/Button/Input/Label: `src/components/ui/{card,alert,button,input,label}.tsx`. Hook: `useSignUp` in `src/client/hooks/useSession.ts`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; Sign up and Google (when shown) reachable without sideways scroll. Confirm Google is absent when `AUTH_GOOGLE_ID` unset (local default).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `SignUpForm` + shared `GoogleButton` (hidden when Google unset). CONFLICT copy locked; passwords stay off Alerts.
 
 ### A1.3 — Sign-in
 

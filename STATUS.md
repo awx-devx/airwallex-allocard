@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A1 — Auth & onboarding
-**Active task:** A1.2 — Sign-up
-**Last green `pnpm verify`:** 2026-08-15 (A1.1)
+**Active task:** A1.3 — Sign-in
+**Last green `pnpm verify`:** 2026-08-15 (A1.2)
 **Blocked on:** _nothing_
 
 ---
@@ -27,10 +27,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | in progress  | 2 / 8   |
+| A     | A1 Auth & onboarding    | in progress  | 3 / 8   |
 | A     | A2–A9 Application       | not started  | —       |
 
-A1 **in progress** — A1.1 centred layouts + invite route. Next: A1.2 `/sign-up`. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A1 **in progress** — A1.2 `/sign-up` landed. Next: A1.3 `/sign-in`. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -60,6 +60,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A1.2 done (2026-08-15).** `/sign-up` with credentials + optional Google; CONFLICT does not confirm the email exists.
 
 **A1.1 done (2026-08-15).** Centred column on `(auth)` / `(onboarding)` / `(invite)`; invite placeholder; ESLint `call()`/`fetch` bans on those globs.
 
