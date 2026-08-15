@@ -13,4 +13,9 @@ describe('toastStore', () => {
     toastStore.clear()
     expect(toastStore.getSnapshot()).toHaveLength(0)
   })
+
+  it('returns a cached empty snapshot for SSR', () => {
+    expect(toastStore.getServerSnapshot()).toBe(toastStore.getServerSnapshot())
+    expect(toastStore.getServerSnapshot()).toEqual([])
+  })
 })

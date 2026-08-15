@@ -8,7 +8,9 @@ export type Toast = {
 
 type Listener = (toasts: Toast[]) => void
 
-let toasts: Toast[] = []
+const EMPTY_TOASTS: Toast[] = []
+
+let toasts: Toast[] = EMPTY_TOASTS
 const listeners = new Set<Listener>()
 let nextId = 1
 
@@ -38,11 +40,14 @@ export const toastStore = {
     emit()
   },
   clear(): void {
-    toasts = []
+    toasts = EMPTY_TOASTS
     emit()
   },
   getSnapshot(): Toast[] {
     return toasts
+  },
+  getServerSnapshot(): Toast[] {
+    return EMPTY_TOASTS
   },
   subscribe(listener: Listener): () => void {
     listeners.add(listener)

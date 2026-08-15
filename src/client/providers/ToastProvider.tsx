@@ -5,7 +5,11 @@ import { toastStore } from '@/client/providers/toastStore'
 import { Toast } from '@/components/ui/toast'
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const toasts = useSyncExternalStore(toastStore.subscribe, toastStore.getSnapshot, () => [])
+  const toasts = useSyncExternalStore(
+    toastStore.subscribe,
+    toastStore.getSnapshot,
+    toastStore.getServerSnapshot,
+  )
 
   return (
     <>
