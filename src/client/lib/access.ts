@@ -19,6 +19,7 @@ const ADD_MEMBER_DENIED = "You don't have permission to manage members."
 const ASSIGN_ROLE_DENIED = "You don't have permission to assign roles."
 const MANAGE_REVIEW_DENIED = "You don't have permission to manage access reviews."
 const LAST_ACCESS_MANAGER_DENIED = 'Cannot remove the last member who can manage access.'
+const NO_ELIGIBLE_MEMBERS = 'Everyone in this organisation is already a member of this project.'
 
 const NOT_YET_VALID = 'Access scope is not yet valid'
 const EXPIRED = 'Access scope has expired'
@@ -339,6 +340,15 @@ export function buildAccessScope(input: {
     scope.validTo = input.validTo
   }
   return scope
+}
+
+/** Fail-open while the session query is in flight — loading is not a denial. */
+export function permissionGateAllowed(allowed: boolean, loading: boolean): boolean {
+  return loading || allowed
+}
+
+export function noEligibleMembersToAddMessage(): string {
+  return NO_ELIGIBLE_MEMBERS
 }
 
 export function eligibleOrgMembersToAdd(

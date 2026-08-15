@@ -17,6 +17,7 @@ import {
   countMembersHoldingRole,
   PERMISSION_GROUPS,
   PERMISSION_LABELS,
+  permissionGateAllowed,
   sortRolesForMatrix,
 } from '@/client/lib/access'
 import { activeOrgRole } from '@/client/lib/projects'
@@ -75,11 +76,14 @@ export function RoleMatrix() {
   const permissionsQuery = usePermissions()
   const { orgId } = useActiveOrg()
   const projectId = permissionsQuery.data?.projects[0]?.projectId
-  const { can } = useCan(projectId ?? '')
+  const { can, isLoading } = useCan(projectId ?? '')
   const orgRole = activeOrgRole(me.data?.memberships ?? [], orgId ?? me.data?.activeOrg?.id ?? null)
-  const allowed = projectId
-    ? can(Permission.ROLE_ASSIGN)
-    : orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN
+  const allowed = permissionGateAllowed(
+    projectId
+      ? can(Permission.ROLE_ASSIGN)
+      : orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN,
+    isLoading || me.isPending,
+  )
 
   const memberQueries = useQueries({
     queries: (projects.data?.items ?? []).map((project) =>
@@ -90,7 +94,10 @@ export function RoleMatrix() {
   const holdersLoading = projects.isPending || memberQueries.some((query) => query.isPending)
 
   const [overrides, setOverrides] = useState<Record<string, Permission[]>>({})
-  const [pending, setPending] = useState<PendingSave | null>(null)
+  const [confirm, setConfirm] = useState<{ open: boolean; payload: PendingSave | null }>({
+    open: false,
+    payload: null,
+  })
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
 
   const roles = sortRolesForMatrix(rolesQuery.data ?? [])
@@ -143,22 +150,28 @@ export function RoleMatrix() {
       projects.data?.total ?? 0,
     )
     if (role.isTemplate) {
-      setPending({
-        role,
-        permissions: nextPermissions,
-        force: true,
-        title: 'Update this template?',
-        confirmLabel: 'Save anyway',
-        description,
+      setConfirm({
+        open: true,
+        payload: {
+          role,
+          permissions: nextPermissions,
+          force: true,
+          title: 'Update this template?',
+          confirmLabel: 'Save anyway',
+          description,
+        },
       })
       return
     }
-    setPending({
-      role,
-      permissions: nextPermissions,
-      title: 'Update this role?',
-      confirmLabel: 'Save',
-      description,
+    setConfirm({
+      open: true,
+      payload: {
+        role,
+        permissions: nextPermissions,
+        title: 'Update this role?',
+        confirmLabel: 'Save',
+        description,
+      },
     })
   }
 
@@ -240,7 +253,7 @@ export function RoleMatrix() {
                   type="button"
                   size="sm"
                   disabled={!allowed || !dirty || holdersLoading}
-                  loading={updateRole.isPending && pending?.role.id === role.id}
+                  loading={updateRole.isPending && confirm.payload?.role.id === role.id}
                   onClick={() => requestSave(role)}
                 >
                   Save
@@ -266,19 +279,17 @@ export function RoleMatrix() {
         })}
       </div>
       <ConfirmDialog
-        open={pending !== null}
-        onOpenChange={(open) => {
-          if (!open) setPending(null)
-        }}
-        title={pending?.title ?? 'Update this role?'}
-        description={pending?.description ?? ''}
-        confirmLabel={pending?.confirmLabel ?? 'Save'}
+        open={confirm.open}
+        onOpenChange={(open) => setConfirm((prev) => ({ ...prev, open }))}
+        title={confirm.payload?.title ?? 'Update this role?'}
+        description={confirm.payload?.description ?? ''}
+        confirmLabel={confirm.payload?.confirmLabel ?? 'Save'}
         variant="default"
         loading={updateRole.isPending}
         onConfirm={() => {
-          if (pending === null) return
-          const next = pending
-          setPending(null)
+          const next = confirm.payload
+          if (next === null) return
+          setConfirm((prev) => ({ ...prev, open: false }))
           void persist(next.role, next.permissions, next.force)
         }}
       />

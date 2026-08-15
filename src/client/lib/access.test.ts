@@ -17,6 +17,8 @@ import {
   buildAccessScope,
   countMembersHoldingRole,
   eligibleOrgMembersToAdd,
+  noEligibleMembersToAddMessage,
+  permissionGateAllowed,
   formatPermissionReason,
   isLastAccessManager,
   isScopeActive,
@@ -235,6 +237,26 @@ describe('buildAccessScope', () => {
       level: AccessScopeLevel.OWN,
       validTo: PAST,
     })
+  })
+})
+
+describe('permissionGateAllowed', () => {
+  it('is true while loading even if the permission is denied', () => {
+    expect(permissionGateAllowed(false, true)).toBe(true)
+    expect(permissionGateAllowed(true, true)).toBe(true)
+  })
+
+  it('defers to allowed once loading is done', () => {
+    expect(permissionGateAllowed(true, false)).toBe(true)
+    expect(permissionGateAllowed(false, false)).toBe(false)
+  })
+})
+
+describe('noEligibleMembersToAddMessage', () => {
+  it('explains that every org member is already on the project', () => {
+    expect(noEligibleMembersToAddMessage()).toBe(
+      'Everyone in this organisation is already a member of this project.',
+    )
   })
 })
 

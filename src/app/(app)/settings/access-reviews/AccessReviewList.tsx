@@ -10,6 +10,7 @@ import {
   manageAccessReviewDenialMessage,
   parseAccessReviewSearchParams,
   peopleHref,
+  permissionGateAllowed,
 } from '@/client/lib/access'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
@@ -42,8 +43,8 @@ function ResolveActions({
   onConfirm: () => void
   onRevoke: () => void
 }) {
-  const { can } = useCan(row.projectId)
-  const allowed = can(Permission.MEMBER_MANAGE)
+  const { can, isLoading } = useCan(row.projectId)
+  const allowed = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
   return (
     <div className="flex flex-wrap gap-2">
       <PermissionGateView allowed={allowed} denialMessage={manageAccessReviewDenialMessage()}>
@@ -69,7 +70,8 @@ export function AccessReviewList() {
   })
   const query = useAccessReviews(filter)
   const resolve = useResolveAccessReview()
-  const [pending, setPending] = useState<{
+  const [resolveDialog, setResolveDialog] = useState<{
+    open: boolean
     id: string
     resolution: typeof AccessReviewResolution.CONFIRM | typeof AccessReviewResolution.REVOKE
   } | null>(null)
@@ -111,8 +113,20 @@ export function AccessReviewList() {
         row.status === AccessReviewStatus.OPEN ? (
           <ResolveActions
             row={row}
-            onConfirm={() => setPending({ id: row.id, resolution: AccessReviewResolution.CONFIRM })}
-            onRevoke={() => setPending({ id: row.id, resolution: AccessReviewResolution.REVOKE })}
+            onConfirm={() =>
+              setResolveDialog({
+                open: true,
+                id: row.id,
+                resolution: AccessReviewResolution.CONFIRM,
+              })
+            }
+            onRevoke={() =>
+              setResolveDialog({
+                open: true,
+                id: row.id,
+                resolution: AccessReviewResolution.REVOKE,
+              })
+            }
           />
         ) : null,
     },
@@ -176,27 +190,31 @@ export function AccessReviewList() {
         }}
       />
       <ConfirmDialog
-        open={pending !== null}
-        onOpenChange={(open) => {
-          if (!open) setPending(null)
-        }}
+        open={resolveDialog?.open === true}
+        onOpenChange={(open) =>
+          setResolveDialog((prev) => (prev === null ? prev : { ...prev, open }))
+        }
         title={
-          pending?.resolution === AccessReviewResolution.REVOKE
+          resolveDialog?.resolution === AccessReviewResolution.REVOKE
             ? 'Revoke this access?'
             : 'Confirm this access?'
         }
         description={
-          pending?.resolution === AccessReviewResolution.REVOKE
+          resolveDialog?.resolution === AccessReviewResolution.REVOKE
             ? 'This member will lose the flagged access.'
             : 'This access will stay in place.'
         }
-        confirmLabel={pending?.resolution === AccessReviewResolution.REVOKE ? 'Revoke' : 'Confirm'}
-        variant={pending?.resolution === AccessReviewResolution.REVOKE ? 'destructive' : 'default'}
+        confirmLabel={
+          resolveDialog?.resolution === AccessReviewResolution.REVOKE ? 'Revoke' : 'Confirm'
+        }
+        variant={
+          resolveDialog?.resolution === AccessReviewResolution.REVOKE ? 'destructive' : 'default'
+        }
         loading={resolve.isPending}
         onConfirm={() => {
-          if (pending === null) return
-          const next = pending
-          setPending(null)
+          if (resolveDialog === null) return
+          const next = resolveDialog
+          setResolveDialog((prev) => (prev === null ? prev : { ...prev, open: false }))
           setActionError(null)
           void resolve
             .mutateAsync({ id: next.id, input: { resolution: next.resolution } })

@@ -26,6 +26,7 @@ import { ROLE_TEMPLATES } from '../src/shared/constants/roleTemplates'
 import { BudgetEntrySourceType } from '../src/shared/enums/budgetEntrySourceType'
 import { BudgetEntryType } from '../src/shared/enums/budgetEntryType'
 import { OrgRole } from '../src/shared/enums/orgRole'
+import { ActorType } from '../src/shared/enums/audit'
 
 export const SEED = {
   ownerEmail: 'owner@allocard.local',
@@ -409,33 +410,65 @@ async function upsertProjectMember(input: {
   addedBy: string
 }): Promise<{ created: boolean }> {
   const projectMembers = mongoose.connection.collection('projectMembers')
+  const auditLogs = mongoose.connection.collection('auditLogs')
   const existing = await projectMembers.findOne({
     orgId: input.orgId,
     projectId: input.projectId,
     userId: input.userId,
     removedAt: null,
   })
+
+  const roleId = existing ? String(existing.roleId) : await roleIdByKey(input.orgId, input.roleKey)
+  const now = new Date()
+  let memberId: string
+  let created = false
+
   if (existing) {
-    return { created: false }
+    memberId = String(existing._id)
+  } else {
+    const _id = new mongoose.Types.ObjectId()
+    memberId = String(_id)
+    await projectMembers.insertOne({
+      _id,
+      orgId: input.orgId,
+      projectId: input.projectId,
+      userId: input.userId,
+      roleId,
+      scope: input.scope,
+      effectivePermissions: permissionsForTemplate(input.roleKey),
+      addedBy: input.addedBy,
+      addedAt: now,
+      removedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    created = true
   }
 
-  const roleId = await roleIdByKey(input.orgId, input.roleKey)
-  const now = new Date()
-  await projectMembers.insertOne({
-    _id: new mongoose.Types.ObjectId(),
+  const existingAudit = await auditLogs.findOne({
     orgId: input.orgId,
     projectId: input.projectId,
-    userId: input.userId,
-    roleId,
-    scope: input.scope,
-    effectivePermissions: permissionsForTemplate(input.roleKey),
-    addedBy: input.addedBy,
-    addedAt: now,
-    removedAt: null,
-    createdAt: now,
-    updatedAt: now,
+    action: 'member.added',
+    subjectType: 'projectMember',
+    subjectId: memberId,
   })
-  return { created: true }
+  if (!existingAudit) {
+    await auditLogs.insertOne({
+      _id: new mongoose.Types.ObjectId(),
+      orgId: input.orgId,
+      projectId: input.projectId,
+      actorType: ActorType.USER,
+      actorId: input.addedBy,
+      action: 'member.added',
+      subjectType: 'projectMember',
+      subjectId: memberId,
+      after: { userId: input.userId, roleId, scope: input.scope },
+      metadata: { userId: input.userId, roleId, seedKey: 'seed_b3_member_added' },
+      at: now,
+    })
+  }
+
+  return { created }
 }
 
 /**

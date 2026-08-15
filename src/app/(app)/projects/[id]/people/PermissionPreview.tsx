@@ -26,7 +26,7 @@ export function PermissionPreview({
       <p className="text-sm">{scopeSummary(scope, names)}</p>
       <ul className="flex max-h-80 flex-col gap-1 overflow-y-auto">
         {(reasons ?? []).map((reason) => (
-          <li key={reason.permission} className="min-w-0 break-all text-sm">
+          <li key={reason.permission} className="min-w-0 break-words text-sm">
             {formatPermissionReason(reason)}
           </li>
         ))}

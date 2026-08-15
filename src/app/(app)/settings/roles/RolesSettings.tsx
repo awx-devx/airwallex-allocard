@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useCreateRole } from '@/client/hooks/useMembers'
 import { useMe, usePermissions } from '@/client/hooks/useSession'
-import { assignRoleDenialMessage } from '@/client/lib/access'
+import { assignRoleDenialMessage, permissionGateAllowed } from '@/client/lib/access'
 import { activeOrgRole } from '@/client/lib/projects'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
@@ -30,11 +30,14 @@ export function RolesSettings() {
   const permissions = usePermissions()
   const { orgId } = useActiveOrg()
   const projectId = permissions.data?.projects[0]?.projectId
-  const { can } = useCan(projectId ?? '')
+  const { can, isLoading } = useCan(projectId ?? '')
   const orgRole = activeOrgRole(me.data?.memberships ?? [], orgId ?? me.data?.activeOrg?.id ?? null)
-  const allowed = projectId
-    ? can(Permission.ROLE_ASSIGN)
-    : orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN
+  const allowed = permissionGateAllowed(
+    projectId
+      ? can(Permission.ROLE_ASSIGN)
+      : orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN,
+    isLoading || me.isPending,
+  )
 
   const [createOpen, setCreateOpen] = useState(false)
   const [name, setName] = useState('')

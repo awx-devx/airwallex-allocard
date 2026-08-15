@@ -39,7 +39,8 @@ export function useCan(projectId: string) {
   const helpers = buildCanFromMe(query.data, projectId)
   return {
     ...helpers,
-    isLoading: query.isLoading,
+    /** True until `me` exists — treat as loading, not as a permission denial. */
+    isLoading: query.isPending,
     isError: query.isError,
     me: query.data as MePermissions | undefined,
   }

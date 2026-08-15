@@ -14,6 +14,7 @@ import {
   lastAccessManagerDenialMessage,
   memberAccessState,
   memberHasCards,
+  permissionGateAllowed,
   SCOPE_LEVEL_LABELS,
   toAccessHistoryTimelineItem,
 } from '@/client/lib/access'
@@ -31,8 +32,8 @@ import { Permission } from '@/shared/enums/permissions'
 import type { ProjectMemberDetail } from '@/shared/types/projectMember'
 
 function AddMemberControl({ projectId }: { projectId: string }) {
-  const { can } = useCan(projectId)
-  const allowed = can(Permission.MEMBER_MANAGE)
+  const { can, isLoading } = useCan(projectId)
+  const allowed = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
   return (
     <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
       {allowed ? (
@@ -57,17 +58,20 @@ export function PeopleList() {
   const cardholders = useCardholders({ page: 1, pageSize: 100 })
   const history = useAccessHistory(id)
   const removeMember = useRemoveMember()
-  const { can } = useCan(id)
+  const { can, isLoading } = useCan(id)
   const now = new Date()
   const [editing, setEditing] = useState<ProjectMemberDetail | null>(null)
-  const [removing, setRemoving] = useState<ProjectMemberDetail | null>(null)
+  const [removeDialog, setRemoveDialog] = useState<{
+    open: boolean
+    member: ProjectMemberDetail | null
+  }>({ open: false, member: null })
   const [actionError, setActionError] = useState<string | null>(null)
 
   if (!id) {
     return <ErrorState message="This project is not available." />
   }
 
-  const canManage = can(Permission.MEMBER_MANAGE)
+  const canManage = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
   const cardItems = cards.data?.items ?? []
   const holderItems = cardholders.data?.items ?? []
   const historyItems = (history.data ?? []).map(toAccessHistoryTimelineItem)
@@ -156,7 +160,7 @@ export function PeopleList() {
                   size="sm"
                   variant="outline"
                   disabled={!canManage}
-                  onClick={() => setRemoving(row)}
+                  onClick={() => setRemoveDialog({ open: true, member: row })}
                 >
                   Remove
                 </Button>
@@ -228,19 +232,21 @@ export function PeopleList() {
         }}
       />
       <ConfirmDialog
-        open={removing !== null}
-        onOpenChange={(open) => {
-          if (!open) setRemoving(null)
-        }}
-        title={removing ? `Remove ${removing.user.name} from this project?` : 'Remove member?'}
+        open={removeDialog.open}
+        onOpenChange={(open) => setRemoveDialog((prev) => ({ ...prev, open }))}
+        title={
+          removeDialog.member
+            ? `Remove ${removeDialog.member.user.name} from this project?`
+            : 'Remove member?'
+        }
         description="They will lose project access immediately."
         confirmLabel="Remove"
         variant="destructive"
         loading={removeMember.isPending}
         onConfirm={() => {
-          if (removing === null) return
-          const row = removing
-          setRemoving(null)
+          const row = removeDialog.member
+          if (row === null) return
+          setRemoveDialog((prev) => ({ ...prev, open: false }))
           setActionError(null)
           void removeMember.mutateAsync({ id, userId: row.userId }).catch((error: unknown) => {
             setActionError(isApiError(error) ? error.message : 'Unable to remove member')

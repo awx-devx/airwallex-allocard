@@ -61,7 +61,8 @@ function CreateProjectControl() {
   const permissions = usePermissions()
   const { orgId } = useActiveOrg()
   const orgRole = activeOrgRole(me.data?.memberships ?? [], orgId ?? me.data?.activeOrg?.id ?? null)
-  const allowed = canCreateProject({ orgRole, me: permissions.data })
+  const allowed =
+    me.isPending || permissions.isPending || canCreateProject({ orgRole, me: permissions.data })
 
   return (
     <PermissionGateView allowed={allowed} denialMessage={createProjectDenialMessage()}>

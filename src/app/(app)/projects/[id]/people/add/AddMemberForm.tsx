@@ -17,7 +17,9 @@ import {
   buildAccessScope,
   eligibleOrgMembersToAdd,
   isScopeSelectionComplete,
+  noEligibleMembersToAddMessage,
   peopleHref,
+  permissionGateAllowed,
 } from '@/client/lib/access'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
@@ -56,7 +58,7 @@ export function AddMemberForm() {
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const router = useRouter()
   const { orgId } = useActiveOrg()
-  const { can } = useCan(id)
+  const { can, isLoading } = useCan(id)
   const orgMembers = useOrgMembers(orgId ?? '')
   const projectMembers = useProjectMembers(id)
   const roles = useRoles()
@@ -81,7 +83,7 @@ export function AddMemberForm() {
   const scopeComplete = isScopeSelectionComplete(scope)
   const previewReady = Boolean(roleId) && scopeComplete
   const canSubmit = Boolean(userId) && previewReady
-  const allowed = can(Permission.MEMBER_MANAGE)
+  const allowed = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
 
   useEffect(() => {
     if (!id || !previewReady) {
@@ -152,6 +154,11 @@ export function AddMemberForm() {
                     value={field.value || null}
                     onChange={(value) => field.onChange(value ?? '')}
                     placeholder="Select a person"
+                    emptyText={
+                      orgMembers.data && projectMembers.data && eligible.length === 0
+                        ? noEligibleMembersToAddMessage()
+                        : 'No results'
+                    }
                   />
                 </FormControl>
                 <FormMessage />

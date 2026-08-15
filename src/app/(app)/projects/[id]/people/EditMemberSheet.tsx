@@ -7,6 +7,7 @@ import {
   addMemberDenialMessage,
   buildAccessScope,
   isScopeSelectionComplete,
+  permissionGateAllowed,
 } from '@/client/lib/access'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { PermissionPreview } from '@/app/(app)/projects/[id]/people/PermissionPreview'
@@ -39,7 +40,7 @@ function EditMemberSheetBody({
   members: ProjectMemberDetail[]
   onClose: () => void
 }) {
-  const { can } = useCan(projectId)
+  const { can, isLoading } = useCan(projectId)
   const roles = useRoles()
   const updateMember = useUpdateMember()
   const { mutate: previewMutate } = usePreviewMember()
@@ -50,7 +51,7 @@ function EditMemberSheetBody({
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
 
   const previewReady = Boolean(roleId) && isScopeSelectionComplete(scope)
-  const allowed = can(Permission.MEMBER_MANAGE)
+  const allowed = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
 
   useEffect(() => {
     if (!projectId || !previewReady) {
