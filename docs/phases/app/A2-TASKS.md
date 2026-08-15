@@ -459,7 +459,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.8 — Workspace shell
 
-- [ ] **A2.8** — `/projects/[id]` tab shell; header from list cache
+- [x] **A2.8** — `/projects/[id]` tab shell; header from list cache
   - **Files:**
     - `src/app/(app)/projects/[id]/layout.tsx` (create, client wrapper OK)
     - `src/app/(app)/projects/[id]/ProjectWorkspace.tsx` (`'use client'`)
@@ -481,7 +481,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** tabs `flex flex-wrap`. Header `flex flex-wrap items-center gap-2`. Body `min-w-0`. No `md:grid` for tabs.
   - **Pattern:** `ProjectContext.tsx` display of name/code/StatusBadge (copy markup, don’t reuse AppShell plumbing). `buttonVariants` from `src/components/ui/button.tsx`. Cache helper from A2.0. `useProject` `src/client/hooks/useProjects.ts`.
   - **Accept:** `pnpm verify`. Open `/projects/[id]` after visiting `/projects` (list cached): header name appears without waiting on a slow detail if cache has the row (simulate by checking `placeholder` path in code). 375px and 768px: no page-level horizontal scrollbar; tabs wrap; Resume/Launch/Archive (when offered) reachable. Each tab href renders the locked placeholder, not a 404.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Workspace header from `projectFromListCache` then `useProject`. Six route Links (no Settings). Tab bodies are locked `{Tab} lands in {phase}.` placeholders. `pnpm verify` green (1561 tests).
 
 ### A2.9 — Lifecycle + don’t-break proofs
 

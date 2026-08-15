@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.8 — Workspace shell
-**Last green `pnpm verify`:** 2026-08-15 (A2.7)
+**Active task:** A2.9 — Lifecycle + don’t-break proofs
+**Last green `pnpm verify`:** 2026-08-15 (A2.8)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 8 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 9 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — A2.7 Launch done. Next = **Workspace shell** (A2.8). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.8 workspace shell done. Next = **Lifecycle proofs** (A2.9). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.8 done (2026-08-15).** `/projects/[id]` tab shell; header from list cache; six placeholders, no Settings. `pnpm verify` green (1561 tests). Next: **A2.9** lifecycle + don’t-break proofs.
 
 **A2.7 done (2026-08-15).** `StepWizard` `nextLabel`; Launch two-hops then Timeline / Open project; 403 info copy. `pnpm verify` green (1561 tests). Next: **A2.8** workspace tab shell.
 
