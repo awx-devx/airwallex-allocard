@@ -17,8 +17,14 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { StepWizard } from '@/components/patterns/StepWizard'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { DetailsStep, type DetailsStepHandle } from '@/app/(app)/projects/new/steps/DetailsStep'
 import { BudgetStep, type BudgetStepHandle } from '@/app/(app)/projects/new/steps/BudgetStep'
+import {
+  CardStructureStep,
+  type CardStructureStepHandle,
+} from '@/app/(app)/projects/new/steps/CardStructureStep'
+import { DeferredStep } from '@/app/(app)/projects/new/steps/DeferredStep'
+import { DetailsStep, type DetailsStepHandle } from '@/app/(app)/projects/new/steps/DetailsStep'
+import { ReviewStep } from '@/app/(app)/projects/new/steps/ReviewStep'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 
@@ -30,12 +36,14 @@ export function ProjectWizard() {
   const me = useMe()
   const detailsRef = useRef<DetailsStepHandle>(null)
   const budgetRef = useRef<BudgetStepHandle>(null)
+  const cardRef = useRef<CardStructureStepHandle>(null)
   const [activeStepId, setActiveStepId] = useState('details')
   const [localDraftId, setLocalDraftId] = useState<string | null>(null)
   const [detailsValid, setDetailsValid] = useState(false)
   const [budgetValid, setBudgetValid] = useState(false)
   const [detailsDirty, setDetailsDirty] = useState(false)
   const [budgetDirty, setBudgetDirty] = useState(false)
+  const [cardDirty, setCardDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
   const urlDraftId = parseDraftId({ draftId: params.get('draftId') ?? undefined })
@@ -50,6 +58,8 @@ export function ProjectWizard() {
     if (step?.optional) return true
     if (id === 'details') return detailsValid && !saving && !launched
     if (id === 'budget') return budgetValid && !saving && !launched && draftId !== null
+    if (id === 'card-structure') return true
+    if (id === 'review') return true
     return false
   }
 
@@ -84,6 +94,23 @@ export function ProjectWizard() {
       }
       return
     }
+    if (activeStepId === 'card-structure') {
+      if (!draftId) {
+        setActiveStepId('details')
+        return
+      }
+      setSaving(true)
+      try {
+        const ok = await cardRef.current?.submit()
+        if (ok) {
+          const next = nextWizardStepId('card-structure')
+          if (next) setActiveStepId(next)
+        }
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
     const next = nextWizardStepId(activeStepId)
     if (next) setActiveStepId(next)
   }
@@ -98,7 +125,7 @@ export function ProjectWizard() {
   }
 
   function handleCancel() {
-    if (detailsDirty || budgetDirty) {
+    if (detailsDirty || budgetDirty || cardDirty) {
       setDiscardOpen(true)
       return
     }
@@ -128,7 +155,54 @@ export function ProjectWizard() {
     }
   }
 
-  const stepLabel = WIZARD_STEPS.find((step) => step.id === activeStepId)?.label ?? activeStepId
+  const user = me.data.user
+
+  function renderStep() {
+    if (activeStepId === 'details') {
+      return (
+        <DetailsStep
+          ref={detailsRef}
+          draftId={draftId}
+          project={project}
+          user={user}
+          launched={launched}
+          onValidChange={setDetailsValid}
+          onDirtyChange={setDetailsDirty}
+        />
+      )
+    }
+    if (!draftId) {
+      return <p>This step needs a draft — go back to Details.</p>
+    }
+    switch (activeStepId) {
+      case 'budget':
+        return (
+          <BudgetStep
+            ref={budgetRef}
+            draftId={draftId}
+            project={project}
+            onValidChange={setBudgetValid}
+            onDirtyChange={setBudgetDirty}
+          />
+        )
+      case 'members':
+        return <DeferredStep title="Members" phase="A3" />
+      case 'roles':
+        return <DeferredStep title="Roles" phase="A3" />
+      case 'card-structure':
+        return <CardStructureStep ref={cardRef} draftId={draftId} onDirtyChange={setCardDirty} />
+      case 'controls':
+        return <DeferredStep title="Controls" phase="A6" />
+      case 'approval-rules':
+        return <DeferredStep title="Approval rules" phase="A7" />
+      case 'review':
+        return <ReviewStep draftId={draftId} />
+      case 'launch':
+        return <p>Launch — not built yet</p>
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="min-w-0">
@@ -146,34 +220,12 @@ export function ProjectWizard() {
         steps={STEPS}
         activeStepId={activeStepId}
         isStepValid={isStepValid}
-        isDirty={detailsDirty || budgetDirty}
+        isDirty={detailsDirty || budgetDirty || cardDirty}
         onNext={() => void handleNext()}
         onBack={handleBack}
         onCancel={handleCancel}
       >
-        {activeStepId === 'details' ? (
-          <DetailsStep
-            ref={detailsRef}
-            draftId={draftId}
-            project={project}
-            user={me.data.user}
-            launched={launched}
-            onValidChange={setDetailsValid}
-            onDirtyChange={setDetailsDirty}
-          />
-        ) : activeStepId === 'budget' && draftId ? (
-          <BudgetStep
-            ref={budgetRef}
-            draftId={draftId}
-            project={project}
-            onValidChange={setBudgetValid}
-            onDirtyChange={setBudgetDirty}
-          />
-        ) : activeStepId === 'budget' && !draftId ? (
-          <p>Budget needs a draft — go back to Details.</p>
-        ) : (
-          <p>{stepLabel} — not built yet</p>
-        )}
+        {renderStep()}
       </StepWizard>
       <ConfirmDialog
         open={discardOpen}

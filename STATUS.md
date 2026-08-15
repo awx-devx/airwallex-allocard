@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.6 — Card structure, deferred steps, review
-**Last green `pnpm verify`:** 2026-08-15 (A2.5)
+**Active task:** A2.7 — Launch + `nextLabel`
+**Last green `pnpm verify`:** 2026-08-15 (A2.6)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 6 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 7 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — A2.5 budget step done. Next = **Card structure / review** (A2.6). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.6 review/deferred/card-structure done. Next = **Launch** (A2.7). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.6 done (2026-08-15).** Deferred Alerts, card-structure switches, review (kinds + budget, no invented limits). Launch still stub. `pnpm verify` green (1561 tests). Next: **A2.7** Launch + `nextLabel`.
 
 **A2.5 done (2026-08-15).** Wizard budget step PUTs `approvedAmount` + org currency via `parseMoneyInput` (no `type="number"`). `pnpm verify` green (1561 tests). Next: **A2.6** card structure, deferred steps, review.
 

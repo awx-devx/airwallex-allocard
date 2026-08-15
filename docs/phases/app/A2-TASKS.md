@@ -421,7 +421,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.6 — Card structure, deferred steps, review
 
-- [ ] **A2.6** — Remaining wizard bodies except Launch
+- [x] **A2.6** — Remaining wizard bodies except Launch
   - **Files:**
     - `src/app/(app)/projects/new/steps/DeferredStep.tsx` (`'use client'`)
     - `src/app/(app)/projects/new/steps/CardStructureStep.tsx` (`'use client'`)
@@ -435,7 +435,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** one column. Switches stacked (`flex flex-col gap-3`). Review sections stack; wrap any long code with `break-all` / `min-w-0`. Rail still `flex-wrap`.
   - **Pattern:** `Switch` `src/components/ui/switch.tsx`. `Alert` A1.5. `Review` as read-only Cards like A1.4 invite preview. Helpers `cardStructureReviewLines` / `isReadyForApprovalInput`.
   - **Accept:** `pnpm verify`. 375px and 768px: Next/Back reachable on deferred + review; four switches reachable; review shows card-kind sentences and does **not** show invented card limits. Members step is obviously unfinished (info Alert), not a blank table.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Deferred steps are info Alerts (`Members land in A3.` etc.). Card structure four switches PATCH all booleans. Review shows details, budget, `cardStructureReviewLines`, deferred notices — no invented card limits. Launch still stubbed. `pnpm verify` green (1561 tests).
 
 ### A2.7 — Launch + `nextLabel`
 
