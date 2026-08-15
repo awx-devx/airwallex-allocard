@@ -3,7 +3,7 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A3 — Project overview, people & access
-**Active task:** generate A3-TASKS.md
+**Active task:** A3.0 — access helpers (STOP before screens)
 **Last green `pnpm verify`:** 2026-08-15 (A2 exit)
 **Blocked on:** _nothing_
 
@@ -29,9 +29,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3–A9 Application       | not started  | —       |
+| A     | A3 People & access      | in progress  | 0 / 10  |
+| A     | A4–A9 Application       | not started  | —       |
 
-A2 **complete**. Next: generate `A3-TASKS.md`. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A3-TASKS **locked**. Next: **A3.0** helpers, then A3.1 overview. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +62,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A3-TASKS locked (2026-08-15).** Policies approved: no new contracts; AppShell collapse stays A2.1 (append SideNav only); A3 ships `/settings/access-reviews` (A9 must not rebuild); `assignedCount` is client-side (first 100 projects); last admin is UX-only on the sole `member.manage` holder; preview matches 403 on allow/deny not copy; overview tiles use F1 hooks not stubbed `overview.*` counts; access-review resolutions are `CONFIRM`/`REVOKE` only; `reasons[]` rendered verbatim plus a separate `scopeSummary`. Next: **A3.0** helpers, then A3.1 overview. Do not start screens before A3.0 STOP.
 
 **A2 exit (2026-08-15).** Phase exit + `A2-dashboard-projects.md` review checklist signed off. Slot crash (`Button asChild`), ThemeToggle hydration, and Timeline wrap in narrow cards fixed. `pnpm verify` green (1566 tests). Next: generate `A3-TASKS.md`; first A3 work is overview / people / access.
 
