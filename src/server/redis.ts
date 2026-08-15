@@ -193,3 +193,13 @@ export function getRedis(options?: { url?: string | null }): RedisClient {
 export function resetRedis(): void {
   singleton = undefined
 }
+
+/** CLI scripts: close the Redis connection so Node can exit. */
+export async function closeRedis(): Promise<void> {
+  if (!singleton) {
+    return
+  }
+  const client = singleton
+  singleton = undefined
+  await client.quit()
+}

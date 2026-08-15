@@ -84,6 +84,10 @@ describe('pnpm seed idempotency', () => {
     expect(ownerUsers).toBe(1)
     expect(adminUsers).toBe(1)
     expect(memberUsers).toBe(1)
+
+    const owner = await mongoose.connection.collection('users').findOne({ email: SEED.ownerEmail })
+    expect(typeof owner?.passwordHash).toBe('string')
+    expect((owner?.passwordHash as string).length).toBeGreaterThan(0)
     expect(orgs).toBe(1)
     // owner + admin + member + approver + spender + contractor + procurement
     expect(memberships).toBe(7)

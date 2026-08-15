@@ -12,6 +12,7 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { hashPassword } from '../src/server/auth/password'
 import { connectDb, disconnectDb, type ConnectDbOptions } from '../src/server/db/connect'
+import { closeRedis } from '../src/server/redis'
 import {
   generateInviteToken,
   hashInviteToken,
@@ -91,13 +92,20 @@ async function upsertOwner(): Promise<SeedUser> {
 
   const existing = await users.findOne({ email })
   if (existing) {
+    if (!existing.passwordHash) {
+      const passwordHash = await hashPassword(SEED.password)
+      await users.updateOne({ _id: existing._id }, { $set: { passwordHash } })
+      return { ...existing, passwordHash }
+    }
     return existing
   }
 
+  const passwordHash = await hashPassword(SEED.password)
   const doc: SeedUser = {
     _id: new mongoose.Types.ObjectId(),
     email,
     name: SEED.ownerName,
+    passwordHash,
     createdAt: new Date(),
   }
   await users.insertOne(doc)
@@ -1525,13 +1533,18 @@ async function main(): Promise<void> {
     console.log('Seed complete.')
   } finally {
     await disconnectDb()
+    await closeRedis()
   }
 }
 
 const entry = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : ''
 if (import.meta.url === entry) {
-  main().catch((error: unknown) => {
-    console.error(error)
-    process.exitCode = 1
-  })
+  main()
+    .then(() => {
+      process.exit(0)
+    })
+    .catch((error: unknown) => {
+      console.error(error)
+      process.exit(1)
+    })
 }
