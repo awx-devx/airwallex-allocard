@@ -342,7 +342,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ## Contracts first
 
-- [ ] **A3.0** — Access helpers (STOP for review)
+- [x] **A3.0** — Access helpers (STOP for review)
   - **Files:**
     - `src/client/lib/access.ts` (create)
     - `src/client/lib/access.test.ts` (create)
@@ -375,7 +375,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Pattern:** `src/client/lib/projects.ts` + `src/client/lib/projects.test.ts` (A2.0). Scope window copy: `src/server/services/access/computeEffectivePermissions.ts` (`timeWindowDenialMessage`). `isScopeActive`: `src/shared/access/scope.ts`. Labels: `src/shared/enums/permissions.ts` + `src/shared/constants/roleTemplates.ts`. Contracts to copy fields from: `src/shared/contracts/projectMember.ts`, `src/shared/contracts/role.ts`, `src/shared/contracts/accessReview.ts` (B3).
   - **STOP and get this reviewed before A3.1+.** Wrong last-admin rule, preview formatter, or settings routes after screens land is a rewrite.
   - **Accept:** `pnpm test client/lib/access` — cover: every `Permission` has a label; groups flatten to the enum; `formatPermissionReason` uses the server message verbatim; expired vs not-yet-valid copy; `isLastAccessManager` true only for the sole active `member.manage` holder; `buildAccessScope` drops the wrong id arrays and empty arrays; `eligibleOrgMembersToAdd` excludes `SUSPENDED` and existing members; `memberHasCards` true via `accessList` or cardholder `userId`; `previewWouldDeny` fail-closed; `parseAccessReviewSearchParams` drops unknown status; `SETTINGS_NAV` has no `/projects/.../settings`; `addMemberHref` throws on empty id.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Helpers in `src/client/lib/access.ts` (`isScopeActive` re-exported from shared). 23 unit tests. `pnpm verify` green (1589 tests). STOP before A3.1 screens.
 
 ---
 
