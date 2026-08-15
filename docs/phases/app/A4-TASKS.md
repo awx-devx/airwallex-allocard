@@ -396,7 +396,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.3 — Set approved, adjust, limits moved
 
-- [ ] **A4.3** — PUT approved + manual ADJUSTMENT + card-limit DiffView
+- [x] **A4.3** — PUT approved + manual ADJUSTMENT + card-limit DiffView
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/BudgetHome.tsx` (edit — wire actions)
     - `src/app/(app)/projects/[id]/budget/CardLimitMoves.tsx` (`'use client'`)
@@ -412,7 +412,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** dialogs stacked fields. Action row `flex flex-wrap gap-2`. DiffView may use its own `grid-cols-3` (F3 — do not restyle). No page `md:grid`. No `hidden` on Set/Adjust/Request.
   - **Pattern:** A1.6 money-adjacent forms; A2.5 `BudgetStep.tsx` (`parseMoneyInput`, no `type="number"`). `DiffView` `src/components/patterns/DiffView.tsx`. `useSetBudget` / `useCreateBudgetEntry` `src/client/hooks/useBudget.ts`. `useProjectCards` `src/client/hooks/useCards.ts`. `qk.cardsForProject` `src/client/queryKeys.ts`. `applyServerErrorsFromApiError` `src/client/lib/forms/applyServerErrors.ts`. B4 PUT/entries: `src/shared/contracts/budget.ts`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/budget`. 375px and 768px: Set approved / Record adjustment / Request change reachable; dialogs do not force page-level horizontal scroll; four figures still visible. Saving approved refetches cards and renders DiffView or the locked empty-moves sentence. No `usePanToken`. No `useCardLimits` in these files.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Set approved + adjust dialogs; snapshot `desiredControls.transactionLimits` then DiffView. Extra-invalidate history/entries. `pnpm verify` green (1618 tests).
 
 ### A4.4 — Formula editor (no screen)
 
