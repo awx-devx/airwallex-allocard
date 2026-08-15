@@ -521,7 +521,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.8 — Access reviews
 
-- [ ] **A3.8** — `/settings/access-reviews`
+- [x] **A3.8** — `/settings/access-reviews`
   - **Files:**
     - `src/app/(app)/settings/access-reviews/page.tsx` (replace placeholder)
     - `src/app/(app)/settings/access-reviews/AccessReviewList.tsx` (`'use client'`)
@@ -535,7 +535,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** table scrolls inside; toolbar wrap. No card-list. No `md:grid`.
   - **Pattern:** A2.3 `ProjectList.tsx` URL filters. `useAccessReviews` / `useResolveAccessReview` `src/client/hooks/useMembers.ts`. B3 `src/shared/contracts/accessReview.ts` + `src/shared/schemas/accessReview.ts`. `AccessReviewStatus` / `AccessReviewResolution` `src/shared/enums/accessReviewStatus.ts`.
   - **Accept:** `pnpm verify`. `/settings/access-reviews?status=OPEN&projectId=x` calls the API with those fields (no extra client filter). 375px and 768px: no page-level horizontal scrollbar; Confirm / Revoke reachable when offered. No `DISMISS` control.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** URL filters via `parseAccessReviewSearchParams`; Confirm/Revoke only (no DISMISS). `pnpm verify` green (1589 tests).
 
 ### A3.9 — Preview vs 403 + don’t-break proofs
 

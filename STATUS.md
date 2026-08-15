@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A3 — Project overview, people & access
-**Active task:** A3.8 — access reviews
-**Last green `pnpm verify`:** 2026-08-15 (A3.7)
+**Active task:** A3.9 — preview vs 403 proofs
+**Last green `pnpm verify`:** 2026-08-15 (A3.8)
 **Blocked on:** _nothing_
 
 ---
@@ -29,10 +29,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3 People & access      | in progress  | 8 / 10  |
+| A     | A3 People & access      | in progress  | 9 / 10  |
 | A     | A4–A9 Application       | not started  | —       |
 
-A3.7 **done**. Next: **A3.8** access reviews. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A3.8 **done**. Next: **A3.9** proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -62,6 +62,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A3.8 done (2026-08-15).** `/settings/access-reviews` DataTable with URL filters; CONFIRM/REVOKE only. `pnpm verify` green (1589 tests). Next: **A3.9** proofs.
 
 **A3.7 done (2026-08-15).** Role permission matrix; template Save sends `force: true` when holders > 0. `pnpm verify` green (1589 tests). Next: **A3.8** access reviews.
 
