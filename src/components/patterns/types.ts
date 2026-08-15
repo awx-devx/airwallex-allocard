@@ -147,6 +147,7 @@ export type StepWizardProps = {
   onNext: () => void
   onBack: () => void
   onCancel?: () => void
+  nextLabel?: string
   children: ReactNode
 }
 

@@ -13,6 +13,7 @@ export function StepWizard({
   onNext,
   onBack,
   onCancel,
+  nextLabel,
   children,
 }: StepWizardProps) {
   useUnsavedChangesGuard(isDirty)
@@ -51,7 +52,7 @@ export function StepWizard({
           Back
         </Button>
         <Button type="button" disabled={nextDisabled} onClick={onNext}>
-          Continue
+          {nextLabel ?? 'Continue'}
         </Button>
       </div>
     </div>

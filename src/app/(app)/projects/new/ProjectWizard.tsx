@@ -24,6 +24,7 @@ import {
 } from '@/app/(app)/projects/new/steps/CardStructureStep'
 import { DeferredStep } from '@/app/(app)/projects/new/steps/DeferredStep'
 import { DetailsStep, type DetailsStepHandle } from '@/app/(app)/projects/new/steps/DetailsStep'
+import { LaunchStep, type LaunchStepHandle } from '@/app/(app)/projects/new/steps/LaunchStep'
 import { ReviewStep } from '@/app/(app)/projects/new/steps/ReviewStep'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -37,10 +38,12 @@ export function ProjectWizard() {
   const detailsRef = useRef<DetailsStepHandle>(null)
   const budgetRef = useRef<BudgetStepHandle>(null)
   const cardRef = useRef<CardStructureStepHandle>(null)
+  const launchRef = useRef<LaunchStepHandle>(null)
   const [activeStepId, setActiveStepId] = useState('details')
   const [localDraftId, setLocalDraftId] = useState<string | null>(null)
   const [detailsValid, setDetailsValid] = useState(false)
   const [budgetValid, setBudgetValid] = useState(false)
+  const [launchValid, setLaunchValid] = useState(false)
   const [detailsDirty, setDetailsDirty] = useState(false)
   const [budgetDirty, setBudgetDirty] = useState(false)
   const [cardDirty, setCardDirty] = useState(false)
@@ -60,6 +63,7 @@ export function ProjectWizard() {
     if (id === 'budget') return budgetValid && !saving && !launched && draftId !== null
     if (id === 'card-structure') return true
     if (id === 'review') return true
+    if (id === 'launch') return launchValid && !saving && draftId !== null
     return false
   }
 
@@ -106,6 +110,19 @@ export function ProjectWizard() {
           const next = nextWizardStepId('card-structure')
           if (next) setActiveStepId(next)
         }
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
+    if (activeStepId === 'launch') {
+      if (!draftId) {
+        setActiveStepId('details')
+        return
+      }
+      setSaving(true)
+      try {
+        await launchRef.current?.submit()
       } finally {
         setSaving(false)
       }
@@ -198,7 +215,7 @@ export function ProjectWizard() {
       case 'review':
         return <ReviewStep draftId={draftId} />
       case 'launch':
-        return <p>Launch — not built yet</p>
+        return <LaunchStep ref={launchRef} draftId={draftId} onValidChange={setLaunchValid} />
       default:
         return null
     }
@@ -221,6 +238,7 @@ export function ProjectWizard() {
         activeStepId={activeStepId}
         isStepValid={isStepValid}
         isDirty={detailsDirty || budgetDirty || cardDirty}
+        nextLabel={activeStepId === 'launch' ? 'Launch' : 'Continue'}
         onNext={() => void handleNext()}
         onBack={handleBack}
         onCancel={handleCancel}

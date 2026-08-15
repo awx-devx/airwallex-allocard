@@ -439,7 +439,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
 
 ### A2.7 — Launch + `nextLabel`
 
-- [ ] **A2.7** — Launch transitions + activity; `StepWizard` `nextLabel`
+- [x] **A2.7** — Launch transitions + activity; `StepWizard` `nextLabel`
   - **Files:**
     - `src/components/patterns/types.ts` (edit — add `nextLabel?: string` to `StepWizardProps`)
     - `src/components/patterns/StepWizard.tsx` (edit — Continue button children `{nextLabel ?? 'Continue'}`)
@@ -455,7 +455,7 @@ Keep `src/client/shell/mockShellData.ts` for `/dev/shell` only.
   - **Layout:** one column. Timeline is a column (already). Launch / Open project in `flex flex-wrap gap-2`.
   - **Pattern:** `useTransitionProject` `src/client/hooks/useProjects.ts`. `useProjectActivity` `src/client/hooks/useReports.ts`. `Timeline` F3.16. Error mapping: A1.2 `applyServerErrorsFromApiError`. `StepWizard` F3.21 (only the label prop changes).
   - **Accept:** `pnpm verify` and `pnpm typecheck`. 375px and 768px: Launch button reachable; after success, Timeline and Open project reachable; no page-level horizontal scrollbar. `/dev/ui` StepWizard still works (default Continue).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `nextLabel` on StepWizard (Launch on last step). Launch does DRAFT→PENDING_APPROVAL then →ACTIVE; 403 shows locked info Alert + Timeline. List Launch remains one hop to ACTIVE. `pnpm verify` green (1561 tests).
 
 ### A2.8 — Workspace shell
 

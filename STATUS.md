@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A2 — Dashboard & projects
-**Active task:** A2.7 — Launch + `nextLabel`
-**Last green `pnpm verify`:** 2026-08-15 (A2.6)
+**Active task:** A2.8 — Workspace shell
+**Last green `pnpm verify`:** 2026-08-15 (A2.7)
 **Blocked on:** _nothing_
 
 ---
@@ -28,10 +28,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | in progress  | 7 / 10  |
+| A     | A2 Dashboard & projects | in progress  | 8 / 10  |
 | A     | A3–A9 Application       | not started  | —       |
 
-A2 **in progress** — A2.6 review/deferred/card-structure done. Next = **Launch** (A2.7). Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **in progress** — A2.7 Launch done. Next = **Workspace shell** (A2.8). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,6 +61,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A2.7 done (2026-08-15).** `StepWizard` `nextLabel`; Launch two-hops then Timeline / Open project; 403 info copy. `pnpm verify` green (1561 tests). Next: **A2.8** workspace tab shell.
 
 **A2.6 done (2026-08-15).** Deferred Alerts, card-structure switches, review (kinds + budget, no invented limits). Launch still stub. `pnpm verify` green (1561 tests). Next: **A2.7** Launch + `nextLabel`.
 
