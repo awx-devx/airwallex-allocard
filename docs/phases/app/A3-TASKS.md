@@ -425,7 +425,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.3 — Scope picker
 
-- [ ] **A3.3** — `ScopePicker` progressive disclosure (no screen)
+- [x] **A3.3** — `ScopePicker` progressive disclosure (no screen)
   - **Files:**
     - `src/app/(app)/projects/[id]/people/ScopePicker.tsx` (`'use client'`)
   - **Do:**
@@ -439,7 +439,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** stack. Sub-picker is **progressive** (only the chosen level). No Sheet.
   - **Pattern:** A1.6 `CreateOrganizationForm.tsx` (`RadioGroup` / `Checkbox` / `DateRangePicker`). `RadioGroup` `src/components/ui/radio-group.tsx`. `Checkbox` `src/components/ui/checkbox.tsx`. `DateRangePicker` `src/components/ui/date-range-picker.tsx`. `buildAccessScope` from A3.0. B3 scope shape: `src/shared/schemas/accessScope.ts`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/access`. 375px and 768px: all six level radios reachable; choosing `WORKSTREAM` reveals workstream checkboxes and hides card/category/member lists. No page-level horizontal scrollbar.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Progressive RadioGroup + one sub-picker; card labels nickName + maskedNumber; optional DateRangePicker. `pnpm verify` green (1589 tests).
 
 ### A3.4 — Add member + live preview
 

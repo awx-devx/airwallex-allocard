@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A3 — Project overview, people & access
-**Active task:** A3.3 — scope picker
-**Last green `pnpm verify`:** 2026-08-15 (A3.2)
+**Active task:** A3.4 — add member + preview
+**Last green `pnpm verify`:** 2026-08-15 (A3.3)
 **Blocked on:** _nothing_
 
 ---
@@ -29,10 +29,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3 People & access      | in progress  | 3 / 10  |
+| A     | A3 People & access      | in progress  | 4 / 10  |
 | A     | A4–A9 Application       | not started  | —       |
 
-A3.2 **done**. Next: **A3.3** scope picker. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A3.3 **done**. Next: **A3.4** add member + preview. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -62,6 +62,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A3.3 done (2026-08-15).** `ScopePicker` progressive disclosure; optional date window. `pnpm verify` green (1589 tests). Next: **A3.4** add member + live preview.
 
 **A3.2 done (2026-08-15).** `/projects/[id]/people` DataTable + access history; Add gated; no fake edit form. `pnpm verify` green (1589 tests). Next: **A3.3** scope picker.
 
