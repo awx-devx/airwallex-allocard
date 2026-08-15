@@ -457,7 +457,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.6 — History
 
-- [ ] **A4.6** — `/projects/[id]/budget/history` actor + reason
+- [x] **A4.6** — `/projects/[id]/budget/history` actor + reason
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/history/page.tsx` (replace placeholder)
     - `src/app/(app)/projects/[id]/budget/history/BudgetHistory.tsx` (`'use client'`)
@@ -469,7 +469,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** column. No `md:grid`. No Sheet. No DataTable required (`Timeline` is the list).
   - **Pattern:** A3.2 access-history block in `PeopleList.tsx`. `toAccessHistoryTimelineItem` in `src/client/lib/access.ts`. `Timeline` `src/components/patterns/Timeline.tsx`. Hook: `useBudgetHistory` `src/client/hooks/useBudget.ts`. B4: `src/shared/schemas/budget.ts` `budgetHistoryEntrySchema` (`at`, not `createdAt`).
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; history entries reachable by vertical scroll. Every rendered item includes `action` text. A fixture/reason test lives in `client/lib/budget` (already A4.0) — do not add RTL.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Timeline of history with action, actorType, reason suffix, `at`. `pnpm verify` green (1618 tests).
 
 ### A4.7 — Change requests
 

@@ -1,3 +1,5 @@
+import { BudgetHistory } from '@/app/(app)/projects/[id]/budget/history/BudgetHistory'
+
 export default function BudgetHistoryPage() {
-  return <main className="min-w-0">History — not built yet</main>
+  return <BudgetHistory />
 }
