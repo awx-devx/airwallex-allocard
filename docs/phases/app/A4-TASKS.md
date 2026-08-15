@@ -521,7 +521,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A3.9 `src/client/lib/access.test.ts`. A2.9 `src/client/lib/projects.test.ts`.
   - **Accept:** `pnpm test client/lib/budget` and `pnpm test client/lib/projects` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on home (four figures + Set/Adjust/Request), categories (Add/Save), history, requests (Approve/Reject), wizard (Next + categories Link); Menu/Sheet still works below `md`; tables may scroll inside.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Remaining `-200` unclamped; formula context one key; PAN scan; `BudgetBar` `md:grid-cols-4`; workspace still six tabs including `/budget`. `pnpm verify` green (1625 tests).
 
 ---
 
