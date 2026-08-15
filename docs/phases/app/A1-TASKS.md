@@ -356,20 +356,20 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A1-auth-onboarding.md` signed off:
-  - [ ] The onboarding gate is unavoidable — no route reaches the app without an organisation
-  - [ ] Invite tokens survive the sign-up round trip (`?invite=` → `/invite/[token]`)
-  - [ ] Every invite failure mode has a distinct, human message (accept-time codes + preview `NOT_FOUND`)
-  - [ ] Password fields never appear in any log or error report
-  - [ ] Return paths are validated against an allowlist, not reflected blindly
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; sign-in and Google actions reachable without sideways scroll
-- [ ] No `AppShell` on `(auth)` / `(onboarding)` / `(invite)`
-- [ ] Google button hidden when `AUTH_GOOGLE_ID` unset
-- [ ] `src/client/shell/AppShell.tsx` unchanged (collapse is A2)
-- [ ] Spec’s review checklist signed off in `A1-auth-onboarding.md`
-- [ ] `STATUS.md` updated with the next phase (**A2** — first task = AppShell collapse)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A1-auth-onboarding.md` signed off:
+  - [x] The onboarding gate is unavoidable — no route reaches the app without an organisation
+  - [x] Invite tokens survive the sign-up round trip (`?invite=` → `/invite/[token]`)
+  - [x] Every invite failure mode has a distinct, human message (accept-time codes + preview `NOT_FOUND`)
+  - [x] Password fields never appear in any log or error report
+  - [x] Return paths are validated against an allowlist, not reflected blindly
+  - [x] 375px and 768px: no page-level horizontal scrollbar; sign-in and Google actions reachable without sideways scroll
+- [x] No `AppShell` on `(auth)` / `(onboarding)` / `(invite)`
+- [x] Google button hidden when `AUTH_GOOGLE_ID` unset
+- [x] `src/client/shell/AppShell.tsx` unchanged (collapse is A2)
+- [x] Spec’s review checklist signed off in `A1-auth-onboarding.md`
+- [x] `STATUS.md` updated with the next phase (**A2** — first task = AppShell collapse)
 
 ## Out of scope (do not do in A1)
 

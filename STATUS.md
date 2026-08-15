@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A1 — Auth & onboarding
-**Active task:** A1 phase exit (not started)
-**Last green `pnpm verify`:** 2026-08-15 (A1.7)
+**Active phase:** A2 — Dashboard & projects
+**Active task:** Generate `docs/phases/app/A2-TASKS.md` (not started)
+**Last green `pnpm verify`:** 2026-08-15 (A1 phase exit)
 **Blocked on:** _nothing_
 
 ---
@@ -27,10 +27,11 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | in progress  | 8 / 8   |
-| A     | A2–A9 Application       | not started  | —       |
+| A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
+| A     | A2 Dashboard & projects | not started  | —       |
+| A     | A3–A9 Application       | not started  | —       |
 
-A1 **in progress** — A1.0–A1.7 implementation complete. **Stop before phase exit.** Visual direction: `docs/VISUAL-DIRECTION.md`.
+A2 **not started** — generate `docs/phases/app/A2-TASKS.md` from `A2-dashboard-projects.md` + `TASKS-TEMPLATE.md` in a fresh session. First product task = **AppShell collapse**. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -61,7 +62,9 @@ _None yet._
 
 ## Notes for the next session
 
-**A1.7 done (2026-08-15).** Guard proofs + password-free copy; `(app)` still uses `requireApp()`. Phase exit not run.
+**A1 exit (2026-08-15).** Phase exit + `A1-auth-onboarding.md` review checklist signed off. `pnpm verify` green (1532 tests). Next: generate `A2-TASKS.md`; first A2 task is AppShell collapse (`hidden md:flex` aside + `Sheet`).
+
+**A1.7 done (2026-08-15).** Guard proofs + password-free copy; `(app)` still uses `requireApp()`.
 
 **A1.6 done (2026-08-15).** Create-org form with geo comboboxes; `update()` before dashboard.
 

@@ -34,9 +34,9 @@ No `AppShell`. A centred column: `max-w-md w-full px-4`. Google and password act
 
 ## Review checklist
 
-- [ ] The onboarding gate is unavoidable — no route reaches the app without an organisation
-- [ ] Invite tokens survive the sign-up round trip
-- [ ] Every invite failure mode has a distinct, human message
-- [ ] Password fields never appear in any log or error report
-- [ ] Return paths are validated against an allowlist, not reflected blindly
-- [ ] 375px and 768px: no page-level horizontal scrollbar; sign-in and Google actions reachable without sideways scroll
+- [x] The onboarding gate is unavoidable — no route reaches the app without an organisation
+- [x] Invite tokens survive the sign-up round trip
+- [x] Every invite failure mode has a distinct, human message
+- [x] Password fields never appear in any log or error report
+- [x] Return paths are validated against an allowlist, not reflected blindly
+- [x] 375px and 768px: no page-level horizontal scrollbar; sign-in and Google actions reachable without sideways scroll
