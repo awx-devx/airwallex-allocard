@@ -560,20 +560,20 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A3-people-access.md` signed off:
-  - [ ] The preview renders `reasons[]` and updates live
-  - [ ] The preview matches actual enforcement — spot-check against a real `403` (allow/deny via `previewWouldDeny`, not string equality with `Missing ${permission}`)
-  - [ ] Scope selection uses progressive disclosure
-  - [ ] Role edits warn about affected members
-  - [ ] Every overview element links somewhere useful
-  - [ ] `can()` gates actions, and the server still rejects them if bypassed
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; matrix may scroll internally; Add / Save reachable
-- [ ] `/dev/shell` still works (inherits new SideNav items + existing collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A4**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A3-people-access.md` signed off:
+  - [x] The preview renders `reasons[]` and updates live
+  - [x] The preview matches actual enforcement — spot-check against a real `403` (allow/deny via `previewWouldDeny`, not string equality with `Missing ${permission}`)
+  - [x] Scope selection uses progressive disclosure
+  - [x] Role edits warn about affected members
+  - [x] Every overview element links somewhere useful
+  - [x] `can()` gates actions, and the server still rejects them if bypassed
+  - [x] 375px and 768px: no page-level horizontal scrollbar; matrix may scroll internally; Add / Save reachable
+- [x] `/dev/shell` still works (inherits new SideNav items + existing collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A4**)
 
 ## Out of scope (do not do in A3)
 

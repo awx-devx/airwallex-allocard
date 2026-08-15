@@ -28,7 +28,7 @@ import { PermissionPreview } from '@/app/(app)/projects/[id]/people/PermissionPr
 import { ScopePicker } from '@/app/(app)/projects/[id]/people/ScopePicker'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import {
   Form,
@@ -223,9 +223,9 @@ export function AddMemberForm() {
                 Add member
               </Button>
             </PermissionGateView>
-            <Button asChild variant="outline">
-              <Link href={peopleHref(id)}>Cancel</Link>
-            </Button>
+            <Link href={peopleHref(id)} className={buttonVariants({ variant: 'outline' })}>
+              Cancel
+            </Link>
           </div>
         </div>
         <div className="min-w-0 flex-1">

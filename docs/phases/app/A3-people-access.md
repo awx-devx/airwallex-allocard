@@ -45,10 +45,10 @@ Permission matrix and member `DataTable`: scroll inside (`overflow-x-auto`), do 
 
 ## Review checklist
 
-- [ ] The preview renders `reasons[]` and updates live
-- [ ] The preview matches actual enforcement — spot-check against a real `403`
-- [ ] Scope selection uses progressive disclosure
-- [ ] Role edits warn about affected members
-- [ ] Every overview element links somewhere useful
-- [ ] `can()` gates actions, and the server still rejects them if bypassed
-- [ ] 375px and 768px: no page-level horizontal scrollbar; matrix may scroll internally; Add / Save reachable
+- [x] The preview renders `reasons[]` and updates live
+- [x] The preview matches actual enforcement — spot-check against a real `403`
+- [x] Scope selection uses progressive disclosure
+- [x] Role edits warn about affected members
+- [x] Every overview element links somewhere useful
+- [x] `can()` gates actions, and the server still rejects them if bypassed
+- [x] 375px and 768px: no page-level horizontal scrollbar; matrix may scroll internally; Add / Save reachable

@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A3 — Project overview, people & access
-**Active task:** A3 phase exit (do not start A4)
-**Last green `pnpm verify`:** 2026-08-15 (A3.9)
+**Active phase:** A4 — Budget
+**Active task:** generate A4-TASKS.md
+**Last green `pnpm verify`:** 2026-08-15 (A3 exit)
 **Blocked on:** _nothing_
 
 ---
@@ -29,10 +29,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F3 UI library           | **complete** | 26 / 26 |
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3 People & access      | in progress  | 10 / 10 |
+| A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4–A9 Application       | not started  | —       |
 
-A3.9 **done**. Next: **A3 phase exit** — do not start A4. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A3 **complete**. Next: generate `A4-TASKS.md`. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -62,6 +62,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A3 exit (2026-08-15).** Phase exit + `A3-people-access.md` review checklist signed off. Add-member Cancel is a `buttonVariants` Link (no `Button asChild` Slot). `pnpm verify` green (1597 tests). Next: generate `A4-TASKS.md`; first A4 work is project budget. Do not start A4 screens before the task file is locked.
 
 **A3.9 done (2026-08-15).** Preview vs 403, SETTINGS_NAV, no Settings workspace tab, PAN scan, shell collapse unchanged. `pnpm verify` green (1594 tests). Next: **A3 phase exit** — do not start A4.
 
