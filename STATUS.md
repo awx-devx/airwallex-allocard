@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A4 — Budget
-**Active task:** generate A4-TASKS.md
-**Last green `pnpm verify`:** 2026-08-15 (A3 exit)
+**Active task:** A4.0 STOP — review helpers before A4.1
+**Last green `pnpm verify`:** 2026-08-16 (A4.0)
 **Blocked on:** _nothing_
 
 ---
@@ -30,9 +30,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4–A9 Application       | not started  | —       |
+| A     | A4 Budget               | in progress  | 1 / 10  |
+| A     | A5–A9 Application       | not started  | —       |
 
-A3 **complete**. Next: generate `A4-TASKS.md`. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A4 **in progress**. A4-TASKS locked; A4.0 helpers done. STOP — review helpers before **A4.1** screens. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -62,6 +63,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A4.0 done (2026-08-16).** Helpers in `src/client/lib/budget.ts`. Formula context `{ approvedAmount }` only; remaining not clamped; card-limit diffs from `desiredControls.transactionLimits`. `pnpm verify` green (1618 tests). STOP — review helpers before **A4.1** chrome / BudgetBar.
+
+**A4-TASKS locked (2026-08-16).** Policies approved: no new contracts; limits-moved is a client diff of `desiredControls.transactionLimits` (not `useCardLimits`); formula context `{ approvedAmount }` only; wizard stays A2 PUT + A4.8 Link; header `formula`/`thresholdPcts` off PUT; BudgetBar `sm:` → `md:grid-cols-4` is the only F3 edit; AppShell collapse stays A2.1. Next: **A4.0** helpers, then A4.1 chrome. Do not start screens before A4.0 STOP.
 
 **A3 exit (2026-08-15).** Phase exit + `A3-people-access.md` review checklist signed off. Add-member Cancel is a `buttonVariants` Link (no `Button asChild` Slot). `pnpm verify` green (1597 tests). Next: generate `A4-TASKS.md`; first A4 work is project budget. Do not start A4 screens before the task file is locked.
 
