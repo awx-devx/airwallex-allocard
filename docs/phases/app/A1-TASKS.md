@@ -252,7 +252,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.3 — Sign-in
 
-- [ ] **A1.3** — `/sign-in` + return path
+- [x] **A1.3** — `/sign-in` + return path
   - **Files:**
     - `src/app/(auth)/sign-in/page.tsx` (server — replace placeholder)
     - `src/app/(auth)/sign-in/SignInForm.tsx` (`'use client'`)
@@ -268,7 +268,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack. Actions `flex-col gap-2`. No `md:grid`. No `Sheet`.
   - **Pattern:** Copy `src/app/(auth)/sign-up/SignUpForm.tsx` (A1.2) and drop `name` / `useSignUp`. Return-path rules already in `src/client/lib/auth.ts` + `src/client/api/errorBehaviour.ts`. Google button: A1.2 file.
   - **Accept:** `pnpm verify`. `pnpm test client/lib/auth` still green (returnTo allowlist). 375px and 768px: no page-level horizontal scrollbar; Sign in and Google reachable. Unsafe `?returnTo=//evil.com` must not be passed to `signIn` as `callbackUrl`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Credentials failures use locked copy. Google `callbackUrl` is invite path, else safe `returnTo` (so `/projects` survives), else `/onboarding`. GoogleButton still rejects protocol-relative URLs.
 
 ### A1.4 — Invite preview & accept
 
