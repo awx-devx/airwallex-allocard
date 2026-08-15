@@ -64,7 +64,7 @@ export async function createOrgInvite(
     orgId: ctx.orgId,
     email,
     invitedBy: inviter?.email ?? ctx.userId,
-    path: `/accept-invite/${token}`,
+    path: `/invite/${token}`,
   })
 
   await audit(ctx, {

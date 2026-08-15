@@ -1,3 +1,5 @@
+import { InviteAccept } from '@/app/(invite)/invite/[token]/InviteAccept'
+
 export default function InvitePage() {
-  return <main>A1: invite</main>
+  return <InviteAccept />
 }

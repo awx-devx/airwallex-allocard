@@ -272,7 +272,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
 
 ### A1.4 — Invite preview & accept
 
-- [ ] **A1.4** — `/invite/[token]`
+- [x] **A1.4** — `/invite/[token]`
   - **Files:**
     - `src/app/(invite)/invite/[token]/page.tsx` (replace placeholder; thin server wrapper OK)
     - `src/app/(invite)/invite/[token]/InviteAccept.tsx` (`'use client'`)
@@ -289,7 +289,7 @@ Server `page.tsx` files still may import `@/server/auth/config`. Do not add a `@
   - **Layout:** stack inside the centred column. Preview fields stacked. Actions `flex flex-col gap-2`. No `md:grid`. No `Sheet`.
   - **Pattern:** `ErrorState` `src/components/patterns/ErrorState.tsx` + `shouldShowErrorRetry`. `EmptyState` not required here. `LoadingState` `src/components/patterns/LoadingState.tsx`. Card/Alert/Button: F3 ui files. Hook: `useInvitePreview` / `useAcceptInvite` in `src/client/hooks/useOrganizations.ts`. Date: `src/lib/dates.ts` `formatDate`.
   - **Accept:** `pnpm verify` and `pnpm test api/invites`. 375px and 768px: no page-level horizontal scrollbar; Accept / Sign up / Sign in reachable. Manual: expired vs revoked vs already-accepted vs mismatch each show a **different** Alert message (policy §6).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Public preview; token survives via `?invite=`. Create-invite log path is `/invite/${token}`.
 
 ### A1.5 — Onboarding fork
 

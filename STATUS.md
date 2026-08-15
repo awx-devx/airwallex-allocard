@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A1 — Auth & onboarding
-**Active task:** A1.4 — Invite preview & accept
-**Last green `pnpm verify`:** 2026-08-15 (A1.3)
+**Active task:** A1.5 — Onboarding fork
+**Last green `pnpm verify`:** 2026-08-15 (A1.4)
 **Blocked on:** _nothing_
 
 ---
@@ -27,10 +27,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | F     | F1 Data layer           | **complete** | 15 / 15 |
 | F     | F2 Utils                | **complete** | 11 / 11 |
 | F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | in progress  | 4 / 8   |
+| A     | A1 Auth & onboarding    | in progress  | 5 / 8   |
 | A     | A2–A9 Application       | not started  | —       |
 
-A1 **in progress** — A1.3 `/sign-in` landed. Next: A1.4 `/invite/[token]`. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A1 **in progress** — A1.4 `/invite/[token]` landed. Next: A1.5 onboarding fork. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -60,6 +60,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A1.4 done (2026-08-15).** `/invite/[token]` preview + accept; demo log path `/invite/${token}`.
 
 **A1.3 done (2026-08-15).** `/sign-in` preserves safe `returnTo` through credentials and Google; invite still wins.
 

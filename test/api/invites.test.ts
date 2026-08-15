@@ -168,7 +168,7 @@ describe('/api/invites', () => {
         expect.objectContaining({
           orgId: org.id,
           email: 'new.person@example.com',
-          path: `/accept-invite/${body.token}`,
+          path: `/invite/${body.token}`,
         }),
       )
 
