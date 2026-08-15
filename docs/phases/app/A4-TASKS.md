@@ -416,7 +416,7 @@ After success, also invalidate (do not edit F1’s map):
 
 ### A4.4 — Formula editor (no screen)
 
-- [ ] **A4.4** — `FormulaEditor` live `useValidateFormula`
+- [x] **A4.4** — `FormulaEditor` live `useValidateFormula`
   - **Files:**
     - `src/app/(app)/projects/[id]/budget/FormulaEditor.tsx` (`'use client'`)
   - **Do:**
@@ -431,7 +431,7 @@ After success, also invalidate (do not edit F1’s map):
   - **Layout:** stack. Preview below the textarea on this component (parent row on `md`). No Sheet.
   - **Pattern:** A3.3 `ScopePicker.tsx` (isolated control). A3.4 generation counter in `AddMemberForm.tsx`. `FormulaHighlight` `src/components/patterns/FormulaHighlight.tsx`. `AttributeValue` `src/components/patterns/AttributeValue.tsx`. Hook: `useValidateFormula` `src/client/hooks/useBudget.ts`. B4 validate: `src/shared/schemas/budget.ts` `validateFormulaInput` / `validateFormulaOutput`. Server context to match: `src/server/services/budget/categories.ts` `formulaContext`.
   - **Accept:** `pnpm verify`. 375px and 768px: textarea and preview reachable; no page-level horizontal scrollbar when this component is the only body (dev-check by temporarily rendering it is **not** required — A4.5 Accept covers resize). Confirm `context` in the mutate payload is `{ approvedAmount }` only (read the call). Do not import `@/server`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Debounced validate with generation counter; context `{ approvedAmount }` only; `onValidityChange` for A4.5 Save gate. `pnpm verify` green (1618 tests).
 
 ### A4.5 — Categories
 

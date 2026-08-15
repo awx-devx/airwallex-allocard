@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A4 — Budget
-**Active task:** A4.4 — Formula editor (no screen)
-**Last green `pnpm verify`:** 2026-08-16 (A4.3)
+**Active task:** A4.5 — Categories
+**Last green `pnpm verify`:** 2026-08-16 (A4.4)
 **Blocked on:** _nothing_
 
 ---
@@ -30,10 +30,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4 Budget               | in progress  | 4 / 10  |
+| A     | A4 Budget               | in progress  | 5 / 10  |
 | A     | A5–A9 Application       | not started  | —       |
 
-A4 **in progress**. A4.3 set/adjust + limits moved. Next: **A4.4** formula editor. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A4 **in progress**. A4.4 FormulaEditor. Next: **A4.5** categories. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -63,6 +63,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A4.4 done (2026-08-16).** FormulaEditor live `useValidateFormula` with `{ approvedAmount }` context, debounce, generation counter. `pnpm verify` green (1618 tests). Next: **A4.5** categories list + Sheet.
 
 **A4.3 done (2026-08-16).** PUT approved + manual ADJUSTMENT; card-limit DiffView from `desiredControls.transactionLimits`. `pnpm verify` green (1618 tests). Next: **A4.4** FormulaEditor.
 
