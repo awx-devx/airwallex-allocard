@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { ActorType } from '@/shared/enums/audit'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { Permission } from '@/shared/enums/permissions'
@@ -381,5 +383,119 @@ describe('sortRolesForMatrix', () => {
       'aa_custom',
       'zz_custom',
     ])
+  })
+})
+
+describe('A3.9 preview vs 403', () => {
+  it('matches allow/deny, not Missing ${permission} copy', () => {
+    expect(
+      previewWouldDeny(
+        {
+          reasons: [{ permission: Permission.CARD_MANAGE, allowed: false }],
+        },
+        Permission.CARD_MANAGE,
+      ),
+    ).toBe(true)
+    expect(
+      previewWouldDeny(
+        {
+          reasons: [{ permission: Permission.CARD_MANAGE, allowed: true }],
+        },
+        Permission.CARD_MANAGE,
+      ),
+    ).toBe(false)
+    expect(previewWouldDeny({ reasons: [] }, Permission.CARD_MANAGE)).toBe(true)
+    expect(
+      formatPermissionReason({
+        permission: Permission.BUDGET_VIEW,
+        allowed: true,
+        message: 'Granted by Project Manager role',
+      }),
+    ).toBe('Can view budget — Granted by Project Manager role')
+  })
+})
+
+describe('A3.9 settings routes and no Settings workspace tab', () => {
+  it('SETTINGS_NAV is exactly the two org settings hrefs', () => {
+    expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/roles',
+      '/settings/access-reviews',
+    ])
+  })
+})
+
+describe('A3 screens never mention PAN', () => {
+  it('has no PAN, cvv, or card_number under projects or settings', () => {
+    function walk(dir: string): string[] {
+      return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const path = join(dir, entry.name)
+        return entry.isDirectory() ? walk(path) : [path]
+      })
+    }
+
+    const roots = [
+      join(process.cwd(), 'src/app/(app)/projects'),
+      join(process.cwd(), 'src/app/(app)/settings'),
+    ]
+    const files = roots.flatMap(walk)
+    expect(files.length).toBeGreaterThan(0)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8').replace(
+        /Card structure flags only — never a PAN\./g,
+        '',
+      )
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+})
+
+describe('A3.9 shell still requireApp + collapse', () => {
+  it('keeps requireApp, AppShellFrame, and aside hidden md:flex', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+  })
+})
+
+describe('A3.9 layout classes', () => {
+  it('uses the four don’t-break patterns on A3 screens', () => {
+    const overview = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/[id]/ProjectOverview.tsx'),
+      'utf8',
+    )
+    expect(overview).toContain('grid-cols-1')
+    expect(overview).toContain('md:grid-cols-2')
+    expect(overview).toContain('min-w-0')
+
+    const people = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/[id]/people/PeopleList.tsx'),
+      'utf8',
+    )
+    expect(people).toContain('flex-wrap')
+
+    const add = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx'),
+      'utf8',
+    )
+    expect(add).toContain('flex-col')
+    expect(add).toContain('md:flex-row')
+
+    const matrix = readFileSync(
+      join(process.cwd(), 'src/app/(app)/settings/roles/RoleMatrix.tsx'),
+      'utf8',
+    )
+    expect(matrix).toContain('overflow-x-auto')
+
+    const reviews = readFileSync(
+      join(process.cwd(), 'src/app/(app)/settings/access-reviews/AccessReviewList.tsx'),
+      'utf8',
+    )
+    expect(reviews).toContain('flex-wrap')
+    expect(reviews).not.toContain('DISMISS')
   })
 })

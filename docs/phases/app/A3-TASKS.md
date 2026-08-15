@@ -539,7 +539,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
 
 ### A3.9 — Preview vs 403 + don’t-break proofs
 
-- [ ] **A3.9** — Preview deny matches enforcement; 375/768; no PAN; no Settings workspace tab
+- [x] **A3.9** — Preview deny matches enforcement; 375/768; no PAN; no Settings workspace tab
   - **Files:**
     - `src/client/lib/access.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (read-only assert `WORKSPACE_TAB_HREFS` still has no settings — do not change A2 helper unless a test needs an import of `SETTINGS_NAV`)
@@ -554,7 +554,7 @@ Skip sticky first column (spec: optional). A sideways-scrolling table inside the
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A2.9 `src/client/lib/projects.test.ts`. 403 message shape: `src/server/http/errors.ts` `permissionDenied` → `Missing ${permission}` (do not expect that string inside the preview pane).
   - **Accept:** `pnpm test client/lib/access` and `pnpm test client/lib/projects` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on overview, people, add (form stacks, preview below), roles (matrix internal scroll), access-reviews; Menu/Sheet still works below `md`; Add / Save / Confirm reachable.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Proofs for `previewWouldDeny`, SETTINGS_NAV vs workspace tabs, PAN scan, `requireApp` + `hidden md:flex`. `pnpm verify` green (1594 tests). Stop before phase exit.
 
 ---
 

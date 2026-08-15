@@ -8,6 +8,7 @@ import { Permission } from '@/shared/enums/permissions'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { MePermissions } from '@/shared/types/mePermissions'
 import type { Project } from '@/shared/types/project'
+import { SETTINGS_NAV } from '@/client/lib/access'
 import {
   WIZARD_STEPS,
   activeOrgRole,
@@ -301,6 +302,10 @@ describe('WORKSPACE_TAB_HREFS', () => {
       'Activity',
     ])
     expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
+    expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/roles',
+      '/settings/access-reviews',
+    ])
   })
 })
 
