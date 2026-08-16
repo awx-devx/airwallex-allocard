@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** generate `A6-TASKS.md`
-**Last green `pnpm verify`:** 2026-08-16 (A5 exit)
+**Active task:** A6.1 — SideNav + settings nav + route shells
+**Last green `pnpm verify`:** 2026-08-17 (A6.0)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | not started  | —       |
+| A     | A6 Controls & automation | in progress  | 1 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A5 **complete**. Next: generate `A6-TASKS.md`; first A6 work is project controls / the rule builder. Do not start A6 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.1** SideNav / route shells. Do not start screens before reviewing A6.0 helpers. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.0 done (2026-08-17).** Helpers in `src/client/lib/rules.ts`. No GET-by-id; templates are B6-legal DSL; remaining unclamped; no client parser. `pnpm verify` green (1672 tests). STOP — review helpers before **A6.1** SideNav / route shells.
+
+**A6-TASKS locked (2026-08-17).** Policies approved: no new contracts; no `GET /api/rules/:id` (load from list pageSize 100); create is `/settings/rules/new`; no client formula/DSL parser (`useValidateRule` + `useSimulateRules` only; never `useValidateFormula`); condition UI leaf-only; templates copy B6 examples tests not RULES-ENGINE.md JSON; simulation hypothetical Alert; match preview / RuleSentence / merge never hidden; AppShell collapse stays A2.1 (A6.1 inserts `/automation` + settings Rules/Attributes only). Next: **A6.0** helpers, then A6.1 chrome. Do not start screens before A6.0 STOP.
 
 **A5 exit (2026-08-16).** Phase exit + `A5-cards.md` review checklist signed off. Reveal hang, holder names, and filter labels patched. `pnpm verify` green (1654 tests). Next: generate `A6-TASKS.md`; first A6 work is project controls / the rule builder. Do not start A6 screens before the task file is locked.
 
