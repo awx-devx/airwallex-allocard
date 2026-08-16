@@ -1,3 +1,5 @@
+import { ActivityFeed } from '@/app/(app)/activity/ActivityFeed'
+
 export default function ActivityPage() {
-  return <main>Activity land in A8.</main>
+  return <ActivityFeed />
 }

@@ -449,7 +449,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.2 — Activity feeds
 
-- [ ] **A8.2** — Org `/activity` + project tab; Timeline; cursor Load more
+- [x] **A8.2** — Org `/activity` + project tab; Timeline; cursor Load more
   - **Files:**
     - `src/client/hooks/useReports.ts` (edit — **queryKey only** on `activityInfiniteQueryOptions` and `projectActivityInfiniteQueryOptions` per policy §8)
     - `src/client/hooks/useReports.test.ts` (edit — if a test snapshots `queryKey`, expect `filter ?? {}` appended)
@@ -466,7 +466,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** Timeline column (already a column). Load more wrap. No `md:grid`. No Sheet. No filter bar. `min-w-0`. Workspace tabs already wrap.
   - **Pattern:** A1-equivalent **A1.5** `src/app/(onboarding)/onboarding/page.tsx` (first Track A list). Copy A2.2 `src/app/(app)/dashboard/DashboardHome.tsx` (`useActivity({ limit: 8 })` + `toTimelineItem` + `Timeline`). Hook: `useActivity` / `useProjectActivity` `src/client/hooks/useReports.ts` (B9 `activityContracts`). `ComingSoonTab` replacement: A6.2 `ProjectControls.tsx` replacing the tab body. Cursor Load more: A5.8 `CardDetail.tsx` DataTable sentinel — here a Button, not a table.
   - **Accept:** `pnpm verify`. `ActivityFeed.tsx` contains `useActivity` and `Timeline` and does **not** contain `useAudit`, `evaluatePolicy`, `parseFloat`, or `type="number"`. `ProjectActivity.tsx` contains `useProjectActivity` and does not pass `projectId` inside the filter object. `useReports.ts` activity queryKeys include `filter ?? {}`. 375px and 768px: no page-level horizontal scrollbar; Load more reachable; Timeline stacked not `hidden`; Menu/Sheet still works; project workspace tabs wrap. `WORKSPACE_TAB_HREFS` still six.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Timeline + cursor Load more on `/activity` and project tab. queryKey appends `filter ?? {}`. No type filter bar. `useProjectActivity` omits `projectId` in filter. `WORKSPACE_TAB_HREFS` still six. `pnpm verify` green (1742 tests).
 
 ### A8.3 — Org transaction list
 

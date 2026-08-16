@@ -26,7 +26,7 @@ export function activityInfiniteQueryOptions(
   callWithOrg: ContractCaller,
 ) {
   return {
-    queryKey: qk.activity(),
+    queryKey: [...qk.activity(), filter ?? {}] as const,
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
       callWithOrg(activityContracts.list, {
@@ -42,7 +42,7 @@ export function projectActivityInfiniteQueryOptions(
   callWithOrg: ContractCaller,
 ) {
   return {
-    queryKey: qk.activity(projectId),
+    queryKey: [...qk.activity(projectId), filter ?? {}] as const,
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
       callWithOrg(activityContracts.listForProject, {

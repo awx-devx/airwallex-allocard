@@ -1,5 +1,5 @@
-import { ComingSoonTab } from '@/app/(app)/projects/[id]/ComingSoonTab'
+import { ProjectActivity } from '@/app/(app)/projects/[id]/activity/ProjectActivity'
 
 export default function ProjectActivityPage() {
-  return <ComingSoonTab tab="Activity" phase="A8" />
+  return <ProjectActivity />
 }
