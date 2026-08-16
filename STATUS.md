@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.7 — Automation history
-**Last green `pnpm verify`:** 2026-08-17 (A6.6)
+**Active task:** A6.8 — Attribute registry
+**Last green `pnpm verify`:** 2026-08-17 (A6.7)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 7 / 12  |
+| A     | A6 Controls & automation | in progress  | 8 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.7** automation history. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.8** attribute registry. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.7 done (2026-08-17).** `/automation` infinite DataTable; FAILED/PARTIAL prominent in status column and Sheet. `pnpm verify` green (1672 tests). Next: **A6.8** attribute registry.
 
 **A6.6 done (2026-08-17).** Simulate page with hypothetical Alert, Run on click, Current/Simulated panes, DRY_RUN badge. `pnpm verify` green (1672 tests). Next: **A6.7** automation history.
 

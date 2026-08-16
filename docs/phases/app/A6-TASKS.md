@@ -699,7 +699,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.7 — Automation history
 
-- [ ] **A6.7** — `/automation` reverse-chronological `DataTable`; FAILED/PARTIAL prominent
+- [x] **A6.7** — `/automation` reverse-chronological `DataTable`; FAILED/PARTIAL prominent
   - **Files:**
     - `src/app/(app)/automation/page.tsx` (replace placeholder)
     - `src/app/(app)/automation/AutomationHistory.tsx` (`'use client'`)
@@ -713,7 +713,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** table scrolls inside; toolbar wrap. Sheet vs wrap. No page `md:grid`. Do not restyle as a card feed.
   - **Pattern:** A5.8 `CardDetail.tsx` infinite table sentinel `'next'`. A3.8 filters. Hook: `useRuleRuns` / `useRuleRun` `src/client/hooks/useRules.ts` (B6 `ruleRunContracts.list` / `get`). `AttributeValue` F3.13. `StatusBadge kind="ruleRun"`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; filters + Load more + row/Sheet reachable; table may scroll inside; PARTIAL `conflicts[].message` readable in the Sheet (not `hidden`). `DRY_RUN` is a filter option but live history from evaluate will be SUCCESS/PARTIAL/FAILED/SKIPPED.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Infinite rule-run table; FAILED/PARTIAL in status + Sheet. `pnpm verify` green (1672 tests).
 
 ### A6.8 — Attribute registry
 

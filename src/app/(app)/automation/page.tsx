@@ -1,3 +1,11 @@
+import { Suspense } from 'react'
+import { AutomationHistory } from '@/app/(app)/automation/AutomationHistory'
+import { LoadingState } from '@/components/patterns/LoadingState'
+
 export default function AutomationPage() {
-  return <main className="min-w-0">Automation — not built yet</main>
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <AutomationHistory />
+    </Suspense>
+  )
 }
