@@ -393,7 +393,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.1 — SideNav + route shells
 
-- [ ] **A7.1** — Insert Requests; placeholders so links do not 404
+- [x] **A7.1** — Insert Requests; placeholders so links do not 404
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/app/(app)/requests/page.tsx` (create — placeholder until A7.2)
@@ -408,7 +408,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** n/a for placeholders (stack `min-w-0`). Shell collapse unchanged. New href is in the aside at `md` and in the Menu `Sheet` below `md` (same `SideNav`).
   - **Pattern:** A6.1 / A5.1 `src/client/shell/AppShell.tsx` `DEFAULT_NAV` insert (this phase’s B1-equivalent for chrome). Collapse already A2.1 — `docs/RESPONSIVENESS.md` §1; do **not** copy A2.1’s aside rewrite. Placeholders: A5.1 `/cards` pages. B7 list UI path is `/requests`, not `/api/projects/:id/requests`.
   - **Accept:** `pnpm verify`. `/requests`, `/requests/new`, `/requests/any-id`, `/approvals`, `/approvals/any-id` are not 404. SideNav at 768px shows Requests immediately before Approvals; at 375px those labels appear inside the existing Menu Sheet. 375px and 768px: no page-level horizontal scrollbar; Menu/Sheet still works below `md`. Aside still `hidden md:flex`. `AppShell.tsx` does not lose `hidden` or `md:flex`. `SETTINGS_NAV` still four hrefs (no Requests).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `DEFAULT_NAV` Requests immediately before Approvals (after Cards). SETTINGS_NAV four hrefs. Placeholders `/requests`, `/requests/new`, `/requests/[id]`, `/approvals`, `/approvals/[id]`. Aside still `hidden md:flex`. `pnpm verify` green (1704 tests).
 
 ### A7.2 — Member request list
 

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7.1 — SideNav + route shells
-**Last green `pnpm verify`:** 2026-08-17 (A7.0)
+**Active task:** A7.2 — Member request list
+**Last green `pnpm verify`:** 2026-08-17 (A7.1)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 1 / 10  |
+| A     | A7 Purchase requests     | in progress  | 2 / 10  |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.0 **done**. Helpers locked; next is A7.1 chrome. Do not start request/queue screens before A7.0 STOP is reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.1 **done**. Requests in SideNav; placeholders for list/new/detail and approvals. Next is A7.2 request list. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.1 done (2026-08-17).** SideNav Requests after Cards, before Approvals. Placeholders `/requests`, `/requests/new`, `/requests/[id]`, `/approvals`, `/approvals/[id]`. Aside still `hidden md:flex`. `pnpm verify` green (1704 tests). Next: **A7.2** member request list.
 
 **A7.0 done (2026-08-17).** Helpers in `src/client/lib/requests.ts`. No `GET /api/requests`; no client `evaluatePolicy`; remaining unclamped; `cardHref` re-exported. Barrel named-exports (clash with A6 `parseOptionalIdParam`). `pnpm verify` green (1704 tests). STOP — review helpers before **A7.1** SideNav / route shells.
 

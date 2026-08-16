@@ -15,6 +15,7 @@ const DEFAULT_NAV: SideNavItem[] = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/projects', label: 'Projects' },
   { href: '/cards', label: 'Cards' },
+  { href: '/requests', label: 'Requests' },
   { href: '/approvals', label: 'Approvals' },
   { href: '/activity', label: 'Activity' },
   { href: '/automation', label: 'Automation' },
