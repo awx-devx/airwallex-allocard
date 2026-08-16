@@ -717,7 +717,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.8 — Attribute registry
 
-- [ ] **A6.8** — `/settings/attributes` built-ins + custom CRUD + MANUAL values
+- [x] **A6.8** — `/settings/attributes` built-ins + custom CRUD + MANUAL values
   - **Files:**
     - `src/app/(app)/settings/attributes/page.tsx` (replace placeholder)
     - `src/app/(app)/settings/attributes/AttributeRegistry.tsx` (`'use client'`)
@@ -732,7 +732,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** stack. Table scrolls inside. Dialog stacked fields. Sheet `side="right"` `min-w-0`. Toolbar wrap. No `md:grid` of built-ins vs custom (stack).
   - **Pattern:** A3.6 create-role Dialog. A3.5 Edit Sheet. Hooks: `useAttributes` / `useCreateAttribute` / `useUpdateAttribute` / `useAttributeValues` / `useSetAttributeValue` `src/client/hooks/useRules.ts`. B6 `src/shared/schemas/attribute.ts`. `AttributeValue` F3.13.
   - **Accept:** `pnpm verify`. Create payload never includes `source: 'COMPUTED'`. Grep these files: no `ingest`, no `x-allocard-attribute-secret`. 375px and 768px: Create / Values / Save value reachable; Sheet does not force window sideways scroll; built-in list not `hidden`. Stale values show F3 `Stale ·`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Built-in catalogue + custom CRUD; MANUAL values Sheet; no ingest. `pnpm verify` green (1672 tests).
 
 ### A6.9 — Card explainer
 
