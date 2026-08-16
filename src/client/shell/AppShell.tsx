@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 const DEFAULT_NAV: SideNavItem[] = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/projects', label: 'Projects' },
+  { href: '/cards', label: 'Cards' },
   { href: '/approvals', label: 'Approvals' },
   { href: '/activity', label: 'Activity' },
   { href: '/reports', label: 'Reports' },

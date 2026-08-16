@@ -377,7 +377,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.1 — SideNav Cards + route shells
 
-- [ ] **A5.1** — Insert `/cards` in SideNav; placeholder detail/reveal so links do not 404
+- [x] **A5.1** — Insert `/cards` in SideNav; placeholder detail/reveal so links do not 404
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/app/(app)/cards/page.tsx` (create — placeholder until A5.2)
@@ -391,7 +391,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** n/a for placeholders (stack `min-w-0`). Shell collapse unchanged. Cards is in the aside at `md` and in the Menu `Sheet` below `md` (same `SideNav`).
   - **Pattern:** A3.6 `src/client/shell/AppShell.tsx` `DEFAULT_NAV` append. Placeholders: A4.1 nested budget pages. B5 list route: `src/shared/contracts/card.ts` `list.path` `'/api/cards'` (UI path is `/cards`, not `/api/cards`).
   - **Accept:** `pnpm verify`. `/cards`, `/cards/any-id`, `/cards/any-id/reveal` are not 404. SideNav at 768px shows Cards after Projects; at 375px Cards appears inside the existing Menu Sheet. 375px and 768px: no page-level horizontal scrollbar; Menu/Sheet still works below `md`. Aside still `hidden md:flex`. `AppShell.tsx` does not lose `hidden` or `md:flex`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `DEFAULT_NAV` Cards after Projects. Placeholders `/cards`, `/cards/[id]`, `/cards/[id]/reveal`. Project cards tab still `ComingSoonTab`. Aside still `hidden md:flex`. `pnpm verify` green (1642 tests).
 
 ### A5.2 — Org-wide card list
 
