@@ -14,6 +14,7 @@ import {
   WIZARD_STEPS,
 } from '@/client/lib/projects'
 import { wizardControlsLinkMessage } from '@/client/lib/rules'
+import { wizardApprovalRulesLinkMessage } from '@/client/lib/requests'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -220,7 +221,14 @@ export function ProjectWizard() {
           />
         )
       case 'approval-rules':
-        return <DeferredStep title="Approval rules" phase="A7" />
+        return (
+          <DeferredStep
+            title="Approval rules"
+            phase="A7"
+            href={draftId.length >= 1 ? controlsHref(draftId) : undefined}
+            linkLabel={wizardApprovalRulesLinkMessage()}
+          />
+        )
       case 'review':
         return <ReviewStep draftId={draftId} />
       case 'launch':

@@ -540,7 +540,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.8 — Wizard link
 
-- [ ] **A7.8** — Approval-rules deferred step points at project controls
+- [x] **A7.8** — Approval-rules deferred step points at project controls
   - **Files:**
     - `src/app/(app)/projects/new/ProjectWizard.tsx` (edit — pass href on the approval-rules step)
     - `src/app/(app)/projects/new/steps/DeferredStep.tsx` (edit only if A6.10 props are insufficient — they already accept `href` / `linkLabel`)
@@ -552,7 +552,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** one column (already). No Sheet. No `md:grid`.
   - **Pattern:** A6.10 `ProjectWizard.tsx` + `DeferredStep.tsx`. `controlsHref` `src/client/lib/cards.ts` (re-exported from `requests.ts`).
   - **Accept:** `pnpm verify`. 375px and 768px: wizard Next and the new Link reachable; no page-level horizontal scrollbar. Members deferred step still has no extra Link.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Wizard approval-rules DeferredStep Links to controls when `draftId` is set. Members/Roles unchanged. `pnpm verify` green (1704 tests).
 
 ### A7.9 — Don’t-break + invariant proofs
 
