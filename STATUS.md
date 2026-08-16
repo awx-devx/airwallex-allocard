@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.4 — Rule builder (form + prose)
-**Last green `pnpm verify`:** 2026-08-17 (A6.3)
+**Active task:** A6.5 — Live validate + match preview
+**Last green `pnpm verify`:** 2026-08-17 (A6.4)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 4 / 12  |
+| A     | A6 Controls & automation | in progress  | 5 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.4** rule builder. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.5** live match preview. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.4 done (2026-08-17).** Rule builder form + `RuleSentence` preview; Save create/PATCH omits `enabled`; Simulate hidden until saved. `pnpm verify` green (1672 tests). Next: **A6.5** live match preview.
 
 **A6.3 done (2026-08-17).** Org rules DataTable with project/enabled URL filters, gated New, template empty. `pnpm verify` green (1672 tests). Next: **A6.4** rule builder.
 

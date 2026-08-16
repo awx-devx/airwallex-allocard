@@ -633,7 +633,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.4 — Rule builder (form + prose)
 
-- [ ] **A6.4** — `/settings/rules/[id]` trigger → condition → actions + `RuleSentence`; Save; no live simulate yet
+- [x] **A6.4** — `/settings/rules/[id]` trigger → condition → actions + `RuleSentence`; Save; no live simulate yet
   - **Files:**
     - `src/app/(app)/settings/rules/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/settings/rules/[id]/RuleBuilder.tsx` (`'use client'`)
@@ -655,7 +655,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** `flex-col md:flex-row` form \| preview. Both `min-w-0`. Buttons `flex-wrap`. No Sheet. Do not `hidden` `RuleSentence` below `md`.
   - **Pattern:** A3.4 `src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx` (`flex-col md:flex-row` form + preview). Formula display: A4.4 `src/app/(app)/projects/[id]/budget/FormulaEditor.tsx` (`FormulaHighlight` + generation counter pattern — counter itself is A6.5). Combobox F3.4. B6 `createRuleInput` / `updateRuleInput` `src/shared/schemas/rule.ts`. `RuleSentence` F3.17. `applyServerErrorsFromApiError` `src/client/lib/forms/applyServerErrors.ts`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/rules`. Save on `new` POSTs `createRuleInput` (no `id`). PATCH payloads do not include `enabled`. 375px: form stacked **above** `RuleSentence`; Save reachable; no page-level horizontal scrollbar. 768px: form \| preview row. `RuleBuilder.tsx` (and siblings) do not contain `eval`, `useValidateFormula`, `parseFloat`, or `type="number"`. `ComingSoon` / placeholder text gone from `[id]/page.tsx`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Builder form + `RuleSentence` preview; Save create/PATCH (no `enabled`); Simulate hidden until saved. `pnpm verify` green (1672 tests).
 
 ### A6.5 — Live validate + match preview
 
