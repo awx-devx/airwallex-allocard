@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A5 — Cards
-**Active task:** A5.3 — Project cards grid
-**Last green `pnpm verify`:** 2026-08-16 (A5.2)
+**Active task:** A5.4 — Card detail (read)
+**Last green `pnpm verify`:** 2026-08-16 (A5.3)
 **Blocked on:** _nothing_
 
 ---
@@ -31,10 +31,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | in progress  | 3 / 11  |
+| A     | A5 Cards                | in progress  | 4 / 11  |
 | A     | A6–A9 Application       | not started  | —       |
 
-A5 **in progress**. Next: **A5.3** project `CardVisual` grid. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **in progress**. Next: **A5.4** card detail (read). Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5.3 done (2026-08-16).** Project cards `CardVisual` grid; Open/Reveal under each tile. `ComingSoonTab` gone. `pnpm verify` green (1642 tests). Next: **A5.4** card detail (read).
 
 **A5.2 done (2026-08-16).** `/cards` DataTable with URL filters; holder column only. `pnpm verify` green (1642 tests). Next: **A5.3** project cards grid.
 

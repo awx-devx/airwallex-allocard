@@ -1,5 +1,11 @@
-import { ComingSoonTab } from '@/app/(app)/projects/[id]/ComingSoonTab'
+import { Suspense } from 'react'
+import { ProjectCards } from '@/app/(app)/projects/[id]/cards/ProjectCards'
+import { LoadingState } from '@/components/patterns/LoadingState'
 
 export default function ProjectCardsPage() {
-  return <ComingSoonTab tab="Cards" phase="A5" />
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <ProjectCards />
+    </Suspense>
+  )
 }

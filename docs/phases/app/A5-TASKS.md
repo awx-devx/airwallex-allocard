@@ -418,7 +418,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.3 — Project cards grid
 
-- [ ] **A5.3** — `/projects/[id]/cards` `CardVisual` grid
+- [x] **A5.3** — `/projects/[id]/cards` `CardVisual` grid
   - **Files:**
     - `src/app/(app)/projects/[id]/cards/page.tsx` (replace `ComingSoonTab`)
     - `src/app/(app)/projects/[id]/cards/ProjectCards.tsx` (`'use client'`)
@@ -433,7 +433,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** `grid-cols-1 md:grid-cols-2`. Toolbar wrap. No Sheet. No DataTable. Cells `min-w-0`.
   - **Pattern:** A3.1 tiles + A2.2 dashboard cards. `CardVisual` `src/components/patterns/CardVisual.tsx` (F3.15). Hook: `useProjectCards` `src/client/hooks/useCards.ts`. B5: `src/shared/contracts/card.ts` `listForProject`. EmptyState F3.19. Workspace already wraps this page.
   - **Accept:** `pnpm verify`. This file tree has no `DataTable` import. 375px: one column, Open/Reveal/View controls reachable, no page-level horizontal scrollbar. 768px: two columns. `ComingSoonTab` is gone from `cards/page.tsx`. No `usePanToken`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `CardVisual` `grid-cols-1 md:grid-cols-2`; Open + gated Reveal Links; no DataTable, no `usePanToken`. Empty → View controls. `pnpm verify` green (1642 tests).
 
 ### A5.4 — Card detail (read)
 
