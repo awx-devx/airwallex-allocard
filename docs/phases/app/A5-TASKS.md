@@ -462,7 +462,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.5 — Freeze, unfreeze, close, reconcile
 
-- [ ] **A5.5** — Lifecycle confirms; close is type-to-confirm `CLOSE`
+- [x] **A5.5** — Lifecycle confirms; close is type-to-confirm `CLOSE`
   - **Files:**
     - `src/app/(app)/cards/[id]/CardDetail.tsx` (edit — wire actions)
   - **Do:**
@@ -478,7 +478,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** action row `flex-wrap`. Dialogs stacked. Do not `hidden` Freeze/Close on narrow.
   - **Pattern:** A4.7 ConfirmDialogs. Close type-to-confirm: F3.20 `src/components/patterns/ConfirmDialog.tsx` + `matchesConfirmPhrase` (case-sensitive). Hooks: `useFreezeCard` / `useUnfreezeCard` / `useCloseCard` / `useReconcileCard` `src/client/hooks/useCards.ts`. B5: `src/shared/contracts/card.ts` `freeze` / `unfreeze` / `close` (`closeCardInput.confirm` literal `true`) / `reconcile`. Lifecycle 409: `src/server/services/cards/lifecycle.ts` `'Card is CLOSED'`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/cards`. Close dialog requires typing `CLOSE` not `close`. 375px and 768px: Freeze / Unfreeze / Close / Reconcile reachable when offered; dialogs do not force page-level horizontal scroll. `CardDetail.tsx` close mutate input includes `confirm: true`. No `usePanToken`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Freeze/Unfreeze/Close confirms; close requires `CLOSE` + `{ confirm: true }`. Reconcile when controls diverge. `pnpm verify` green (1642 tests).
 
 ### A5.6 — Secure reveal iframe
 

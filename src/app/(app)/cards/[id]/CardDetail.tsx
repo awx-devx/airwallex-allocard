@@ -2,11 +2,25 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
-import { useCard, useCardholder, useCardLimits } from '@/client/hooks/useCards'
-import { useOrgMembers } from '@/client/hooks/useOrganizations'
 import {
+  useCard,
+  useCardholder,
+  useCardLimits,
+  useCloseCard,
+  useFreezeCard,
+  useReconcileCard,
+  useUnfreezeCard,
+} from '@/client/hooks/useCards'
+import { useOrgMembers } from '@/client/hooks/useOrganizations'
+import { permissionGateAllowed } from '@/client/lib/access'
+import {
+  CLOSE_CONFIRM_PHRASE,
   accessListNames,
+  canCloseCard,
+  canFreezeCard,
+  canUnfreezeCard,
   cardLimitsToMeters,
   cardholderScreeningMessage,
   closedCardMessage,
@@ -23,21 +37,26 @@ import {
   isSingleUse,
   isTerminalLost,
   lostCardMessage,
+  manageCardDenialMessage,
   orgCardsHref,
   pendingCreateMessage,
   projectCardsHref,
   ruleHref,
   singleUseUsedMessage,
 } from '@/client/lib/cards'
+import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
+import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DiffView } from '@/components/patterns/DiffView'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
+import { Permission } from '@/shared/enums/permissions'
 import type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 import type { Card } from '@/shared/types/card'
 
@@ -83,6 +102,133 @@ function CardAlerts({
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
       ))}
+    </>
+  )
+}
+
+function CardActions({ card }: { card: Card }) {
+  const freeze = useFreezeCard()
+  const unfreeze = useUnfreezeCard()
+  const close = useCloseCard()
+  const reconcile = useReconcileCard()
+  const [dialog, setDialog] = useState<'freeze' | 'unfreeze' | 'close' | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const projectId = card.projectId
+  const { can, isLoading } = useCan(projectId ?? '')
+  const allowed =
+    projectId !== null && projectId.length >= 1
+      ? permissionGateAllowed(can(Permission.CARD_MANAGE, { cardId: card.id }), isLoading)
+      : false
+  const showFreeze = canFreezeCard(card.status)
+  const showUnfreeze = canUnfreezeCard(card.status)
+  const showClose = canCloseCard(card.status)
+  const showReconcile = controlsDiverge(card.desiredControls, card.appliedControls)
+
+  if (!showFreeze && !showUnfreeze && !showClose && !showReconcile) {
+    return null
+  }
+
+  async function run(mutate: () => Promise<unknown>) {
+    setActionError(null)
+    try {
+      await mutate()
+    } catch (error) {
+      setActionError(isApiError(error) ? error.message : 'Unable to update card')
+    }
+  }
+
+  return (
+    <>
+      {actionError ? (
+        <Alert variant="destructive">
+          <AlertDescription>{actionError}</AlertDescription>
+        </Alert>
+      ) : null}
+      <div className="flex flex-wrap gap-2">
+        {showFreeze ? (
+          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+            <Button type="button" disabled={!allowed} onClick={() => setDialog('freeze')}>
+              Freeze
+            </Button>
+          </PermissionGateView>
+        ) : null}
+        {showUnfreeze ? (
+          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+            <Button type="button" disabled={!allowed} onClick={() => setDialog('unfreeze')}>
+              Unfreeze
+            </Button>
+          </PermissionGateView>
+        ) : null}
+        {showClose ? (
+          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={!allowed}
+              onClick={() => setDialog('close')}
+            >
+              Close
+            </Button>
+          </PermissionGateView>
+        ) : null}
+        {showReconcile ? (
+          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+            <Button
+              type="button"
+              disabled={!allowed || reconcile.isPending}
+              onClick={() => void run(() => reconcile.mutateAsync({ id: card.id }))}
+            >
+              Reconcile
+            </Button>
+          </PermissionGateView>
+        ) : null}
+      </div>
+      <ConfirmDialog
+        open={dialog === 'freeze'}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null)
+        }}
+        title="Freeze this card?"
+        description="You can unfreeze this card later."
+        confirmLabel="Freeze"
+        variant="default"
+        loading={freeze.isPending}
+        onConfirm={() => {
+          setDialog(null)
+          void run(() => freeze.mutateAsync({ id: card.id }))
+        }}
+      />
+      <ConfirmDialog
+        open={dialog === 'unfreeze'}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null)
+        }}
+        title="Unfreeze this card?"
+        description="The card will be able to transact again."
+        confirmLabel="Unfreeze"
+        variant="default"
+        loading={unfreeze.isPending}
+        onConfirm={() => {
+          setDialog(null)
+          void run(() => unfreeze.mutateAsync({ id: card.id }))
+        }}
+      />
+      <ConfirmDialog
+        open={dialog === 'close'}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null)
+        }}
+        title="Close this card?"
+        description="This cannot be undone. Pending transactions will still clear."
+        confirmLabel="Close"
+        variant="destructive"
+        typeToConfirm={{ phrase: CLOSE_CONFIRM_PHRASE, prompt: 'Type CLOSE to confirm' }}
+        loading={close.isPending}
+        onConfirm={() => {
+          setDialog(null)
+          void run(() => close.mutateAsync({ id: card.id, input: { confirm: true } }))
+        }}
+      />
     </>
   )
 }
@@ -152,7 +298,7 @@ export function CardDetail() {
         status={card.status}
         purpose={card.purpose}
       />
-      {/* TODO(A5.5) freeze / unfreeze / close / reconcile */}
+      <CardActions card={card} />
       {/* TODO(A5.6) reveal */}
       <CardAlerts card={card} cardholderStatus={cardholderQuery.data?.status} />
       {card.managedByRuleIds.length > 0 ? (
