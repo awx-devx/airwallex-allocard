@@ -616,7 +616,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.3 — Org-wide rules list
 
-- [ ] **A6.3** — `/settings/rules` DataTable; URL filters `projectId` / `enabled`
+- [x] **A6.3** — `/settings/rules` DataTable; URL filters `projectId` / `enabled`
   - **Files:**
     - `src/app/(app)/settings/rules/page.tsx` (replace placeholder)
     - `src/app/(app)/settings/rules/OrgRuleList.tsx` (`'use client'`)
@@ -629,7 +629,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** table scrolls inside; toolbar wrap. No `md:grid`. No Sheet.
   - **Pattern:** A6.2 + A3.8 `src/app/(app)/settings/access-reviews/AccessReviewList.tsx`. `activeOrgRole` `src/client/lib/projects.ts`. B6 `listRulesQuery`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; filters + New + row Link reachable; table may scroll inside. Settings tabs still wrap. `RuleSentence` visible on narrow.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Org rules DataTable with project/enabled URL filters, gated New, template empty. `pnpm verify` green (1672 tests).
 
 ### A6.4 — Rule builder (form + prose)
 

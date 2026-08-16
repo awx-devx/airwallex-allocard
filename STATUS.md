@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.3 — Org-wide rules list
-**Last green `pnpm verify`:** 2026-08-17 (A6.2)
+**Active task:** A6.4 — Rule builder (form + prose)
+**Last green `pnpm verify`:** 2026-08-17 (A6.3)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 3 / 12  |
+| A     | A6 Controls & automation | in progress  | 4 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.3** org-wide rules list. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.4** rule builder. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.3 done (2026-08-17).** Org rules DataTable with project/enabled URL filters, gated New, template empty. `pnpm verify` green (1672 tests). Next: **A6.4** rule builder.
 
 **A6.2 done (2026-08-17).** Project controls DataTable with URL enabled filter, gated New, template empty, `?ruleId=` Alert, org-wide section. `ComingSoonTab` gone. `pnpm verify` green (1672 tests). Next: **A6.3** org-wide rules list.
 
