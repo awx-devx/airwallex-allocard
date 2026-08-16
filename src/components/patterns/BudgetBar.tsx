@@ -1,9 +1,28 @@
+'use client'
+
+import { useState } from 'react'
 import { BUDGET_TERM_TOOLTIPS } from '@/client/lib/budget'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { budgetBarFillWidths, budgetBarLayout } from '@/components/patterns/budgetBarLayout'
 import type { BudgetBarProps } from '@/components/patterns/types'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatMoney } from '@/lib/money'
+
+function BudgetTermTooltip({ label, content }: { label: string; content: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <Tooltip open={open} onOpenChange={setOpen} delayDuration={0}>
+      <TooltipTrigger
+        type="button"
+        className="underline-offset-4 hover:underline"
+        onClick={() => setOpen(true)}
+      >
+        {label}
+      </TooltipTrigger>
+      <TooltipContent>{content}</TooltipContent>
+    </Tooltip>
+  )
+}
 
 export function BudgetBar(props: BudgetBarProps) {
   const layout = budgetBarLayout(props)
@@ -35,12 +54,7 @@ export function BudgetBar(props: BudgetBarProps) {
       <dl className="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
         <div>
           <dt className="text-muted-foreground">
-            <Tooltip>
-              <TooltipTrigger className="underline-offset-4 hover:underline">
-                Approved
-              </TooltipTrigger>
-              <TooltipContent>{BUDGET_TERM_TOOLTIPS.approved}</TooltipContent>
-            </Tooltip>
+            <BudgetTermTooltip label="Approved" content={BUDGET_TERM_TOOLTIPS.approved} />
           </dt>
           <dd>
             <MoneyDisplay money={{ amount: approved, currency }} colorBySign={false} />
@@ -48,12 +62,7 @@ export function BudgetBar(props: BudgetBarProps) {
         </div>
         <div>
           <dt className="text-muted-foreground">
-            <Tooltip>
-              <TooltipTrigger className="underline-offset-4 hover:underline">
-                Committed
-              </TooltipTrigger>
-              <TooltipContent>{BUDGET_TERM_TOOLTIPS.committed}</TooltipContent>
-            </Tooltip>
+            <BudgetTermTooltip label="Committed" content={BUDGET_TERM_TOOLTIPS.committed} />
           </dt>
           <dd>
             <MoneyDisplay money={{ amount: committed, currency }} colorBySign={false} />
@@ -61,10 +70,7 @@ export function BudgetBar(props: BudgetBarProps) {
         </div>
         <div>
           <dt className="text-muted-foreground">
-            <Tooltip>
-              <TooltipTrigger className="underline-offset-4 hover:underline">Actual</TooltipTrigger>
-              <TooltipContent>{BUDGET_TERM_TOOLTIPS.actual}</TooltipContent>
-            </Tooltip>
+            <BudgetTermTooltip label="Actual" content={BUDGET_TERM_TOOLTIPS.actual} />
           </dt>
           <dd>
             <MoneyDisplay money={{ amount: actual, currency }} colorBySign={false} />
@@ -72,12 +78,7 @@ export function BudgetBar(props: BudgetBarProps) {
         </div>
         <div>
           <dt className="text-muted-foreground">
-            <Tooltip>
-              <TooltipTrigger className="underline-offset-4 hover:underline">
-                Remaining
-              </TooltipTrigger>
-              <TooltipContent>{BUDGET_TERM_TOOLTIPS.remaining}</TooltipContent>
-            </Tooltip>
+            <BudgetTermTooltip label="Remaining" content={BUDGET_TERM_TOOLTIPS.remaining} />
           </dt>
           <dd>
             <MoneyDisplay money={{ amount: remaining, currency }} />

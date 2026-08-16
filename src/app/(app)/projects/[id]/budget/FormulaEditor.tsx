@@ -53,7 +53,7 @@ export function FormulaEditor({
   onValidityChange,
   onValidatedValue,
 }: FormulaEditorProps) {
-  const validate = useValidateFormula()
+  const { mutate: validateFormula } = useValidateFormula()
   const attributes = useAttributeValues({
     subjectType: AttributeSubjectType.PROJECT,
     subjectId: projectId,
@@ -88,7 +88,7 @@ export function FormulaEditor({
     }
     const gen = ++generation.current
     const timer = window.setTimeout(() => {
-      validate.mutate(
+      validateFormula(
         { expression, context: formulaContextFromBudget(approvedAmount) },
         {
           onSuccess: (output) => {
@@ -105,7 +105,7 @@ export function FormulaEditor({
       )
     }, FORMULA_DEBOUNCE_MS)
     return () => window.clearTimeout(timer)
-  }, [approvedAmount, empty, expression, tooLong, validate])
+  }, [approvedAmount, empty, expression, tooLong, validateFormula])
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
