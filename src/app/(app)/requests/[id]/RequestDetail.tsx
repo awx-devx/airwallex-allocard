@@ -29,6 +29,7 @@ import {
   formatEscalatedAt,
   parseOptionalIdParam,
   POLICY_PREVIEW_DEBOUNCE_MS,
+  policyPreviewFailedMessage,
   policyPreviewHeading,
   projectCardsHref,
   rejectedFallbackMessage,
@@ -122,8 +123,17 @@ function policyReasonsFromError(details: unknown): string[] {
   return []
 }
 
-function PolicyPreviewPane({ decision }: { decision: PolicyDecision | null }) {
+function PolicyPreviewPane({
+  decision,
+  error,
+}: {
+  decision: PolicyDecision | null
+  error?: string | null
+}) {
   if (decision === null) {
+    if (error !== undefined && error !== null && error.length >= 1) {
+      return <p className="text-sm text-destructive">{error}</p>
+    }
     return <p className="text-sm text-muted-foreground">{checkingPolicyMessage()}</p>
   }
   if (decision.outcome === PolicyOutcome.APPROVAL_REQUIRED) {
@@ -178,6 +188,7 @@ function DraftEditor({ request }: { request: PurchaseRequest }) {
   const generation = useRef(0)
   const [decision, setDecision] = useState<PolicyDecision | null>(null)
   const [previewSuccessKey, setPreviewSuccessKey] = useState('')
+  const [previewError, setPreviewError] = useState<string | null>(null)
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
   const [policyReasons, setPolicyReasons] = useState<string[]>([])
   const form = useZodForm(draftFormSchema, {
@@ -233,7 +244,14 @@ function DraftEditor({ request }: { request: PurchaseRequest }) {
         {
           onSuccess: (data) => {
             if (gen !== generation.current) return
+            setPreviewError(null)
             setDecision(data)
+            setPreviewSuccessKey(key)
+          },
+          onError: (error) => {
+            if (gen !== generation.current) return
+            setDecision(null)
+            setPreviewError(isApiError(error) ? error.message : policyPreviewFailedMessage())
             setPreviewSuccessKey(key)
           },
         },
@@ -409,7 +427,10 @@ function DraftEditor({ request }: { request: PurchaseRequest }) {
         />
         {previewReady ? (
           <div className="min-w-0">
-            <PolicyPreviewPane decision={decision} />
+            <PolicyPreviewPane
+              decision={previewBusy ? null : decision}
+              error={previewBusy ? null : previewError}
+            />
           </div>
         ) : null}
         <div className="flex flex-wrap gap-2">

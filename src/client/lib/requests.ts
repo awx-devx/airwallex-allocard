@@ -32,6 +32,7 @@ const UNLOCKED_NONE =
 const NO_PROJECT_RULES = 'No project approval rules. Org defaults still apply on submit.'
 const WIZARD_APPROVAL_RULES_LINK = 'Set approval rules on the controls tab.'
 const CHECKING_POLICY = 'Checking policy…'
+const POLICY_PREVIEW_FAILED = 'Unable to check policy.'
 const NO_APPROVAL_NEEDED = 'No approval needed.'
 const NOT_PERMITTED_HEADING = 'Not permitted.'
 
@@ -471,6 +472,10 @@ export function wizardApprovalRulesLinkMessage(): string {
 
 export function checkingPolicyMessage(): string {
   return CHECKING_POLICY
+}
+
+export function policyPreviewFailedMessage(): string {
+  return POLICY_PREVIEW_FAILED
 }
 
 export function selectProjectEmpty(): EmptyCopy {

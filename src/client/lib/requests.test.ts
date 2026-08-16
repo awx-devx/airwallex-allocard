@@ -14,6 +14,7 @@ import {
   canEditDraft,
   canSubmitDraft,
   checkingPolicyMessage,
+  policyPreviewFailedMessage,
   createRequestDenialMessage,
   emptyApprovalRuleBody,
   formatApprovalProgress,
@@ -149,6 +150,7 @@ describe('policy copy and trail', () => {
     expect(policyPreviewHeading('NO_APPROVAL_REQUIRED')).toBe('No approval needed.')
     expect(policyPreviewHeading('APPROVAL_REQUIRED')).toBe('')
     expect(checkingPolicyMessage()).toBe('Checking policy…')
+    expect(policyPreviewFailedMessage()).toBe('Unable to check policy.')
     expect(selfApprovalMessage()).toBe('You cannot approve your own request.')
     expect(createRequestDenialMessage()).toBe(
       "You don't have permission to create a purchase request.",
@@ -320,6 +322,19 @@ describe('A7.9 invariant proofs', () => {
       escalationAfterMins: 60,
       escalateTo: { type: 'PROJECT_OWNER' },
     })
+  })
+
+  it('unsticks create and draft preview when the preview request fails', () => {
+    const files = [
+      join(process.cwd(), 'src/app/(app)/requests/new/RequestForm.tsx'),
+      join(process.cwd(), 'src/app/(app)/requests/[id]/RequestDetail.tsx'),
+    ]
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).toContain('onError')
+      expect(src, file).toContain('policyPreviewFailedMessage')
+      expect(src, file).toContain('setPreviewSuccessKey(key)')
+    }
   })
 
   it('A7 screens never evaluate policy, type number, or mention PAN', () => {
