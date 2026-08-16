@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7.3 — Create form + live policy preview
-**Last green `pnpm verify`:** 2026-08-17 (A7.2)
+**Active task:** A7.4 — Request detail (requester)
+**Last green `pnpm verify`:** 2026-08-17 (A7.3)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 3 / 10  |
+| A     | A7 Purchase requests     | in progress  | 4 / 10  |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.2 **done**. `/requests` DataTable with required project Select. Next is A7.3 create form. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.3 **done**. Create form with live policy preview. Next is A7.4 request detail. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.3 done (2026-08-17).** `/requests/new` preview above submit; create always DRAFT; submit runs policy; `parseMoneyInput` text amount; no client `evaluatePolicy`. `pnpm verify` green (1704 tests). Next: **A7.4** request detail.
 
 **A7.2 done (2026-08-17).** `/requests` DataTable; project Select required (`?projectId=`); no org-wide list; gated New request. `pnpm verify` green (1704 tests). Next: **A7.3** create form + live policy preview.
 

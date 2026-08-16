@@ -431,7 +431,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.3 — Create form + live policy preview
 
-- [ ] **A7.3** — `/requests/new` preview above submit
+- [x] **A7.3** — `/requests/new` preview above submit
   - **Files:**
     - `src/app/(app)/requests/new/page.tsx` (replace placeholder)
     - `src/app/(app)/requests/new/RequestForm.tsx` (`'use client'`)
@@ -446,7 +446,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** one column `flex-col`. Preview **above** submit. Buttons wrap. No `md:flex-row`. No Sheet. `min-w-0`.
   - **Pattern:** A3.4 `src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx` (form + live preview). Debounce + generation: A4.4 `FormulaEditor.tsx` / A6.5 `RuleBuilder.tsx`. Money: A2.5 `BudgetStep.tsx` (`parseMoneyInput`, no `type="number"`). Hook: `usePolicyPreview` / `useCreateRequest` / `useSubmitRequest` `src/client/hooks/useRequests.ts` (B7 `policyPreview` + `create` + `submit`). `applyServerErrorsFromApiError` `src/client/lib/forms/applyServerErrors.ts`.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/requests`. Create payload has int `amount` and length-3 `currency` and no `id`. `RequestForm.tsx` contains `usePolicyPreview` and `POLICY_PREVIEW_DEBOUNCE_MS` and does **not** contain `evaluatePolicy`, `parseFloat`, `type="number"`, or `useDecideRequest`. 375px: preview stacked **above** Submit / Save draft; both reachable; no page-level horizontal scrollbar. 768px: still one column (preview not beside the form). `NOT_PERMITTED` shows a reason string, not only the heading.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Create form; live `usePolicyPreview` + debounce + generation; preview above Submit in one column; Save draft create-only; 422 policy lists `reasons[]`. `pnpm verify` green (1704 tests).
 
 ### A7.4 — Request detail (requester)
 
