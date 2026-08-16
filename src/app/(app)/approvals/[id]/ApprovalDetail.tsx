@@ -62,6 +62,7 @@ import { Permission } from '@/shared/enums/permissions'
 import { PolicyOutcome } from '@/shared/enums/policyOutcome'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
 import { formatDate } from '@/lib/dates'
+import { cn } from '@/lib/utils'
 import type { CardList } from '@/shared/types/card'
 import type { PolicyDecision, PurchaseRequest } from '@/shared/types/purchaseRequest'
 
@@ -256,10 +257,13 @@ export function ApprovalDetail() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-wrap gap-2">
-        <Link href={approvalsHref()} className={buttonVariants({ variant: 'ghost' })}>
+        <Link href={approvalsHref()} className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}>
           Back
         </Link>
-        <Link href={requestHref(data.id)} className={buttonVariants({ variant: 'ghost' })}>
+        <Link
+          href={requestHref(data.id)}
+          className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+        >
           View as request
         </Link>
       </div>

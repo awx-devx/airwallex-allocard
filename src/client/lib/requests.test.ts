@@ -352,6 +352,19 @@ describe('A7.9 invariant proofs', () => {
     })
   })
 
+  it('keeps request Back and wizard outline links hugging the label', () => {
+    const detail = readFileSync(
+      join(process.cwd(), 'src/app/(app)/requests/[id]/RequestDetail.tsx'),
+      'utf8',
+    )
+    expect(detail).toContain("cn(buttonVariants({ variant: 'ghost' }), 'w-fit')")
+    const deferred = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/new/steps/DeferredStep.tsx'),
+      'utf8',
+    )
+    expect(deferred).toContain("cn(buttonVariants({ variant: 'outline' }), 'w-fit')")
+  })
+
   it('does not duplicate mutation error copy as both title and description', () => {
     const files = [
       join(process.cwd(), 'src/app/(app)/requests/new/RequestForm.tsx'),

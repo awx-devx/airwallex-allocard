@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export function DeferredStep({
   title,
@@ -24,7 +25,7 @@ export function DeferredStep({
         <AlertDescription>Nothing is saved on this step.</AlertDescription>
       </Alert>
       {href && linkLabel ? (
-        <Link href={href} className={buttonVariants({ variant: 'outline' })}>
+        <Link href={href} className={cn(buttonVariants({ variant: 'outline' }), 'w-fit')}>
           {linkLabel}
         </Link>
       ) : null}

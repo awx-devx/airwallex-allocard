@@ -73,6 +73,7 @@ import { PolicyOutcome } from '@/shared/enums/policyOutcome'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
 import { parseMoneyInput } from '@/lib/money'
 import { formatDate } from '@/lib/dates'
+import { cn } from '@/lib/utils'
 import type { PolicyDecision, PurchaseRequest } from '@/shared/types/purchaseRequest'
 
 const NONE = '__none__'
@@ -553,7 +554,7 @@ export function RequestDetail() {
     <div className="flex min-w-0 flex-col gap-4">
       <Link
         href={requestListHref({ projectId: data.projectId })}
-        className={buttonVariants({ variant: 'ghost' })}
+        className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
       >
         Back
       </Link>
