@@ -395,7 +395,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.2 — Org-wide card list
 
-- [ ] **A5.2** — `/cards` DataTable; URL filters `projectId` / `status` / `purpose`
+- [x] **A5.2** — `/cards` DataTable; URL filters `projectId` / `status` / `purpose`
   - **Files:**
     - `src/app/(app)/cards/page.tsx` (replace placeholder)
     - `src/app/(app)/cards/OrgCardList.tsx` (`'use client'`)
@@ -414,7 +414,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** table scrolls **inside**; page does not. Toolbar `flex-wrap`. No `md:grid`. No Sheet. No `CardVisual`.
   - **Pattern:** A2.3 `src/app/(app)/projects/ProjectList.tsx` (URL filters, `__all__` Select, page pagination). `DataTable` `src/components/patterns/DataTable.tsx`. `StatusBadge` F3.10. Hooks: `src/client/hooks/useCards.ts` `useCards` (B5 `cardContracts.list`). `formatMaskedCard` `src/lib/format/cardNumber.ts`. B5 query: `src/shared/schemas/card.ts` `listCardsQuery`.
   - **Accept:** `pnpm verify`. Changing status writes `?status=` and does not client-filter a full unfiltered list. 375px and 768px: no page-level horizontal scrollbar; filters + row `Link` reachable; table may scroll inside. No `PAN` / `cvv` / `card_number` in these two files. No holder query param in `cardListHref`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** DataTable with URL `projectId`/`status`/`purpose`; holder is a column via cardholders map. No holder query param, no `CardVisual`. `pnpm verify` green (1642 tests).
 
 ### A5.3 — Project cards grid
 
