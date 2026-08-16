@@ -2,10 +2,13 @@
 
 /** Card structure flags only — never a PAN. */
 
+import Link from 'next/link'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useUpdateProject } from '@/client/hooks/useProjects'
+import { projectCardsHref } from '@/client/lib/cards'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { buttonVariants } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 
@@ -91,6 +94,11 @@ export const CardStructureStep = forwardRef<
           <Label htmlFor={flag.key}>{flag.label}</Label>
         </div>
       ))}
+      {draftId.length >= 1 ? (
+        <Link href={projectCardsHref(draftId)} className={buttonVariants({ variant: 'outline' })}>
+          Issue and manage cards on the project cards tab.
+        </Link>
+      ) : null}
     </div>
   )
 })

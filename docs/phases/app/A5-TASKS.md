@@ -537,7 +537,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.9 — Wizard link
 
-- [ ] **A5.9** — Card-structure step points at project cards
+- [x] **A5.9** — Card-structure step points at project cards
   - **Files:**
     - `src/app/(app)/projects/new/steps/CardStructureStep.tsx` (edit)
   - **Do:**
@@ -547,7 +547,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** one column (already). No Sheet. No `md:grid`.
   - **Pattern:** A4.8 `src/app/(app)/projects/new/steps/BudgetStep.tsx`. A2.6 this same `CardStructureStep.tsx`. Href: A5.0 / A4.0 `cardsTabHref`.
   - **Accept:** `pnpm verify`. 375px and 768px: wizard Next and the new Link reachable; no page-level horizontal scrollbar. `CardStructureStep.tsx` still has no `type="number"` and no `parseFloat`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Outline Link to `projectCardsHref(draftId)` with locked wizard copy. No create-card fields. `pnpm verify` green (1642 tests).
 
 ### A5.10 — Don’t-break + invariant proofs
 

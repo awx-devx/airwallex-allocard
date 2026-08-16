@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A5 — Cards
-**Active task:** A5.9 — Wizard link
-**Last green `pnpm verify`:** 2026-08-16 (A5.8)
+**Active task:** A5.10 — Don’t-break + invariant proofs
+**Last green `pnpm verify`:** 2026-08-16 (A5.9)
 **Blocked on:** _nothing_
 
 ---
@@ -31,10 +31,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | in progress  | 9 / 11  |
+| A     | A5 Cards                | in progress  | 10 / 11 |
 | A     | A6–A9 Application       | not started  | —       |
 
-A5 **in progress**. Next: **A5.9** wizard cards Link. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **in progress**. Next: **A5.10** don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5.9 done (2026-08-16).** Wizard card-structure Link to project cards tab. `pnpm verify` green (1642 tests). Next: **A5.10** proofs.
 
 **A5.8 done (2026-08-16).** Card transactions infinite table; single-use used uses row count. `pnpm verify` green (1642 tests). Next: **A5.9** wizard link.
 
