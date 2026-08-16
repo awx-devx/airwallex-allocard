@@ -25,6 +25,10 @@ import { findProjectById } from '@/server/repositories/projects'
 import { listPurchaseRequestsForFeed } from '@/server/repositories/purchaseRequests'
 import { listRuleRunsForFeed } from '@/server/repositories/ruleRuns'
 import { listTransactionsForFeed } from '@/server/repositories/transactions'
+import {
+  purchaseRequestFeedSummary,
+  transactionFeedSummary,
+} from '@/server/services/activity/summaries'
 import { ActorType } from '@/shared/enums/audit'
 import { ActivityItemType } from '@/shared/enums/activityItemType'
 import { OrgRole } from '@/shared/enums/orgRole'
@@ -192,7 +196,7 @@ async function collectItems(
         subjectType: 'transaction',
         subjectId: tx.id,
         summary: truncateSummary(
-          `${tx.type} ${tx.status} ${tx.amount} ${tx.currency} at ${tx.merchant.name}`,
+          transactionFeedSummary(tx.type, tx.status, tx.amount, tx.currency, tx.merchant.name),
         ),
         payload: {
           cardId: tx.cardId,
@@ -221,7 +225,7 @@ async function collectItems(
           subjectType: 'purchaseRequest',
           subjectId: req.id,
           summary: truncateSummary(
-            `Purchase request ${req.status}: ${req.vendor} ${req.amount} ${req.currency}`,
+            purchaseRequestFeedSummary(req.status, req.vendor, req.amount, req.currency),
           ),
           payload: {
             status: req.status,
