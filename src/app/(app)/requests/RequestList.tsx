@@ -6,11 +6,12 @@ import type { ReactNode } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects } from '@/client/hooks/useProjects'
 import { useRequests } from '@/client/hooks/useRequests'
-import { permissionGateAllowed } from '@/client/lib/access'
+import { useMe } from '@/client/hooks/useSession'
 import { useCan } from '@/client/lib/permissions/useCan'
 import {
   createRequestDenialMessage,
   formatApprovalRequired,
+  listRequestsDenialMessage,
   newRequestHref,
   noRequestsEmpty,
   parseRequestListSearchParams,
@@ -43,8 +44,18 @@ import { PolicyOutcome } from '@/shared/enums/policyOutcome'
 import type { PolicyDecision, PurchaseRequest } from '@/shared/types/purchaseRequest'
 
 function NewRequestControl({ projectId }: { projectId: string }) {
+  const me = useMe()
   const { can, isLoading } = useCan(projectId)
-  const allowed = permissionGateAllowed(can(Permission.PAYMENT_MAKE), isLoading)
+  const viewerId = me.data?.user.id
+  const ready = !isLoading && !me.isPending && viewerId !== undefined && viewerId.length >= 1
+  const allowed = ready && can(Permission.PAYMENT_MAKE, { userId: viewerId })
+  if (!ready) {
+    return (
+      <Button type="button" disabled>
+        New request
+      </Button>
+    )
+  }
   return (
     <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
       {allowed ? (
@@ -185,6 +196,14 @@ function RequestListForProject({
         <div className="flex min-w-0 flex-col gap-4">
           {toolbar}
           <ErrorState message="This project is not available." />
+        </div>
+      )
+    }
+    if (isApiError(query.error) && query.error.code === ErrorCode.PERMISSION_DENIED) {
+      return (
+        <div className="flex min-w-0 flex-col gap-4">
+          {toolbar}
+          <ErrorState message={listRequestsDenialMessage()} />
         </div>
       )
     }

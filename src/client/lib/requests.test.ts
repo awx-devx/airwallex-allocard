@@ -16,6 +16,7 @@ import {
   checkingPolicyMessage,
   policyPreviewFailedMessage,
   createRequestDenialMessage,
+  listRequestsDenialMessage,
   emptyApprovalRuleBody,
   formatApprovalProgress,
   formatApprovalRequired,
@@ -155,6 +156,7 @@ describe('policy copy and trail', () => {
     expect(createRequestDenialMessage()).toBe(
       "You don't have permission to create a purchase request.",
     )
+    expect(listRequestsDenialMessage()).toBe("You don't have permission to view purchase requests.")
   })
 
   it('uses last REJECT reason', () => {
@@ -322,6 +324,19 @@ describe('A7.9 invariant proofs', () => {
       escalationAfterMins: 60,
       escalateTo: { type: 'PROJECT_OWNER' },
     })
+  })
+
+  it('gates New request after can() settles and does not dump list 403 copy', () => {
+    const list = readFileSync(join(process.cwd(), 'src/app/(app)/requests/RequestList.tsx'), 'utf8')
+    expect(list).not.toContain('permissionGateAllowed')
+    expect(list).toContain('listRequestsDenialMessage')
+    expect(list).toContain('userId: viewerId')
+    const form = readFileSync(
+      join(process.cwd(), 'src/app/(app)/requests/new/RequestForm.tsx'),
+      'utf8',
+    )
+    expect(form).not.toContain('permissionGateAllowed')
+    expect(form).toContain('gateReady')
   })
 
   it('unsticks create and draft preview when the preview request fails', () => {

@@ -10,7 +10,6 @@ import { useBudgetCategories } from '@/client/hooks/useBudget'
 import { useProjects } from '@/client/hooks/useProjects'
 import { useCreateRequest, usePolicyPreview, useSubmitRequest } from '@/client/hooks/useRequests'
 import { useMe } from '@/client/hooks/useSession'
-import { permissionGateAllowed } from '@/client/lib/access'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import {
@@ -137,10 +136,9 @@ export function RequestForm() {
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
   const [policyReasons, setPolicyReasons] = useState<string[]>([])
   const { can, isLoading } = useCan(projectId)
-  const allowed = permissionGateAllowed(
-    projectId.length >= 1 && can(Permission.PAYMENT_MAKE),
-    isLoading,
-  )
+  const viewerId = me.data?.user.id
+  const gateReady = !isLoading && !me.isPending && viewerId !== undefined && viewerId.length >= 1
+  const allowed = gateReady && can(Permission.PAYMENT_MAKE, { userId: viewerId })
   const categoriesQuery = useBudgetCategories(projectId)
   const omitCategory =
     Boolean(categoriesQuery.error) &&
@@ -440,11 +438,17 @@ export function RequestForm() {
           </div>
         ) : null}
         <div className="flex flex-wrap gap-2">
-          <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
-            <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
+          {gateReady ? (
+            <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
+              <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
+                Submit request
+              </Button>
+            </PermissionGateView>
+          ) : (
+            <Button type="submit" disabled>
               Submit request
             </Button>
-          </PermissionGateView>
+          )}
           <Button
             type="button"
             variant="outline"

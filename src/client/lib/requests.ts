@@ -18,6 +18,7 @@ import type { ListApprovalsQuery } from '@/shared/types/purchaseRequest'
 export { cardHref, controlsHref, projectCardsHref }
 
 const CREATE_DENIED = "You don't have permission to create a purchase request."
+const LIST_DENIED = "You don't have permission to view purchase requests."
 const DECIDE_DENIED = "You don't have permission to approve requests."
 const SELF_APPROVAL = 'You cannot approve your own request.'
 const ALREADY_DECIDED = 'You already decided this request.'
@@ -420,6 +421,10 @@ export function formatEscalatedAt(iso: string, formatDate: (iso: string) => stri
 
 export function createRequestDenialMessage(): string {
   return CREATE_DENIED
+}
+
+export function listRequestsDenialMessage(): string {
+  return LIST_DENIED
 }
 
 export function decideRequestDenialMessage(): string {

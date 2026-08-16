@@ -24,6 +24,7 @@ export {
   checkingPolicyMessage,
   policyPreviewFailedMessage,
   createRequestDenialMessage,
+  listRequestsDenialMessage,
   decideRequestDenialMessage,
   emptyApprovalRuleBody,
   expiredRequestMessage,
