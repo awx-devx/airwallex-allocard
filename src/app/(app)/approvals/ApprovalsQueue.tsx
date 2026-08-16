@@ -22,7 +22,9 @@ import {
   decideRequestDenialMessage,
   formatApprovalProgress,
   formatEscalatedAt,
+  holdQueueRow,
   isSelfApproval,
+  mergeHeldQueueRows,
   noApprovalsEmpty,
   parseApprovalsSearchParams,
   projectCardsHref,
@@ -60,7 +62,13 @@ import type { PurchaseRequest } from '@/shared/types/purchaseRequest'
 
 const CARD_PAGE = { page: 1, pageSize: 100 } as const
 
-function QueueItem({ row }: { row: PurchaseRequest }) {
+function QueueItem({
+  row,
+  onHold,
+}: {
+  row: PurchaseRequest
+  onHold: (row: PurchaseRequest) => void
+}) {
   const me = useMe()
   const queryClient = useQueryClient()
   const decide = useDecideRequest()
@@ -98,6 +106,7 @@ function QueueItem({ row }: { row: PurchaseRequest }) {
 
   async function onApprove() {
     setAlertMessage(null)
+    onHold(row)
     const before = snapshotCardTransactionLimits(cards.data?.items ?? [])
     const beforeIds = (cards.data?.items ?? []).map((card) => card.id)
     try {
@@ -105,6 +114,7 @@ function QueueItem({ row }: { row: PurchaseRequest }) {
         id: row.id,
         input: { decision: 'APPROVE' },
       })
+      onHold(after)
       if (after.status !== PurchaseRequestStatus.APPROVED) {
         setUnlocked({
           cardId: after.cardId,
@@ -177,7 +187,7 @@ function QueueItem({ row }: { row: PurchaseRequest }) {
             <AlertDescription>{selfApprovalMessage()}</AlertDescription>
           </Alert>
         ) : null}
-        {!self && decided ? (
+        {!self && decided && row.status === PurchaseRequestStatus.PENDING ? (
           <Alert>
             <AlertDescription>{alreadyDecidedMessage()}</AlertDescription>
           </Alert>
@@ -319,6 +329,11 @@ export function ApprovalsQueue() {
     pageSize: params.get('pageSize') ?? undefined,
   })
   const query = useApprovals(filter)
+  const [held, setHeld] = useState<PurchaseRequest[]>([])
+
+  function holdRow(row: PurchaseRequest) {
+    setHeld((prev) => holdQueueRow(prev, row))
+  }
 
   if (query.isPending) {
     return <LoadingState />
@@ -332,7 +347,8 @@ export function ApprovalsQueue() {
     )
   }
 
-  if (query.data.total === 0) {
+  const rows = mergeHeldQueueRows(query.data.items, held)
+  if (rows.length === 0) {
     const empty = noApprovalsEmpty()
     return <EmptyState title={empty.title} description={empty.description} />
   }
@@ -344,8 +360,8 @@ export function ApprovalsQueue() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-4">
-        {query.data.items.map((row) => (
-          <QueueItem key={row.id} row={row} />
+        {rows.map((row) => (
+          <QueueItem key={row.id} row={row} onHold={holdRow} />
         ))}
       </div>
       <div className="flex flex-wrap justify-end gap-2">

@@ -21,9 +21,11 @@ import {
   formatApprovalProgress,
   formatApprovalRequired,
   listPolicyLabel,
+  mergeHeldQueueRows,
   formatApproverSelector,
   formatEscalatedAt,
   holdsPaymentMake,
+  holdQueueRow,
   holdsRequestApprove,
   isSelfApproval,
   isTerminalRequestStatus,
@@ -264,6 +266,14 @@ describe('recent spend, remaining, unlocked cards', () => {
     expect(unlockedCardIds(before, after)).toEqual(['b'])
     expect(before).toEqual(['a'])
     expect(after).toEqual(['a', 'b'])
+    expect(mergeHeldQueueRows([{ id: 'a' }, { id: 'b' }], [{ id: 'c' }])).toEqual([
+      { id: 'c' },
+      { id: 'a' },
+      { id: 'b' },
+    ])
+    expect(mergeHeldQueueRows([{ id: 'a' }], [{ id: 'a' }])).toEqual([{ id: 'a' }])
+    expect(holdQueueRow([{ id: 'a' }], { id: 'b' })).toEqual([{ id: 'a' }, { id: 'b' }])
+    expect(holdQueueRow([{ id: 'a', n: 1 }], { id: 'a', n: 2 })).toEqual([{ id: 'a', n: 2 }])
   })
 })
 
@@ -363,6 +373,16 @@ describe('A7.9 invariant proofs', () => {
       'utf8',
     )
     expect(deferred).toContain("cn(buttonVariants({ variant: 'outline' }), 'w-fit')")
+  })
+
+  it('keeps a just-approved queue card after the pending list drops it', () => {
+    const queue = readFileSync(
+      join(process.cwd(), 'src/app/(app)/approvals/ApprovalsQueue.tsx'),
+      'utf8',
+    )
+    expect(queue).toContain('holdQueueRow')
+    expect(queue).toContain('mergeHeldQueueRows')
+    expect(queue).toContain('onHold(row)')
   })
 
   it('does not duplicate mutation error copy as both title and description', () => {

@@ -350,6 +350,18 @@ export function unlockedCardIds(
   return afterIds.filter((id) => !before.has(id))
 }
 
+export function holdQueueRow<T extends { id: string }>(held: ReadonlyArray<T>, row: T): T[] {
+  return [...held.filter((item) => item.id !== row.id), row]
+}
+
+export function mergeHeldQueueRows<T extends { id: string }>(
+  pending: ReadonlyArray<T>,
+  held: ReadonlyArray<T>,
+): T[] {
+  const pendingIds = new Set(pending.map((row) => row.id))
+  return [...held.filter((row) => !pendingIds.has(row.id)), ...pending]
+}
+
 export function toApprovalRuleBody(rule: {
   threshold: number
   approverSelection: unknown
