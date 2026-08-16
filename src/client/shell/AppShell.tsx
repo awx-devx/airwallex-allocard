@@ -17,9 +17,12 @@ const DEFAULT_NAV: SideNavItem[] = [
   { href: '/cards', label: 'Cards' },
   { href: '/approvals', label: 'Approvals' },
   { href: '/activity', label: 'Activity' },
+  { href: '/automation', label: 'Automation' },
   { href: '/reports', label: 'Reports' },
   { href: '/settings/roles', label: 'Roles' },
   { href: '/settings/access-reviews', label: 'Access reviews' },
+  { href: '/settings/rules', label: 'Rules' },
+  { href: '/settings/attributes', label: 'Attributes' },
 ]
 
 export type AppShellProps = {

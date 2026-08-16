@@ -564,7 +564,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.1 — SideNav + settings nav + route shells
 
-- [ ] **A6.1** — Insert Automation / Rules / Attributes; placeholders so links do not 404
+- [x] **A6.1** — Insert Automation / Rules / Attributes; placeholders so links do not 404
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/client/lib/access.ts` (edit — `SETTINGS_NAV` only)
@@ -590,7 +590,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** n/a for placeholders (stack `min-w-0`). Shell collapse unchanged. New hrefs are in the aside at `md` and in the Menu `Sheet` below `md` (same `SideNav`). Settings tabs wrap.
   - **Pattern:** A5.1 `src/client/shell/AppShell.tsx` `DEFAULT_NAV` insert. A3.6 `SETTINGS_NAV` in `src/client/lib/access.ts`. Placeholders: A5.1 `/cards` pages. B6 list path: `src/shared/contracts/rule.ts` `list.path` `'/api/rules'` (UI path is `/settings/rules`, not `/api/rules`).
   - **Accept:** `pnpm verify`. `/automation`, `/settings/rules`, `/settings/rules/new`, `/settings/rules/any-id`, `/settings/rules/any-id/simulate`, `/settings/attributes`, `/cards/any-id/explain` are not 404. SideNav at 768px shows Automation after Activity and Rules/Attributes after Access reviews; at 375px those labels appear inside the existing Menu Sheet. 375px and 768px: no page-level horizontal scrollbar; Menu/Sheet still works below `md`. Aside still `hidden md:flex`. `AppShell.tsx` does not lose `hidden` or `md:flex`. SETTINGS_NAV tests expect four hrefs and still ban a project settings tab.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `DEFAULT_NAV` Automation after Activity; Rules/Attributes after Access reviews. SETTINGS_NAV four hrefs. Placeholders `/automation`, `/settings/rules`, `/settings/rules/[id]`, `/settings/rules/[id]/simulate`, `/settings/attributes`, `/cards/[id]/explain`. Aside still `hidden md:flex`. `pnpm verify` green (1672 tests).
 
 ### A6.2 — Project controls list
 

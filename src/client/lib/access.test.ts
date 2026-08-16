@@ -298,10 +298,12 @@ describe('hrefs', () => {
 })
 
 describe('SETTINGS_NAV', () => {
-  it('is the two settings hrefs and has no project settings tab', () => {
+  it('is the four settings hrefs and has no project settings tab', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
       '/settings/roles',
       '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
     ])
     expect(SETTINGS_NAV.map((item) => `${item.href} ${item.label}`).join(' ')).not.toMatch(
       /\/projects\/[^/]*settings/,
@@ -438,10 +440,12 @@ describe('A3.9 preview vs 403', () => {
 })
 
 describe('A3.9 settings routes and no Settings workspace tab', () => {
-  it('SETTINGS_NAV is exactly the two org settings hrefs', () => {
+  it('SETTINGS_NAV is exactly the four org settings hrefs', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
       '/settings/roles',
       '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
     ])
   })
 })

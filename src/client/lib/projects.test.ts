@@ -305,6 +305,8 @@ describe('WORKSPACE_TAB_HREFS', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
       '/settings/roles',
       '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
     ])
   })
 })

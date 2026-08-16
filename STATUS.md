@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.1 — SideNav + settings nav + route shells
-**Last green `pnpm verify`:** 2026-08-17 (A6.0)
+**Active task:** A6.2 — Project controls list
+**Last green `pnpm verify`:** 2026-08-17 (A6.1)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 1 / 12  |
+| A     | A6 Controls & automation | in progress  | 2 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.1** SideNav / route shells. Do not start screens before reviewing A6.0 helpers. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.2** project controls list. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.1 done (2026-08-17).** SideNav Automation after Activity; Rules/Attributes after Access reviews. Placeholders `/automation`, `/settings/rules`, `/settings/rules/[id]`, `/settings/rules/[id]/simulate`, `/settings/attributes`, `/cards/[id]/explain`. Aside still `hidden md:flex`. `pnpm verify` green (1672 tests). Next: **A6.2** project controls list.
 
 **A6.0 done (2026-08-17).** Helpers in `src/client/lib/rules.ts`. No GET-by-id; templates are B6-legal DSL; remaining unclamped; no client parser. `pnpm verify` green (1672 tests). STOP — review helpers before **A6.1** SideNav / route shells.
 

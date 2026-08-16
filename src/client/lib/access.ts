@@ -112,6 +112,8 @@ export const SCOPE_LEVEL_LABELS: Record<AccessScopeLevel, string> = {
 export const SETTINGS_NAV = [
   { href: '/settings/roles', label: 'Roles' },
   { href: '/settings/access-reviews', label: 'Access reviews' },
+  { href: '/settings/rules', label: 'Rules' },
+  { href: '/settings/attributes', label: 'Attributes' },
 ] as const
 
 export type ScopeSummaryNames = {
