@@ -1,3 +1,5 @@
+import { ApprovalDetail } from '@/app/(app)/approvals/[id]/ApprovalDetail'
+
 export default function ApprovalDetailPage() {
-  return <main className="min-w-0">Approval detail — not built yet</main>
+  return <ApprovalDetail />
 }

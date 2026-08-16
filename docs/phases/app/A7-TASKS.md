@@ -500,7 +500,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.6 — Approval detail (decide)
 
-- [ ] **A7.6** — `/approvals/[id]` context + trail + decide
+- [x] **A7.6** — `/approvals/[id]` context + trail + decide
   - **Files:**
     - `src/app/(app)/approvals/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/approvals/[id]/ApprovalDetail.tsx` (`'use client'`)
@@ -514,7 +514,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** stack. Figures wrap. Decide `flex-wrap`. Trail / remaining / recent spend not `hidden`. No page `md:grid`. No Sheet.
   - **Pattern:** A7.4 `RequestDetail.tsx` + A7.5 decide. B7 `.get` + `.decide`.
   - **Accept:** `pnpm verify`. `ApprovalDetail.tsx` contains `useDecideRequest` and `selfApprovalMessage` / the locked self string and does not contain `useSubmitRequest` / `usePanToken`. 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable; trail and remaining reachable by vertical scroll.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Approval detail with remaining, recent spend, trail, decide; self-approval Alert and no buttons. `pnpm verify` green (1704 tests).
 
 ### A7.7 — Approval rules on project controls
 
