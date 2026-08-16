@@ -2,6 +2,7 @@
  * Purchase-request lifecycle: create → update → submit → cancel / decide.
  * Never calls Airwallex — emits domain events; B6 reacts.
  */
+import { formatMoney } from '@/lib/money'
 import { connectDb } from '@/server/db/connect'
 import { publishEvent } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
@@ -92,7 +93,11 @@ export async function runPolicyCheck(
     const detail = await getProjectBudget(ctx, projectId)
     spendingRuleDenials = []
     if (detail.budget && amount > detail.projection.remaining) {
-      spendingRuleDenials = [`Insufficient remaining budget (${detail.projection.remaining})`]
+      const remaining = formatMoney({
+        amount: detail.projection.remaining,
+        currency: detail.budget.currency,
+      })
+      spendingRuleDenials = [`Insufficient remaining budget (${remaining})`]
     }
   }
 

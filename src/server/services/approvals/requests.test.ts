@@ -227,7 +227,7 @@ describe('approvals/requests', () => {
       expect(appError.code).toBe(ErrorCode.VALIDATION_FAILED)
       expect(appError.details).toEqual({
         fieldErrors: {
-          policy: [expect.stringMatching(/Insufficient remaining budget \(10000\)/)],
+          policy: [expect.stringMatching(/Insufficient remaining budget \(\$100\.00\)/)],
         },
       })
     }
