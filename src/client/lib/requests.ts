@@ -13,7 +13,7 @@ import { PolicyOutcome } from '@/shared/enums/policyOutcome'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
 import { listApprovalsQuery, listPurchaseRequestsQuery } from '@/shared/schemas/purchaseRequest'
 import type { ApprovalRuleBody, ApproverSelector } from '@/shared/types/approvalRule'
-import type { ListApprovalsQuery } from '@/shared/types/purchaseRequest'
+import type { ListApprovalsQuery, PolicyDecision } from '@/shared/types/purchaseRequest'
 
 export { cardHref, controlsHref, projectCardsHref }
 
@@ -409,6 +409,29 @@ export function policyPreviewHeading(outcome: string): string {
     return NOT_PERMITTED_HEADING
   }
   return ''
+}
+
+export function listPolicyLabel(
+  status: string,
+  decision: PolicyDecision | null,
+): { text: string; title?: string } {
+  if (isTerminalRequestStatus(status) || decision === null) {
+    return { text: '—' }
+  }
+  if (decision.outcome === PolicyOutcome.NOT_PERMITTED) {
+    return {
+      text: decision.reasons[0] ?? policyPreviewHeading(decision.outcome),
+      title: decision.reasons.join('\n'),
+    }
+  }
+  if (decision.outcome === PolicyOutcome.APPROVAL_REQUIRED) {
+    return { text: formatApprovalRequired(decision.requiredApprovals) }
+  }
+  return { text: policyPreviewHeading(decision.outcome) || '—' }
+}
+
+export function showLivePolicyDecision(status: string): boolean {
+  return !isTerminalRequestStatus(status)
 }
 
 export function formatApprovalRequired(requiredApprovals: number): string {

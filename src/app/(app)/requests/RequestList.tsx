@@ -10,12 +10,11 @@ import { useMe } from '@/client/hooks/useSession'
 import { useCan } from '@/client/lib/permissions/useCan'
 import {
   createRequestDenialMessage,
-  formatApprovalRequired,
+  listPolicyLabel,
   listRequestsDenialMessage,
   newRequestHref,
   noRequestsEmpty,
   parseRequestListSearchParams,
-  policyPreviewHeading,
   requestHref,
   requestListHref,
   selectProjectEmpty,
@@ -40,8 +39,7 @@ import {
 import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
-import { PolicyOutcome } from '@/shared/enums/policyOutcome'
-import type { PolicyDecision, PurchaseRequest } from '@/shared/types/purchaseRequest'
+import type { PurchaseRequest } from '@/shared/types/purchaseRequest'
 
 function NewRequestControl({ projectId }: { projectId: string }) {
   const me = useMe()
@@ -69,22 +67,6 @@ function NewRequestControl({ projectId }: { projectId: string }) {
       )}
     </PermissionGateView>
   )
-}
-
-function policyLabel(decision: PolicyDecision | null): { text: string; title?: string } {
-  if (decision === null) {
-    return { text: '—' }
-  }
-  if (decision.outcome === PolicyOutcome.NOT_PERMITTED) {
-    return {
-      text: decision.reasons[0] ?? policyPreviewHeading(decision.outcome),
-      title: decision.reasons.join('\n'),
-    }
-  }
-  if (decision.outcome === PolicyOutcome.APPROVAL_REQUIRED) {
-    return { text: formatApprovalRequired(decision.requiredApprovals) }
-  }
-  return { text: policyPreviewHeading(decision.outcome) || '—' }
 }
 
 function ProjectSelect({
@@ -256,7 +238,7 @@ function RequestListForProject({
       id: 'policy',
       header: 'Policy',
       cell: (row) => {
-        const label = policyLabel(row.policyDecision)
+        const label = listPolicyLabel(row.status, row.policyDecision)
         return (
           <span className="min-w-0" title={label.title}>
             {label.text}

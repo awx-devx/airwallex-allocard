@@ -20,6 +20,7 @@ import {
   emptyApprovalRuleBody,
   formatApprovalProgress,
   formatApprovalRequired,
+  listPolicyLabel,
   formatApproverSelector,
   formatEscalatedAt,
   holdsPaymentMake,
@@ -42,6 +43,7 @@ import {
   requestsHref,
   selectProjectEmpty,
   selfApprovalMessage,
+  showLivePolicyDecision,
   toApprovalRuleBody,
   unlockedCardIds,
   viewerHasDecided,
@@ -147,6 +149,30 @@ describe('permission and decision helpers', () => {
 describe('policy copy and trail', () => {
   it('locks preview sentences', () => {
     expect(formatApprovalRequired(2)).toBe('Approval needed from 2 approver(s).')
+    expect(
+      listPolicyLabel('REJECTED', {
+        outcome: 'APPROVAL_REQUIRED',
+        requiredApprovals: 1,
+        reasons: [],
+      }),
+    ).toEqual({ text: '—' })
+    expect(
+      listPolicyLabel('PENDING', {
+        outcome: 'APPROVAL_REQUIRED',
+        requiredApprovals: 2,
+        reasons: [],
+      }),
+    ).toEqual({ text: 'Approval needed from 2 approver(s).' })
+    expect(
+      listPolicyLabel('APPROVED', {
+        outcome: 'APPROVAL_REQUIRED',
+        requiredApprovals: 1,
+        reasons: [],
+      }),
+    ).toEqual({ text: '—' })
+    expect(showLivePolicyDecision('PENDING')).toBe(true)
+    expect(showLivePolicyDecision('REJECTED')).toBe(false)
+    expect(showLivePolicyDecision('APPROVED')).toBe(false)
     expect(policyPreviewHeading('NOT_PERMITTED')).toBe('Not permitted.')
     expect(policyPreviewHeading('NO_APPROVAL_REQUIRED')).toBe('No approval needed.')
     expect(policyPreviewHeading('APPROVAL_REQUIRED')).toBe('')
@@ -324,6 +350,21 @@ describe('A7.9 invariant proofs', () => {
       escalationAfterMins: 60,
       escalateTo: { type: 'PROJECT_OWNER' },
     })
+  })
+
+  it('does not keep APPROVAL_REQUIRED copy on terminal requests', () => {
+    const list = readFileSync(join(process.cwd(), 'src/app/(app)/requests/RequestList.tsx'), 'utf8')
+    expect(list).toContain('listPolicyLabel(row.status, row.policyDecision)')
+    const detail = readFileSync(
+      join(process.cwd(), 'src/app/(app)/requests/[id]/RequestDetail.tsx'),
+      'utf8',
+    )
+    expect(detail).toContain('showLivePolicyDecision(data.status)')
+    const approval = readFileSync(
+      join(process.cwd(), 'src/app/(app)/approvals/[id]/ApprovalDetail.tsx'),
+      'utf8',
+    )
+    expect(approval).toContain('showLivePolicyDecision(data.status)')
   })
 
   it('gates New request after can() settles and does not dump list 403 copy', () => {

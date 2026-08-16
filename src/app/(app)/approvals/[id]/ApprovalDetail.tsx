@@ -34,6 +34,7 @@ import {
   requestHref,
   requestNotFoundMessage,
   selfApprovalMessage,
+  showLivePolicyDecision,
   unlockedCardIds,
   unlockedCardMessage,
   unlockedHeading,
@@ -312,7 +313,7 @@ export function ApprovalDetail() {
           ))}
         </ul>
       )}
-      {data.policyDecision ? (
+      {data.policyDecision && showLivePolicyDecision(data.status) ? (
         <div className="flex min-w-0 flex-col gap-1">
           <PolicyPane decision={data.policyDecision} />
           {data.policyDecision.reasons.map((policyReason) =>

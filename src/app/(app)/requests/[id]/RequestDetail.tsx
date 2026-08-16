@@ -36,6 +36,7 @@ import {
   rejectionReason,
   requestListHref,
   requestNotFoundMessage,
+  showLivePolicyDecision,
   unlockedCardMessage,
   unlockedNoneLinkedMessage,
 } from '@/client/lib/requests'
@@ -575,7 +576,7 @@ export function RequestDetail() {
       {data.escalatedAt ? (
         <p className="text-sm">{formatEscalatedAt(data.escalatedAt, formatDate)}</p>
       ) : null}
-      {data.policyDecision ? (
+      {data.policyDecision && showLivePolicyDecision(data.status) ? (
         <div className="flex min-w-0 flex-col gap-1">
           <PolicyPreviewPane decision={data.policyDecision} />
           {data.policyDecision.reasons.map((reason) =>
