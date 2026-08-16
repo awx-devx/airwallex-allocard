@@ -435,7 +435,8 @@ export function showLivePolicyDecision(status: string): boolean {
 }
 
 export function formatApprovalRequired(requiredApprovals: number): string {
-  return `Approval needed from ${requiredApprovals} approver(s).`
+  const unit = requiredApprovals === 1 ? 'approver' : 'approvers'
+  return `Approval needed from ${requiredApprovals} ${unit}.`
 }
 
 export function formatEscalatedAt(iso: string, formatDate: (iso: string) => string): string {

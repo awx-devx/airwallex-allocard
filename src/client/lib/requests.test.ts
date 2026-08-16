@@ -148,7 +148,7 @@ describe('permission and decision helpers', () => {
 
 describe('policy copy and trail', () => {
   it('locks preview sentences', () => {
-    expect(formatApprovalRequired(2)).toBe('Approval needed from 2 approver(s).')
+    expect(formatApprovalRequired(2)).toBe('Approval needed from 2 approvers.')
     expect(
       listPolicyLabel('REJECTED', {
         outcome: 'APPROVAL_REQUIRED',
@@ -162,7 +162,7 @@ describe('policy copy and trail', () => {
         requiredApprovals: 2,
         reasons: [],
       }),
-    ).toEqual({ text: 'Approval needed from 2 approver(s).' })
+    ).toEqual({ text: 'Approval needed from 2 approvers.' })
     expect(
       listPolicyLabel('APPROVED', {
         outcome: 'APPROVAL_REQUIRED',
@@ -331,7 +331,7 @@ describe('A7.9 invariant proofs', () => {
     expect(parsed).not.toHaveProperty('status')
     expect(canDecideRequest('PENDING', 'u1', 'u1')).toBe(false)
     expect(canDecideRequest('APPROVED', 'u1', 'u2')).toBe(false)
-    expect(formatApprovalRequired(1)).toBe('Approval needed from 1 approver(s).')
+    expect(formatApprovalRequired(1)).toBe('Approval needed from 1 approver.')
     expect(policyPreviewHeading('NOT_PERMITTED')).toBe('Not permitted.')
     expect(
       toApprovalRuleBody({
