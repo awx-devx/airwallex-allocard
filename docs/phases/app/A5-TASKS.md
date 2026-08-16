@@ -575,20 +575,20 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A5-cards.md` signed off:
-  - [ ] No card number, CVV, or expiry exists in application state or the DOM outside the iframe
-  - [ ] Reveal is permission-gated, scope-checked, and disclosed as audited
-  - [ ] Limits come from the live endpoint
-  - [ ] Close uses type-to-confirm and explains irreversibility
-  - [ ] Rule-created cards link to the rule that created them
-  - [ ] Desired-versus-applied divergence is visible rather than silently hidden
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; Freeze / Close / Reveal reachable; iframe not wider than the viewport
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A6**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A5-cards.md` signed off:
+  - [x] No card number, CVV, or expiry exists in application state or the DOM outside the iframe
+  - [x] Reveal is permission-gated, scope-checked, and disclosed as audited
+  - [x] Limits come from the live endpoint
+  - [x] Close uses type-to-confirm and explains irreversibility
+  - [x] Rule-created cards link to the rule that created them
+  - [x] Desired-versus-applied divergence is visible rather than silently hidden
+  - [x] 375px and 768px: no page-level horizontal scrollbar; Freeze / Close / Reveal reachable; iframe not wider than the viewport
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A6**)
 
 ## Out of scope (do not do in A5)
 

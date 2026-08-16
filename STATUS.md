@@ -2,39 +2,40 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A5 — Cards
-**Active task:** A5 phase exit
-**Last green `pnpm verify`:** 2026-08-16 (A5 runtime QA patch)
+**Active phase:** A6 — Controls & automation
+**Active task:** generate `A6-TASKS.md`
+**Last green `pnpm verify`:** 2026-08-16 (A5 exit)
 **Blocked on:** _nothing_
 
 ---
 
 ## Progress
 
-| Track | Phase                   | Status       | Tasks   |
-| ----- | ----------------------- | ------------ | ------- |
-| B     | B0 Foundation           | **complete** | 13 / 13 |
-| B     | B1 Auth & organisations | **complete** | 15 / 15 |
-| B     | B2 Projects             | **complete** | 12 / 12 |
-| B     | B3 Access control       | **complete** | 14 / 14 |
-| B     | B4 Budget               | **complete** | 16 / 16 |
-| B     | B5 Cards                | **complete** | 15 / 15 |
-| B     | B6 Rules engine         | **complete** | 15 / 15 |
-| B     | B7 Requests & approvals | **complete** | 11 / 11 |
-| B     | B8 Money in motion      | **complete** | 11 / 11 |
-| B     | B9 Reporting & closure  | **complete** | 11 / 11 |
-| F     | F0 Client foundation    | **complete** | 17 / 17 |
-| F     | F1 Data layer           | **complete** | 15 / 15 |
-| F     | F2 Utils                | **complete** | 11 / 11 |
-| F     | F3 UI library           | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects | **complete** | 10 / 10 |
-| A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | in progress  | 11 / 11 |
-| A     | A6–A9 Application       | not started  | —       |
+| Track | Phase                    | Status       | Tasks   |
+| ----- | ------------------------ | ------------ | ------- |
+| B     | B0 Foundation            | **complete** | 13 / 13 |
+| B     | B1 Auth & organisations  | **complete** | 15 / 15 |
+| B     | B2 Projects              | **complete** | 12 / 12 |
+| B     | B3 Access control        | **complete** | 14 / 14 |
+| B     | B4 Budget                | **complete** | 16 / 16 |
+| B     | B5 Cards                 | **complete** | 15 / 15 |
+| B     | B6 Rules engine          | **complete** | 15 / 15 |
+| B     | B7 Requests & approvals  | **complete** | 11 / 11 |
+| B     | B8 Money in motion       | **complete** | 11 / 11 |
+| B     | B9 Reporting & closure   | **complete** | 11 / 11 |
+| F     | F0 Client foundation     | **complete** | 17 / 17 |
+| F     | F1 Data layer            | **complete** | 15 / 15 |
+| F     | F2 Utils                 | **complete** | 11 / 11 |
+| F     | F3 UI library            | **complete** | 26 / 26 |
+| A     | A1 Auth & onboarding     | **complete** | 8 / 8   |
+| A     | A2 Dashboard & projects  | **complete** | 10 / 10 |
+| A     | A3 People & access       | **complete** | 10 / 10 |
+| A     | A4 Budget                | **complete** | 10 / 10 |
+| A     | A5 Cards                 | **complete** | 11 / 11 |
+| A     | A6 Controls & automation | not started  | —       |
+| A     | A7–A9 Application        | not started  | —       |
 
-A5 **in progress**. Next: **A5 phase exit** — do not start A6. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **complete**. Next: generate `A6-TASKS.md`; first A6 work is project controls / the rule builder. Do not start A6 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5 exit (2026-08-16).** Phase exit + `A5-cards.md` review checklist signed off. Reveal hang, holder names, and filter labels patched. `pnpm verify` green (1654 tests). Next: generate `A6-TASKS.md`; first A6 work is project controls / the rule builder. Do not start A6 screens before the task file is locked.
 
 **A5 runtime QA patched (2026-08-16).** Reveal no longer hangs on expired pantoken (ErrorState + Retry); fixture `expires_at` 2099; org list Holder uses org member names; filter labels visible. `pnpm verify` green (1654 tests). Next: **A5 phase exit** — do not start A6.
 

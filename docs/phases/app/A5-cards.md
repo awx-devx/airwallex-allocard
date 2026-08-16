@@ -40,10 +40,10 @@ Card list: `grid-cols-1 md:grid-cols-2`, or `DataTable` with internal scroll —
 
 ## Review checklist
 
-- [ ] No card number, CVV, or expiry exists in application state or the DOM outside the iframe
-- [ ] Reveal is permission-gated, scope-checked, and disclosed as audited
-- [ ] Limits come from the live endpoint
-- [ ] Close uses type-to-confirm and explains irreversibility
-- [ ] Rule-created cards link to the rule that created them
-- [ ] Desired-versus-applied divergence is visible rather than silently hidden
-- [ ] 375px and 768px: no page-level horizontal scrollbar; Freeze / Close / Reveal reachable; iframe not wider than the viewport
+- [x] No card number, CVV, or expiry exists in application state or the DOM outside the iframe
+- [x] Reveal is permission-gated, scope-checked, and disclosed as audited
+- [x] Limits come from the live endpoint
+- [x] Close uses type-to-confirm and explains irreversibility
+- [x] Rule-created cards link to the rule that created them
+- [x] Desired-versus-applied divergence is visible rather than silently hidden
+- [x] 375px and 768px: no page-level horizontal scrollbar; Freeze / Close / Reveal reachable; iframe not wider than the viewport
