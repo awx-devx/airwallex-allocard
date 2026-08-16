@@ -3,7 +3,10 @@
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import type { FieldValues, UseFormReturn } from 'react-hook-form'
+import { z } from 'zod'
 import { isApiError } from '@/client/api/errors'
+import { AccessListSheet } from '@/app/(app)/cards/[id]/AccessListSheet'
 import {
   useCard,
   useCardholder,
@@ -12,6 +15,7 @@ import {
   useFreezeCard,
   useReconcileCard,
   useUnfreezeCard,
+  useUpdateCard,
 } from '@/client/hooks/useCards'
 import { useOrgMembers } from '@/client/hooks/useOrganizations'
 import { permissionGateAllowed } from '@/client/lib/access'
@@ -19,6 +23,7 @@ import {
   CLOSE_CONFIRM_PHRASE,
   accessListNames,
   canCloseCard,
+  canEditCardMeta,
   canFreezeCard,
   canRevealCard,
   canUnfreezeCard,
@@ -47,6 +52,7 @@ import {
   ruleHref,
   singleUseUsedMessage,
 } from '@/client/lib/cards'
+import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
@@ -58,6 +64,8 @@ import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
 import type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
@@ -247,6 +255,89 @@ function CardActions({ card }: { card: Card }) {
   )
 }
 
+const nickNameSchema = z.object({
+  nickName: z.string().min(1).max(100),
+})
+
+function CardMetaEditor({ card, projectId }: { card: Card; projectId: string }) {
+  const update = useUpdateCard()
+  const { can, isLoading } = useCan(projectId)
+  const allowed = permissionGateAllowed(can(Permission.CARD_MANAGE, { cardId: card.id }), isLoading)
+  const form = useZodForm(nickNameSchema, { defaultValues: { nickName: card.nickName } })
+  const [accessOpen, setAccessOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState<string | null>(null)
+
+  async function onSaveNick(values: { nickName: string }) {
+    const nickName = values.nickName.trim()
+    if (nickName.length < 1) {
+      form.setError('nickName', { type: 'manual', message: 'Enter a nickname.' })
+      return
+    }
+    if (nickName === card.nickName) return
+    setAlertMessage(null)
+    try {
+      await update.mutateAsync({ id: card.id, input: { nickName } })
+    } catch (error) {
+      if (isApiError(error) && error.code === ErrorCode.VALIDATION_FAILED) {
+        applyServerErrorsFromApiError(form as unknown as UseFormReturn<FieldValues>, error)
+        return
+      }
+      setAlertMessage(isApiError(error) ? error.message : 'Unable to update nickname')
+    }
+  }
+
+  return (
+    <>
+      {alertMessage ? (
+        <Alert variant="destructive">
+          <AlertDescription>{alertMessage}</AlertDescription>
+        </Alert>
+      ) : null}
+      <Form {...form}>
+        <form
+          className="flex flex-wrap gap-2"
+          onSubmit={form.handleSubmit((values) => void onSaveNick(values))}
+        >
+          <FormField
+            control={form.control}
+            name="nickName"
+            render={({ field }) => (
+              <FormItem className="min-w-0 flex-1">
+                <FormControl>
+                  <Input {...field} maxLength={100} aria-label="Nickname" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+            <Button type="submit" disabled={!allowed} loading={update.isPending}>
+              Save nickname
+            </Button>
+          </PermissionGateView>
+        </form>
+      </Form>
+      <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!allowed}
+          onClick={() => setAccessOpen(true)}
+        >
+          Edit access
+        </Button>
+      </PermissionGateView>
+      <AccessListSheet
+        cardId={card.id}
+        projectId={projectId}
+        accessList={card.accessList}
+        open={accessOpen}
+        onOpenChange={setAccessOpen}
+      />
+    </>
+  )
+}
+
 export function CardDetail() {
   const raw = useParams().id
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
@@ -355,6 +446,9 @@ export function CardDetail() {
           </ul>
         )}
       </div>
+      {canEditCardMeta(card.status) && card.projectId !== null && card.projectId.length >= 1 ? (
+        <CardMetaEditor card={card} projectId={card.projectId} />
+      ) : null}
       <div className="flex min-w-0 flex-col gap-3">
         <h2 className="text-sm font-medium">Limits</h2>
         {limitsQuery.isPending ? (

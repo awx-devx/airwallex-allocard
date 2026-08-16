@@ -505,7 +505,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.7 — Nickname + access list
 
-- [ ] **A5.7** — PATCH `nickName` / `accessList` only
+- [x] **A5.7** — PATCH `nickName` / `accessList` only
   - **Files:**
     - `src/app/(app)/cards/[id]/CardDetail.tsx` (edit)
     - `src/app/(app)/cards/[id]/AccessListSheet.tsx` (`'use client'`)
@@ -518,7 +518,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** wrap vs Sheet. Sheet body `flex flex-col gap-4 min-w-0`. Nickname row `flex flex-wrap gap-2`. Do not `hidden` Save on narrow.
   - **Pattern:** A3.5 `EditMemberSheet.tsx`. `useUpdateCard` `src/client/hooks/useCards.ts`. B5: `src/shared/schemas/card.ts` `updateCardInput` (`nickName` 1–100, `accessList` string[]). `applyServerErrorsFromApiError` `src/client/lib/forms/applyServerErrors.ts`. Checkbox F3 `src/components/ui/checkbox.tsx`.
   - **Accept:** `pnpm verify`. Update payloads in this task’s files contain only `nickName` and/or `accessList` (grep `desiredControls` must not appear). 375px and 768px: Save nickname / Edit access / Sheet Save reachable; Sheet does not force window sideways scroll.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Nickname Input + Save; access Sheet of project members. PATCH only `nickName` / `accessList`. `pnpm verify` green (1642 tests).
 
 ### A5.8 — Card transactions
 
