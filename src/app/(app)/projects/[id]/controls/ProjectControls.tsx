@@ -18,6 +18,7 @@ import {
   ruleBuilderHref,
   type RuleTemplateKey,
 } from '@/client/lib/rules'
+import { ApprovalRuleEditor } from '@/app/(app)/projects/[id]/controls/ApprovalRuleEditor'
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -247,6 +248,10 @@ export function ProjectControls() {
         />
       )}
       {orgWideSection}
+      <section className="flex min-w-0 flex-col gap-3">
+        <h2 className="text-sm font-medium">Approval rules</h2>
+        <ApprovalRuleEditor projectId={id} />
+      </section>
     </div>
   )
 }

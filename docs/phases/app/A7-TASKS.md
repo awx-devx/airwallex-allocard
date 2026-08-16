@@ -518,7 +518,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.7 — Approval rules on project controls
 
-- [ ] **A7.7** — `/projects/[id]/controls` threshold + approver editor
+- [x] **A7.7** — `/projects/[id]/controls` threshold + approver editor
   - **Files:**
     - `src/app/(app)/projects/[id]/controls/ProjectControls.tsx` (edit — append section)
     - `src/app/(app)/projects/[id]/controls/ApprovalRuleEditor.tsx` (`'use client'`)
@@ -536,7 +536,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** stack **below** the A6 table. Editor rows column. Add/remove/Save `flex-wrap`. No Sheet. No `md:grid` of all rules. Do not `hidden` the section below `md`.
   - **Pattern:** A6.2 `ProjectControls.tsx` (append only). A3.7 `src/app/(app)/settings/roles/[id]/` permission matrix Save. A3.3 `ScopePicker.tsx` progressive disclosure. Hooks: `useApprovalRules` / `usePutApprovalRules` `src/client/hooks/useRequests.ts` (B7 `approvalRuleContracts`). Money: A2.5 `parseMoneyInput`. `toApprovalRuleBody` A7.0.
   - **Accept:** `pnpm verify`. PUT payload items have `threshold` int, `requiredCount` int >= 1, `escalationAfterMins` int >= 1, and a legal `approverSelection` / `escalateTo` discriminated object — no `id` / `orgId` / `projectId`. `ApprovalRuleEditor.tsx` has no `type="number"` / `parseFloat`. 375px and 768px: no page-level horizontal scrollbar; Add / Remove / Save reachable; A6 New rule + Enable still reachable; approval-rules section not `hidden`. `WORKSPACE_TAB_HREFS` still six.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Approval rules section below A6 table; PUT replace-all project rules; empty `[]` allowed; no `type="number"`. `pnpm verify` green (1704 tests).
 
 ### A7.8 — Wizard link
 
