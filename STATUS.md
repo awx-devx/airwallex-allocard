@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** generate `A7-TASKS.md`
-**Last green `pnpm verify`:** 2026-08-17 (A6 exit)
+**Active task:** A7.1 — SideNav + route shells
+**Last green `pnpm verify`:** 2026-08-17 (A7.0)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | not started  | —       |
+| A     | A7 Purchase requests     | in progress  | 1 / 10  |
 | A     | A8–A9 Application        | not started  | —       |
 
-A6 **complete**. Next: generate `A7-TASKS.md`; first A7 work is requests / the approver queue. Do not start A7 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.0 **done**. Helpers locked; next is A7.1 chrome. Do not start request/queue screens before A7.0 STOP is reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.0 done (2026-08-17).** Helpers in `src/client/lib/requests.ts`. No `GET /api/requests`; no client `evaluatePolicy`; remaining unclamped; `cardHref` re-exported. Barrel named-exports (clash with A6 `parseOptionalIdParam`). `pnpm verify` green (1704 tests). STOP — review helpers before **A7.1** SideNav / route shells.
+
+**A7-TASKS locked (2026-08-17).** Policies approved: no new contracts; no org-wide request list (`?projectId=` then `useRequests`); preview “from whom” is `requiredApprovals` only; queue is stacked cards with decide in place; create always DRAFT; `cardId` usually null (unlocked = link or A4 card snapshot); recent spend = other APPROVED requests by same `requestedBy`; approval rules section on existing `/projects/[id]/controls`; AppShell collapse stays A2.1 (A7.1 inserts `/requests` before Approvals only). Next: **A7.1** chrome. Do not start screens before A7.0 STOP.
 
 **A6 exit (2026-08-17).** Phase exit + `A6-controls-automation.md` review checklist signed off. Automation parse, explainer merge, and 375 overflow patched. `pnpm verify` green (1688 tests). Next: generate `A7-TASKS.md`; first A7 work is requests / the approver queue. Do not start A7 screens before the task file is locked.
 
