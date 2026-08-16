@@ -1,3 +1,5 @@
+import { CardExplain } from '@/app/(app)/cards/[id]/explain/CardExplain'
+
 export default function CardExplainPage() {
-  return <main className="min-w-0">Explain — not built yet</main>
+  return <CardExplain />
 }

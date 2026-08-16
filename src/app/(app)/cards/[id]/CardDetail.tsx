@@ -54,6 +54,7 @@ import {
   ruleHref,
   singleUseUsedMessage,
 } from '@/client/lib/cards'
+import { cardExplainHref } from '@/client/lib/rules'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
@@ -499,6 +500,9 @@ export function CardDetail() {
       ) : null}
       <div className="flex min-w-0 flex-col gap-3">
         <h2 className="text-sm font-medium">Limits</h2>
+        <Link href={cardExplainHref(id)} className={buttonVariants({ variant: 'outline' })}>
+          Why this limit?
+        </Link>
         {limitsQuery.isPending ? (
           <LoadingState />
         ) : limitsQuery.error ? (
