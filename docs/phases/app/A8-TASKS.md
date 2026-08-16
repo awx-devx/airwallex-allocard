@@ -509,7 +509,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.5 — Declined queue
 
-- [ ] **A8.5** — `/transactions/declined` reasons + card explain Link
+- [x] **A8.5** — `/transactions/declined` reasons + card explain Link
   - **Files:**
     - `src/app/(app)/transactions/declined/page.tsx` (replace placeholder)
     - `src/app/(app)/transactions/declined/DeclinedList.tsx` (`'use client'`)
@@ -523,7 +523,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** table inside overflow; toolbar wrap. No `md:grid`. No Sheet. Reason not `hidden`.
   - **Pattern:** A1-equivalent **A1.5**. Copy A8.3 `TransactionList.tsx` (same file family as A7.2). Hook: `useDeclinedTransactions` (B8 `.listDeclined`). Explain: A6.9 `cardExplainHref`.
   - **Accept:** `pnpm verify`. `DeclinedList.tsx` contains `useDeclinedTransactions` and `declineReason` and does **not** contain `status:` in the hook filter, `useSimulatePurchase`, or `parseFloat`. Static `/transactions/declined` still not handled by `[id]`. 375px and 768px: no page-level horizontal scrollbar; reason reachable (table may scroll inside); Why this limit? reachable; Menu/Sheet still works.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** MEMBER/project gate; `useDeclinedTransactions` with no `status`; reason + Why this limit? columns; static `/transactions/declined` still wins. `pnpm verify` green (1742 tests).
 
 ### A8.6 — Per-card history (A5.8 table)
 
