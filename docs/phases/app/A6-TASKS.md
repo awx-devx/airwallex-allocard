@@ -594,7 +594,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.2 — Project controls list
 
-- [ ] **A6.2** — `/projects/[id]/controls` DataTable; templates empty; `?ruleId=` highlight
+- [x] **A6.2** — `/projects/[id]/controls` DataTable; templates empty; `?ruleId=` highlight
   - **Files:**
     - `src/app/(app)/projects/[id]/controls/page.tsx` (replace `ComingSoonTab`)
     - `src/app/(app)/projects/[id]/controls/ProjectControls.tsx` (`'use client'`)
@@ -612,7 +612,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** table scrolls **inside**; page does not. Toolbar wrap. Org-wide section stacks below. No `md:grid`. No Sheet. `RuleSentence` may wrap; cell `min-w-0`.
   - **Pattern:** A5.2 `src/app/(app)/cards/OrgCardList.tsx` (URL filters, `__all__` Select, page pagination). `DataTable` `src/components/patterns/DataTable.tsx`. `RuleSentence` `src/components/patterns/RuleSentence.tsx`. Hook: `useRules` / `useEnableRule` `src/client/hooks/useRules.ts` (B6 `ruleContracts.list` / `enable`). EmptyState F3.19. Workspace already wraps this page.
   - **Accept:** `pnpm verify`. This file tree has no `ComingSoonTab`. Changing enabled writes `?enabled=true` and does not client-filter a full unfiltered list. 375px and 768px: no page-level horizontal scrollbar; New / template Links / Enable / row Link reachable; table may scroll inside; `RuleSentence` not `hidden`. No `useValidateFormula`. No `eval(`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Project controls DataTable with URL enabled filter, gated New, template empty state, `?ruleId=` Alert, org-wide section. `ComingSoonTab` gone. `pnpm verify` green (1672 tests).
 
 ### A6.3 — Org-wide rules list
 
