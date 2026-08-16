@@ -556,7 +556,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.9 — Don’t-break + invariant proofs
 
-- [ ] **A7.9** — No client policy engine, unclamped remaining, 375/768, shell unchanged
+- [x] **A7.9** — No client policy engine, unclamped remaining, 375/768, shell unchanged
   - **Files:**
     - `src/client/lib/requests.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (assert `WORKSPACE_TAB_HREFS` still six, still includes `/controls`, still no settings, still no `/projects/${id}/requests`)
@@ -575,7 +575,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A6.11 `src/client/lib/rules.test.ts`. A5.10 `src/client/lib/cards.test.ts`. A2.1 shell classes (read-only).
   - **Accept:** `pnpm test client/lib/requests` and `pnpm test client/lib/projects` and `pnpm test client/lib/access` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on request list (Select + New), create (preview above Submit), detail (trail + rejected reason stacked, not hidden), queue (Approve / Reject reachable without sideways window scroll; amount/vendor/remaining wrap), approval detail, controls (Save approval rules), wizard (Next + approval-rules Link); Menu/Sheet still works below `md`; tables may scroll inside. Aside still `hidden md:flex`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Proofs: no client `evaluatePolicy` / `@/server` / `type="number"` / PAN; remaining unclamped; Requests before Approvals; workspace tabs still six; SETTINGS_NAV four hrefs. `pnpm verify` green (1710 tests).
 
 ---
 

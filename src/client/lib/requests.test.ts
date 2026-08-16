@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { cardHref, controlsHref, projectCardsHref } from '@/client/lib/cards'
 import {
   POLICY_PREVIEW_DEBOUNCE_MS,
@@ -274,5 +276,89 @@ describe('empty copy', () => {
       'No project approval rules. Org defaults still apply on submit.',
     )
     expect(wizardApprovalRulesLinkMessage()).toBe('Set approval rules on the controls tab.')
+  })
+})
+
+function walkFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    return entry.isDirectory() ? walkFiles(path) : [path]
+  })
+}
+
+describe('A7.9 invariant proofs', () => {
+  it('does not clamp remaining and does not mutate unlocked inputs', () => {
+    expect(remainingShortfall(-50, 1)).toBe(true)
+    const before = ['a']
+    const after = ['a', 'b']
+    expect(unlockedCardIds(before, after)).toEqual(['b'])
+    expect(before).toEqual(['a'])
+    expect(after).toEqual(['a', 'b'])
+  })
+
+  it('drops status from list params and locks decide/preview copy', () => {
+    const parsed = parseRequestListSearchParams({ status: 'PENDING', page: '1' })
+    expect(parsed).not.toHaveProperty('status')
+    expect(canDecideRequest('PENDING', 'u1', 'u1')).toBe(false)
+    expect(canDecideRequest('APPROVED', 'u1', 'u2')).toBe(false)
+    expect(formatApprovalRequired(1)).toBe('Approval needed from 1 approver(s).')
+    expect(policyPreviewHeading('NOT_PERMITTED')).toBe('Not permitted.')
+    expect(
+      toApprovalRuleBody({
+        id: 'x',
+        threshold: 0,
+        approverSelection: { type: 'PROJECT_OWNER' },
+        requiredCount: 1,
+        escalationAfterMins: 60,
+        escalateTo: { type: 'PROJECT_OWNER' },
+      }),
+    ).not.toHaveProperty('id')
+    expect(emptyApprovalRuleBody()).toEqual({
+      threshold: 0,
+      approverSelection: { type: 'PROJECT_OWNER' },
+      requiredCount: 1,
+      escalationAfterMins: 60,
+      escalateTo: { type: 'PROJECT_OWNER' },
+    })
+  })
+
+  it('A7 screens never evaluate policy, type number, or mention PAN', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/requests')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/approvals')),
+      join(process.cwd(), 'src/app/(app)/projects/[id]/controls/ApprovalRuleEditor.tsx'),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain('evaluatePolicy')
+      expect(src, file).not.toContain("from '@/server/")
+      expect(src, file).not.toContain('type="number"')
+      expect(src, file).not.toContain('parseFloat')
+      expect(src, file).not.toContain('useBudgetChangeRequests')
+      expect(src, file).not.toContain('usePanToken')
+      expect(src, file).not.toContain('useSimulatePurchase')
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, and Requests immediately before Approvals', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    const requestsAt = shell.indexOf("{ href: '/requests', label: 'Requests' }")
+    const approvalsAt = shell.indexOf("{ href: '/approvals', label: 'Approvals' }")
+    expect(requestsAt).toBeGreaterThan(-1)
+    expect(approvalsAt).toBeGreaterThan(requestsAt)
+    expect(
+      shell.includes(
+        "{ href: '/requests', label: 'Requests' },\n  { href: '/approvals', label: 'Approvals' }",
+      ),
+    ).toBe(true)
   })
 })

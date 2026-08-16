@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7.9 — Don’t-break + invariant proofs
-**Last green `pnpm verify`:** 2026-08-17 (A7.8)
+**Active task:** A7 phase exit
+**Last green `pnpm verify`:** 2026-08-17 (A7.9)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 9 / 10  |
+| A     | A7 Purchase requests     | in progress  | 10 / 10 |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.8 **done**. Wizard approval-rules Link. Next is A7.9 don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.9 **done**. Don’t-break proofs green. Next is **A7 phase exit** — do not start A8. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.9 done (2026-08-17).** Don’t-break proofs: no client policy engine; remaining unclamped; Requests immediately before Approvals; workspace tabs still six; SETTINGS_NAV four hrefs. `pnpm verify` green (1710 tests). Next: **A7 phase exit** — do not start A8.
 
 **A7.8 done (2026-08-17).** Wizard approval-rules step Links to project controls. Members deferred step still has no extra Link. `pnpm verify` green (1704 tests). Next: **A7.9** don’t-break proofs.
 
