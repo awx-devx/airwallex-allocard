@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7.4 — Request detail (requester)
-**Last green `pnpm verify`:** 2026-08-17 (A7.3)
+**Active task:** A7.5 — Approver queue
+**Last green `pnpm verify`:** 2026-08-17 (A7.4)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 4 / 10  |
+| A     | A7 Purchase requests     | in progress  | 5 / 10  |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.3 **done**. Create form with live policy preview. Next is A7.4 request detail. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.4 **done**. Request detail with trail and draft edit. Next is A7.5 approver queue. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.4 done (2026-08-17).** `/requests/[id]` policy, trail, reject reason, unlocked; DRAFT edit; no decide on requester surface. `pnpm verify` green (1704 tests). Next: **A7.5** approver queue.
 
 **A7.3 done (2026-08-17).** `/requests/new` preview above submit; create always DRAFT; submit runs policy; `parseMoneyInput` text amount; no client `evaluatePolicy`. `pnpm verify` green (1704 tests). Next: **A7.4** request detail.
 

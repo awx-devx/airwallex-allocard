@@ -450,7 +450,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.4 — Request detail (requester)
 
-- [ ] **A7.4** — `/requests/[id]` policy, trail, reject reason, unlocked
+- [x] **A7.4** — `/requests/[id]` policy, trail, reject reason, unlocked
   - **Files:**
     - `src/app/(app)/requests/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/requests/[id]/RequestDetail.tsx` (`'use client'`)
@@ -469,7 +469,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** stack. Figures wrap (`flex flex-wrap gap-2`), never `whitespace-nowrap`. Trail not `hidden`. Actions wrap. No page `md:grid`. No Sheet.
   - **Pattern:** A5.4 `src/app/(app)/cards/[id]/CardDetail.tsx`. `Timeline` F3.16. Hook: `useRequest` / `useUpdateRequest` / `useSubmitRequest` / `useCancelRequest`. B7 `purchaseRequestSchema`. Members: A3.2 `PeopleList.tsx` name map.
   - **Accept:** `pnpm verify`. `RequestDetail.tsx` contains `useRequest` and does not contain `useDecideRequest` or `usePanToken` / `cvv` / `card_number`. 375px and 768px: no page-level horizontal scrollbar; Submit / Save / Cancel (when shown) reachable; rejected reason and trail reachable by vertical scroll (not `hidden`).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Detail with trail, rejected reason, unlocked copy; DRAFT edit + preview; PENDING cancel. No Approve/Reject. `pnpm verify` green (1704 tests).
 
 ### A7.5 — Approver queue
 
