@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProjectCards } from '@/client/hooks/useCards'
 import { useProjects } from '@/client/hooks/useProjects'
@@ -12,22 +12,29 @@ import {
   useDeleteRule,
   useEnableRule,
   useRules,
+  useSimulateRules,
   useUpdateRule,
+  useValidateRule,
 } from '@/client/hooks/useRules'
 import { useMe, usePermissions } from '@/client/hooks/useSession'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { activeOrgRole } from '@/client/lib/projects'
 import {
   applyTemplate,
+  attributeOptions,
+  DRAFT_RULE_ID,
   editControlsDenialMessage,
   emptyDraftRule,
   findRuleById,
+  formatMatchPreview,
   holdsControlEdit,
   isNewRuleId,
+  matchPreviewFromSimulate,
   orgRulesHref,
   parseIntInput,
   parseOptionalIdParam,
   parseTemplateParam,
+  RULE_VALIDATE_DEBOUNCE_MS,
   ruleBuilderHref,
   ruleNotFoundMessage,
   ruleSimulateHref,
@@ -40,6 +47,7 @@ import { TriggerPicker } from '@/app/(app)/settings/rules/[id]/TriggerPicker'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -61,6 +69,7 @@ import { ErrorCode } from '@/shared/enums/errors'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import { createRuleInput } from '@/shared/schemas/rule'
 import type { CreateRuleInput, Rule, RuleScope } from '@/shared/types/rule'
+import type { SimulateRulesOutput } from '@/shared/types/ruleRun'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 
 function initialNewDraft(search: {
@@ -149,6 +158,11 @@ export function RuleBuilder() {
   const updateRule = useUpdateRule()
   const deleteRule = useDeleteRule()
   const enableRule = useEnableRule()
+  const validateRule = useValidateRule()
+  const simulateRules = useSimulateRules()
+  const generation = useRef(0)
+  const [validateErrors, setValidateErrors] = useState<{ path: string; message: string }[]>([])
+  const [lastSimulate, setLastSimulate] = useState<SimulateRulesOutput | null>(null)
   const orgRole = activeOrgRole(me.data?.memberships ?? [], orgId ?? me.data?.activeOrg?.id ?? null)
   const allowed =
     me.isPending || permissions.isPending || holdsControlEdit(orgRole, permissions.data?.projects)
@@ -160,6 +174,69 @@ export function RuleBuilder() {
       return { ...current, ...next }
     })
   }
+
+  function insertAttributeKey(key: string) {
+    setOverride((prev) => {
+      const current = prev ?? baseDraft
+      if (current === null) return current
+      const negated = current.when.not !== undefined
+      const inner = negated ? current.when.not : current.when
+      if (inner !== undefined && inner.expr !== undefined) {
+        const nextInner = { expr: `${inner.expr}${key}` }
+        return { ...current, when: negated ? { not: nextInner } : nextInner }
+      }
+      const then = current.then.map((action, index) => {
+        if (index !== 0) return action
+        const limits = action.params?.transactionLimits
+        const first = limits?.limits[0]
+        if (limits === undefined || first === undefined) return action
+        return {
+          ...action,
+          params: {
+            ...action.params,
+            transactionLimits: {
+              ...limits,
+              limits: [{ ...first, amount: `${first.amount}${key}` }, ...limits.limits.slice(1)],
+            },
+          },
+        }
+      })
+      return { ...current, then }
+    })
+  }
+
+  const serializedDraft = draft === null ? '' : JSON.stringify(toCreateRuleInput(draft))
+  useEffect(() => {
+    if (draft === null || serializedDraft.length < 1) {
+      return
+    }
+    const body = toCreateRuleInput(draft)
+    const projectIdForSim =
+      draft.scope.level === RuleScopeLevel.PROJECT ? draft.scope.projectId : undefined
+    const timer = window.setTimeout(() => {
+      const gen = ++generation.current
+      validateRule.mutate(body, {
+        onSuccess: (output) => {
+          if (gen !== generation.current) return
+          if (!output.ok) {
+            setValidateErrors(output.errors)
+            return
+          }
+          setValidateErrors([])
+          simulateRules.mutate(
+            { draftRule: body, projectId: projectIdForSim },
+            {
+              onSuccess: (sim) => {
+                if (gen !== generation.current) return
+                setLastSimulate(sim)
+              },
+            },
+          )
+        },
+      })
+    }, RULE_VALIDATE_DEBOUNCE_MS)
+    return () => window.clearTimeout(timer)
+  }, [draft, serializedDraft, simulateRules, validateRule])
 
   async function onSave() {
     if (draft === null) return
@@ -382,7 +459,29 @@ export function RuleBuilder() {
         <RuleSentence
           rule={{ name: draft.name, when: draft.when, then: draft.then, else: draft.else }}
         />
-        <p className="text-sm text-muted-foreground">Live preview lands in A6.5.</p>
+        {validateErrors.length > 0 ? (
+          <ul className="mt-3 flex min-w-0 flex-col gap-1 text-sm text-destructive">
+            {validateErrors.map((error) => (
+              <li key={`${error.path}:${error.message}`}>
+                {error.path}: {error.message}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <MatchPreview output={lastSimulate} />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {attributeOptions(attributes.data?.items ?? []).map((option) => (
+            <Button
+              key={option.value}
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => insertAttributeKey(option.value)}
+            >
+              {option.value}
+            </Button>
+          ))}
+        </div>
       </div>
       <ConfirmDialog
         open={deleteOpen}
@@ -403,5 +502,29 @@ export function RuleBuilder() {
         }}
       />
     </div>
+  )
+}
+
+function MatchPreview({ output }: { output: SimulateRulesOutput | null }) {
+  if (output === null) {
+    return null
+  }
+  const stats = matchPreviewFromSimulate(output, DRAFT_RULE_ID)
+  if (stats.sampleLimit === null) {
+    return (
+      <p className="mt-3 text-sm">
+        {formatMatchPreview(stats, (money) => `${money.currency} ${money.amount}`)}
+      </p>
+    )
+  }
+  return (
+    <p className="mt-3 text-sm">
+      With today&apos;s values, this rule matches {stats.matchedCardCount} cards and would set the{' '}
+      {stats.sampleLimit.interval} limit to{' '}
+      <MoneyDisplay
+        money={{ amount: stats.sampleLimit.amount, currency: stats.sampleLimit.currency }}
+      />
+      .
+    </p>
   )
 }

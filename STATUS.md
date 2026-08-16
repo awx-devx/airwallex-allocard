@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.5 — Live validate + match preview
-**Last green `pnpm verify`:** 2026-08-17 (A6.4)
+**Active task:** A6.6 — What-if simulation
+**Last green `pnpm verify`:** 2026-08-17 (A6.5)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 5 / 12  |
+| A     | A6 Controls & automation | in progress  | 6 / 12  |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.5** live match preview. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6.6** what-if simulation. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.5 done (2026-08-17).** Debounced `useValidateRule` + `useSimulateRules`; match preview keeps last success; attribute insert. `pnpm verify` green (1672 tests). Next: **A6.6** what-if simulation.
 
 **A6.4 done (2026-08-17).** Rule builder form + `RuleSentence` preview; Save create/PATCH omits `enabled`; Simulate hidden until saved. `pnpm verify` green (1672 tests). Next: **A6.5** live match preview.
 

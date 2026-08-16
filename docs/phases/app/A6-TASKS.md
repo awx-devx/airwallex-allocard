@@ -659,7 +659,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.5 — Live validate + match preview
 
-- [ ] **A6.5** — Debounced `useValidateRule` + `useSimulateRules`; preview copy; autocomplete insert
+- [x] **A6.5** — Debounced `useValidateRule` + `useSimulateRules`; preview copy; autocomplete insert
   - **Files:**
     - `src/app/(app)/settings/rules/[id]/RuleBuilder.tsx` (edit — wire preview)
   - **Do:**
@@ -673,7 +673,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** preview stays in the `md:flex-row` second column / stacked below. Do not `hidden` it. `min-w-0`.
   - **Pattern:** A4.4 `FormulaEditor.tsx` debounce + generation counter + `useValidateFormula` **replaced by** `useValidateRule` / `useSimulateRules` `src/client/hooks/useRules.ts`. B6 `validateRuleOutput` / `simulateRulesOutput`. F1: these mutations invalidate `[]`.
   - **Accept:** `pnpm verify`. `RuleBuilder.tsx` contains `useValidateRule` and `useSimulateRules` and `DRAFT_RULE_ID` and does **not** contain `useValidateFormula` or `eval`. 375px and 768px: match preview reachable by vertical scroll (not `hidden`); Save still reachable; no page-level horizontal scrollbar.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Debounced validate + simulate; match preview keeps last success; attribute key insert. `pnpm verify` green (1672 tests).
 
 ### A6.6 — What-if simulation
 
