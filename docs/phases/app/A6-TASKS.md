@@ -774,7 +774,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.11 — Don’t-break + invariant proofs
 
-- [ ] **A6.11** — No client parser, unclamped money, 375/768, shell unchanged
+- [x] **A6.11** — No client parser, unclamped money, 375/768, shell unchanged
   - **Files:**
     - `src/client/lib/rules.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (assert `WORKSPACE_TAB_HREFS` still six, still includes `/controls`, still no settings; SETTINGS_NAV is the four hrefs from A6.1)
@@ -793,7 +793,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A5.10 `src/client/lib/cards.test.ts`. A4.9 `src/client/lib/budget.test.ts`. A3.9 `src/client/lib/access.test.ts`.
   - **Accept:** `pnpm test client/lib/rules` and `pnpm test client/lib/projects` and `pnpm test client/lib/access` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on project list (New + templates + Enable), org list, builder (`RuleSentence` + match preview stacked, not hidden), simulate (both panes + hypothetical Alert), automation (filters + Sheet), attributes (Create + Sheet), explainer (merge reachable), wizard (Next + controls Link); Menu/Sheet still works below `md`; tables may scroll inside.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Helper proofs (`1.02` stays a string, templates, empty allowlist null, OWNER vs MEMBER, unmatched n=0). Screen grep: no eval/parser/ingest/`type="number"`/PAN. Shell still `hidden md:flex`; Automation after Activity. `pnpm verify` green (1682 tests). STOP before phase exit.
 
 ---
 

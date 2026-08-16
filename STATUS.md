@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A6 — Controls & automation
-**Active task:** A6.11 — Don’t-break proofs
-**Last green `pnpm verify`:** 2026-08-17 (A6.10)
+**Active task:** A6 phase exit
+**Last green `pnpm verify`:** 2026-08-17 (A6.11)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 11 / 12 |
+| A     | A6 Controls & automation | in progress  | 12 / 12 |
 | A     | A7–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6.11** don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **in progress**. Next: **A6 phase exit** — do not start A7. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6.11 done (2026-08-17).** Don’t-break proofs: no client parser/ingest/`type="number"`/PAN; templates and money helpers locked; workspace tabs still six with `/controls`; shell `hidden md:flex`. `pnpm verify` green (1682 tests). Next: **A6 phase exit** — do not start A7.
 
 **A6.10 done (2026-08-17).** Wizard Controls deferred step Links to project controls. Members/Roles/Approval unchanged. `pnpm verify` green (1672 tests). Next: **A6.11** don’t-break proofs.
 

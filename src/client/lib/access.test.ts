@@ -450,6 +450,17 @@ describe('A3.9 settings routes and no Settings workspace tab', () => {
   })
 })
 
+describe('A6.11 SETTINGS_NAV unchanged', () => {
+  it('SETTINGS_NAV is exactly the four org settings hrefs', () => {
+    expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/roles',
+      '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
+    ])
+  })
+})
+
 describe('A3 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or settings', () => {
     function walk(dir: string): string[] {

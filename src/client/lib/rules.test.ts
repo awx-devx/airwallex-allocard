@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   BUILTIN_ATTRIBUTE_KEYS,
   CAMPAIGN_ANALYTICS_CONNECTOR_ID,
@@ -42,6 +44,7 @@ import {
   ruleListHref,
   ruleSimulateHref,
   toCreateRuleInput,
+  wizardControlsLinkMessage,
   wrapNot,
 } from '@/client/lib/rules'
 import { controlsHref, ruleHref } from '@/client/lib/cards'
@@ -354,5 +357,104 @@ describe('attributeOptions', () => {
     expect(options.some((row) => row.value === 'campaign.roas' && row.label === 'ROAS')).toBe(true)
     expect(options.filter((row) => row.value === 'project.status')).toHaveLength(1)
     expect(options.find((row) => row.value === 'project.status')?.label).toBe('Project status')
+  })
+})
+
+function walkFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    return entry.isDirectory() ? walkFiles(path) : [path]
+  })
+}
+
+describe('A6.11 invariant proofs', () => {
+  it('keeps 1.02 as a formula string because it is not an integer token', () => {
+    expect(parseFormulaOrInt('1.02')).toBe('1.02')
+    expect(typeof parseFormulaOrInt('1.02')).toBe('string')
+    expect(parseFormulaOrInt('412')).toBe(412)
+  })
+
+  it('locks templates to B6-legal DSL without now()', () => {
+    expect(JSON.stringify(RULE_TEMPLATES)).not.toContain('now()')
+    expect(RULE_TEMPLATES.D.then[0]?.params.activeToOffsetDays).toBe(7)
+    const cAmount = RULE_TEMPLATES.C.then[0]?.params.transactionLimits?.limits[0]?.amount
+    expect(String(cAmount)).toContain('200000')
+  })
+
+  it('treats an empty comma list as unconstrained null', () => {
+    expect(parseCommaList('')).toBeNull()
+  })
+
+  it('grants OWNER control.edit and denies MEMBER without the permission', () => {
+    expect(holdsControlEdit('OWNER', [])).toBe(true)
+    expect(holdsControlEdit('MEMBER', [])).toBe(false)
+    expect(holdsControlEdit('MEMBER', [{ permissions: ['card.view'] }])).toBe(false)
+  })
+
+  it('formats unmatched simulate as the locked n=0 sentence', () => {
+    const unmatched = matchPreviewFromSimulate(
+      {
+        runs: [
+          {
+            ruleId: DRAFT_RULE_ID,
+            matched: false,
+            desiredState: { cards: [{ cardId: 'c1' }] },
+          },
+        ],
+        cardDiffs: [],
+      },
+      DRAFT_RULE_ID,
+    )
+    expect(unmatched.matchedCardCount).toBe(0)
+    expect(formatMatchPreview(unmatched, (m) => String(m.amount))).toBe(
+      "With today's values, this rule matches no cards.",
+    )
+  })
+
+  it('locks wizard controls copy', () => {
+    expect(wizardControlsLinkMessage()).toBe('Set project rules on the controls tab.')
+  })
+
+  it('A6 screens never parse, ingest, or type number, and never mention PAN', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/controls')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/settings/rules')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/settings/attributes')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/automation')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/cards/[id]/explain')),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain('eval(')
+      expect(src, file).not.toContain('new Function')
+      expect(src, file).not.toContain('useValidateFormula')
+      expect(src, file).not.toContain('useSimulatePurchase')
+      expect(src, file).not.toContain('attributeContracts.ingest')
+      expect(src, file).not.toContain('useIngest')
+      expect(src, file).not.toContain('type="number"')
+      expect(src, file).not.toContain('parseFloat')
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, and Automation after Activity', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    const activityAt = shell.indexOf("{ href: '/activity', label: 'Activity' }")
+    const automationAt = shell.indexOf("{ href: '/automation', label: 'Automation' }")
+    const reviewsAt = shell.indexOf("{ href: '/settings/access-reviews', label: 'Access reviews' }")
+    const rulesAt = shell.indexOf("{ href: '/settings/rules', label: 'Rules' }")
+    const attributesAt = shell.indexOf("{ href: '/settings/attributes', label: 'Attributes' }")
+    expect(activityAt).toBeGreaterThan(-1)
+    expect(automationAt).toBeGreaterThan(activityAt)
+    expect(rulesAt).toBeGreaterThan(reviewsAt)
+    expect(attributesAt).toBeGreaterThan(rulesAt)
   })
 })
