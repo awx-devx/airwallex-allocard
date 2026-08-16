@@ -324,6 +324,15 @@ describe('A4.9 workspace tabs unchanged', () => {
   })
 })
 
+describe('A5.10 workspace tabs unchanged', () => {
+  it('still includes /cards and has no settings', () => {
+    const id = 'proj_1'
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id))).toContain('/projects/proj_1/cards')
+    expect(WORKSPACE_TAB_HREFS).toHaveLength(6)
+    expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
+  })
+})
+
 describe('A2 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or dashboard', () => {
     function walk(dir: string): string[] {

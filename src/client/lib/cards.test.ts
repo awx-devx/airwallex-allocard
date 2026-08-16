@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   AIRWALLEX_PCI_CSS_CLASSES,
   AIRWALLEX_PCI_IFRAME_ORIGIN,
@@ -322,5 +324,125 @@ describe('locked copy', () => {
     expect(iframePendingMessage()).toBe('Card details are not available until the card is issued.')
     expect(iframeErrorMessage()).toBe('The secure card frame failed to load.')
     expect(lostCardMessage('LOST')).toBe('This card is LOST.')
+  })
+})
+
+const PAN_HEADER_ALLOWLIST = [
+  'PCI boundary: sensitive details render in the Airwallex iframe only.',
+  'PCI boundary: never a PAN.',
+  'Card structure flags only — never a PAN.',
+]
+
+function walkFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    return entry.isDirectory() ? walkFiles(path) : [path]
+  })
+}
+
+describe('A5.10 invariant proofs', () => {
+  it('does not clamp remaining: -1', () => {
+    expect(
+      cardLimitsToMeters({
+        currency: 'USD',
+        limits: [{ interval: 'MONTHLY', amount: 100, remaining: -1 }],
+      }),
+    ).toEqual([{ interval: 'MONTHLY', amount: 100, remaining: -1, currency: 'USD' }])
+  })
+
+  it('iframe src uses airwallex.com origin, fragment token, and airwallexCardId not local id', () => {
+    const src = airwallexRevealIframeSrc('awx_live', 'tok_secret')
+    expect(src.startsWith('https://airwallex.com/issuing/pci/v2/awx_live/details#')).toBe(true)
+    expect(src).toBe('https://airwallex.com/issuing/pci/v2/awx_live/details#tok_secret')
+    expect(src).not.toContain('card_local')
+    expect(AIRWALLEX_PCI_IFRAME_ORIGIN).toBe('https://airwallex.com')
+  })
+
+  it('parseCardListSearchParams does not copy a holder key', () => {
+    const parsed = parseCardListSearchParams({
+      holder: 'x',
+      status: 'ACTIVE',
+    } as never)
+    expect(parsed).toEqual({ status: 'ACTIVE', page: 1, pageSize: 20 })
+    expect(parsed).not.toHaveProperty('holder')
+    expect(cardListHref({ status: 'ACTIVE' })).not.toContain('holder')
+  })
+
+  it('CLOSE is the confirm phrase and CLOSED cannot close', () => {
+    expect(CLOSE_CONFIRM_PHRASE).toBe('CLOSE')
+    expect(canCloseCard('CLOSED')).toBe(false)
+  })
+
+  it('controlsToDiffView emits money objects and diverge on MONTHLY', () => {
+    const desired = {
+      ...APPLIED,
+      transactionLimits: {
+        currency: 'USD',
+        limits: [{ interval: 'MONTHLY', amount: 80 }],
+      },
+    }
+    expect(controlsDiverge(desired, APPLIED)).toBe(true)
+    const view = controlsToDiffView(APPLIED, desired)
+    expect(view.before['limit.MONTHLY']).toEqual({ amount: 100, currency: 'USD' })
+    expect(view.after['limit.MONTHLY']).toEqual({ amount: 80, currency: 'USD' })
+  })
+
+  it('A5 card screens never mention PAN, cvv, or card_number after stripping allowlisted headers', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/cards')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/cards')),
+      join(process.cwd(), 'src/app/(app)/projects/new/steps/CardStructureStep.tsx'),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      let src = readFileSync(file, 'utf8')
+      for (const header of PAN_HEADER_ALLOWLIST) {
+        src = src.replaceAll(header, '')
+      }
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, and Cards after Projects in DEFAULT_NAV', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    const projectsAt = shell.indexOf("{ href: '/projects', label: 'Projects' }")
+    const cardsAt = shell.indexOf("{ href: '/cards', label: 'Cards' }")
+    const approvalsAt = shell.indexOf("{ href: '/approvals', label: 'Approvals' }")
+    expect(projectsAt).toBeGreaterThan(-1)
+    expect(cardsAt).toBeGreaterThan(projectsAt)
+    expect(approvalsAt).toBeGreaterThan(cardsAt)
+  })
+
+  it('A5 screens never call useCreateCard or PATCH desiredControls', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/cards')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/cards')),
+      join(process.cwd(), 'src/app/(app)/projects/new/steps/CardStructureStep.tsx'),
+    ]
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain('useCreateCard')
+      expect(src, file).not.toMatch(/input:\s*\{[^}]*desiredControls/)
+    }
+  })
+
+  it('reveal iframe is w-full without a fixed pixel width', () => {
+    const reveal = readFileSync(
+      join(process.cwd(), 'src/app/(app)/cards/[id]/reveal/RevealCard.tsx'),
+      'utf8',
+    )
+    expect(reveal).toContain('usePanToken')
+    expect(reveal).toContain('airwallexRevealIframeSrc')
+    expect(reveal).not.toContain('console.log')
+    expect(reveal).toMatch(/className="[^"]*\bw-full\b/)
+    expect(reveal).not.toMatch(/w-\[/)
+    expect(reveal).not.toMatch(/min-w-\[/)
   })
 })

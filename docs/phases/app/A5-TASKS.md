@@ -551,7 +551,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.10 — Don’t-break + invariant proofs
 
-- [ ] **A5.10** — Live limits, PCI scan, close phrase, 375/768, shell unchanged
+- [x] **A5.10** — Live limits, PCI scan, close phrase, 375/768, shell unchanged
   - **Files:**
     - `src/client/lib/cards.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (read-only assert `WORKSPACE_TAB_HREFS` still has no settings and still includes `/cards`)
@@ -569,7 +569,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A4.9 `src/client/lib/budget.test.ts`. A3.9 `src/client/lib/access.test.ts`. A2.9 `src/client/lib/projects.test.ts`.
   - **Accept:** `pnpm test client/lib/cards` and `pnpm test client/lib/projects` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on org list (filters + row links), project grid (Open/Reveal), detail (Freeze / Close / Reveal when offered), reveal (iframe ≤ viewport, Back), wizard (Next + cards Link); Menu/Sheet still works below `md`; tables may scroll inside; iframe has no fixed pixel width.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Unclamped remaining, iframe origin/fragment, no holder query, CLOSE phrase, PAN scan with §13 headers stripped, shell `hidden md:flex`, Cards after Projects, no `useCreateCard` / no PATCH `desiredControls`. `pnpm verify` green (1652 tests).
 
 ---
 
