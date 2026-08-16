@@ -490,7 +490,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.4 — Transaction detail (lifecycle)
 
-- [ ] **A8.4** — `/transactions/[id]` chain; auth vs clearing; billing
+- [x] **A8.4** — `/transactions/[id]` chain; auth vs clearing; billing
   - **Files:**
     - `src/app/(app)/transactions/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/transactions/[id]/TransactionDetail.tsx` (`'use client'`)
@@ -505,7 +505,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** stack. Figures wrap. Lifecycle vertical. No page `md:grid`. No Sheet. Chain not `hidden` below `md`.
   - **Pattern:** A1-equivalent **A1.4** `src/app/(invite)/invite/[token]/page.tsx` (first Track A detail). Copy A7.4 `src/app/(app)/requests/[id]/RequestDetail.tsx` and A5.4 `src/app/(app)/cards/[id]/CardDetail.tsx`. Hook: `useTransaction` (B8 `.get` `transactionDetailSchema`). `MoneyDisplay` F3.10. Dates: `formatDateTime` `src/lib/dates.ts`.
   - **Accept:** `pnpm verify`. `TransactionDetail.tsx` contains `useTransaction` and `lifecycleHeading` / `lifecycleSorted` and does **not** contain `ledgerMap`, `useUploadReceipt`, `usePanToken`, `parseFloat`, or `whitespace-nowrap` on the amount row. 375px and 768px: no page-level horizontal scrollbar; lifecycle events reachable by vertical scroll (not `hidden`); billed-as and decline reason reachable; Back + card Link reachable. Menu/Sheet still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Detail header is this event’s amount; lifecycle is a vertical chain; auth/clearing/partial/reversal/closed Alerts; decline reason + Why this limit?; receipt read-only. `pnpm verify` green (1742 tests).
 
 ### A8.5 — Declined queue
 
