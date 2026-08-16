@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A4 — Budget
-**Active task:** A4 phase exit
-**Last green `pnpm verify`:** 2026-08-16 (A4.9)
+**Active phase:** A5 — Cards
+**Active task:** generate `A5-TASKS.md`
+**Last green `pnpm verify`:** 2026-08-16 (A4 exit)
 **Blocked on:** _nothing_
 
 ---
@@ -30,10 +30,11 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A1 Auth & onboarding    | **complete** | 8 / 8   |
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
-| A     | A4 Budget               | in progress  | 10 / 10 |
-| A     | A5–A9 Application       | not started  | —       |
+| A     | A4 Budget               | **complete** | 10 / 10 |
+| A     | A5 Cards                | not started  | —       |
+| A     | A6–A9 Application       | not started  | —       |
 
-A4 **in progress**. A4.9 proofs done. Next: **A4 phase exit** — do not start A5. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A4 **complete**. Next: generate `A5-TASKS.md`; first A5 work is project cards. Do not start A5 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -63,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A4 exit (2026-08-16).** Phase exit + `A4-budget.md` review checklist signed off. Formula validate uses stable `mutate`; BudgetBar term tooltips open on click. `pnpm verify` green (1625 tests). Next: generate `A5-TASKS.md`; first A5 work is project cards. Do not start A5 screens before the task file is locked.
 
 **A4.9 done (2026-08-16).** Remaining unclamped, formula context `{ approvedAmount }`, PAN scan, shell unchanged, `BudgetBar` `md:grid-cols-4`. `pnpm verify` green (1625 tests). Next: **A4 phase exit** — do not start A5.
 

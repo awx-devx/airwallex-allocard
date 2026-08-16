@@ -35,10 +35,10 @@ Because the budget drives card limits, any change here should show its downstrea
 
 ## Review checklist
 
-- [ ] The four figures are visually distinct and individually explained
-- [ ] Formula validation is live and blocks saving when invalid
-- [ ] Budget changes surface the card limits they moved
-- [ ] Negative remaining is flagged prominently
-- [ ] All amounts render through F2's money helpers — no local arithmetic
-- [ ] History shows actor and reason for every change
-- [ ] 375px and 768px: no page-level horizontal scrollbar; the four budget figures and primary actions visible without sideways window scroll
+- [x] The four figures are visually distinct and individually explained
+- [x] Formula validation is live and blocks saving when invalid
+- [x] Budget changes surface the card limits they moved
+- [x] Negative remaining is flagged prominently
+- [x] All amounts render through F2's money helpers — no local arithmetic
+- [x] History shows actor and reason for every change
+- [x] 375px and 768px: no page-level horizontal scrollbar; the four budget figures and primary actions visible without sideways window scroll

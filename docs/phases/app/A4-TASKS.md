@@ -527,20 +527,20 @@ After success, also invalidate (do not edit F1’s map):
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A4-budget.md` signed off:
-  - [ ] The four figures are visually distinct and individually explained
-  - [ ] Formula validation is live and blocks saving when invalid
-  - [ ] Budget changes surface the card limits they moved
-  - [ ] Negative remaining is flagged prominently
-  - [ ] All amounts render through F2's money helpers — no local arithmetic
-  - [ ] History shows actor and reason for every change
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; the four budget figures and primary actions visible without sideways window scroll
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files; only `BudgetBar` `md:grid-cols-4` + four tooltips
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A5**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A4-budget.md` signed off:
+  - [x] The four figures are visually distinct and individually explained
+  - [x] Formula validation is live and blocks saving when invalid
+  - [x] Budget changes surface the card limits they moved
+  - [x] Negative remaining is flagged prominently
+  - [x] All amounts render through F2's money helpers — no local arithmetic
+  - [x] History shows actor and reason for every change
+  - [x] 375px and 768px: no page-level horizontal scrollbar; the four budget figures and primary actions visible without sideways window scroll
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files; only `BudgetBar` `md:grid-cols-4` + four tooltips
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A5**)
 
 ## Out of scope (do not do in A4)
 
