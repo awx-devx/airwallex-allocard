@@ -2,41 +2,42 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A7 — Purchase requests & approvals
-**Active task:** _none — A7 closed. Do not generate `A8-TASKS.md` or start A8 screens._
-**Last green `pnpm verify`:** 2026-08-17 (A7 phase exit)
+**Active phase:** A8 — Activity & transactions
+**Active task:** _none — A8.0 done. STOP — review helpers before A8.1 SideNav / route shells._
+**Last green `pnpm verify`:** 2026-08-17 (A8.0)
 **Blocked on:** _nothing_
 
 ---
 
 ## Progress
 
-| Track | Phase                    | Status       | Tasks   |
-| ----- | ------------------------ | ------------ | ------- |
-| B     | B0 Foundation            | **complete** | 13 / 13 |
-| B     | B1 Auth & organisations  | **complete** | 15 / 15 |
-| B     | B2 Projects              | **complete** | 12 / 12 |
-| B     | B3 Access control        | **complete** | 14 / 14 |
-| B     | B4 Budget                | **complete** | 16 / 16 |
-| B     | B5 Cards                 | **complete** | 15 / 15 |
-| B     | B6 Rules engine          | **complete** | 15 / 15 |
-| B     | B7 Requests & approvals  | **complete** | 11 / 11 |
-| B     | B8 Money in motion       | **complete** | 11 / 11 |
-| B     | B9 Reporting & closure   | **complete** | 11 / 11 |
-| F     | F0 Client foundation     | **complete** | 17 / 17 |
-| F     | F1 Data layer            | **complete** | 15 / 15 |
-| F     | F2 Utils                 | **complete** | 11 / 11 |
-| F     | F3 UI library            | **complete** | 26 / 26 |
-| A     | A1 Auth & onboarding     | **complete** | 8 / 8   |
-| A     | A2 Dashboard & projects  | **complete** | 10 / 10 |
-| A     | A3 People & access       | **complete** | 10 / 10 |
-| A     | A4 Budget                | **complete** | 10 / 10 |
-| A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | **complete** | 10 / 10 |
-| A     | A8–A9 Application        | not started  | —       |
+| Track | Phase                      | Status          | Tasks   |
+| ----- | -------------------------- | --------------- | ------- |
+| B     | B0 Foundation              | **complete**    | 13 / 13 |
+| B     | B1 Auth & organisations    | **complete**    | 15 / 15 |
+| B     | B2 Projects                | **complete**    | 12 / 12 |
+| B     | B3 Access control          | **complete**    | 14 / 14 |
+| B     | B4 Budget                  | **complete**    | 16 / 16 |
+| B     | B5 Cards                   | **complete**    | 15 / 15 |
+| B     | B6 Rules engine            | **complete**    | 15 / 15 |
+| B     | B7 Requests & approvals    | **complete**    | 11 / 11 |
+| B     | B8 Money in motion         | **complete**    | 11 / 11 |
+| B     | B9 Reporting & closure     | **complete**    | 11 / 11 |
+| F     | F0 Client foundation       | **complete**    | 17 / 17 |
+| F     | F1 Data layer              | **complete**    | 15 / 15 |
+| F     | F2 Utils                   | **complete**    | 11 / 11 |
+| F     | F3 UI library              | **complete**    | 26 / 26 |
+| A     | A1 Auth & onboarding       | **complete**    | 8 / 8   |
+| A     | A2 Dashboard & projects    | **complete**    | 10 / 10 |
+| A     | A3 People & access         | **complete**    | 10 / 10 |
+| A     | A4 Budget                  | **complete**    | 10 / 10 |
+| A     | A5 Cards                   | **complete**    | 11 / 11 |
+| A     | A6 Controls & automation   | **complete**    | 12 / 12 |
+| A     | A7 Purchase requests       | **complete**    | 10 / 10 |
+| A     | A8 Activity & transactions | **in progress** | 1 / 9   |
+| A     | A9 Reports & closure       | not started     | —       |
 
-A7 **closed**. Phase exit + `A7-approvals.md` review checklist signed off. Next phase is **A8** — do not generate `A8-TASKS.md` and do not start A8 screens until asked. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **in progress**. Policies locked; A8.0 helpers done. Do not start A8.1 screens until helpers are reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,7 +68,11 @@ _None yet._
 
 ## Notes for the next session
 
-**A7 exit (2026-08-17).** Phase exit + `A7-approvals.md` review checklist signed off. Preview, NOT_PERMITTED named remaining, reject reason, self-approval, 375/768 overflow, and shell collapse verified live. Unlocked copy is coded (`holdQueueRow` + snapshot) — live APPROVE was not run as Seed Owner (queue empty / own pending row). `pnpm verify` green (1719 tests). Next phase is A8 (activity / money in motion UI). Do not generate `A8-TASKS.md` or start A8 screens until asked.
+**A8.0 done (2026-08-17).** Helpers in `src/client/lib/transactions.ts`. No `GET /api/receipts`; MEMBER lists require `?projectId=`; remaining/amounts unclamped; barrel named-exports (clash with A6/A7 `parseOptionalIdParam`). `pnpm verify` green (1741 tests). STOP — review helpers before **A8.1** SideNav / route shells.
+
+**A8-TASKS locked (2026-08-17).** Policies approved: no new contracts; no `GET /api/receipts` (CLEARED list + `needsReceipt` at 5000); MEMBER org tx lists require `?projectId=` (OWNER/ADMIN org-wide); activity is B9 cursor, transactions stay F1 page-based infinite; declines show `failureReason` + `Why this limit?` (no invented `ruleId`); no activity filter bar; A8.2 may patch `useReports` activity queryKey only; AppShell collapse stays A2.1 (A8.1 inserts `/transactions` + `/receipts` after Activity). Next: **A8.1** chrome. Do not start screens before A8.0 STOP.
+
+**A7 exit (2026-08-17).** Phase exit + `A7-approvals.md` review checklist signed off. Preview, NOT_PERMITTED named remaining, reject reason, self-approval, 375/768 overflow, and shell collapse verified live. Unlocked copy is coded (`holdQueueRow` + snapshot) — live APPROVE was not run as Seed Owner (queue empty / own pending row). `pnpm verify` green (1719 tests). Next phase is A8 (activity / money in motion UI).
 
 **A7.9 done (2026-08-17).** Don’t-break proofs: no client policy engine; remaining unclamped; Requests immediately before Approvals; workspace tabs still six; SETTINGS_NAV four hrefs. `pnpm verify` green (1710 tests). Next: **A7 phase exit** — do not start A8.
 
