@@ -677,7 +677,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.6 — What-if simulation
 
-- [ ] **A6.6** — `/settings/rules/[id]/simulate` side-by-side current vs simulated
+- [x] **A6.6** — `/settings/rules/[id]/simulate` side-by-side current vs simulated
   - **Files:**
     - `src/app/(app)/settings/rules/[id]/simulate/page.tsx` (replace placeholder)
     - `src/app/(app)/settings/rules/[id]/simulate/SimulateRule.tsx` (`'use client'`)
@@ -695,7 +695,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** page `grid-cols-1 md:grid-cols-2` for the two panes; each pane `min-w-0`. Hypothetical Alert stacks above. Overrides `flex-wrap` add button. Do not `hidden` either pane. No Sheet.
   - **Pattern:** A5.4 `DiffView` usage in `CardDetail.tsx`. `DiffView` `src/components/patterns/DiffView.tsx`. Hook: `useSimulateRules` `src/client/hooks/useRules.ts`. B6 `simulateRulesInput` `src/shared/schemas/ruleRun.ts`. `StatusBadge kind="ruleRun"` F3.10.
   - **Accept:** `pnpm verify`. `SimulateRule.tsx` contains `simulationHypotheticalMessage` / the locked Alert string and `useSimulateRules` and does not call `useValidateFormula`. 375px: Current stacks **above** Simulated; both reachable; Run reachable; no page-level horizontal scrollbar. 768px: two columns. `DRY_RUN` visible. No writes implied (no `useCreateRule` / `useUpdateRule` / `useEnableRule` on this page).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Hypothetical Alert always first; Run on click; Current/Simulated panes; DRY_RUN badge. `pnpm verify` green (1672 tests).
 
 ### A6.7 — Automation history
 
