@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A8 — Activity & transactions
-**Active task:** A8.3 — Org transaction list
-**Last green `pnpm verify`:** 2026-08-17 (A8.2)
+**Active task:** A8.4 — Transaction detail (lifecycle)
+**Last green `pnpm verify`:** 2026-08-17 (A8.3)
 **Blocked on:** _nothing_
 
 ---
@@ -34,10 +34,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A5 Cards                   | **complete**    | 11 / 11 |
 | A     | A6 Controls & automation   | **complete**    | 12 / 12 |
 | A     | A7 Purchase requests       | **complete**    | 10 / 10 |
-| A     | A8 Activity & transactions | **in progress** | 3 / 9   |
+| A     | A8 Activity & transactions | **in progress** | 4 / 9   |
 | A     | A9 Reports & closure       | not started     | —       |
 
-A8 **in progress**. Policies locked; A8.2 activity feeds done. Next is A8.3 org transaction list. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **in progress**. Policies locked; A8.3 org transaction list done. Next is A8.4 transaction detail. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8.3 done (2026-08-17).** `/transactions` DataTable; MEMBER needs `?projectId=`; OWNER/ADMIN org-wide. Toolbar wrap + Declines/Receipts. `pnpm verify` green (1742 tests). Next: **A8.4** transaction detail lifecycle.
 
 **A8.2 done (2026-08-17).** Org `/activity` + project tab Timeline; cursor Load more; activity queryKeys include `filter ?? {}`. No type filter. `pnpm verify` green (1742 tests). Next: **A8.3** `/transactions` DataTable.
 

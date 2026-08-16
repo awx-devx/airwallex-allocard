@@ -470,7 +470,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.3 — Org transaction list
 
-- [ ] **A8.3** — `/transactions` DataTable; filters wrap; MEMBER needs `?projectId=`
+- [x] **A8.3** — `/transactions` DataTable; filters wrap; MEMBER needs `?projectId=`
   - **Files:**
     - `src/app/(app)/transactions/page.tsx` (replace placeholder)
     - `src/app/(app)/transactions/TransactionList.tsx` (`'use client'`)
@@ -486,7 +486,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** table scrolls **inside**; page does not. Toolbar wrap. No `md:grid`. No Sheet. Cells `min-w-0`. Amount + billed-as wrap, never `whitespace-nowrap`.
   - **Pattern:** A1-equivalent **A1.5** onboarding list. Copy A7.2 `src/app/(app)/requests/RequestList.tsx` (required project Select, URL filters, no client refilter) and A5.2 `src/app/(app)/cards/OrgCardList.tsx`. Infinite table: A5.8 `CardDetail.tsx` / A6.7 `AutomationHistory.tsx`. Hook: `useTransactions` `src/client/hooks/useTransactions.ts` (B8 `.list`). `MoneyDisplay` F3.10. `DateRangePicker` F3.5.
   - **Accept:** `pnpm verify`. MEMBER path: no `useTransactions` until `?projectId=`. OWNER may load without projectId. No `?page=` in `transactionListHref`. `TransactionList.tsx` contains `useTransactions` and does **not** contain `useProjectTransactions`, `parseFloat`, `type="number"`, or `whitespace-nowrap`. 375px and 768px: no page-level horizontal scrollbar; project Select + Declines + Receipts + row Link reachable; table may scroll inside; billed-as wraps. Menu/Sheet still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** MEMBER does not call `useTransactions` until `?projectId=`. OWNER/ADMIN may list org-wide. Toolbar wrap: project, status, dates, Declines, Receipts. Infinite cursor table; billed-as wraps. `pnpm verify` green (1742 tests).
 
 ### A8.4 — Transaction detail (lifecycle)
 

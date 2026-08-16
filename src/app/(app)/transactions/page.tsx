@@ -1,3 +1,11 @@
+import { Suspense } from 'react'
+import { TransactionList } from '@/app/(app)/transactions/TransactionList'
+import { LoadingState } from '@/components/patterns/LoadingState'
+
 export default function TransactionsPage() {
-  return <main className="min-w-0">Transactions — not built yet</main>
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <TransactionList />
+    </Suspense>
+  )
 }
