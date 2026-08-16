@@ -437,7 +437,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.4 — Card detail (read)
 
-- [ ] **A5.4** — `/cards/[id]` visual, live limits, states, holder, access, desired vs applied, rule links
+- [x] **A5.4** — `/cards/[id]` visual, live limits, states, holder, access, desired vs applied, rule links
   - **Files:**
     - `src/app/(app)/cards/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/cards/[id]/CardDetail.tsx` (`'use client'`)
@@ -458,7 +458,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** stack. Actions (when present) `flex-wrap`. No page `md:grid`. No Sheet. `DiffView` may use its own `grid-cols-3` (F3 — do not restyle). `CardVisual` `w-full max-w-[22rem]` already.
   - **Pattern:** A4.2 `BudgetHome.tsx` (read-only + stubbed mutations). `CardVisual` / `LimitMeter` / `DiffView` / `StatusBadge` F3. Hooks: `useCard` / `useCardLimits` / `useCardholder` `src/client/hooks/useCards.ts`. B5: `src/shared/contracts/card.ts` `get` / `limits`. Limits remaining: `src/shared/schemas/card.ts` `cardLimitEntrySchema.remaining` (int, not nonnegative).
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; visual + meters reachable by vertical scroll; iframe not on this page. `CardDetail.tsx` does not contain `parseFloat`, `type="number"`, `usePanToken`, or `useCreateCard`. Limits come from `useCardLimits` (read the hook call). Divergent controls render `DiffView`; matching controls omit the pane.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Read-only detail: CardVisual, live `useCardLimits` meters, alerts, holder, access ul, DiffView when controls diverge. Mutations omitted TODO(A5.5)/TODO(A5.6). `pnpm verify` green (1642 tests).
 
 ### A5.5 — Freeze, unfreeze, close, reconcile
 
