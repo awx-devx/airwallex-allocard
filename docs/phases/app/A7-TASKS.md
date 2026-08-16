@@ -412,7 +412,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.2 — Member request list
 
-- [ ] **A7.2** — `/requests` DataTable; project Select required
+- [x] **A7.2** — `/requests` DataTable; project Select required
   - **Files:**
     - `src/app/(app)/requests/page.tsx` (replace placeholder)
     - `src/app/(app)/requests/RequestList.tsx` (`'use client'`)
@@ -427,7 +427,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** table scrolls **inside**; page does not. Toolbar wrap. No `md:grid`. No Sheet. Cells `min-w-0`.
   - **Pattern:** A5.2 `src/app/(app)/cards/OrgCardList.tsx` (URL filters, `__all__` Select, page pagination — this phase’s B1-equivalent for lists). Hook: `useRequests` `src/client/hooks/useRequests.ts` (B7 `purchaseRequestContracts.list`). `MoneyDisplay` / `StatusBadge` F3.10. `PermissionGate` F3.14.
   - **Accept:** `pnpm verify`. Changing project writes `?projectId=` and does not client-filter a full unfiltered list. No `?status=` in href helpers. 375px and 768px: no page-level horizontal scrollbar; project Select + New + row Link reachable; table may scroll inside. No `type="number"`. No `useBudgetChangeRequests`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `/requests` requires `?projectId=`; Select writes URL; no `useRequests` until selected; no `?status=`. Gated New request. `pnpm verify` green (1704 tests).
 
 ### A7.3 — Create form + live policy preview
 
