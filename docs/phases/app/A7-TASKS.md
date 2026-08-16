@@ -473,7 +473,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ### A7.5 — Approver queue
 
-- [ ] **A7.5** — `/approvals` stacked cards; decide in place; dashboard Links
+- [x] **A7.5** — `/approvals` stacked cards; decide in place; dashboard Links
   - **Files:**
     - `src/app/(app)/approvals/page.tsx` (replace placeholder)
     - `src/app/(app)/approvals/ApprovalsQueue.tsx` (`'use client'`)
@@ -496,7 +496,7 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
   - **Layout:** stacked cards (not DataTable, not `md:grid` of the queue). Card internals wrap. Decide `flex-wrap`. No Sheet for the queue (detail is a route). Remaining / recent spend / Reject **not** `hidden` below `md`.
   - **Pattern:** A4.7 `src/app/(app)/projects/[id]/budget/requests/ChangeRequestList.tsx` (decide + card snapshot — this phase’s B1-equivalent for decide-in-place). Queue layout: spec A7 Layout (stacked cards). Dashboard: A2.2 `DashboardHome.tsx`. Hooks: `useApprovals` / `useDecideRequest` / `useBudget` / `useRequests` / `useProjectCards`. B7 `listApprovals` + `decide`. `ConfirmDialog` F3.20. `CardLimitMoves` A4 if diffs exist.
   - **Accept:** `pnpm verify`. `ApprovalsQueue.tsx` contains `useDecideRequest` and `useApprovals` and does **not** contain `DataTable` or `whitespace-nowrap`. Approve payloads have no `reason`. Reject payloads include `reason` min 1. Self rows (if any) have no Approve button. 375px and 768px: no page-level horizontal scrollbar; Approve / Reject / Review reachable without sideways window scroll; remaining and recent spend reachable by vertical scroll. Dashboard pending rows navigate to `/approvals/{id}`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Stacked queue cards with decide in place, remaining, recent spend; dashboard pending rows Link to `/approvals/{id}`. `pnpm verify` green (1704 tests).
 
 ### A7.6 — Approval detail (decide)
 

@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7.5 — Approver queue
-**Last green `pnpm verify`:** 2026-08-17 (A7.4)
+**Active task:** A7.6 — Approval detail (decide)
+**Last green `pnpm verify`:** 2026-08-17 (A7.5)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 5 / 10  |
+| A     | A7 Purchase requests     | in progress  | 6 / 10  |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.4 **done**. Request detail with trail and draft edit. Next is A7.5 approver queue. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7.5 **done**. Approver queue stacked cards + dashboard Links. Next is A7.6 approval detail. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7.5 done (2026-08-17).** `/approvals` stacked cards; decide in place; remaining unclamped; recent spend from APPROVED requests; dashboard Links to `approvalHref`. `pnpm verify` green (1704 tests). Next: **A7.6** approval detail.
 
 **A7.4 done (2026-08-17).** `/requests/[id]` policy, trail, reject reason, unlocked; DRAFT edit; no decide on requester surface. `pnpm verify` green (1704 tests). Next: **A7.5** approver queue.
 

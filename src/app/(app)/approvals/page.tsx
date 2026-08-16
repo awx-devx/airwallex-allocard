@@ -1,3 +1,11 @@
+import { Suspense } from 'react'
+import { ApprovalsQueue } from '@/app/(app)/approvals/ApprovalsQueue'
+import { LoadingState } from '@/components/patterns/LoadingState'
+
 export default function ApprovalsPage() {
-  return <main className="min-w-0">Approvals — not built yet</main>
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <ApprovalsQueue />
+    </Suspense>
+  )
 }

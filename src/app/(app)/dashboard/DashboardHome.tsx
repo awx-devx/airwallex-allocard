@@ -14,6 +14,7 @@ import {
   draftWizardHref,
   toTimelineItem,
 } from '@/client/lib/projects'
+import { approvalHref } from '@/client/lib/requests'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState, shouldShowErrorRetry } from '@/components/patterns/ErrorState'
@@ -168,10 +169,15 @@ export function DashboardHome() {
           >
             <ul className="flex flex-col gap-2">
               {approvals.data?.items.map((request) => (
-                <li key={request.id} className="flex min-w-0 flex-wrap items-center gap-2">
-                  <span className="min-w-0 break-all">{request.vendor}</span>
-                  <MoneyDisplay money={{ amount: request.amount, currency: request.currency }} />
-                  <StatusBadge kind="request" status={request.status} />
+                <li key={request.id}>
+                  <Link
+                    href={approvalHref(request.id)}
+                    className="flex min-w-0 flex-wrap items-center gap-2 hover:underline"
+                  >
+                    <span className="min-w-0 break-all">{request.vendor}</span>
+                    <MoneyDisplay money={{ amount: request.amount, currency: request.currency }} />
+                    <StatusBadge kind="request" status={request.status} />
+                  </Link>
                 </li>
               ))}
             </ul>

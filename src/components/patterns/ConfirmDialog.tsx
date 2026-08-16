@@ -26,10 +26,13 @@ export function ConfirmDialog({
   typeToConfirm,
   onConfirm,
   loading,
+  confirmDisabled: confirmDisabledProp,
+  children,
 }: ConfirmDialogProps) {
   const [typed, setTyped] = useState('')
   const matched = typeToConfirm ? matchesConfirmPhrase(typed, typeToConfirm.phrase) : true
-  const confirmDisabled = Boolean(loading) || (typeToConfirm ? !matched : false)
+  const confirmDisabled =
+    Boolean(loading) || Boolean(confirmDisabledProp) || (typeToConfirm ? !matched : false)
 
   return (
     <Dialog
@@ -55,6 +58,7 @@ export function ConfirmDialog({
             />
           </div>
         ) : null}
+        {children}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {cancelLabel}

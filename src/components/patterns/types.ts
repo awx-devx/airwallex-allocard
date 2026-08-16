@@ -131,6 +131,8 @@ export type ConfirmDialogProps = {
   typeToConfirm?: { phrase: string; prompt: string }
   onConfirm: () => void
   loading?: boolean
+  confirmDisabled?: boolean
+  children?: ReactNode
 }
 
 export type StepWizardStep = {
