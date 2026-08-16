@@ -6,12 +6,14 @@ import { useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject } from '@/client/hooks/useProjects'
 import { useMe } from '@/client/hooks/useSession'
+import { controlsHref } from '@/client/lib/cards'
 import {
   nextWizardStepId,
   parseDraftId,
   prevWizardStepId,
   WIZARD_STEPS,
 } from '@/client/lib/projects'
+import { wizardControlsLinkMessage } from '@/client/lib/rules'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -209,7 +211,14 @@ export function ProjectWizard() {
       case 'card-structure':
         return <CardStructureStep ref={cardRef} draftId={draftId} onDirtyChange={setCardDirty} />
       case 'controls':
-        return <DeferredStep title="Controls" phase="A6" />
+        return (
+          <DeferredStep
+            title="Controls"
+            phase="A6"
+            href={controlsHref(draftId)}
+            linkLabel={wizardControlsLinkMessage()}
+          />
+        )
       case 'approval-rules':
         return <DeferredStep title="Approval rules" phase="A7" />
       case 'review':

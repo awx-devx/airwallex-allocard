@@ -758,7 +758,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ### A6.10 — Wizard link
 
-- [ ] **A6.10** — Controls deferred step points at project controls
+- [x] **A6.10** — Controls deferred step points at project controls
   - **Files:**
     - `src/app/(app)/projects/new/steps/DeferredStep.tsx` (edit)
     - `src/app/(app)/projects/new/ProjectWizard.tsx` (edit — pass `draftId` if needed)
@@ -770,7 +770,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** one column (already). No Sheet. No `md:grid`.
   - **Pattern:** A5.9 `src/app/(app)/projects/new/steps/CardStructureStep.tsx`. `controlsHref` `src/client/lib/cards.ts`. `DeferredStep` current file.
   - **Accept:** `pnpm verify`. 375px and 768px: wizard Next and the new Link reachable; no page-level horizontal scrollbar. Members deferred step still has no extra Link.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Controls deferred step outline Link to `controlsHref`; Members/Roles/Approval unchanged. `pnpm verify` green (1672 tests).
 
 ### A6.11 — Don’t-break + invariant proofs
 
