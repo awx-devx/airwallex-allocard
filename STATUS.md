@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A8 — Activity & transactions
-**Active task:** _none — A8.0 done. STOP — review helpers before A8.1 SideNav / route shells._
-**Last green `pnpm verify`:** 2026-08-17 (A8.0)
+**Active task:** A8.2 — Activity feeds
+**Last green `pnpm verify`:** 2026-08-17 (A8.1)
 **Blocked on:** _nothing_
 
 ---
@@ -34,10 +34,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A5 Cards                   | **complete**    | 11 / 11 |
 | A     | A6 Controls & automation   | **complete**    | 12 / 12 |
 | A     | A7 Purchase requests       | **complete**    | 10 / 10 |
-| A     | A8 Activity & transactions | **in progress** | 1 / 9   |
+| A     | A8 Activity & transactions | **in progress** | 2 / 9   |
 | A     | A9 Reports & closure       | not started     | —       |
 
-A8 **in progress**. Policies locked; A8.0 helpers done. Do not start A8.1 screens until helpers are reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **in progress**. Policies locked; A8.1 chrome done. Next is A8.2 activity feeds. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8.1 done (2026-08-17).** SideNav Transactions after Activity, then Receipts, then Automation. Placeholders `/transactions`, `/transactions/declined`, `/transactions/[id]`, `/receipts`. Aside still `hidden md:flex`. `pnpm verify` green (1741 tests). Next: **A8.2** org + project activity feeds.
 
 **A8.0 done (2026-08-17).** Helpers in `src/client/lib/transactions.ts`. No `GET /api/receipts`; MEMBER lists require `?projectId=`; remaining/amounts unclamped; barrel named-exports (clash with A6/A7 `parseOptionalIdParam`). `pnpm verify` green (1741 tests). STOP — review helpers before **A8.1** SideNav / route shells.
 

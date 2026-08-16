@@ -18,6 +18,8 @@ const DEFAULT_NAV: SideNavItem[] = [
   { href: '/requests', label: 'Requests' },
   { href: '/approvals', label: 'Approvals' },
   { href: '/activity', label: 'Activity' },
+  { href: '/transactions', label: 'Transactions' },
+  { href: '/receipts', label: 'Receipts' },
   { href: '/automation', label: 'Automation' },
   { href: '/reports', label: 'Reports' },
   { href: '/settings/roles', label: 'Roles' },

@@ -431,7 +431,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.1 — SideNav + route shells
 
-- [ ] **A8.1** — Insert Transactions + Receipts; placeholders so links do not 404
+- [x] **A8.1** — Insert Transactions + Receipts; placeholders so links do not 404
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/app/(app)/transactions/page.tsx` (create — placeholder until A8.3)
@@ -445,7 +445,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** n/a for placeholders (stack `min-w-0`). Shell collapse unchanged. New hrefs are in the aside at `md` and in the Menu `Sheet` below `md` (same `SideNav`).
   - **Pattern:** A1-equivalent **A1.1** `src/app/(auth)/layout.tsx` (first Track A route chrome — centred column; A8 still uses AppShell). Copy A7.1 `src/client/shell/AppShell.tsx` `DEFAULT_NAV` insert. Collapse already A2.1 — `docs/RESPONSIVENESS.md` §1; do **not** copy A2.1’s aside rewrite. Placeholders: A5.1 `/cards` pages. Static segment win: A7.1 `requests/new/page.tsx` vs `[id]`.
   - **Accept:** `pnpm verify`. `/transactions`, `/transactions/declined`, `/transactions/any-id`, `/receipts` are not 404. `/transactions/declined` is **not** the `[id]` placeholder (static wins). SideNav at 768px shows Activity, then Transactions, then Receipts, then Automation; at 375px those labels appear inside the existing Menu Sheet. 375px and 768px: no page-level horizontal scrollbar; Menu/Sheet still works below `md`. Aside still `hidden md:flex`. `AppShell.tsx` does not lose `hidden` or `md:flex`. `SETTINGS_NAV` still four hrefs (no Transactions / Receipts).
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** SideNav Transactions then Receipts immediately after Activity, before Automation. Placeholders `/transactions`, `/transactions/declined`, `/transactions/[id]`, `/receipts`. Static `declined` wins over `[id]`. Aside still `hidden md:flex`. SETTINGS_NAV four hrefs. `pnpm verify` green (1741 tests).
 
 ### A8.2 — Activity feeds
 
