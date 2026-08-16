@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A5 — Cards
-**Active task:** generate `A5-TASKS.md`
-**Last green `pnpm verify`:** 2026-08-16 (A4 exit)
+**Active task:** A5.0 STOP — review helpers before A5.1
+**Last green `pnpm verify`:** 2026-08-16 (A5.0)
 **Blocked on:** _nothing_
 
 ---
@@ -31,10 +31,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | not started  | —       |
+| A     | A5 Cards                | in progress  | 1 / 11  |
 | A     | A6–A9 Application       | not started  | —       |
 
-A4 **complete**. Next: generate `A5-TASKS.md`; first A5 work is project cards. Do not start A5 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **in progress**. Next: **A5.1** SideNav `/cards` + route shells after helper review. Do not start screens before A5.0 STOP. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +64,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5.0 done (2026-08-16).** Helpers in `src/client/lib/cards.ts`. Iframe origin `https://airwallex.com`; no holder query param; remaining not clamped; `projectCardsHref` wraps `cardsTabHref`. `pnpm verify` green (1642 tests). STOP — review helpers before **A5.1** SideNav / route shells.
+
+**A5-TASKS locked (2026-08-16).** Policies approved: no new contracts; no create-card form / no typing `transactionLimits`; holder is a column not a query param; org list is DataTable, project cards are `CardVisual` `md:grid-cols-2`; remaining from `useCardLimits` unclamped; PATCH nickName/accessList only; retry = reconcile; iframe src from integration §8; close phrase `CLOSE`; AppShell collapse stays A2.1 (A5.1 inserts `/cards` in `DEFAULT_NAV` only). Next: **A5.0** helpers, then A5.1 chrome. Do not start screens before A5.0 STOP.
 
 **A4 exit (2026-08-16).** Phase exit + `A4-budget.md` review checklist signed off. Formula validate uses stable `mutate`; BudgetBar term tooltips open on click. `pnpm verify` green (1625 tests). Next: generate `A5-TASKS.md`; first A5 work is project cards. Do not start A5 screens before the task file is locked.
 
