@@ -352,6 +352,19 @@ describe('A7.9 invariant proofs', () => {
     })
   })
 
+  it('does not duplicate mutation error copy as both title and description', () => {
+    const files = [
+      join(process.cwd(), 'src/app/(app)/requests/new/RequestForm.tsx'),
+      join(process.cwd(), 'src/app/(app)/requests/[id]/RequestDetail.tsx'),
+    ]
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain(
+        '<AlertTitle>{alertMessage}</AlertTitle>\n            {policyReasons.length > 0 ? (',
+      )
+    }
+  })
+
   it('does not keep APPROVAL_REQUIRED copy on terminal requests', () => {
     const list = readFileSync(join(process.cwd(), 'src/app/(app)/requests/RequestList.tsx'), 'utf8')
     expect(list).toContain('listPolicyLabel(row.status, row.policyDecision)')

@@ -309,13 +309,15 @@ export function RequestForm() {
       >
         {alertMessage ? (
           <Alert variant="destructive">
-            <AlertTitle>{alertMessage}</AlertTitle>
             {policyReasons.length > 0 ? (
-              <AlertDescription className="flex min-w-0 flex-col gap-1">
-                {policyReasons.map((reason) => (
-                  <span key={reason}>{reason}</span>
-                ))}
-              </AlertDescription>
+              <>
+                <AlertTitle>{alertMessage}</AlertTitle>
+                <AlertDescription className="flex min-w-0 flex-col gap-1">
+                  {policyReasons.map((reason) => (
+                    <span key={reason}>{reason}</span>
+                  ))}
+                </AlertDescription>
+              </>
             ) : (
               <AlertDescription>{alertMessage}</AlertDescription>
             )}
