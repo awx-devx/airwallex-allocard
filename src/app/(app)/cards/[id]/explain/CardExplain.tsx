@@ -5,7 +5,12 @@ import { useParams } from 'next/navigation'
 import { isApiError } from '@/client/api/errors'
 import { useCardExplain } from '@/client/hooks/useRules'
 import { cardHref } from '@/client/lib/cards'
-import { parseOptionalIdParam, ruleBuilderHref, ruleHref } from '@/client/lib/rules'
+import {
+  contributionToDiffView,
+  parseOptionalIdParam,
+  ruleBuilderHref,
+  ruleHref,
+} from '@/client/lib/rules'
 import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { DiffView } from '@/components/patterns/DiffView'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -15,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { formatDate } from '@/lib/dates'
+import { cn } from '@/lib/utils'
 import { ErrorCode } from '@/shared/enums/errors'
 
 function allowlistText(value: string[] | null): string {
@@ -52,7 +58,7 @@ export function CardExplain() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <Link href={cardHref(id)} className={buttonVariants({ variant: 'outline' })}>
+      <Link href={cardHref(id)} className={cn(buttonVariants({ variant: 'outline' }), 'w-fit')}>
         Back
       </Link>
       <h1 className="text-lg font-medium">Why this limit?</h1>
@@ -94,7 +100,7 @@ export function CardExplain() {
             ) : null}
             <p className="text-sm">matched: {rule.matched ? 'Yes' : 'No'}</p>
             <p className="text-sm">priority: {rule.priority}</p>
-            <DiffView before={null} after={rule.contribution ?? null} />
+            <DiffView {...contributionToDiffView(rule.contribution)} />
           </div>
         ))}
       </section>
@@ -136,7 +142,7 @@ export function CardExplain() {
         <p className="text-sm">Last evaluated {formatDate(explain.lastEvaluatedAt)}</p>
       ) : null}
       {explain.lastRuleRunId ? (
-        <p className="text-sm">lastRuleRunId {explain.lastRuleRunId}</p>
+        <p className="min-w-0 break-all text-sm">Last run {explain.lastRuleRunId}</p>
       ) : null}
     </div>
   )

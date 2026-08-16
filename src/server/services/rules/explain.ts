@@ -11,6 +11,7 @@ import { findCardById } from '@/server/repositories/cards'
 import { listEnabledRulesForScope } from '@/server/repositories/rules'
 import { findLatestRunForCard, findRuleRunById, listRuleRuns } from '@/server/repositories/ruleRuns'
 import { buildAttributeContext } from '@/server/services/attributes/resolve'
+import { mergeIntoControls } from '@/server/services/rules/apply'
 import {
   loadMembers,
   loadPipelineCards,
@@ -104,7 +105,8 @@ export async function explainCard(ctx: OrgContext, cardId: string): Promise<Card
   const cardContributions = pipeline.outcomes.flatMap((outcome) =>
     outcome.contributions.filter((entry) => entry.cardId === cardId),
   )
-  const { explanations, conflicts } = mergeContributions(cardContributions)
+  const { explanations, conflicts, desiredState } = mergeContributions(cardContributions)
+  const merged = desiredState.cards.find((entry) => entry.cardId === cardId)
 
   const governingRules = pipeline.outcomes.map((outcome) => {
     const own = outcome.contributions.find((entry) => entry.cardId === cardId)
@@ -132,12 +134,12 @@ export async function explainCard(ctx: OrgContext, cardId: string): Promise<Card
     .filter((reading) => usedKeys.has(reading.key))
     .map((reading) => readingToAttributeValue(ctx, reading))
 
-  const finalStatus = desiredStatusOf(card.status) ?? DesiredCardStatus.ACTIVE
+  const finalStatus = merged?.cardStatus ?? desiredStatusOf(card.status) ?? DesiredCardStatus.ACTIVE
 
   return {
     cardId: card.id,
     projectId: card.projectId,
-    finalControls: card.appliedControls,
+    finalControls: mergeIntoControls(card.appliedControls, merged?.controls),
     finalStatus,
     governingRules,
     attributeValues,

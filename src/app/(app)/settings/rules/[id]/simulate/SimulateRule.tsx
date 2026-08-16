@@ -41,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import { AttributeSubjectType } from '@/shared/enums/attributeSubjectType'
 import type {
   AttributeOverride,
@@ -133,7 +134,10 @@ export function SimulateRule() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <Link href={ruleBuilderHref(id)} className={buttonVariants({ variant: 'outline' })}>
+      <Link
+        href={ruleBuilderHref(id)}
+        className={cn(buttonVariants({ variant: 'outline' }), 'w-fit')}
+      >
         Back
       </Link>
       <Alert>
@@ -207,13 +211,20 @@ export function SimulateRule() {
           type="button"
           variant="outline"
           size="sm"
+          className="w-fit"
           onClick={() => setOverrides((prev) => [...prev, EMPTY_OVERRIDE])}
         >
           Add override
         </Button>
       </div>
       <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-        <Button type="button" disabled={!allowed} loading={simulate.isPending} onClick={onRun}>
+        <Button
+          type="button"
+          className="w-fit"
+          disabled={!allowed}
+          loading={simulate.isPending}
+          onClick={onRun}
+        >
           Run simulation
         </Button>
       </PermissionGateView>

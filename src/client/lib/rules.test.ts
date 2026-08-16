@@ -16,6 +16,7 @@ import {
   automationListHref,
   cardDiffToDiffView,
   cardExplainHref,
+  contributionToDiffView,
   conditionMode,
   emptyDraftRule,
   findRuleById,
@@ -328,6 +329,28 @@ describe('cardDiffToDiffView', () => {
       after: { controls: null, cardStatus: 'CLOSED' },
     })
     expect(view.after).toEqual({ cardStatus: 'CLOSED' })
+  })
+})
+
+describe('contributionToDiffView', () => {
+  it('flattens partial transactionLimits to MoneyDisplay keys', () => {
+    const view = contributionToDiffView({
+      controls: {
+        transactionLimits: {
+          currency: 'USD',
+          limits: [{ interval: 'MONTHLY', amount: 48_500 }],
+        },
+      },
+    })
+    expect(view.before).toBeNull()
+    expect(view.after).toEqual({
+      'limit.MONTHLY': { amount: 48_500, currency: 'USD' },
+    })
+  })
+
+  it('returns after null when contribution is missing', () => {
+    expect(contributionToDiffView(null)).toEqual({ before: null, after: null })
+    expect(contributionToDiffView(undefined)).toEqual({ before: null, after: null })
   })
 })
 

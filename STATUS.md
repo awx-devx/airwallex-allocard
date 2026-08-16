@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** A6 — Controls & automation
 **Active task:** A6 phase exit
-**Last green `pnpm verify`:** 2026-08-17 (A6.11)
+**Last green `pnpm verify`:** 2026-08-17 (A6 runtime QA)
 **Blocked on:** _nothing_
 
 ---
@@ -65,6 +65,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6 runtime QA patched (2026-08-17).** Automation list normalizes missing `desiredState.cards`; explainer heading uses merged controls (not stale applied); DiffView stacks at 375px; contribution limits flatten to `MoneyDisplay`; last run skips unmatched empty SKIPPED seed rows; outline Back/Run hug their labels. `pnpm verify` green (1688 tests). Next: **A6 phase exit** — do not start A7.
 
 **A6.11 done (2026-08-17).** Don’t-break proofs: no client parser/ingest/`type="number"`/PAN; templates and money helpers locked; workspace tabs still six with `/controls`; shell `hidden md:flex`. `pnpm verify` green (1682 tests). Next: **A6 phase exit** — do not start A7.
 

@@ -1452,8 +1452,8 @@ export async function seedB9(input: {
       triggerEvent: seedRunKey,
       inputs: [],
       matched: false,
-      desiredState: {},
-      diff: {},
+      desiredState: { cards: [] },
+      diff: { cards: [] },
       actions: [],
       conflicts: [],
       status: RuleRunStatus.SKIPPED,
@@ -1462,12 +1462,23 @@ export async function seedB9(input: {
       durationMs: 1,
       startedAt: now,
       finishedAt: now,
-      cardIds: [input.cardId],
+      cardIds: [],
       projectId: input.activeProjectId,
       createdAt: now,
       updatedAt: now,
     })
     activitySources += 1
+  } else {
+    await ruleRuns.updateOne(
+      { _id: existingRun._id },
+      {
+        $set: {
+          desiredState: { cards: [] },
+          diff: { cards: [] },
+          cardIds: [],
+        },
+      },
+    )
   }
 
   return {

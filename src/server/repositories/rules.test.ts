@@ -237,5 +237,37 @@ describe('repositories/rules', () => {
       expect(await ruleRuns.findLastRuleRun(ctx('org_other'), 'rule_1')).toBeNull()
       expect(await ruleRuns.findLatestRunForCard(orgCtx, 'card_missing')).toBeNull()
     })
+
+    it('normalizes missing cards arrays and skips unmatched empty SKIPPED placeholders', async () => {
+      const orgCtx = ctx('org_1')
+      const real = await ruleRuns.createRuleRun(orgCtx, runInput())
+      await RuleRunModel.create({
+        orgId: orgCtx.orgId,
+        ruleId: 'rule_1',
+        triggeredBy: 'system',
+        triggeredByType: ActorType.SYSTEM,
+        triggerEvent: 'seed_b9_activity_run',
+        inputs: [],
+        matched: false,
+        desiredState: {},
+        diff: {},
+        actions: [],
+        conflicts: [],
+        status: RuleRunStatus.SKIPPED,
+        skipReason: 'SEED activity sample',
+        failureReason: null,
+        durationMs: 1,
+        startedAt: new Date('2026-08-11T06:00:00.000Z'),
+        finishedAt: new Date('2026-08-11T06:00:00.001Z'),
+        cardIds: ['card_1'],
+        projectId: 'proj_1',
+      })
+
+      const listed = await ruleRuns.listRuleRuns(orgCtx)
+      expect(listed.total).toBe(2)
+      expect(listed.items.every((item) => Array.isArray(item.desiredState.cards))).toBe(true)
+      expect(listed.items.every((item) => Array.isArray(item.diff.cards))).toBe(true)
+      expect((await ruleRuns.findLatestRunForCard(orgCtx, 'card_1'))?.id).toBe(real.id)
+    })
   })
 })

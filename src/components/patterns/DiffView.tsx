@@ -42,7 +42,7 @@ export function diffEntries(before: unknown | null, after: unknown | null): Diff
 function DiffValue({ value }: { value: unknown }) {
   if (isMoney(value)) return <MoneyDisplay money={value} />
   if (value === undefined) return <span className="text-muted-foreground">—</span>
-  return <span className="font-mono text-xs">{JSON.stringify(value)}</span>
+  return <span className="min-w-0 break-all font-mono text-xs">{JSON.stringify(value)}</span>
 }
 
 export function DiffView({ before, after }: DiffViewProps) {
@@ -56,15 +56,15 @@ export function DiffView({ before, after }: DiffViewProps) {
         <div
           key={entry.key}
           className={cn(
-            'grid grid-cols-3 gap-2 rounded-md p-2',
+            'grid min-w-0 grid-cols-1 gap-2 rounded-md p-2 md:grid-cols-3',
             entry.changed ? 'bg-status-warning/10' : 'text-muted-foreground',
           )}
         >
-          <dt className="font-medium">{entry.key}</dt>
-          <dd>
+          <dt className="min-w-0 font-medium">{entry.key}</dt>
+          <dd className="min-w-0">
             <DiffValue value={entry.before} />
           </dd>
-          <dd>
+          <dd className="min-w-0">
             <DiffValue value={entry.after} />
           </dd>
         </div>

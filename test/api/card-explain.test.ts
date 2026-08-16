@@ -25,6 +25,7 @@ import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
 import { cardExplainContracts } from '@/shared/contracts/ruleRun'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
+import { ActorType } from '@/shared/enums/audit'
 import { BudgetEntrySourceType } from '@/shared/enums/budgetEntrySourceType'
 import { BudgetEntryType } from '@/shared/enums/budgetEntryType'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
@@ -35,6 +36,7 @@ import { ConditionOperator } from '@/shared/enums/conditionOperator'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { RuleActionType } from '@/shared/enums/ruleActionType'
+import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
 import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
@@ -238,6 +240,65 @@ describe('/api/cards/:id/explain', () => {
     )
     expect(body.lastRuleRunId).toBe(evaluated.runs[0]?.id)
     expect(body.lastEvaluatedAt).not.toBeNull()
+  })
+
+  it('reports merged desired limits even when appliedControls have not been pushed', async () => {
+    const { session, card } = await seedWorld()
+    const res = await explain(
+      buildRequest({
+        method: 'GET',
+        path: `/api/cards/${card.id}/explain`,
+        session,
+        params: { id: card.id },
+      }),
+    )
+    expect(res.status).toBe(200)
+    const body = await expectMatchesContract(res, cardExplainContracts.explain.output)
+    expect(body.finalControls.transactionLimits.limits[0]?.amount).toBe(100_000)
+    expect(body.lastRuleRunId).toBeNull()
+  })
+
+  it('ignores a later unmatched empty SKIPPED run when attaching lastRuleRunId', async () => {
+    const { ctx, session, project, card } = await seedWorld()
+    const evaluated = await evaluateAndApply(
+      ctx,
+      { triggerEvent: 'budget.updated', projectId: project.id, now: NOW },
+      { airwallex: mockClient() },
+    )
+    await RuleRunModel.create({
+      orgId: session.orgId,
+      ruleId: evaluated.runs[0]?.ruleId ?? 'rule',
+      triggeredBy: session.userId,
+      triggeredByType: ActorType.USER,
+      triggerEvent: 'seed_b9_activity_run',
+      inputs: [],
+      matched: false,
+      desiredState: {},
+      diff: {},
+      actions: [],
+      conflicts: [],
+      status: RuleRunStatus.SKIPPED,
+      skipReason: 'SEED activity sample',
+      failureReason: null,
+      durationMs: 1,
+      startedAt: new Date('2026-08-11T06:00:00.000Z'),
+      finishedAt: new Date('2026-08-11T06:00:00.001Z'),
+      cardIds: [card.id],
+      projectId: project.id,
+    })
+
+    const res = await explain(
+      buildRequest({
+        method: 'GET',
+        path: `/api/cards/${card.id}/explain`,
+        session,
+        params: { id: card.id },
+      }),
+    )
+    expect(res.status).toBe(200)
+    const body = await expectMatchesContract(res, cardExplainContracts.explain.output)
+    expect(body.lastRuleRunId).toBe(evaluated.runs[0]?.id)
+    expect(body.finalControls.transactionLimits.limits[0]?.amount).toBe(100_000)
   })
 
   it('returns 404 for unknown cards', async () => {

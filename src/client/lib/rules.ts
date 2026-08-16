@@ -768,6 +768,60 @@ export function cardDiffToDiffView(diff: {
   return { before, after }
 }
 
+function appendControlFields(target: Record<string, unknown>, controls: Record<string, unknown>) {
+  if (controls.allowedTransactionCount !== undefined) {
+    target.allowedTransactionCount = controls.allowedTransactionCount
+  }
+  if (controls.activeFrom !== undefined) target.activeFrom = controls.activeFrom
+  if (controls.activeTo !== undefined) target.activeTo = controls.activeTo
+  if (controls.allowedCurrencies !== undefined) {
+    target.allowedCurrencies = controls.allowedCurrencies
+  }
+  if (controls.allowedMerchantCategories !== undefined) {
+    target.allowedMerchantCategories = controls.allowedMerchantCategories
+  }
+  if (controls.allowedMerchantCountries !== undefined) {
+    target.allowedMerchantCountries = controls.allowedMerchantCountries
+  }
+  if (controls.allowedMerchantBrands !== undefined) {
+    target.allowedMerchantBrands = controls.allowedMerchantBrands
+  }
+  if (controls.blockedTransactionUsages !== undefined) {
+    target.blockedTransactionUsages = controls.blockedTransactionUsages
+  }
+  const limits = controls.transactionLimits
+  if (
+    !isPlainObject(limits) ||
+    typeof limits.currency !== 'string' ||
+    !Array.isArray(limits.limits)
+  ) {
+    return
+  }
+  for (const row of limits.limits) {
+    if (!isPlainObject(row) || typeof row.interval !== 'string' || typeof row.amount !== 'number') {
+      continue
+    }
+    target[`limit.${row.interval}`] = { amount: row.amount, currency: limits.currency }
+  }
+}
+
+/** Flatten a governing-rule contribution so DiffView can render MoneyDisplay limits. */
+export function contributionToDiffView(
+  contribution: { controls?: unknown; cardStatus?: unknown } | null | undefined,
+): { before: null; after: Record<string, unknown> | null } {
+  if (contribution == null) {
+    return { before: null, after: null }
+  }
+  const after: Record<string, unknown> = {}
+  if (contribution.cardStatus !== undefined) {
+    after.cardStatus = contribution.cardStatus
+  }
+  if (isPlainObject(contribution.controls)) {
+    appendControlFields(after, contribution.controls)
+  }
+  return { before: null, after }
+}
+
 export function flattenRunPages(
   pages: ReadonlyArray<{ items: readonly unknown[] }> | undefined,
 ): unknown[] {

@@ -8,7 +8,7 @@ import { RuleRunModel } from '@/server/models/RuleRun'
 import { toDomain } from '@/server/models/base'
 import type { OrgContext } from '@/server/http/types'
 import type { ActorType } from '@/shared/enums/audit'
-import type { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
+import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 import type {
   ActionResult,
   DesiredState,
@@ -48,6 +48,14 @@ export type ListRuleRunsFilter = {
   pageSize?: number
 }
 
+function cardsOf(value: unknown): unknown[] {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return []
+  }
+  const cards = (value as { cards?: unknown }).cards
+  return Array.isArray(cards) ? cards : []
+}
+
 function toRuleRun(doc: Parameters<typeof toDomain>[0]): RuleRun {
   const raw = toDomain<Record<string, unknown>>(doc)
   return {
@@ -59,8 +67,8 @@ function toRuleRun(doc: Parameters<typeof toDomain>[0]): RuleRun {
     triggerEvent: String(raw.triggerEvent),
     inputs: (raw.inputs ?? []) as RuleRunInputValue[],
     matched: Boolean(raw.matched),
-    desiredState: raw.desiredState as DesiredState,
-    diff: raw.diff as RuleRunDiff,
+    desiredState: { cards: cardsOf(raw.desiredState) } as DesiredState,
+    diff: { cards: cardsOf(raw.diff) } as RuleRunDiff,
     actions: (raw.actions ?? []) as ActionResult[],
     conflicts: (raw.conflicts ?? []) as MergeConflict[],
     status: raw.status as RuleRun['status'],
@@ -70,6 +78,20 @@ function toRuleRun(doc: Parameters<typeof toDomain>[0]): RuleRun {
     startedAt: String(raw.startedAt),
     finishedAt: String(raw.finishedAt),
   }
+}
+
+/**
+ * Seed used to stamp SKIPPED rows with a card id and empty `{}` state.
+ * Those rows must not win "latest run" over a real evaluation.
+ */
+function isUnmatchedEmptySkip(run: RuleRun): boolean {
+  return (
+    run.status === RuleRunStatus.SKIPPED &&
+    !run.matched &&
+    run.inputs.length === 0 &&
+    run.desiredState.cards.length === 0 &&
+    run.diff.cards.length === 0
+  )
 }
 
 /** Card ids touched by a run — derived so history can filter by card. */
@@ -220,11 +242,18 @@ export async function findLatestRunForCard(
   ctx: OrgContext,
   cardId: string,
 ): Promise<RuleRun | null> {
-  const doc = await RuleRunModel.findOne({ orgId: ctx.orgId, cardIds: cardId })
+  const docs = await RuleRunModel.find({ orgId: ctx.orgId, cardIds: cardId })
     .sort({ startedAt: -1, _id: -1 })
+    .limit(50)
     .lean()
     .exec()
-  return doc ? toRuleRun(doc) : null
+  for (const doc of docs) {
+    const run = toRuleRun(doc)
+    if (!isUnmatchedEmptySkip(run)) {
+      return run
+    }
+  }
+  return null
 }
 
 export type FlagReviewActionCandidate = {

@@ -754,7 +754,7 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
   - **Layout:** stack. No `md:grid` that hides merge. `min-w-0`. `break-all` on long formula results. No Sheet. Actions wrap.
   - **Pattern:** A5.4 `CardDetail.tsx`. Hook: `useCardExplain` `src/client/hooks/useRules.ts`. B6 `cardExplainSchema` `src/shared/schemas/ruleRun.ts`. `LimitMeter` is the wrong remaining source — `MoneyDisplay` F3.10. `AttributeValue` F3.13. `DiffView` F3.18.
   - **Accept:** `pnpm verify`. `CardExplain.tsx` contains `useCardExplain` and the merge heading and does not contain `usePanToken` / `cvv` / `card_number`. 375px and 768px: no page-level horizontal scrollbar; Why this limit? (detail) + merge section reachable by vertical scroll (not `hidden`). `CardDetail.tsx` has the outline Link.
-  - **Notes:** `useCardExplain` + stacked merge; `MoneyDisplay` limits; `DiffView` contributions; outline `Why this limit?` on detail. No `usePanToken`. `pnpm verify` green (1672 tests).
+  - **Notes:** `useCardExplain` + stacked merge; `MoneyDisplay` limits; `DiffView` contributions flattened via `contributionToDiffView`; outline `Why this limit?` on detail. Runtime QA: heading uses merged controls; `Last run {id}`; Back `w-fit`. No `usePanToken`. `pnpm verify` green (1672 tests).
 
 ### A6.10 — Wizard link
 

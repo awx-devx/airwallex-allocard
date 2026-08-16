@@ -26,6 +26,7 @@ import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
 import { ruleRunContracts } from '@/shared/contracts/ruleRun'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
+import { ActorType } from '@/shared/enums/audit'
 import { BudgetEntrySourceType } from '@/shared/enums/budgetEntrySourceType'
 import { BudgetEntryType } from '@/shared/enums/budgetEntryType'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
@@ -36,6 +37,7 @@ import { ConditionOperator } from '@/shared/enums/conditionOperator'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { RuleActionType } from '@/shared/enums/ruleActionType'
+import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
 import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
@@ -254,6 +256,44 @@ describe('/api/rule-runs', () => {
     const body = await expectMatchesContract(get, ruleRunContracts.get.output)
     expect(body.id).toBe(run.id)
     expect(body.matched).toBe(true)
+  })
+
+  it('lists runs whose stored desiredState omitted cards', async () => {
+    const { session, project, rule } = await seedAndEvaluate()
+    await RuleRunModel.create({
+      orgId: session.orgId,
+      ruleId: rule.id,
+      triggeredBy: session.userId,
+      triggeredByType: ActorType.USER,
+      triggerEvent: 'seed_b9_activity_run',
+      inputs: [],
+      matched: false,
+      desiredState: {},
+      diff: {},
+      actions: [],
+      conflicts: [],
+      status: RuleRunStatus.SKIPPED,
+      skipReason: 'SEED activity sample',
+      failureReason: null,
+      durationMs: 1,
+      startedAt: new Date('2026-08-11T06:00:00.000Z'),
+      finishedAt: new Date('2026-08-11T06:00:00.001Z'),
+      cardIds: [],
+      projectId: project.id,
+    })
+
+    const list = await listRuns(
+      buildRequest({
+        method: 'GET',
+        path: '/api/rule-runs',
+        session,
+        query: { projectId: project.id },
+      }),
+    )
+    expect(list.status).toBe(200)
+    const listed = await expectMatchesContract(list, ruleRunContracts.list.output)
+    expect(listed.total).toBe(2)
+    expect(listed.items.every((item) => Array.isArray(item.desiredState.cards))).toBe(true)
   })
 
   it('returns 404 for another org', async () => {
