@@ -1,3 +1,11 @@
+import { Suspense } from 'react'
+import { ReceiptsQueue } from '@/app/(app)/receipts/ReceiptsQueue'
+import { LoadingState } from '@/components/patterns/LoadingState'
+
 export default function ReceiptsPage() {
-  return <main className="min-w-0">Receipts — not built yet</main>
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <ReceiptsQueue />
+    </Suspense>
+  )
 }

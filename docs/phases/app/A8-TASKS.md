@@ -545,7 +545,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.7 — Missing-receipt queue + attach
 
-- [ ] **A8.7** — `/receipts` display-filter; Sheet upload; detail attach/delete
+- [x] **A8.7** — `/receipts` display-filter; Sheet upload; detail attach/delete
   - **Files:**
     - `src/app/(app)/receipts/page.tsx` (replace placeholder)
     - `src/app/(app)/receipts/ReceiptsQueue.tsx` (`'use client'`)
@@ -560,7 +560,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** receipts table inside overflow; toolbar wrap. Upload is **Sheet**, not a stacked inline form that blows 375px. Detail actions wrap. Do not `hidden` Attach below `md`.
   - **Pattern:** A1-equivalent **A1.6** `src/app/(onboarding)/onboarding/create-organization/page.tsx` (first Track A form + file-less submit). Copy A3.5 `src/app/(app)/projects/[id]/people/PeopleList.tsx` Edit **Sheet**. Confirm: A7.4 cancel `ConfirmDialog`. Hook: `useUploadReceipt` / `useDeleteReceipt` `src/client/hooks/useTransactions.ts` (B8 `.uploadReceipt` / `.deleteReceipt`). Optimistic id `'optimistic-receipt'` is F1 — never send it as a real file id.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/transactions`. Upload payload has `contentType` in the four-enum set and `contentBase64` with **no** `data:` prefix. `ReceiptsQueue.tsx` contains `status: 'CLEARED'` and `needsReceipt` and does **not** contain `GET /api/receipts`, `parseFloat`, or `type="number"`. 375px and 768px: no page-level horizontal scrollbar; Attach reachable; Sheet does not force page-level sideways scroll; Load more reachable; detail Remove/Attach wrap. Menu/Sheet (nav) still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `/receipts` CLEARED + `needsReceipt` display-filter; Attach Sheet FileReader → base64 without `data:` prefix; detail Attach/Remove gated. `pnpm verify` green (1742 tests).
 
 ### A8.8 — Don’t-break + invariant proofs
 

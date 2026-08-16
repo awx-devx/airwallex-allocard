@@ -2,9 +2,14 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
+import { AttachReceiptSheet } from '@/app/(app)/receipts/ReceiptsQueue'
 import { isApiError } from '@/client/api/errors'
 import { useCard } from '@/client/hooks/useCards'
-import { useTransaction } from '@/client/hooks/useTransactions'
+import { useDeleteReceipt, useTransaction } from '@/client/hooks/useTransactions'
+import { permissionGateAllowed } from '@/client/lib/access'
+import { manageCardDenialMessage } from '@/client/lib/cards'
+import { useCan } from '@/client/lib/permissions/useCan'
 import {
   authClearingDiffer,
   authClearingDifferMessage,
@@ -14,6 +19,7 @@ import {
   cardHref,
   closedCardMessage,
   declineReason,
+  isOptimisticReceiptId,
   isPendingAuthorization,
   isReversalType,
   lifecycleHeading,
@@ -30,21 +36,28 @@ import {
   transactionNotFoundMessage,
   transactionStatusLabel,
   transactionTypeLabel,
+  viewTransactionsDenialMessage,
   whyThisLimitLink,
 } from '@/client/lib/transactions'
+import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { formatDateTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ErrorCode } from '@/shared/enums/errors'
+import { Permission } from '@/shared/enums/permissions'
 import { TransactionStatus } from '@/shared/enums/transactionStatus'
 import { TransactionType } from '@/shared/enums/transactionType'
-import type { Transaction } from '@/shared/types/transaction'
+import type {
+  Transaction,
+  TransactionDetail as TransactionDetailData,
+} from '@/shared/types/transaction'
 
 function AmountBlock({
   amount,
@@ -96,6 +109,67 @@ function LifecycleEvent({ event, currentId }: { event: Transaction; currentId: s
       />
       <p className="text-xs text-muted-foreground">{formatDateTime(event.transactedAt)}</p>
     </div>
+  )
+}
+
+function ReceiptActions({ data }: { data: TransactionDetailData }) {
+  const [attachOpen, setAttachOpen] = useState(false)
+  const [removeOpen, setRemoveOpen] = useState(false)
+  const remove = useDeleteReceipt()
+  const { can, isLoading } = useCan(data.projectId)
+  const canView = permissionGateAllowed(can(Permission.TRANSACTION_VIEW), isLoading)
+  const canManage = permissionGateAllowed(
+    can(Permission.CARD_MANAGE, { cardId: data.cardId }),
+    isLoading,
+  )
+  const hasReceipt = data.receiptFileId !== null && data.receiptFileId.length >= 1
+  const showAttach = needsReceipt(data) || hasReceipt
+  const showRemove = hasReceipt && !isOptimisticReceiptId(data.receiptFileId)
+
+  return (
+    <>
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <p className="min-w-0 text-sm">{receiptLabel(data)}</p>
+        {needsReceipt(data) ? (
+          <Link href={receiptsHref()} className={buttonVariants({ variant: 'ghost' })}>
+            Receipts
+          </Link>
+        ) : null}
+        {showAttach ? (
+          <PermissionGateView allowed={canView} denialMessage={viewTransactionsDenialMessage()}>
+            <Button type="button" disabled={!canView} onClick={() => setAttachOpen(true)}>
+              Attach receipt
+            </Button>
+          </PermissionGateView>
+        ) : null}
+        {showRemove ? (
+          <PermissionGateView allowed={canManage} denialMessage={manageCardDenialMessage()}>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={!canManage}
+              onClick={() => setRemoveOpen(true)}
+            >
+              Remove receipt
+            </Button>
+          </PermissionGateView>
+        ) : null}
+      </div>
+      <AttachReceiptSheet transactionId={data.id} open={attachOpen} onOpenChange={setAttachOpen} />
+      <ConfirmDialog
+        open={removeOpen}
+        onOpenChange={setRemoveOpen}
+        title="Remove this receipt?"
+        description="The file is deleted. You can attach another."
+        confirmLabel="Remove receipt"
+        variant="destructive"
+        loading={remove.isPending}
+        onConfirm={() => {
+          setRemoveOpen(false)
+          void remove.mutateAsync({ id: data.id })
+        }}
+      />
+    </>
   )
 }
 
@@ -191,14 +265,7 @@ export function TransactionDetail() {
           <LifecycleEvent key={event.id} event={event} currentId={data.id} />
         ))}
       </div>
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <p className="min-w-0 text-sm">{receiptLabel(data)}</p>
-        {needsReceipt(data) ? (
-          <Link href={receiptsHref()} className={buttonVariants({ variant: 'ghost' })}>
-            Receipts
-          </Link>
-        ) : null}
-      </div>
+      <ReceiptActions data={data} />
       {data.status === TransactionStatus.DECLINED ? (
         <div className="flex min-w-0 flex-col gap-2">
           <p className="min-w-0 break-words text-sm">{declineReason(data.failureReason)}</p>
