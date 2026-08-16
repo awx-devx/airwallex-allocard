@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A7 — Purchase requests & approvals
-**Active task:** A7 phase exit
-**Last green `pnpm verify`:** 2026-08-17 (A7.9)
+**Active task:** _none — A7 closed. Do not generate `A8-TASKS.md` or start A8 screens._
+**Last green `pnpm verify`:** 2026-08-17 (A7 phase exit)
 **Blocked on:** _nothing_
 
 ---
@@ -33,10 +33,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
 | A     | A6 Controls & automation | **complete** | 12 / 12 |
-| A     | A7 Purchase requests     | in progress  | 10 / 10 |
+| A     | A7 Purchase requests     | **complete** | 10 / 10 |
 | A     | A8–A9 Application        | not started  | —       |
 
-A7.9 **done**. Don’t-break proofs green. Next is **A7 phase exit** — do not start A8. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A7 **closed**. Phase exit + `A7-approvals.md` review checklist signed off. Next phase is **A8** — do not generate `A8-TASKS.md` and do not start A8 screens until asked. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -66,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A7 exit (2026-08-17).** Phase exit + `A7-approvals.md` review checklist signed off. Preview, NOT_PERMITTED named remaining, reject reason, self-approval, 375/768 overflow, and shell collapse verified live. Unlocked copy is coded (`holdQueueRow` + snapshot) — live APPROVE was not run as Seed Owner (queue empty / own pending row). `pnpm verify` green (1719 tests). Next phase is A8 (activity / money in motion UI). Do not generate `A8-TASKS.md` or start A8 screens until asked.
 
 **A7.9 done (2026-08-17).** Don’t-break proofs: no client policy engine; remaining unclamped; Requests immediately before Approvals; workspace tabs still six; SETTINGS_NAV four hrefs. `pnpm verify` green (1710 tests). Next: **A7 phase exit** — do not start A8.
 

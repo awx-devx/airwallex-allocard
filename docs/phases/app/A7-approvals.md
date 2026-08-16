@@ -38,11 +38,11 @@ Queue items are stacked cards or a `DataTable` with internal scroll. Decision ac
 
 ## Review checklist
 
-- [ ] Policy preview runs before submission
-- [ ] `NOT_PERMITTED` always names the failing check
-- [ ] The queue carries enough context to decide in place
-- [ ] Rejection reasons are mandatory and surfaced to the requester
-- [ ] Self-approval is impossible in the UI as well as the API
-- [ ] Approval shows what it unlocked
-- [ ] Multi-approver progress is visible
-- [ ] 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable without sideways window scroll
+- [x] Policy preview runs before submission
+- [x] `NOT_PERMITTED` always names the failing check
+- [x] The queue carries enough context to decide in place
+- [x] Rejection reasons are mandatory and surfaced to the requester
+- [x] Self-approval is impossible in the UI as well as the API
+- [x] Approval shows what it unlocked
+- [x] Multi-approver progress is visible
+- [x] 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable without sideways window scroll

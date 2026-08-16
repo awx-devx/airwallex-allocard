@@ -581,21 +581,21 @@ On `/requests/[id]` for an already-`APPROVED` row: same `cardId` Link; if null, 
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A7-approvals.md` signed off:
-  - [ ] Policy preview runs before submission
-  - [ ] `NOT_PERMITTED` always names the failing check
-  - [ ] The queue carries enough context to decide in place
-  - [ ] Rejection reasons are mandatory and surfaced to the requester
-  - [ ] Self-approval is impossible in the UI as well as the API
-  - [ ] Approval shows what it unlocked
-  - [ ] Multi-approver progress is visible
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable without sideways window scroll
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A8**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A7-approvals.md` signed off:
+  - [x] Policy preview runs before submission
+  - [x] `NOT_PERMITTED` always names the failing check
+  - [x] The queue carries enough context to decide in place
+  - [x] Rejection reasons are mandatory and surfaced to the requester
+  - [x] Self-approval is impossible in the UI as well as the API
+  - [x] Approval shows what it unlocked
+  - [x] Multi-approver progress is visible
+  - [x] 375px and 768px: no page-level horizontal scrollbar; Approve / Reject reachable without sideways window scroll
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A8**)
 
 ## Out of scope (do not do in A7)
 
