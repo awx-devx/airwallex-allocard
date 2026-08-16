@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import {
@@ -20,8 +20,10 @@ import {
   accessListNames,
   canCloseCard,
   canFreezeCard,
+  canRevealCard,
   canUnfreezeCard,
   cardLimitsToMeters,
+  cardRevealHref,
   cardholderScreeningMessage,
   closedCardMessage,
   controlsDiverge,
@@ -41,6 +43,7 @@ import {
   orgCardsHref,
   pendingCreateMessage,
   projectCardsHref,
+  revealCardDenialMessage,
   ruleHref,
   singleUseUsedMessage,
 } from '@/client/lib/cards'
@@ -107,6 +110,7 @@ function CardAlerts({
 }
 
 function CardActions({ card }: { card: Card }) {
+  const router = useRouter()
   const freeze = useFreezeCard()
   const unfreeze = useUnfreezeCard()
   const close = useCloseCard()
@@ -115,18 +119,19 @@ function CardActions({ card }: { card: Card }) {
   const [actionError, setActionError] = useState<string | null>(null)
   const projectId = card.projectId
   const { can, isLoading } = useCan(projectId ?? '')
-  const allowed =
+  const manageAllowed =
     projectId !== null && projectId.length >= 1
       ? permissionGateAllowed(can(Permission.CARD_MANAGE, { cardId: card.id }), isLoading)
       : false
+  const revealAllowed =
+    projectId !== null && projectId.length >= 1
+      ? permissionGateAllowed(can(Permission.CARD_VIEW_DETAILS, { cardId: card.id }), isLoading)
+      : false
+  const revealEligible = canRevealCard(card.status, card.airwallexCardId)
   const showFreeze = canFreezeCard(card.status)
   const showUnfreeze = canUnfreezeCard(card.status)
   const showClose = canCloseCard(card.status)
   const showReconcile = controlsDiverge(card.desiredControls, card.appliedControls)
-
-  if (!showFreeze && !showUnfreeze && !showClose && !showReconcile) {
-    return null
-  }
 
   async function run(mutate: () => Promise<unknown>) {
     setActionError(null)
@@ -145,26 +150,35 @@ function CardActions({ card }: { card: Card }) {
         </Alert>
       ) : null}
       <div className="flex flex-wrap gap-2">
+        <PermissionGateView allowed={revealAllowed} denialMessage={revealCardDenialMessage()}>
+          <Button
+            type="button"
+            disabled={!revealAllowed || !revealEligible}
+            onClick={() => router.push(cardRevealHref(card.id))}
+          >
+            Reveal
+          </Button>
+        </PermissionGateView>
         {showFreeze ? (
-          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
-            <Button type="button" disabled={!allowed} onClick={() => setDialog('freeze')}>
+          <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
+            <Button type="button" disabled={!manageAllowed} onClick={() => setDialog('freeze')}>
               Freeze
             </Button>
           </PermissionGateView>
         ) : null}
         {showUnfreeze ? (
-          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
-            <Button type="button" disabled={!allowed} onClick={() => setDialog('unfreeze')}>
+          <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
+            <Button type="button" disabled={!manageAllowed} onClick={() => setDialog('unfreeze')}>
               Unfreeze
             </Button>
           </PermissionGateView>
         ) : null}
         {showClose ? (
-          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+          <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
             <Button
               type="button"
               variant="destructive"
-              disabled={!allowed}
+              disabled={!manageAllowed}
               onClick={() => setDialog('close')}
             >
               Close
@@ -172,10 +186,10 @@ function CardActions({ card }: { card: Card }) {
           </PermissionGateView>
         ) : null}
         {showReconcile ? (
-          <PermissionGateView allowed={allowed} denialMessage={manageCardDenialMessage()}>
+          <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
             <Button
               type="button"
-              disabled={!allowed || reconcile.isPending}
+              disabled={!manageAllowed || reconcile.isPending}
               onClick={() => void run(() => reconcile.mutateAsync({ id: card.id }))}
             >
               Reconcile
@@ -299,7 +313,6 @@ export function CardDetail() {
         purpose={card.purpose}
       />
       <CardActions card={card} />
-      {/* TODO(A5.6) reveal */}
       <CardAlerts card={card} cardholderStatus={cardholderQuery.data?.status} />
       {card.managedByRuleIds.length > 0 ? (
         <p className="text-sm">

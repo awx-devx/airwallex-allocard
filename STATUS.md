@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A5 — Cards
-**Active task:** A5.6 — Secure reveal iframe
-**Last green `pnpm verify`:** 2026-08-16 (A5.5)
+**Active task:** A5.7 — Nickname + access list
+**Last green `pnpm verify`:** 2026-08-16 (A5.6)
 **Blocked on:** _nothing_
 
 ---
@@ -31,10 +31,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | in progress  | 6 / 11  |
+| A     | A5 Cards                | in progress  | 7 / 11  |
 | A     | A6–A9 Application       | not started  | —       |
 
-A5 **in progress**. Next: **A5.6** secure reveal iframe. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **in progress**. Next: **A5.7** nickname + access list. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5.6 done (2026-08-16).** Reveal iframe + audited Alert; pantoken on mount with generation counter; no token in URL/DOM. `pnpm verify` green (1642 tests). Next: **A5.7** nickname / access list.
 
 **A5.5 done (2026-08-16).** Freeze/Unfreeze/Close confirms; close is type-to-confirm `CLOSE` with `{ confirm: true }`. Reconcile on divergence. `pnpm verify` green (1642 tests). Next: **A5.6** reveal iframe.
 

@@ -1,3 +1,5 @@
+import { RevealCard } from '@/app/(app)/cards/[id]/reveal/RevealCard'
+
 export default function CardRevealPage() {
-  return <main className="min-w-0">Reveal — not built yet</main>
+  return <RevealCard />
 }

@@ -1,0 +1,184 @@
+/**
+ * PCI boundary: sensitive details render in the Airwallex iframe only.
+ */
+'use client'
+
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { isApiError } from '@/client/api/errors'
+import { useCard, usePanToken } from '@/client/hooks/useCards'
+import {
+  airwallexRevealIframeSrc,
+  canRevealCard,
+  cardHref,
+  classifyRevealMessage,
+  iframeErrorMessage,
+  iframePendingMessage,
+  isAirwallexPciOrigin,
+  isPendingAirwallexId,
+  revealAuditedMessage,
+  tokenIsExpired,
+} from '@/client/lib/cards'
+import { ErrorState } from '@/components/patterns/ErrorState'
+import { LoadingState } from '@/components/patterns/LoadingState'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { buttonVariants } from '@/components/ui/button'
+import { ErrorCode } from '@/shared/enums/errors'
+
+export function RevealCard() {
+  const raw = useParams().id
+  const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
+  const cardQuery = useCard(id)
+  const { mutateAsync } = usePanToken()
+  const generation = useRef(0)
+  const expiryRetried = useRef(false)
+  const [retry, setRetry] = useState(0)
+  const [token, setToken] = useState<string | null>(null)
+  const [frameReady, setFrameReady] = useState(false)
+  const [frameError, setFrameError] = useState(false)
+  const [tokenError, setTokenError] = useState<string | null>(null)
+
+  const card = cardQuery.data
+  const eligible = card !== undefined && canRevealCard(card.status, card.airwallexCardId)
+
+  useEffect(() => {
+    if (!eligible || !id) return
+    const gen = ++generation.current
+    if (retry === 0) {
+      expiryRetried.current = false
+    }
+    void mutateAsync({ id })
+      .then(async (data) => {
+        if (gen !== generation.current) return
+        if (tokenIsExpired(data.expiresAt, Date.now())) {
+          if (!expiryRetried.current) {
+            expiryRetried.current = true
+            const refreshed = await mutateAsync({ id })
+            if (gen !== generation.current) return
+            if (!tokenIsExpired(refreshed.expiresAt, Date.now()) && refreshed.token.length >= 1) {
+              setToken(refreshed.token)
+            }
+            return
+          }
+          return
+        }
+        if (data.token.length >= 1) {
+          setToken(data.token)
+        }
+      })
+      .catch((error: unknown) => {
+        if (gen !== generation.current) return
+        setTokenError(isApiError(error) ? error.message : iframeErrorMessage())
+      })
+    return () => {
+      generation.current += 1
+    }
+  }, [eligible, id, mutateAsync, retry])
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (!isAirwallexPciOrigin(event.origin)) return
+      const kind = classifyRevealMessage(event.data)
+      if (kind === 'error') {
+        setFrameError(true)
+      } else if (kind === 'ready') {
+        setFrameReady(true)
+      }
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
+
+  if (!id) {
+    return <ErrorState message="This card is not available." />
+  }
+
+  if (cardQuery.isPending) {
+    return <LoadingState />
+  }
+
+  if (cardQuery.error) {
+    if (isApiError(cardQuery.error) && cardQuery.error.code === ErrorCode.NOT_FOUND) {
+      return <ErrorState message="This card is not available." />
+    }
+    return (
+      <ErrorState
+        message={isApiError(cardQuery.error) ? cardQuery.error.message : 'Unable to load card'}
+      />
+    )
+  }
+
+  if (card === undefined) {
+    return <ErrorState message="This card is not available." />
+  }
+
+  const back = (
+    <Link href={cardHref(id)} className={buttonVariants({ variant: 'ghost' })}>
+      Back
+    </Link>
+  )
+
+  if (!eligible || isPendingAirwallexId(card.airwallexCardId)) {
+    return (
+      <div className="flex min-w-0 flex-col gap-4">
+        {back}
+        <ErrorState message={iframePendingMessage()} />
+      </div>
+    )
+  }
+
+  if (frameError || tokenError) {
+    return (
+      <div className="flex min-w-0 flex-col gap-4">
+        {back}
+        <Alert>
+          <AlertDescription>{revealAuditedMessage()}</AlertDescription>
+        </Alert>
+        <ErrorState
+          message={tokenError ?? iframeErrorMessage()}
+          onRetry={() => {
+            expiryRetried.current = false
+            setFrameError(false)
+            setFrameReady(false)
+            setToken(null)
+            setTokenError(null)
+            setRetry((n) => n + 1)
+          }}
+        />
+      </div>
+    )
+  }
+
+  const iframeSrc =
+    token !== null && token.length >= 1
+      ? airwallexRevealIframeSrc(card.airwallexCardId, token)
+      : null
+
+  return (
+    <div className="flex min-w-0 flex-col gap-4">
+      {back}
+      <Alert>
+        <AlertDescription>{revealAuditedMessage()}</AlertDescription>
+      </Alert>
+      <div className="relative min-w-0">
+        {iframeSrc ? (
+          <iframe
+            className="min-h-96 w-full border-0"
+            title="Card details"
+            referrerPolicy="no-referrer"
+            src={iframeSrc}
+            onLoad={() => setFrameReady(true)}
+          />
+        ) : (
+          <LoadingState />
+        )}
+        {iframeSrc && !frameReady ? (
+          <div className="absolute inset-0 bg-background/80">
+            <LoadingState />
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}

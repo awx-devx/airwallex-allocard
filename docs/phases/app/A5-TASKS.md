@@ -482,7 +482,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.6 — Secure reveal iframe
 
-- [ ] **A5.6** — `/cards/[id]/reveal` pantoken + iframe; audited disclosure
+- [x] **A5.6** — `/cards/[id]/reveal` pantoken + iframe; audited disclosure
   - **Files:**
     - `src/app/(app)/cards/[id]/reveal/page.tsx` (replace placeholder)
     - `src/app/(app)/cards/[id]/reveal/RevealCard.tsx` (`'use client'`)
@@ -501,7 +501,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** stack. Iframe `w-full`. No `md:grid`. No Sheet. No fixed pixel width.
   - **Pattern:** A1.4 token-in-route (invite) is **not** the pattern — token must **not** be in the page URL. Hook: `usePanToken` `src/client/hooks/useCards.ts` (F1.8). B5: `src/shared/contracts/card.ts` `panToken`, `src/shared/schemas/card.ts` `panTokenOutput` (`token`, `expiresAt` only). Server audit: `src/server/services/cards/panToken.ts` (do not import). Integration URL: `docs/AIRWALLEX-INTEGRATION.md` §8. `CardVisual` `onReveal` F3.15.
   - **Accept:** `pnpm verify` and `pnpm test client/lib/cards`. `RevealCard.tsx` contains `usePanToken` and `airwallexRevealIframeSrc` and does **not** contain `console.log`. Iframe `className` includes `w-full` and does not match `w-[` or `min-w-[`. 375px and 768px: no page-level horizontal scrollbar; iframe not wider than the viewport; Reveal (detail) and Back reachable. Denied reveal still shows a disabled control on detail. Page URL has no `token` search param.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Reveal page fetches pantoken on mount; iframe `https://airwallex.com/issuing/pci/v2/{airwallexCardId}/details#token`. Token never rendered. Detail Reveal is gated and always visible. `pnpm verify` green (1642 tests).
 
 ### A5.7 — Nickname + access list
 
