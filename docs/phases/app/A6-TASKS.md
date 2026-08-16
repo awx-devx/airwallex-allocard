@@ -799,21 +799,21 @@ Next to every formula/amount `Textarea`/`Input`: `FormulaHighlight expression={v
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A6-controls-automation.md` signed off:
-  - [ ] Rules read as prose, not just as forms
-  - [ ] The live match preview works and is accurate
-  - [ ] Simulation is unmistakably hypothetical
-  - [ ] Simulation output matches what a real run would apply
-  - [ ] Automation history makes failures and conflicts prominent
-  - [ ] The card explainer genuinely explains, including the merge
-  - [ ] No formula or DSL parsing happens client-side
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; builder, simulate, and explainer content all reachable (stacked, not hidden)
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A7**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A6-controls-automation.md` signed off:
+  - [x] Rules read as prose, not just as forms
+  - [x] The live match preview works and is accurate
+  - [x] Simulation is unmistakably hypothetical
+  - [x] Simulation output matches what a real run would apply
+  - [x] Automation history makes failures and conflicts prominent
+  - [x] The card explainer genuinely explains, including the merge
+  - [x] No formula or DSL parsing happens client-side
+  - [x] 375px and 768px: no page-level horizontal scrollbar; builder, simulate, and explainer content all reachable (stacked, not hidden)
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A7**)
 
 ## Out of scope (do not do in A6)
 

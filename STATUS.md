@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A6 — Controls & automation
-**Active task:** A6 phase exit
-**Last green `pnpm verify`:** 2026-08-17 (A6 runtime QA)
+**Active phase:** A7 — Purchase requests & approvals
+**Active task:** generate `A7-TASKS.md`
+**Last green `pnpm verify`:** 2026-08-17 (A6 exit)
 **Blocked on:** _nothing_
 
 ---
@@ -32,10 +32,11 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A3 People & access       | **complete** | 10 / 10 |
 | A     | A4 Budget                | **complete** | 10 / 10 |
 | A     | A5 Cards                 | **complete** | 11 / 11 |
-| A     | A6 Controls & automation | in progress  | 12 / 12 |
-| A     | A7–A9 Application        | not started  | —       |
+| A     | A6 Controls & automation | **complete** | 12 / 12 |
+| A     | A7 Purchase requests     | not started  | —       |
+| A     | A8–A9 Application        | not started  | —       |
 
-A6 **in progress**. Next: **A6 phase exit** — do not start A7. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A6 **complete**. Next: generate `A7-TASKS.md`; first A7 work is requests / the approver queue. Do not start A7 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -65,6 +66,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A6 exit (2026-08-17).** Phase exit + `A6-controls-automation.md` review checklist signed off. Automation parse, explainer merge, and 375 overflow patched. `pnpm verify` green (1688 tests). Next: generate `A7-TASKS.md`; first A7 work is requests / the approver queue. Do not start A7 screens before the task file is locked.
 
 **A6 runtime QA patched (2026-08-17).** Automation list normalizes missing `desiredState.cards`; explainer heading uses merged controls (not stale applied); DiffView stacks at 375px; contribution limits flatten to `MoneyDisplay`; last run skips unmatched empty SKIPPED seed rows; outline Back/Run hug their labels. `pnpm verify` green (1688 tests). Next: **A6 phase exit** — do not start A7.
 

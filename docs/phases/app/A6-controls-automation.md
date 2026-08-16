@@ -53,11 +53,11 @@ For a given card: which rules govern it, what attribute values they consumed, an
 
 ## Review checklist
 
-- [ ] Rules read as prose, not just as forms
-- [ ] The live match preview works and is accurate
-- [ ] Simulation is unmistakably hypothetical
-- [ ] Simulation output matches what a real run would apply
-- [ ] Automation history makes failures and conflicts prominent
-- [ ] The card explainer genuinely explains, including the merge
-- [ ] No formula or DSL parsing happens client-side
-- [ ] 375px and 768px: no page-level horizontal scrollbar; builder, simulate, and explainer content all reachable (stacked, not hidden)
+- [x] Rules read as prose, not just as forms
+- [x] The live match preview works and is accurate
+- [x] Simulation is unmistakably hypothetical
+- [x] Simulation output matches what a real run would apply
+- [x] Automation history makes failures and conflicts prominent
+- [x] The card explainer genuinely explains, including the merge
+- [x] No formula or DSL parsing happens client-side
+- [x] 375px and 768px: no page-level horizontal scrollbar; builder, simulate, and explainer content all reachable (stacked, not hidden)
