@@ -4,19 +4,23 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { isApiError } from '@/client/api/errors'
 import { useCardholders, useCards } from '@/client/hooks/useCards'
+import { useOrgMembers } from '@/client/hooks/useOrganizations'
 import { useProjects } from '@/client/hooks/useProjects'
 import {
   cardHref,
   cardListHref,
   holderLabel,
+  memberNameByUserId,
   parseCardListSearchParams,
   projectCardsHref,
 } from '@/client/lib/cards'
+import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -34,6 +38,7 @@ const ALL = '__all__'
 export function OrgCardList() {
   const router = useRouter()
   const params = useSearchParams()
+  const { orgId } = useActiveOrg()
   const filter = parseCardListSearchParams({
     projectId: params.get('projectId') ?? undefined,
     status: params.get('status') ?? undefined,
@@ -44,9 +49,11 @@ export function OrgCardList() {
   const query = useCards(filter)
   const projects = useProjects({ page: 1, pageSize: 100 })
   const cardholders = useCardholders({ page: 1, pageSize: 100 })
+  const members = useOrgMembers(orgId ?? '')
 
   const projectNames = new Map((projects.data?.items ?? []).map((row) => [row.id, row.name]))
   const holdersById = new Map((cardholders.data?.items ?? []).map((row) => [row.id, row]))
+  const orgMembers = members.data ?? []
 
   function pushFilter(next: typeof filter) {
     router.push(cardListHref(next))
@@ -97,7 +104,7 @@ export function OrgCardList() {
         if (holder === undefined) {
           return row.cardholderId
         }
-        return holderLabel(holder, undefined)
+        return holderLabel(holder, memberNameByUserId(holder.userId, orgMembers))
       },
     },
     {
@@ -117,73 +124,82 @@ export function OrgCardList() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <Select
-          value={filter.projectId ?? ALL}
-          onValueChange={(value) =>
-            pushFilter({
-              ...filter,
-              projectId: value === ALL ? undefined : value,
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Project" size="sm">
-            <SelectValue placeholder="All projects" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {(projects.data?.items ?? []).map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filter.status ?? ALL}
-          onValueChange={(value) =>
-            pushFilter({
-              ...filter,
-              status: value === ALL ? undefined : (value as CardStatus),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Status" size="sm">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {Object.values(CardStatus).map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filter.purpose ?? ALL}
-          onValueChange={(value) =>
-            pushFilter({
-              ...filter,
-              purpose: value === ALL ? undefined : (value as CardPurpose),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Purpose" size="sm">
-            <SelectValue placeholder="All purposes" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {Object.values(CardPurpose).map((purpose) => (
-              <SelectItem key={purpose} value={purpose}>
-                {purpose}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Project</Label>
+          <Select
+            value={filter.projectId ?? ALL}
+            onValueChange={(value) =>
+              pushFilter({
+                ...filter,
+                projectId: value === ALL ? undefined : value,
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger aria-label="Project" size="sm">
+              <SelectValue placeholder="All projects" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All</SelectItem>
+              {(projects.data?.items ?? []).map((project) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Status</Label>
+          <Select
+            value={filter.status ?? ALL}
+            onValueChange={(value) =>
+              pushFilter({
+                ...filter,
+                status: value === ALL ? undefined : (value as CardStatus),
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger aria-label="Status" size="sm">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All</SelectItem>
+              {Object.values(CardStatus).map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Purpose</Label>
+          <Select
+            value={filter.purpose ?? ALL}
+            onValueChange={(value) =>
+              pushFilter({
+                ...filter,
+                purpose: value === ALL ? undefined : (value as CardPurpose),
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger aria-label="Purpose" size="sm">
+              <SelectValue placeholder="All purposes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All</SelectItem>
+              {Object.values(CardPurpose).map((purpose) => (
+                <SelectItem key={purpose} value={purpose}>
+                  {purpose}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <DataTable
         columns={columns}

@@ -12,13 +12,13 @@ import {
   airwallexRevealIframeSrc,
   canRevealCard,
   cardHref,
+  classifyPanTokenResult,
   classifyRevealMessage,
   iframeErrorMessage,
   iframePendingMessage,
   isAirwallexPciOrigin,
   isPendingAirwallexId,
   revealAuditedMessage,
-  tokenIsExpired,
 } from '@/client/lib/cards'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -48,29 +48,31 @@ export function RevealCard() {
     if (retry === 0) {
       expiryRetried.current = false
     }
-    void mutateAsync({ id })
-      .then(async (data) => {
+
+    async function run() {
+      try {
+        const first = await mutateAsync({ id })
         if (gen !== generation.current) return
-        if (tokenIsExpired(data.expiresAt, Date.now())) {
-          if (!expiryRetried.current) {
-            expiryRetried.current = true
-            const refreshed = await mutateAsync({ id })
-            if (gen !== generation.current) return
-            if (!tokenIsExpired(refreshed.expiresAt, Date.now()) && refreshed.token.length >= 1) {
-              setToken(refreshed.token)
-            }
-            return
-          }
+        let decision = classifyPanTokenResult(first, Date.now(), expiryRetried.current)
+        if (decision.kind === 'retry') {
+          expiryRetried.current = true
+          const refreshed = await mutateAsync({ id })
+          if (gen !== generation.current) return
+          decision = classifyPanTokenResult(refreshed, Date.now(), true)
+        }
+        if (gen !== generation.current) return
+        if (decision.kind === 'ok') {
+          setToken(decision.token)
           return
         }
-        if (data.token.length >= 1) {
-          setToken(data.token)
-        }
-      })
-      .catch((error: unknown) => {
+        setTokenError(iframeErrorMessage())
+      } catch (error: unknown) {
         if (gen !== generation.current) return
         setTokenError(isApiError(error) ? error.message : iframeErrorMessage())
-      })
+      }
+    }
+
+    void run()
     return () => {
       generation.current += 1
     }

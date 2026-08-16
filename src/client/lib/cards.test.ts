@@ -18,6 +18,7 @@ import {
   cardListHref,
   cardRevealHref,
   cardholderScreeningMessage,
+  classifyPanTokenResult,
   classifyRevealMessage,
   closedCardMessage,
   controlsDiverge,
@@ -41,6 +42,7 @@ import {
   isTerminalLost,
   lostCardMessage,
   manageCardDenialMessage,
+  memberNameByUserId,
   orgCardsHref,
   parseCardListSearchParams,
   parseProjectCardListSearchParams,
@@ -269,6 +271,18 @@ describe('reveal iframe', () => {
       false,
     )
   })
+
+  it('retries an expired pantoken once, then fails instead of hanging', () => {
+    const now = Date.parse('2026-08-16T12:00:00.000Z')
+    const expired = { token: 'tok', expiresAt: '2026-08-11T00:00:00.000Z' }
+    const fresh = { token: 'tok', expiresAt: '2026-08-17T00:00:00.000Z' }
+    expect(classifyPanTokenResult(expired, now, false)).toEqual({ kind: 'retry' })
+    expect(classifyPanTokenResult(expired, now, true)).toEqual({ kind: 'fail' })
+    expect(classifyPanTokenResult(fresh, now, false)).toEqual({ kind: 'ok', token: 'tok' })
+    expect(
+      classifyPanTokenResult({ token: '', expiresAt: '2026-08-17T00:00:00.000Z' }, now, false),
+    ).toEqual({ kind: 'fail' })
+  })
 })
 
 describe('labels and lists', () => {
@@ -278,6 +292,11 @@ describe('labels and lists', () => {
     expect(holderLabel({ type: 'DELEGATE', status: 'READY', userId: null }, undefined)).toBe(
       'DELEGATE READY',
     )
+    expect(memberNameByUserId('u1', [{ userId: 'u1', user: { id: 'u1', name: 'Ada' } }])).toBe(
+      'Ada',
+    )
+    expect(memberNameByUserId('missing', [{ user: { id: 'u1', name: 'Ada' } }])).toBeUndefined()
+    expect(memberNameByUserId(null, [])).toBeUndefined()
   })
 
   it('keeps accessList order and falls back to the raw id', () => {
@@ -440,9 +459,26 @@ describe('A5.10 invariant proofs', () => {
     )
     expect(reveal).toContain('usePanToken')
     expect(reveal).toContain('airwallexRevealIframeSrc')
+    expect(reveal).toContain('classifyPanTokenResult')
     expect(reveal).not.toContain('console.log')
     expect(reveal).toMatch(/className="[^"]*\bw-full\b/)
     expect(reveal).not.toMatch(/w-\[/)
     expect(reveal).not.toMatch(/min-w-\[/)
+  })
+
+  it('org list resolves holder names and labels filters', () => {
+    const list = readFileSync(join(process.cwd(), 'src/app/(app)/cards/OrgCardList.tsx'), 'utf8')
+    expect(list).toContain('useOrgMembers')
+    expect(list).toContain('memberNameByUserId')
+    expect(list).not.toMatch(/holderLabel\(holder,\s*undefined\)/)
+    expect(list).toContain('>Project</Label>')
+    expect(list).toContain('>Status</Label>')
+    expect(list).toContain('>Purpose</Label>')
+    const project = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/[id]/cards/ProjectCards.tsx'),
+      'utf8',
+    )
+    expect(project).toContain('>Status</Label>')
+    expect(project).toContain('>Purpose</Label>')
   })
 })

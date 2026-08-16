@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** A5 — Cards
 **Active task:** A5 phase exit
-**Last green `pnpm verify`:** 2026-08-16 (A5.10)
+**Last green `pnpm verify`:** 2026-08-16 (A5 runtime QA patch)
 **Blocked on:** _nothing_
 
 ---
@@ -64,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5 runtime QA patched (2026-08-16).** Reveal no longer hangs on expired pantoken (ErrorState + Retry); fixture `expires_at` 2099; org list Holder uses org member names; filter labels visible. `pnpm verify` green (1654 tests). Next: **A5 phase exit** — do not start A6.
 
 **A5.10 done (2026-08-16).** Live limits unclamped, PCI scan, CLOSE phrase, shell unchanged, Cards after Projects. `pnpm verify` green (1652 tests). Next: **A5 phase exit** — do not start A6.
 

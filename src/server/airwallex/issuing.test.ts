@@ -164,6 +164,7 @@ describe('airwallex/issuing', () => {
 
     const pan = await client.panTokens.create({ card_id: 'card_fixture_001' })
     expect(pan.token).toBe('pan_token_fixture_abc123')
+    expect(Date.parse(pan.expires_at)).toBeGreaterThan(Date.now())
     expect(pan).not.toHaveProperty('card_number')
     expect(pan).not.toHaveProperty('cvv')
   })

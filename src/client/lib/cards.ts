@@ -352,6 +352,17 @@ export function holderLabel(
   return `${cardholder.type} ${cardholder.status}`
 }
 
+export function memberNameByUserId(
+  userId: string | null,
+  members: ReadonlyArray<{ userId?: string; user?: { id: string; name: string } }>,
+): string | undefined {
+  if (userId === null || userId.length < 1) {
+    return undefined
+  }
+  const name = members.find((row) => row.userId === userId || row.user?.id === userId)?.user?.name
+  return name !== undefined && name.length >= 1 ? name : undefined
+}
+
 export function accessListNames(
   accessList: string[],
   members: ReadonlyArray<{ userId?: string; user?: { id: string; name: string } }>,
@@ -435,4 +446,21 @@ export function tokenIsExpired(expiresAt: string, nowMs: number): boolean {
     return true
   }
   return parsed <= nowMs
+}
+
+export type PanTokenDecision = { kind: 'ok'; token: string } | { kind: 'retry' } | { kind: 'fail' }
+
+/** Valid token → use it. Expired once → retry. Else fail (do not hang on LoadingState). */
+export function classifyPanTokenResult(
+  data: { token: string; expiresAt: string },
+  nowMs: number,
+  alreadyRetried: boolean,
+): PanTokenDecision {
+  if (!tokenIsExpired(data.expiresAt, nowMs) && data.token.length >= 1) {
+    return { kind: 'ok', token: data.token }
+  }
+  if (tokenIsExpired(data.expiresAt, nowMs) && !alreadyRetried) {
+    return { kind: 'retry' }
+  }
+  return { kind: 'fail' }
 }

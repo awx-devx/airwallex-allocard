@@ -21,6 +21,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -102,51 +103,57 @@ export function ProjectCards() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <Select
-          value={filter.status ?? ALL}
-          onValueChange={(value) =>
-            pushFilter({
-              ...filter,
-              status: value === ALL ? undefined : (value as CardStatus),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Status" size="sm">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {Object.values(CardStatus).map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filter.purpose ?? ALL}
-          onValueChange={(value) =>
-            pushFilter({
-              ...filter,
-              purpose: value === ALL ? undefined : (value as CardPurpose),
-              page: 1,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Purpose" size="sm">
-            <SelectValue placeholder="All purposes" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {Object.values(CardPurpose).map((purpose) => (
-              <SelectItem key={purpose} value={purpose}>
-                {purpose}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Status</Label>
+          <Select
+            value={filter.status ?? ALL}
+            onValueChange={(value) =>
+              pushFilter({
+                ...filter,
+                status: value === ALL ? undefined : (value as CardStatus),
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger aria-label="Status" size="sm">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All</SelectItem>
+              {Object.values(CardStatus).map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Purpose</Label>
+          <Select
+            value={filter.purpose ?? ALL}
+            onValueChange={(value) =>
+              pushFilter({
+                ...filter,
+                purpose: value === ALL ? undefined : (value as CardPurpose),
+                page: 1,
+              })
+            }
+          >
+            <SelectTrigger aria-label="Purpose" size="sm">
+              <SelectValue placeholder="All purposes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All</SelectItem>
+              {Object.values(CardPurpose).map((purpose) => (
+                <SelectItem key={purpose} value={purpose}>
+                  {purpose}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       {query.isPending ? (
         <LoadingState />
