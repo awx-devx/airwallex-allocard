@@ -18,6 +18,7 @@ import {
   useUpdateCard,
 } from '@/client/hooks/useCards'
 import { useOrgMembers } from '@/client/hooks/useOrganizations'
+import { useCardTransactions } from '@/client/hooks/useTransactions'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
   CLOSE_CONFIRM_PHRASE,
@@ -34,6 +35,7 @@ import {
   controlsDiverge,
   controlsToDiffView,
   failedCreateMessage,
+  flattenTransactionPages,
   frozenCardMessage,
   holderLabel,
   isClosed,
@@ -41,7 +43,7 @@ import {
   isFrozen,
   isPendingCreate,
   isScreeningCardholder,
-  isSingleUse,
+  isSingleUseUsed,
   isTerminalLost,
   lostCardMessage,
   manageCardDenialMessage,
@@ -56,27 +58,34 @@ import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
+import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LimitMeter } from '@/components/patterns/LimitMeter'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
 import type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 import type { Card } from '@/shared/types/card'
+import type { Transaction } from '@/shared/types/transaction'
 
 function CardAlerts({
   card,
   cardholderStatus,
+  transactionCount,
 }: {
   card: Card
   cardholderStatus: string | undefined
+  transactionCount: number
 }) {
   const alerts: { key: string; message: string; destructive?: boolean }[] = []
 
@@ -102,7 +111,13 @@ function CardAlerts({
       message: lostCardMessage(card.status as 'BLOCKED' | 'LOST' | 'STOLEN'),
     })
   }
-  if (isSingleUse(card.desiredControls.allowedTransactionCount) && isClosed(card.status)) {
+  if (
+    isSingleUseUsed({
+      allowedTransactionCount: card.desiredControls.allowedTransactionCount,
+      status: card.status,
+      transactionCount,
+    })
+  ) {
     alerts.push({ key: 'single-use', message: singleUseUsedMessage() })
   }
 
@@ -346,6 +361,7 @@ export function CardDetail() {
   const cardholderQuery = useCardholder(card?.cardholderId ?? '')
   const membersQuery = useOrgMembers(card?.orgId ?? '')
   const limitsQuery = useCardLimits(id)
+  const txQuery = useCardTransactions(id)
 
   if (!id) {
     return <ErrorState message="This card is not available." />
@@ -381,6 +397,34 @@ export function CardDetail() {
   const meters = limitsQuery.data ? cardLimitsToMeters(limitsQuery.data) : []
   const diverge = controlsDiverge(card.desiredControls, card.appliedControls)
   const diff = diverge ? controlsToDiffView(card.appliedControls, card.desiredControls) : null
+  const txRows = flattenTransactionPages(txQuery.data?.pages) as Transaction[]
+  const txColumns: DataTableColumn<Transaction>[] = [
+    {
+      id: 'transactedAt',
+      header: 'Date',
+      cell: (row) => formatDate(row.transactedAt),
+    },
+    {
+      id: 'merchant',
+      header: 'Merchant',
+      cell: (row) => row.merchant.name,
+    },
+    {
+      id: 'amount',
+      header: 'Amount',
+      cell: (row) => <MoneyDisplay money={{ amount: row.amount, currency: row.currency }} />,
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      cell: (row) => <Badge variant="outline">{row.status}</Badge>,
+    },
+    {
+      id: 'type',
+      header: 'Type',
+      cell: (row) => row.type,
+    },
+  ]
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -404,7 +448,11 @@ export function CardDetail() {
         purpose={card.purpose}
       />
       <CardActions card={card} />
-      <CardAlerts card={card} cardholderStatus={cardholderQuery.data?.status} />
+      <CardAlerts
+        card={card}
+        cardholderStatus={cardholderQuery.data?.status}
+        transactionCount={txRows.length}
+      />
       {card.managedByRuleIds.length > 0 ? (
         <p className="text-sm">
           Created by rule{' '}
@@ -478,7 +526,37 @@ export function CardDetail() {
           <DiffView before={diff.before} after={diff.after} />
         </div>
       ) : null}
-      <p className="text-sm text-muted-foreground">Transactions land in A5.8.</p>
+      <div className="flex min-w-0 flex-col gap-2">
+        <h2 className="text-sm font-medium">Transactions</h2>
+        <DataTable
+          columns={txColumns}
+          rows={txRows}
+          getRowId={(row) => row.id}
+          pagination={{
+            mode: 'cursor',
+            nextCursor: txQuery.hasNextPage ? 'next' : null,
+            onLoadMore: () => {
+              void txQuery.fetchNextPage()
+            },
+            isFetchingMore: txQuery.isFetchingNextPage,
+          }}
+          loading={txQuery.isPending}
+          error={
+            txQuery.error
+              ? {
+                  message: isApiError(txQuery.error)
+                    ? txQuery.error.message
+                    : 'Unable to load transactions',
+                  onRetry: () => void txQuery.refetch(),
+                }
+              : undefined
+          }
+          empty={{
+            title: 'No transactions yet',
+            description: 'Authorizations and clearings for this card appear here.',
+          }}
+        />
+      </div>
     </div>
   )
 }

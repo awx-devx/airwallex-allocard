@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A5 — Cards
-**Active task:** A5.8 — Card transactions
-**Last green `pnpm verify`:** 2026-08-16 (A5.7)
+**Active task:** A5.9 — Wizard link
+**Last green `pnpm verify`:** 2026-08-16 (A5.8)
 **Blocked on:** _nothing_
 
 ---
@@ -31,10 +31,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A2 Dashboard & projects | **complete** | 10 / 10 |
 | A     | A3 People & access      | **complete** | 10 / 10 |
 | A     | A4 Budget               | **complete** | 10 / 10 |
-| A     | A5 Cards                | in progress  | 8 / 11  |
+| A     | A5 Cards                | in progress  | 9 / 11  |
 | A     | A6–A9 Application       | not started  | —       |
 
-A5 **in progress**. Next: **A5.8** card transactions. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A5 **in progress**. Next: **A5.9** wizard cards Link. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -64,6 +64,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A5.8 done (2026-08-16).** Card transactions infinite table; single-use used uses row count. `pnpm verify` green (1642 tests). Next: **A5.9** wizard link.
 
 **A5.7 done (2026-08-16).** PATCH nickName / accessList only; access Sheet of project members. `pnpm verify` green (1642 tests). Next: **A5.8** transactions.
 

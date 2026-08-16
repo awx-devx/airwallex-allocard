@@ -522,7 +522,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
 
 ### A5.8 — Card transactions
 
-- [ ] **A5.8** — Detail transactions from `useCardTransactions`
+- [x] **A5.8** — Detail transactions from `useCardTransactions`
   - **Files:**
     - `src/app/(app)/cards/[id]/CardDetail.tsx` (edit — add table)
   - **Do:**
@@ -533,7 +533,7 @@ File-header allowlist (A5.10 strips these before the PAN scan):
   - **Layout:** table scrolls inside; page does not. No `md:grid`. No Sheet.
   - **Pattern:** A4.2 entries table. Hook: `useCardTransactions` `src/client/hooks/useTransactions.ts` (B8 `transactionContracts.listForCard`). `MoneyDisplay` F3.10. Schema: `src/shared/schemas/transaction.ts` `transactionSchema`.
   - **Accept:** `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar; transactions reachable by vertical scroll; table may scroll inside. Load more appears when `hasNextPage`. CLOSED cards still show the table.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Infinite `useCardTransactions`; cursor Load more sentinel `'next'`. Single-use used uses row count. `pnpm verify` green (1642 tests).
 
 ### A5.9 — Wizard link
 
