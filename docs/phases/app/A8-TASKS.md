@@ -527,7 +527,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.6 — Per-card history (A5.8 table)
 
-- [ ] **A8.6** — Card detail: row Links, billing, decline reason, closed card
+- [x] **A8.6** — Card detail: row Links, billing, decline reason, closed card
   - **Files:**
     - `src/app/(app)/cards/[id]/CardDetail.tsx` (edit — transactions table columns + one Link)
   - **Do:**
@@ -541,7 +541,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** table scrolls inside (already). New lines wrap. No `md:grid`. No Sheet. Do not `hidden` decline reason.
   - **Pattern:** A1-equivalent **A1.4** detail. Copy A5.8 in this same `CardDetail.tsx`. Hrefs: A8.0 `transactionHref` / `transactionListHref`. `MoneyDisplay` F3.10.
   - **Accept:** `pnpm verify`. `CardDetail.tsx` still has `useCardTransactions` and still has no `usePanToken` / `cvv` / `card_number` / `type="number"`. Merchant cells link to `/transactions/{id}`. 375px and 768px: no page-level horizontal scrollbar; transactions table reachable; billed-as wraps; Freeze/Reveal still reachable (A5). Menu/Sheet still works.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Merchant cells link to `/transactions/{id}`; billed-as wraps; declined reason visible; View in transactions Link. Closed-card Alert kept. `pnpm verify` green (1742 tests).
 
 ### A8.7 — Missing-receipt queue + attach
 

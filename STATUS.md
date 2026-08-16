@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A8 — Activity & transactions
-**Active task:** A8.6 — Per-card history (A5.8 table)
-**Last green `pnpm verify`:** 2026-08-17 (A8.5)
+**Active task:** A8.7 — Missing-receipt queue + attach
+**Last green `pnpm verify`:** 2026-08-17 (A8.6)
 **Blocked on:** _nothing_
 
 ---
@@ -34,10 +34,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A5 Cards                   | **complete**    | 11 / 11 |
 | A     | A6 Controls & automation   | **complete**    | 12 / 12 |
 | A     | A7 Purchase requests       | **complete**    | 10 / 10 |
-| A     | A8 Activity & transactions | **in progress** | 6 / 9   |
+| A     | A8 Activity & transactions | **in progress** | 7 / 9   |
 | A     | A9 Reports & closure       | not started     | —       |
 
-A8 **in progress**. Policies locked; A8.5 declined queue done. Next is A8.6 card transaction links. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **in progress**. Policies locked; A8.6 card tx links done. Next is A8.7 receipts queue. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8.6 done (2026-08-17).** Card detail merchant Links, billed-as, decline reason, View in transactions. `pnpm verify` green (1742 tests). Next: **A8.7** missing-receipt queue + attach.
 
 **A8.5 done (2026-08-17).** `/transactions/declined` reasons + Why this limit?; MEMBER `?projectId=`; no status in hook filter. `pnpm verify` green (1742 tests). Next: **A8.6** card detail transaction links.
 

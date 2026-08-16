@@ -55,6 +55,14 @@ import {
   singleUseUsedMessage,
 } from '@/client/lib/cards'
 import { cardExplainHref } from '@/client/lib/rules'
+import {
+  billedAsLabel,
+  billingDiffers,
+  declineReason,
+  transactionHref,
+  transactionListHref,
+  transactionStatusLabel,
+} from '@/client/lib/transactions'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
@@ -76,6 +84,7 @@ import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
 import type { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
+import { TransactionStatus } from '@/shared/enums/transactionStatus'
 import type { Card } from '@/shared/types/card'
 import type { Transaction } from '@/shared/types/transaction'
 
@@ -408,17 +417,43 @@ export function CardDetail() {
     {
       id: 'merchant',
       header: 'Merchant',
-      cell: (row) => row.merchant.name,
+      cell: (row) => (
+        <Link href={transactionHref(row.id)} className="min-w-0 break-words hover:underline">
+          {row.merchant.name}
+        </Link>
+      ),
     },
     {
       id: 'amount',
       header: 'Amount',
-      cell: (row) => <MoneyDisplay money={{ amount: row.amount, currency: row.currency }} />,
+      cell: (row) => (
+        <div className="flex min-w-0 flex-col gap-1">
+          <MoneyDisplay money={{ amount: row.amount, currency: row.currency }} colorBySign />
+          {billingDiffers(row.currency, row.billingCurrency) ? (
+            <span className="min-w-0 text-xs text-muted-foreground">
+              {billedAsLabel()}{' '}
+              <MoneyDisplay
+                money={{ amount: row.billingAmount, currency: row.billingCurrency }}
+                colorBySign
+              />
+            </span>
+          ) : null}
+        </div>
+      ),
     },
     {
       id: 'status',
       header: 'Status',
-      cell: (row) => <Badge variant="outline">{row.status}</Badge>,
+      cell: (row) => (
+        <div className="flex min-w-0 flex-col gap-1">
+          <Badge variant="outline">{transactionStatusLabel(row.status)}</Badge>
+          {row.status === TransactionStatus.DECLINED ? (
+            <span className="min-w-0 break-words text-xs" title={declineReason(row.failureReason)}>
+              {declineReason(row.failureReason)}
+            </span>
+          ) : null}
+        </div>
+      ),
     },
     {
       id: 'type',
@@ -531,7 +566,15 @@ export function CardDetail() {
         </div>
       ) : null}
       <div className="flex min-w-0 flex-col gap-2">
-        <h2 className="text-sm font-medium">Transactions</h2>
+        <div className="flex flex-wrap gap-2">
+          <h2 className="text-sm font-medium">Transactions</h2>
+          <Link
+            href={transactionListHref({ cardId: id })}
+            className={buttonVariants({ variant: 'ghost' })}
+          >
+            View in transactions
+          </Link>
+        </div>
         <DataTable
           columns={txColumns}
           rows={txRows}
