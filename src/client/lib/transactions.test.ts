@@ -346,6 +346,20 @@ describe('A8.8 invariant proofs', () => {
     }
   })
 
+  it('humanises card type and names the attach file input', () => {
+    const card = readFileSync(
+      join(process.cwd(), 'src/app/(app)/cards/[id]/CardDetail.tsx'),
+      'utf8',
+    )
+    expect(card).toContain('transactionTypeLabel(row.type)')
+    const receipts = readFileSync(
+      join(process.cwd(), 'src/app/(app)/receipts/ReceiptsQueue.tsx'),
+      'utf8',
+    )
+    expect(receipts).toContain('aria-label="Attach receipt"')
+    expect(receipts).toContain('htmlFor="attach-receipt-file"')
+  })
+
   it('keeps requireApp, AppShell collapse, and Activity then Transactions then Receipts then Automation', () => {
     const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
     expect(layout).toContain('requireApp()')

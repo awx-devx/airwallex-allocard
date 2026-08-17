@@ -62,6 +62,7 @@ import {
   transactionHref,
   transactionListHref,
   transactionStatusLabel,
+  transactionTypeLabel,
 } from '@/client/lib/transactions'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
@@ -458,7 +459,7 @@ export function CardDetail() {
     {
       id: 'type',
       header: 'Type',
-      cell: (row) => row.type,
+      cell: (row) => transactionTypeLabel(row.type),
     },
   ]
 
