@@ -1,3 +1,5 @@
+import { ProjectReport } from '@/app/(app)/reports/project/[id]/ProjectReport'
+
 export default function ProjectReportPage() {
-  return <main className="min-w-0">Project report — not built yet</main>
+  return <ProjectReport />
 }

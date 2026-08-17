@@ -501,7 +501,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.3 — Project budget versus actual
 
-- [ ] **A9.3** — `/reports/project/[id]` figures, category and member tables
+- [x] **A9.3** — `/reports/project/[id]` figures, category and member tables
   - **Files:**
     - `src/app/(app)/reports/project/[id]/page.tsx` (replace placeholder)
     - `src/app/(app)/reports/project/[id]/ProjectReport.tsx` (`'use client'`)
@@ -516,7 +516,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** stack. `BudgetBar` already `grid-cols-1` / `md:grid-cols-4` inside the F3 component — do not restyle it. Tables scroll **inside**. No page `md:grid`. No Sheet. Figures wrap, never `whitespace-nowrap`.
   - **Pattern:** A1-equivalent **A1.4** `src/app/(invite)/invite/[token]/page.tsx` (first Track A detail). Copy A4.2 `src/app/(app)/projects/[id]/budget/BudgetHome.tsx` (`BudgetBar` + `MoneyDisplay`). Hook: `useProjectReport` (B9 `.project`). Members: `useProjectMembers` `src/client/hooks/useMembers.ts`.
   - **Accept:** `pnpm verify`. `ProjectReport.tsx` contains `useProjectReport` and `reportToBudgetBar` / `BudgetBar` and does **not** contain `useBudget`, `projectBudget`, `parseFloat`, `Math.max(0`, or `type="number"`. Remaining can render negative. 375px and 768px: no page-level horizontal scrollbar; Back + figures + tables reachable; tables may scroll inside. Menu/Sheet still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** `useProjectReport` + `BudgetBar` via `reportToBudgetBar`; remaining unclamped; members joined client-side. No `useBudget`. `pnpm verify` green (1767 tests).
 
 ### A9.4 — Organization rollup
 
