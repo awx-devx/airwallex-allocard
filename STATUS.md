@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** _none_ — Track A complete
 **Active task:** _none_ — wait for the user to name the next phase
-**Last green `pnpm verify`:** 2026-08-18 (A9 phase exit)
+**Last green `pnpm verify`:** 2026-08-18 (theme toggle in AppShell header)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Theme toggle (2026-08-18).** `Switch` stays binary. Three-step Light / System / Dark `ThemeToggle` (next-themes) lives in the AppShell header as icon-only on every width (`aria-label` for Light / System / Dark). `/dev/ui` re-exports the same control. `pnpm verify` green (1777 tests). Next: wait for the user to name the next phase.
 
 **A9 exit (2026-08-18).** Phase exit + `A9-reports-closure.md` review checklist signed off. Archived mutations gated on requests, cards, receipts, and approvals as well as budget/people/controls. `pnpm verify` green (1775 tests). Track A complete. Wait for the user to name the next phase — do not invent one.
 

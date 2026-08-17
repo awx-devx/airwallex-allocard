@@ -6,6 +6,7 @@ import { ApprovalsBadge } from '@/client/shell/ApprovalsBadge'
 import { OrgSwitcher } from '@/client/shell/OrgSwitcher'
 import { ProjectContext } from '@/client/shell/ProjectContext'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
+import { ThemeToggle } from '@/client/shell/ThemeToggle'
 import { UserMenu } from '@/client/shell/UserMenu'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { Button } from '@/components/ui/button'
@@ -74,7 +75,7 @@ export function AppShell({
         <SideNav items={items} />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               type="button"
@@ -86,7 +87,8 @@ export function AppShell({
             </Button>
             <ProjectContext project={project} />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
+            <ThemeToggle />
             <ApprovalsBadge count={approvalsCount} />
             <UserMenu user={user} onSignOut={onSignOut ?? (() => undefined)} />
           </div>
