@@ -1040,9 +1040,23 @@ export async function seedB7(input: {
   }
 }
 
+async function upsertSeedTransaction(
+  col: ReturnType<typeof mongoose.connection.collection>,
+  doc: Record<string, unknown> & { orgId: string; airwallexTransactionId: string },
+): Promise<void> {
+  const existing = await col.findOne({
+    orgId: doc.orgId,
+    airwallexTransactionId: doc.airwallexTransactionId,
+  })
+  if (existing) {
+    return
+  }
+  await col.insertOne({ _id: new mongoose.Types.ObjectId(), ...doc })
+}
+
 /**
  * B8 — sample transactions + one webhook fixture on SEED-ACTIVE.
- * Idempotent on (orgId, airwallexTransactionId).
+ * Idempotent on (orgId, airwallexTransactionId). Re-runs insert missing QA rows.
  */
 export async function seedB8(input: {
   orgId: string
@@ -1054,11 +1068,6 @@ export async function seedB8(input: {
   const webhookEventsCol = mongoose.connection.collection('webhookEvents')
   const { TransactionStatus } = await import('../src/shared/enums/transactionStatus')
   const { TransactionType } = await import('../src/shared/enums/transactionType')
-
-  const existing = await transactions.countDocuments({ orgId: input.orgId })
-  if (existing > 0) {
-    return { transactionCount: existing, webhookCreated: false }
-  }
 
   const now = new Date()
   const lifecycleId = 'lc_seed_001'
@@ -1075,9 +1084,8 @@ export async function seedB8(input: {
     updatedAt: now,
   }
 
-  await transactions.insertMany([
+  const rows: Array<Record<string, unknown> & { orgId: string; airwallexTransactionId: string }> = [
     {
-      _id: new mongoose.Types.ObjectId(),
       ...txBase,
       airwallexTransactionId: 'awx_tx_seed_auth_001',
       cardTransactionId: 'ctx_seed_auth_001',
@@ -1089,7 +1097,6 @@ export async function seedB8(input: {
       transactedAt: new Date('2026-08-01T10:00:00Z'),
     },
     {
-      _id: new mongoose.Types.ObjectId(),
       ...txBase,
       airwallexTransactionId: 'awx_tx_seed_clear_001',
       cardTransactionId: 'ctx_seed_clear_001',
@@ -1101,7 +1108,6 @@ export async function seedB8(input: {
       transactedAt: new Date('2026-08-02T10:00:00Z'),
     },
     {
-      _id: new mongoose.Types.ObjectId(),
       ...txBase,
       airwallexTransactionId: 'awx_tx_seed_decline_001',
       cardTransactionId: 'ctx_seed_decline_001',
@@ -1113,7 +1119,80 @@ export async function seedB8(input: {
       failureReason: 'insufficient_funds',
       transactedAt: new Date('2026-08-03T10:00:00Z'),
     },
-  ])
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_fx_001',
+      cardTransactionId: 'ctx_seed_fx_001',
+      lifecycleId: 'lc_seed_fx',
+      type: TransactionType.CLEARING,
+      status: TransactionStatus.CLEARED,
+      amount: 10_000,
+      currency: 'EUR',
+      billingAmount: 11_000,
+      billingCurrency: 'USD',
+      merchant: { name: 'FX Cafe Paris', mcc: '5812', country: 'FR' },
+      transactedAt: new Date('2026-08-04T10:00:00Z'),
+    },
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_pending_001',
+      cardTransactionId: 'ctx_seed_pending_001',
+      lifecycleId: 'lc_seed_pending',
+      type: TransactionType.AUTHORIZATION,
+      status: TransactionStatus.AUTHORIZED,
+      amount: 15_000,
+      billingAmount: 15_000,
+      transactedAt: new Date('2026-08-05T10:00:00Z'),
+    },
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_diff_auth_001',
+      cardTransactionId: 'ctx_seed_diff_auth_001',
+      lifecycleId: 'lc_seed_diff',
+      type: TransactionType.AUTHORIZATION,
+      status: TransactionStatus.AUTHORIZED,
+      amount: 25_000,
+      billingAmount: 25_000,
+      transactedAt: new Date('2026-08-06T10:00:00Z'),
+    },
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_diff_clear_001',
+      cardTransactionId: 'ctx_seed_diff_clear_001',
+      lifecycleId: 'lc_seed_diff',
+      type: TransactionType.PARTIAL_CLEARING,
+      status: TransactionStatus.CLEARED,
+      amount: 18_000,
+      billingAmount: 18_000,
+      transactedAt: new Date('2026-08-07T10:00:00Z'),
+    },
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_rev_auth_001',
+      cardTransactionId: 'ctx_seed_rev_auth_001',
+      lifecycleId: 'lc_seed_rev',
+      type: TransactionType.AUTHORIZATION,
+      status: TransactionStatus.AUTHORIZED,
+      amount: 12_000,
+      billingAmount: 12_000,
+      transactedAt: new Date('2026-08-08T10:00:00Z'),
+    },
+    {
+      ...txBase,
+      airwallexTransactionId: 'awx_tx_seed_rev_001',
+      cardTransactionId: 'ctx_seed_rev_001',
+      lifecycleId: 'lc_seed_rev',
+      type: TransactionType.REVERSAL_AUTH,
+      status: TransactionStatus.REVERSED,
+      amount: 12_000,
+      billingAmount: 12_000,
+      transactedAt: new Date('2026-08-09T10:00:00Z'),
+    },
+  ]
+
+  for (const row of rows) {
+    await upsertSeedTransaction(transactions, row)
+  }
 
   const webhookExists = await webhookEventsCol.findOne({ eventId: 'ev_seed_001' })
   let webhookCreated = false
@@ -1138,7 +1217,8 @@ export async function seedB8(input: {
     webhookCreated = true
   }
 
-  return { transactionCount: 3, webhookCreated }
+  const transactionCount = await transactions.countDocuments({ orgId: input.orgId })
+  return { transactionCount, webhookCreated }
 }
 
 /**
