@@ -1,3 +1,11 @@
+import { Suspense } from 'react'
+import { AuditList } from '@/app/(app)/audit/AuditList'
+import { LoadingState } from '@/components/patterns/LoadingState'
+
 export default function AuditPage() {
-  return <main className="min-w-0">Audit — not built yet</main>
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <AuditList />
+    </Suspense>
+  )
 }

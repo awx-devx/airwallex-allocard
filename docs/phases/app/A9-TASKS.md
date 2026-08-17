@@ -538,7 +538,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.5 — Audit log
 
-- [ ] **A9.5** — `/audit` filters, actorType, DiffView Sheet, cursor Load more
+- [x] **A9.5** — `/audit` filters, actorType, DiffView Sheet, cursor Load more
   - **Files:**
     - `src/app/(app)/audit/page.tsx` (replace placeholder)
     - `src/app/(app)/audit/AuditList.tsx` (`'use client'`)
@@ -553,7 +553,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** table scrolls **inside**; toolbar wrap. Diff is **Sheet**, not a page `md:grid`. ActorType + Diff not `hidden` below `md` (table may scroll inside to reach them).
   - **Pattern:** A1-equivalent **A1.5**. Copy A8.3 `TransactionList.tsx` (URL filters, infinite cursor table) + A3.5 `PeopleList.tsx` Edit **Sheet**. Hook: `useAudit` `src/client/hooks/useReports.ts` (B9 `auditContracts.list`). `DiffView` F3.18. Actor labels: `src/components/patterns/timelineActor.ts`.
   - **Accept:** `pnpm verify`. `AuditList.tsx` contains `useAudit` and `DiffView` and does **not** contain `useProjectAudit`, `useActivity`, `parseFloat`, or `cursor` inside `auditListHref`. RULE rows are not filtered out. 375px and 768px: no page-level horizontal scrollbar; filters wrap; Diff Sheet reachable; Load more reachable; table may scroll inside. Menu/Sheet (nav) still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Org `/audit` with URL filters, actorType chips, Diff Sheet, B9 cursor Load more. No `useProjectAudit`. Cursor stays out of the URL. `pnpm verify` green (1767 tests).
 
 ### A9.6 — Closure wizard (preflight, start, resume, settle)
 
