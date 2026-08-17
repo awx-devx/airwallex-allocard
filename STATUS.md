@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A8 — Activity & transactions
-**Active task:** A8.8 — Don’t-break + invariant proofs
-**Last green `pnpm verify`:** 2026-08-17 (A8.7)
+**Active task:** _none — A8.8 done. STOP — A8 phase exit. Do not start A9._
+**Last green `pnpm verify`:** 2026-08-17 (A8.8)
 **Blocked on:** _nothing_
 
 ---
@@ -34,10 +34,10 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A5 Cards                   | **complete**    | 11 / 11 |
 | A     | A6 Controls & automation   | **complete**    | 12 / 12 |
 | A     | A7 Purchase requests       | **complete**    | 10 / 10 |
-| A     | A8 Activity & transactions | **in progress** | 8 / 9   |
+| A     | A8 Activity & transactions | **in progress** | 9 / 9   |
 | A     | A9 Reports & closure       | not started     | —       |
 
-A8 **in progress**. Policies locked; A8.7 receipts queue done. Next is A8.8 don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **in progress**. All tasks checked. Next is **A8 phase exit**. Do not start A9. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8.8 done (2026-08-17).** Don’t-break proofs: unclamped amounts; no client ledger; Activity then Transactions then Receipts then Automation; workspace tabs still six with `/activity`; SETTINGS_NAV four hrefs. Aside still `hidden md:flex`. `pnpm verify` green (1750 tests). Next: **A8 phase exit** — do not start A9.
 
 **A8.7 done (2026-08-17).** `/receipts` CLEARED display-filter + Attach Sheet; detail attach/delete. `pnpm verify` green (1742 tests). Next: **A8.8** don’t-break proofs.
 

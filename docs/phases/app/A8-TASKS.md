@@ -564,7 +564,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ### A8.8 — Don’t-break + invariant proofs
 
-- [ ] **A8.8** — Unclamped amounts, no client ledger, 375/768, shell unchanged
+- [x] **A8.8** — Unclamped amounts, no client ledger, 375/768, shell unchanged
   - **Files:**
     - `src/client/lib/transactions.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (assert `WORKSPACE_TAB_HREFS` still six, still includes `/activity`, still no settings, still no `/projects/${id}/transactions`)
@@ -583,7 +583,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A1-equivalent **A1.7** `src/client/lib/auth.ts` tests / A1 proofs. Copy A7.9 `src/client/lib/requests.test.ts`. A5.10 `src/client/lib/cards.test.ts`. A2.1 shell classes (read-only).
   - **Accept:** `pnpm test client/lib/transactions` and `pnpm test client/lib/projects` and `pnpm test client/lib/access` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on activity (Load more), project activity, transaction list (Select + Declines + table), declined (reason + Why this limit?), detail (lifecycle stacked, not hidden), receipts (Attach), card detail transactions; Menu/Sheet still works below `md`; tables may scroll inside. Aside still `hidden md:flex`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Proofs: unclamped `needsReceipt`; no client ledger/`@/server`/PAN; Activity→Transactions→Receipts→Automation; workspace tabs still six with `/activity`; SETTINGS_NAV four hrefs. Aside still `hidden md:flex`. `pnpm verify` green (1750 tests).
 
 ---
 

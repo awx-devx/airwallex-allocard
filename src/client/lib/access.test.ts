@@ -474,6 +474,20 @@ describe('A7.9 SETTINGS_NAV unchanged', () => {
   })
 })
 
+describe('A8.8 SETTINGS_NAV unchanged', () => {
+  it('SETTINGS_NAV is exactly the four org settings hrefs and has no Transactions or Receipts', () => {
+    expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/roles',
+      '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
+    ])
+    expect(SETTINGS_NAV.map((item) => item.href)).not.toContain('/transactions')
+    expect(SETTINGS_NAV.map((item) => item.href)).not.toContain('/receipts')
+    expect(SETTINGS_NAV.map((item) => item.label).join(' ')).not.toMatch(/Transactions|Receipts/)
+  })
+})
+
 describe('A3 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or settings', () => {
     function walk(dir: string): string[] {

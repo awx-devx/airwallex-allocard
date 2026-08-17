@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { cardExplainHref } from '@/client/lib/rules'
 import { cardHref, closedCardMessage, flattenTransactionPages } from '@/client/lib/cards'
 import {
@@ -261,5 +263,100 @@ describe('labels and receipt bytes', () => {
     expect(isOptimisticReceiptId('optimistic-receipt')).toBe(true)
     expect(isOptimisticReceiptId('file_1')).toBe(false)
     expect(isOptimisticReceiptId(null)).toBe(false)
+  })
+})
+
+function walkFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    return entry.isDirectory() ? walkFiles(path) : [path]
+  })
+}
+
+describe('A8.8 invariant proofs', () => {
+  it('does not clamp needsReceipt and does not mutate lifecycle inputs', () => {
+    expect(needsReceipt({ status: 'CLEARED', receiptFileId: null, amount: 5000 })).toBe(true)
+    expect(needsReceipt({ status: 'CLEARED', receiptFileId: null, amount: 4999 })).toBe(false)
+    expect(needsReceipt({ status: 'CLEARED', receiptFileId: null, amount: -9000 })).toBe(false)
+    const input = [
+      { id: 'b', transactedAt: '2026-01-02T00:00:00.000Z' },
+      { id: 'a', transactedAt: '2026-01-01T00:00:00.000Z' },
+    ]
+    const copy = [...input]
+    lifecycleSorted(input)
+    expect(input).toEqual(copy)
+    expect(
+      authClearingDiffer([
+        { type: 'AUTHORIZATION', amount: 100 },
+        { type: 'CLEARING', amount: 90 },
+      ]),
+    ).toBe(true)
+    expect(authClearingDiffer([{ type: 'AUTHORIZATION', amount: 100 }])).toBe(false)
+    expect(
+      authClearingDiffer([
+        { type: 'AUTHORIZATION', amount: 100 },
+        { type: 'CLEARING', amount: 100 },
+      ]),
+    ).toBe(false)
+  })
+
+  it('drops page, merchant, and invalid status from list search params', () => {
+    const parsed = parseTransactionListSearchParams({
+      status: 'NOPE',
+      merchant: 'x',
+      page: '2',
+    } as never)
+    expect('status' in parsed).toBe(false)
+    expect('merchant' in parsed).toBe(false)
+    expect('page' in parsed).toBe(false)
+  })
+
+  it('requires projectId on MEMBER lists and not OWNER', () => {
+    expect(requiresProjectIdOnTxList('MEMBER')).toBe(true)
+    expect(requiresProjectIdOnTxList('OWNER')).toBe(false)
+  })
+
+  it('strips data-URL prefix and maps image/jpg', () => {
+    expect(base64FromDataUrl('data:image/png;base64,QQ==')).toBe('QQ==')
+    expect(receiptContentType('image/jpg')).toBe('image/jpeg')
+  })
+
+  it('A8 screens never import a client ledger, type number, or mention PAN', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/activity')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/transactions')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/receipts')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/activity')),
+      join(process.cwd(), 'src/app/(app)/cards/[id]/CardDetail.tsx'),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain('ledgerMap')
+      expect(src, file).not.toContain("from '@/server/")
+      expect(src, file).not.toContain('type="number"')
+      expect(src, file).not.toContain('parseFloat')
+      expect(src, file).not.toContain('useSimulatePurchase')
+      expect(src, file).not.toContain('usePanToken')
+      expect(src, file).not.toContain('useExportTransactions')
+      expect(src, file).not.toContain('useSyncTransactionsAdmin')
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, and Activity then Transactions then Receipts then Automation', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    expect(
+      shell.includes(
+        "{ href: '/activity', label: 'Activity' },\n  { href: '/transactions', label: 'Transactions' },\n  { href: '/receipts', label: 'Receipts' },\n  { href: '/automation', label: 'Automation' }",
+      ),
+    ).toBe(true)
   })
 })
