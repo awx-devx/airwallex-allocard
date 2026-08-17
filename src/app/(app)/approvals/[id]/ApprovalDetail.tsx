@@ -8,6 +8,7 @@ import { isApiError } from '@/client/api/errors'
 import { useBudget, useBudgetCategories } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
 import { useProjectMembers } from '@/client/hooks/useMembers'
+import { useProject } from '@/client/hooks/useProjects'
 import { useDecideRequest, useRequest, useRequests } from '@/client/hooks/useRequests'
 import { useMe } from '@/client/hooks/useSession'
 import { permissionGateAllowed } from '@/client/lib/access'
@@ -42,6 +43,7 @@ import {
 } from '@/client/lib/requests'
 import { diffCardTransactionLimits, snapshotCardTransactionLimits } from '@/client/lib/budget'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import { qk } from '@/client/queryKeys'
 import { CardLimitMoves } from '@/app/(app)/projects/[id]/budget/CardLimitMoves'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
@@ -115,6 +117,7 @@ export function ApprovalDetail() {
   )
   const me = useMe()
   const query = useRequest(id ?? '')
+  const project = useProject(query.data?.projectId ?? '')
   const members = useProjectMembers(query.data?.projectId ?? '')
   const categories = useBudgetCategories(query.data?.projectId ?? '')
   const budgetQuery = useBudget(query.data?.projectId ?? '')
@@ -160,7 +163,9 @@ export function ApprovalDetail() {
   const data = query.data
   const viewerId = me.data?.user.id
   const self = isSelfApproval(data.requestedBy, viewerId)
-  const canDecide = canDecideRequest(data.status, data.requestedBy, viewerId, data.approvals)
+  const archived = isProjectArchived(project.data?.status ?? '')
+  const canDecide =
+    !archived && canDecideRequest(data.status, data.requestedBy, viewerId, data.approvals)
   const nameOf = new Map((members.data ?? []).map((member) => [member.userId, member.user.name]))
   const requesterName = nameOf.get(data.requestedBy) ?? data.requestedBy
   const categoryName =
@@ -270,6 +275,11 @@ export function ApprovalDetail() {
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
+        </Alert>
+      ) : null}
+      {archived ? (
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
         </Alert>
       ) : null}
       <div className="flex min-w-0 flex-wrap gap-2">

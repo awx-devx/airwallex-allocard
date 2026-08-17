@@ -41,11 +41,11 @@ Closure is already a `StepWizard` — same wrapping step rail as A2. Report and 
 
 ## Review checklist
 
-- [ ] Closure is guided, resumable, and shows per-step progress
-- [ ] Pre-flight blockers link to the items blocking
-- [ ] Card closure uses type-to-confirm and explains post-closure clearing
-- [ ] Audit distinguishes rule actors from human ones and renders usable diffs
-- [ ] Archived projects reject every mutation in the UI as well as the API
-- [ ] Exports stream without blocking
-- [ ] Final report totals match the budget tab exactly
-- [ ] 375px and 768px: no page-level horizontal scrollbar; closure Next / confirm reachable; report tables may scroll internally
+- [x] Closure is guided, resumable, and shows per-step progress
+- [x] Pre-flight blockers link to the items blocking
+- [x] Card closure uses type-to-confirm and explains post-closure clearing
+- [x] Audit distinguishes rule actors from human ones and renders usable diffs
+- [x] Archived projects reject every mutation in the UI as well as the API
+- [x] Exports stream without blocking
+- [x] Final report totals match the budget tab exactly
+- [x] 375px and 768px: no page-level horizontal scrollbar; closure Next / confirm reachable; report tables may scroll internally

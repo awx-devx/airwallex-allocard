@@ -640,22 +640,22 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A9-reports-closure.md` signed off:
-  - [ ] Closure is guided, resumable, and shows per-step progress
-  - [ ] Pre-flight blockers link to the items blocking
-  - [ ] Card closure uses type-to-confirm and explains post-closure clearing
-  - [ ] Audit distinguishes rule actors from human ones and renders usable diffs
-  - [ ] Archived projects reject every mutation in the UI as well as the API
-  - [ ] Exports stream without blocking
-  - [ ] Final report totals match the budget tab exactly
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; closure Next / confirm reachable; report tables may scroll internally
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `/settings/access-reviews` still the A3 screen (not rebuilt)
-- [ ] `STATUS.md` updated — Track A complete; next is whatever the user names (do not invent a phase)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A9-reports-closure.md` signed off:
+  - [x] Closure is guided, resumable, and shows per-step progress
+  - [x] Pre-flight blockers link to the items blocking
+  - [x] Card closure uses type-to-confirm and explains post-closure clearing
+  - [x] Audit distinguishes rule actors from human ones and renders usable diffs
+  - [x] Archived projects reject every mutation in the UI as well as the API
+  - [x] Exports stream without blocking
+  - [x] Final report totals match the budget tab exactly
+  - [x] 375px and 768px: no page-level horizontal scrollbar; closure Next / confirm reachable; report tables may scroll internally
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `/settings/access-reviews` still the A3 screen (not rebuilt)
+- [x] `STATUS.md` updated — Track A complete; next is whatever the user names (do not invent a phase)
 
 ## Out of scope (do not do in A9)
 

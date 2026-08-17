@@ -8,6 +8,7 @@ import { useProjects } from '@/client/hooks/useProjects'
 import { useRequests } from '@/client/hooks/useRequests'
 import { useMe } from '@/client/hooks/useSession'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import {
   createRequestDenialMessage,
   listPolicyLabel,
@@ -27,6 +28,7 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
@@ -126,11 +128,16 @@ export function RequestList() {
     )
   }
 
+  const archived = isProjectArchived(
+    projectItems.find((row) => row.id === filter.projectId)?.status ?? '',
+  )
+
   return (
     <RequestListForProject
       projectId={filter.projectId}
       page={filter.page}
       pageSize={filter.pageSize}
+      archived={archived}
       projectSelect={projectSelect}
       onPageChange={(page) =>
         router.push(
@@ -145,28 +152,36 @@ function RequestListForProject({
   projectId,
   page,
   pageSize,
+  archived,
   projectSelect,
   onPageChange,
 }: {
   projectId: string
   page: number
   pageSize: number
+  archived: boolean
   projectSelect: ReactNode
   onPageChange: (page: number) => void
 }) {
   const query = useRequests(projectId, { page, pageSize })
-  const newControl = <NewRequestControl projectId={projectId} />
+  const newControl = archived ? null : <NewRequestControl projectId={projectId} />
   const toolbar = (
     <div className="flex flex-wrap gap-2">
       {projectSelect}
       {newControl}
     </div>
   )
+  const archivedAlert = archived ? (
+    <Alert>
+      <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+    </Alert>
+  ) : null
 
   if (query.isPending) {
     return (
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
+        {archivedAlert}
         <LoadingState />
       </div>
     )
@@ -177,6 +192,7 @@ function RequestListForProject({
       return (
         <div className="flex min-w-0 flex-col gap-4">
           {toolbar}
+          {archivedAlert}
           <ErrorState message="This project is not available." />
         </div>
       )
@@ -185,6 +201,7 @@ function RequestListForProject({
       return (
         <div className="flex min-w-0 flex-col gap-4">
           {toolbar}
+          {archivedAlert}
           <ErrorState message={listRequestsDenialMessage()} />
         </div>
       )
@@ -192,6 +209,7 @@ function RequestListForProject({
     return (
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
+        {archivedAlert}
         <ErrorState
           message={isApiError(query.error) ? query.error.message : 'Unable to load requests'}
         />
@@ -204,6 +222,7 @@ function RequestListForProject({
     return (
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
+        {archivedAlert}
         <EmptyState title={empty.title} description={empty.description} />
       </div>
     )
@@ -251,6 +270,7 @@ function RequestListForProject({
   return (
     <div className="flex min-w-0 flex-col gap-4">
       {toolbar}
+      {archivedAlert}
       <DataTable
         columns={columns}
         rows={query.data.items}

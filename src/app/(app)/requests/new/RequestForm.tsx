@@ -12,6 +12,7 @@ import { useCreateRequest, usePolicyPreview, useSubmitRequest } from '@/client/h
 import { useMe } from '@/client/hooks/useSession'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import {
   checkingPolicyMessage,
   createRequestDenialMessage,
@@ -179,7 +180,11 @@ export function RequestForm() {
   const previewBusy = previewMutating || (previewReady && previewSuccessKey !== previewKey)
   const notPermitted = decision?.outcome === PolicyOutcome.NOT_PERMITTED
   const pendingWrite = createRequest.isPending || submitRequest.isPending
+  const archived = isProjectArchived(
+    (projects.data?.items ?? []).find((row) => row.id === projectId)?.status ?? '',
+  )
   const submitDisabled =
+    archived ||
     !allowed ||
     !fieldsReady ||
     projectId.length < 1 ||
@@ -187,7 +192,7 @@ export function RequestForm() {
     notPermitted ||
     previewBusy ||
     pendingWrite
-  const draftDisabled = !allowed || !fieldsReady || projectId.length < 1 || pendingWrite
+  const draftDisabled = archived || !allowed || !fieldsReady || projectId.length < 1 || pendingWrite
 
   useEffect(() => {
     if (!previewReady || currency.length !== 3 || parsedAmount === null) {
@@ -307,6 +312,11 @@ export function RequestForm() {
           void onSubmitRequest()
         }}
       >
+        {archived ? (
+          <Alert>
+            <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+          </Alert>
+        ) : null}
         {alertMessage ? (
           <Alert variant="destructive">
             {policyReasons.length > 0 ? (
@@ -440,7 +450,7 @@ export function RequestForm() {
           </div>
         ) : null}
         <div className="flex flex-wrap gap-2">
-          {gateReady ? (
+          {archived ? null : gateReady ? (
             <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
               <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
                 Submit request
@@ -451,14 +461,16 @@ export function RequestForm() {
               Submit request
             </Button>
           )}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={draftDisabled}
-            onClick={() => void onSaveDraft()}
-          >
-            Save draft
-          </Button>
+          {archived ? null : (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={draftDisabled}
+              onClick={() => void onSaveDraft()}
+            >
+              Save draft
+            </Button>
+          )}
           <Link
             href={requestListHref({ projectId: projectId.length >= 1 ? projectId : undefined })}
             className={buttonVariants({ variant: 'ghost' })}

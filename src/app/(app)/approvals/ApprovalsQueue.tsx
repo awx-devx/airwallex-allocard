@@ -8,6 +8,7 @@ import { isApiError } from '@/client/api/errors'
 import { useBudget } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
 import { useProjectMembers } from '@/client/hooks/useMembers'
+import { useProject } from '@/client/hooks/useProjects'
 import { useApprovals, useDecideRequest, useRequests } from '@/client/hooks/useRequests'
 import { useMe } from '@/client/hooks/useSession'
 import { permissionGateAllowed } from '@/client/lib/access'
@@ -38,6 +39,7 @@ import {
 } from '@/client/lib/requests'
 import { diffCardTransactionLimits, snapshotCardTransactionLimits } from '@/client/lib/budget'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import { qk } from '@/client/queryKeys'
 import { CardLimitMoves } from '@/app/(app)/projects/[id]/budget/CardLimitMoves'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
@@ -76,10 +78,12 @@ function QueueItem({
   const budgetQuery = useBudget(row.projectId)
   const recentQuery = useRequests(row.projectId, { page: 1, pageSize: 20 })
   const cards = useProjectCards(row.projectId, CARD_PAGE)
+  const project = useProject(row.projectId)
   const { can, isLoading } = useCan(row.projectId)
   const allowed = permissionGateAllowed(can(Permission.REQUEST_APPROVE), isLoading)
   const viewerId = me.data?.user.id
   const self = isSelfApproval(row.requestedBy, viewerId)
+  const archived = isProjectArchived(project.data?.status ?? '')
   const decided = !canDecideRequest(row.status, row.requestedBy, viewerId, row.approvals)
   const requesterName =
     (members.data ?? []).find((member) => member.userId === row.requestedBy)?.user.name ??
@@ -172,7 +176,7 @@ function QueueItem({
     }
   }
 
-  const showDecide = !self && !decided
+  const showDecide = !self && !decided && !archived
 
   return (
     <Card className="min-w-0">

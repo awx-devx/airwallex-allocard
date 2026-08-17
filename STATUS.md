@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A9 — Reports & closure
-**Active task:** A9 phase exit — do not start a next phase
-**Last green `pnpm verify`:** 2026-08-18 (A9 QA patches)
+**Active phase:** _none_ — Track A complete
+**Active task:** _none_ — wait for the user to name the next phase
+**Last green `pnpm verify`:** 2026-08-18 (A9 phase exit)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | in progress  | 10 / 10 |
+| A     | A9 Reports & closure       | **complete** | 10 / 10 |
 
-A9 **in progress**. All A9 tasks checked. Next is **A9 phase exit** — do not start a next phase. Visual direction: `docs/VISUAL-DIRECTION.md`.
+Track A **complete**. A9 phase exit signed off. Next is whatever the user names — do not invent a phase. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9 exit (2026-08-18).** Phase exit + `A9-reports-closure.md` review checklist signed off. Archived mutations gated on requests, cards, receipts, and approvals as well as budget/people/controls. `pnpm verify` green (1775 tests). Track A complete. Wait for the user to name the next phase — do not invent one.
 
 **A9 QA patches done (2026-08-18).** Runtime findings: no “No report yet” under live figures; archived mutations hidden; budget tab uses final snapshot when archived/closed with no ledger; duplicate archived Alert removed; ARCHIVE prompt once; blocker Links underlined + formatMoney; org CLOSED/ARCHIVED Final report Links; disabled Start muted. `pnpm verify` green (1775 tests). Next: **A9 phase exit** — do not start a next phase.
 

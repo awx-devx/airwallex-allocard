@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useCard, usePanToken } from '@/client/hooks/useCards'
+import { useProject } from '@/client/hooks/useProjects'
 import {
   airwallexRevealIframeSrc,
   canRevealCard,
@@ -20,6 +21,7 @@ import {
   isPendingAirwallexId,
   revealAuditedMessage,
 } from '@/client/lib/cards'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -30,6 +32,7 @@ export function RevealCard() {
   const raw = useParams().id
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const cardQuery = useCard(id)
+  const project = useProject(cardQuery.data?.projectId ?? '')
   const { mutateAsync } = usePanToken()
   const generation = useRef(0)
   const expiryRetried = useRef(false)
@@ -40,7 +43,9 @@ export function RevealCard() {
   const [tokenError, setTokenError] = useState<string | null>(null)
 
   const card = cardQuery.data
-  const eligible = card !== undefined && canRevealCard(card.status, card.airwallexCardId)
+  const archived = isProjectArchived(project.data?.status ?? '')
+  const eligible =
+    card !== undefined && !archived && canRevealCard(card.status, card.airwallexCardId)
 
   useEffect(() => {
     if (!eligible || !id) return
@@ -120,6 +125,17 @@ export function RevealCard() {
       Back
     </Link>
   )
+
+  if (archived) {
+    return (
+      <div className="flex min-w-0 flex-col gap-4">
+        {back}
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   if (!eligible || isPendingAirwallexId(card.airwallexCardId)) {
     return (

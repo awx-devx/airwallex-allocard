@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
 import { isApiError } from '@/client/api/errors'
-import { useProjects } from '@/client/hooks/useProjects'
+import { useProject, useProjects } from '@/client/hooks/useProjects'
 import { useMe } from '@/client/hooks/useSession'
 import { useTransactions, useUploadReceipt } from '@/client/hooks/useTransactions'
 import { permissionGateAllowed } from '@/client/lib/access'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { activeOrgRole } from '@/client/lib/projects'
+import { isProjectArchived } from '@/client/lib/reports'
 import {
   RECEIPT_MAX_BASE64_CHARS,
   badReceiptTypeMessage,
@@ -148,8 +149,12 @@ export function AttachReceiptSheet({
 }
 
 function AttachReceiptButton({ projectId, onClick }: { projectId: string; onClick: () => void }) {
+  const project = useProject(projectId)
   const { can, isLoading } = useCan(projectId)
   const allowed = permissionGateAllowed(can(Permission.TRANSACTION_VIEW), isLoading)
+  if (isProjectArchived(project.data?.status ?? '')) {
+    return null
+  }
   return (
     <PermissionGateView allowed={allowed} denialMessage={viewTransactionsDenialMessage()}>
       <Button type="button" disabled={!allowed} onClick={onClick}>

@@ -6,10 +6,12 @@ import { useState } from 'react'
 import { AttachReceiptSheet } from '@/app/(app)/receipts/ReceiptsQueue'
 import { isApiError } from '@/client/api/errors'
 import { useCard } from '@/client/hooks/useCards'
+import { useProject } from '@/client/hooks/useProjects'
 import { useDeleteReceipt, useTransaction } from '@/client/hooks/useTransactions'
 import { permissionGateAllowed } from '@/client/lib/access'
 import { manageCardDenialMessage } from '@/client/lib/cards'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import {
   authClearingDiffer,
   authClearingDifferMessage,
@@ -116,18 +118,25 @@ function ReceiptActions({ data }: { data: TransactionDetailData }) {
   const [attachOpen, setAttachOpen] = useState(false)
   const [removeOpen, setRemoveOpen] = useState(false)
   const remove = useDeleteReceipt()
+  const project = useProject(data.projectId)
   const { can, isLoading } = useCan(data.projectId)
   const canView = permissionGateAllowed(can(Permission.TRANSACTION_VIEW), isLoading)
   const canManage = permissionGateAllowed(
     can(Permission.CARD_MANAGE, { cardId: data.cardId }),
     isLoading,
   )
+  const archived = isProjectArchived(project.data?.status ?? '')
   const hasReceipt = data.receiptFileId !== null && data.receiptFileId.length >= 1
-  const showAttach = needsReceipt(data) || hasReceipt
-  const showRemove = hasReceipt && !isOptimisticReceiptId(data.receiptFileId)
+  const showAttach = !archived && (needsReceipt(data) || hasReceipt)
+  const showRemove = !archived && hasReceipt && !isOptimisticReceiptId(data.receiptFileId)
 
   return (
     <>
+      {archived ? (
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+        </Alert>
+      ) : null}
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <p className="min-w-0 text-sm">{receiptLabel(data)}</p>
         {needsReceipt(data) ? (

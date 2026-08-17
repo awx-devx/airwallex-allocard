@@ -18,6 +18,7 @@ import {
   useUpdateCard,
 } from '@/client/hooks/useCards'
 import { useOrgMembers } from '@/client/hooks/useOrganizations'
+import { useProject } from '@/client/hooks/useProjects'
 import { useCardTransactions } from '@/client/hooks/useTransactions'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
@@ -64,7 +65,12 @@ import {
   transactionStatusLabel,
   transactionTypeLabel,
 } from '@/client/lib/transactions'
-import { auditListHref, viewInAuditLink } from '@/client/lib/reports'
+import {
+  archivedProjectMessage,
+  auditListHref,
+  isProjectArchived,
+  viewInAuditLink,
+} from '@/client/lib/reports'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
@@ -144,7 +150,7 @@ function CardAlerts({
   )
 }
 
-function CardActions({ card }: { card: Card }) {
+function CardActions({ card, archived }: { card: Card; archived: boolean }) {
   const router = useRouter()
   const freeze = useFreezeCard()
   const unfreeze = useUnfreezeCard()
@@ -163,10 +169,10 @@ function CardActions({ card }: { card: Card }) {
       ? permissionGateAllowed(can(Permission.CARD_VIEW_DETAILS, { cardId: card.id }), isLoading)
       : false
   const revealEligible = canRevealCard(card.status, card.airwallexCardId)
-  const showFreeze = canFreezeCard(card.status)
-  const showUnfreeze = canUnfreezeCard(card.status)
-  const showClose = canCloseCard(card.status)
-  const showReconcile = controlsDiverge(card.desiredControls, card.appliedControls)
+  const showFreeze = !archived && canFreezeCard(card.status)
+  const showUnfreeze = !archived && canUnfreezeCard(card.status)
+  const showClose = !archived && canCloseCard(card.status)
+  const showReconcile = !archived && controlsDiverge(card.desiredControls, card.appliedControls)
 
   async function run(mutate: () => Promise<unknown>) {
     setActionError(null)
@@ -185,15 +191,17 @@ function CardActions({ card }: { card: Card }) {
         </Alert>
       ) : null}
       <div className="flex flex-wrap gap-2">
-        <PermissionGateView allowed={revealAllowed} denialMessage={revealCardDenialMessage()}>
-          <Button
-            type="button"
-            disabled={!revealAllowed || !revealEligible}
-            onClick={() => router.push(cardRevealHref(card.id))}
-          >
-            Reveal
-          </Button>
-        </PermissionGateView>
+        {archived ? null : (
+          <PermissionGateView allowed={revealAllowed} denialMessage={revealCardDenialMessage()}>
+            <Button
+              type="button"
+              disabled={!revealAllowed || !revealEligible}
+              onClick={() => router.push(cardRevealHref(card.id))}
+            >
+              Reveal
+            </Button>
+          </PermissionGateView>
+        )}
         {showFreeze ? (
           <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
             <Button type="button" disabled={!manageAllowed} onClick={() => setDialog('freeze')}>
@@ -370,6 +378,7 @@ export function CardDetail() {
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const cardQuery = useCard(id)
   const card = cardQuery.data
+  const project = useProject(card?.projectId ?? '')
   const cardholderQuery = useCardholder(card?.cardholderId ?? '')
   const membersQuery = useOrgMembers(card?.orgId ?? '')
   const limitsQuery = useCardLimits(id)
@@ -410,6 +419,7 @@ export function CardDetail() {
   const diverge = controlsDiverge(card.desiredControls, card.appliedControls)
   const diff = diverge ? controlsToDiffView(card.appliedControls, card.desiredControls) : null
   const txRows = flattenTransactionPages(txQuery.data?.pages) as Transaction[]
+  const archived = isProjectArchived(project.data?.status ?? '')
   const txColumns: DataTableColumn<Transaction>[] = [
     {
       id: 'transactedAt',
@@ -485,13 +495,18 @@ export function CardDetail() {
           {viewInAuditLink()}
         </Link>
       </div>
+      {archived ? (
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+        </Alert>
+      ) : null}
       <CardVisual
         nickName={card.nickName}
         maskedNumber={card.maskedNumber}
         status={card.status}
         purpose={card.purpose}
       />
-      <CardActions card={card} />
+      <CardActions card={card} archived={archived} />
       <CardAlerts
         card={card}
         cardholderStatus={cardholderQuery.data?.status}
@@ -538,7 +553,10 @@ export function CardDetail() {
           </ul>
         )}
       </div>
-      {canEditCardMeta(card.status) && card.projectId !== null && card.projectId.length >= 1 ? (
+      {!archived &&
+      canEditCardMeta(card.status) &&
+      card.projectId !== null &&
+      card.projectId.length >= 1 ? (
         <CardMetaEditor card={card} projectId={card.projectId} />
       ) : null}
       <div className="flex min-w-0 flex-col gap-3">

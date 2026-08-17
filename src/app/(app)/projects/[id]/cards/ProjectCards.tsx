@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { isApiError } from '@/client/api/errors'
 import { useProjectCards } from '@/client/hooks/useCards'
+import { useProject } from '@/client/hooks/useProjects'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
   canRevealCard,
@@ -15,6 +16,7 @@ import {
   revealCardDenialMessage,
 } from '@/client/lib/cards'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import { CardVisual } from '@/components/patterns/CardVisual'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -75,7 +77,9 @@ export function ProjectCards() {
     pageSize: params.get('pageSize') ?? undefined,
   })
   const query = useProjectCards(id, filter)
+  const project = useProject(id)
   const { can, isLoading } = useCan(id)
+  const archived = isProjectArchived(project.data?.status ?? '')
 
   function pushFilter(next: typeof filter) {
     router.push(projectCardListHref(id, next))
@@ -190,7 +194,7 @@ export function ProjectCards() {
                     >
                       Open
                     </Link>
-                    <RevealControl card={card} allowed={revealAllowed} />
+                    {archived ? null : <RevealControl card={card} allowed={revealAllowed} />}
                   </div>
                 </li>
               )

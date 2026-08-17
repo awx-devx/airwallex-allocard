@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { isApiError } from '@/client/api/errors'
 import { useBudgetCategories } from '@/client/hooks/useBudget'
 import { useProjectMembers } from '@/client/hooks/useMembers'
+import { useProject } from '@/client/hooks/useProjects'
 import {
   useCancelRequest,
   usePolicyPreview,
@@ -17,6 +18,7 @@ import {
 } from '@/client/hooks/useRequests'
 import { useMe } from '@/client/hooks/useSession'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
+import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import {
   approvalProgress,
   canCancelRequest,
@@ -513,6 +515,7 @@ export function RequestDetail() {
   )
   const me = useMe()
   const query = useRequest(id ?? '')
+  const project = useProject(query.data?.projectId ?? '')
   const members = useProjectMembers(query.data?.projectId ?? '')
   const viewerId = me.data?.user.id
 
@@ -536,6 +539,7 @@ export function RequestDetail() {
   }
 
   const data = query.data
+  const archived = isProjectArchived(project.data?.status ?? '')
   const nameOf = new Map((members.data ?? []).map((member) => [member.userId, member.user.name]))
   const trail: TimelineItem[] = data.approvals.map((entry) => ({
     id: `${entry.approverId}-${entry.at}`,
@@ -565,6 +569,11 @@ export function RequestDetail() {
       </div>
       <p className="min-w-0 break-words text-sm">{data.description}</p>
       <p className="min-w-0 break-words text-sm">{data.justification}</p>
+      {archived ? (
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+        </Alert>
+      ) : null}
       {data.status === PurchaseRequestStatus.REJECTED ? (
         <Alert variant="destructive">
           <AlertTitle>Rejected</AlertTitle>
@@ -604,8 +613,8 @@ export function RequestDetail() {
         ) : null}
       </div>
       {data.status === PurchaseRequestStatus.APPROVED ? <UnlockedBlock request={data} /> : null}
-      {editable ? <DraftEditor request={data} /> : null}
-      {!editable && cancellable ? (
+      {editable && !archived ? <DraftEditor request={data} /> : null}
+      {!editable && cancellable && !archived ? (
         <div className="flex flex-wrap gap-2">
           <CancelRequestButton
             requestId={data.id}
