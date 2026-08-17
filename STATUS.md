@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** A8 — Activity & transactions
 **Active task:** _none — A8.8 done. STOP — A8 phase exit. Do not start A9._
-**Last green `pnpm verify`:** 2026-08-17 (A8.8)
+**Last green `pnpm verify`:** 2026-08-17 (A8 QA runtime — 1753 passed)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8 QA runtime (2026-08-17).** Should-fixes: named attach file input `8428e2a`; card Type humanised `f0e9f5c`; activity audit summaries hide pan_token `0f1c1a6`; seed FX + lifecycle mismatch rows `7744da3`. Seed Member viewer stays OWN — list 403 without a user subject is correct; use Approver/Procurement for PROJECT-scoped MEMBER. Re-run seed to load new txs. Next: **A8 phase exit** — do not start A9. `pnpm verify` green (1753 tests).
 
 **A8.8 done (2026-08-17).** Don’t-break proofs: unclamped amounts; no client ledger; Activity then Transactions then Receipts then Automation; workspace tabs still six with `/activity`; SETTINGS_NAV four hrefs. Aside still `hidden md:flex`. `pnpm verify` green (1750 tests). Next: **A8 phase exit** — do not start A9.
 
