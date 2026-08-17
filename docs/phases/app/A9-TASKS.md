@@ -576,7 +576,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.7 — Complete confirms + final report
 
-- [ ] **A9.7** — Type-to-confirm CLOSE then ARCHIVE; `/projects/[id]/report/final` no fixed width
+- [x] **A9.7** — Type-to-confirm CLOSE then ARCHIVE; `/projects/[id]/report/final` no fixed width
   - **Files:**
     - `src/app/(app)/projects/[id]/closure/ClosureFlow.tsx` (edit — confirm dialogs if not finished in A9.6)
     - `src/app/(app)/projects/[id]/report/final/page.tsx` (replace placeholder)
@@ -591,7 +591,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** stack, **no fixed width**. Tables inside overflow. `BudgetBar` existing `md:grid-cols-4`. No Sheet required. Confirms are Dialogs on the closure route. Figures wrap.
   - **Pattern:** A1-equivalent **A1.4** detail + **A1.6** confirm. Copy A9.3 `ProjectReport.tsx` (same file family as A4.2). Confirms: A5.5 `CLOSE`. Hook: `useFinalReport` / `useCompleteClosure` (B9 `.final` / `.complete`).
   - **Accept:** `pnpm verify` and `pnpm test client/lib/reports`. Complete payload is exactly `{ confirmCloseCards: true, confirmArchive: true }`. `FinalReport.tsx` contains `useFinalReport` and does **not** contain `max-w-md`, `max-w-3xl`, `useBudget`, `parseFloat`, or `Math.max(0`. 375px and 768px: no page-level horizontal scrollbar; final report figures + tables reachable; closure confirm Inputs + confirm Buttons reachable; Menu/Sheet still works.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Final report snapshot via `useFinalReport`; no max-width; confirms already sequenced in A9.6. `pnpm verify` green (1767 tests).
 
 ### A9.8 — Chrome Links + archived Alert + View in audit
 
