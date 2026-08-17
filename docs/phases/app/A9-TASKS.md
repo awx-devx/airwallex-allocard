@@ -520,7 +520,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.4 — Organization rollup
 
-- [ ] **A9.4** — `/reports/organization` totals; mixed-currency Alert
+- [x] **A9.4** — `/reports/organization` totals; mixed-currency Alert
   - **Files:**
     - `src/app/(app)/reports/organization/page.tsx` (replace placeholder)
     - `src/app/(app)/reports/organization/OrganizationReport.tsx` (`'use client'`)
@@ -534,7 +534,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** stack totals, then table inside overflow. Toolbar wrap. No `md:grid`. No Sheet. Mixed-currency Alert not `hidden`.
   - **Pattern:** A1-equivalent **A1.5**. Copy A8.3 `TransactionList.tsx` / A5.2 `OrgCardList.tsx`. Hook: `useOrganizationReport` (B9 `.organization`). `MoneyDisplay` F3.10.
   - **Accept:** `pnpm verify`. `OrganizationReport.tsx` contains `useOrganizationReport` and `orgTotalsExcludeSomeProjects` and does **not** contain `useProjectReport`, `parseFloat`, or a `currency` property read on a project row. 375px and 768px: no page-level horizontal scrollbar; totals + Alert + table reachable; table may scroll inside. Menu/Sheet still works below `md`. Static `/reports/organization` still not a `[id]` page.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Org totals from hook; mixed-currency Alert via approved-sum; row amounts use `report.currency`. No per-row currency. `pnpm verify` green (1767 tests).
 
 ### A9.5 — Audit log
 
