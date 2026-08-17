@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   ARCHIVE_CONFIRM_PHRASE,
   CLOSE_CONFIRM_PHRASE,
@@ -78,11 +80,13 @@ describe('parseAuditSearchParams', () => {
     const parsed = parseAuditSearchParams({
       cursor: 'abc',
       page: '2',
+      limit: '20',
       subjectType: 'card',
     } as never)
     expect(parsed).toEqual({ subjectType: 'card' })
     expect('cursor' in parsed).toBe(false)
     expect('page' in parsed).toBe(false)
+    expect('limit' in parsed).toBe(false)
   })
 
   it('keeps free-string filters and omits empty ids', () => {
@@ -219,5 +223,108 @@ describe('display and complete input', () => {
       'Pending transactions will still clear after cards are closed.',
     )
     expect(archiveConfirm().phrase).toBe('ARCHIVE')
+  })
+})
+
+function walkFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    return entry.isDirectory() ? walkFiles(path) : [path]
+  })
+}
+
+describe('A9.9 invariant proofs', () => {
+  it('does not clamp remaining or utilisation and detects mixed-currency totals', () => {
+    expect(reportOverCommitted(-1)).toBe(true)
+    const bar = reportToBudgetBar({
+      approved: 10,
+      committed: 4,
+      actual: 7,
+      remaining: -1,
+      utilisationPct: 110,
+      currency: 'USD',
+    })
+    expect(bar.remaining).toBe(-1)
+    expect(bar.utilisationPct).toBe(110)
+    expect(
+      orgTotalsExcludeSomeProjects([{ approved: 100 }, { approved: 50 }], { approved: 100 }),
+    ).toBe(true)
+    expect(orgTotalsExcludeSomeProjects([{ approved: 100 }], { approved: 100 })).toBe(false)
+  })
+
+  it('drops cursor, page, and limit from audit search params', () => {
+    const parsed = parseAuditSearchParams({
+      cursor: 'abc',
+      page: '2',
+      limit: '20',
+      subjectType: 'card',
+    } as never)
+    expect(parsed).toEqual({ subjectType: 'card' })
+    expect('cursor' in parsed).toBe(false)
+    expect('page' in parsed).toBe(false)
+    expect('limit' in parsed).toBe(false)
+  })
+
+  it('complete input and phrases stay both-literals CLOSE then ARCHIVE', () => {
+    expect(completeClosureInput()).toEqual({ confirmCloseCards: true, confirmArchive: true })
+    expect(CLOSE_CONFIRM_PHRASE).toBe('CLOSE')
+    expect(ARCHIVE_CONFIRM_PHRASE).toBe('ARCHIVE')
+    expect(canClickStart({ projectStatus: 'ACTIVE', canStart: true, archived: false })).toBe(true)
+    expect(canClickStart({ projectStatus: 'ACTIVE', canStart: false, archived: false })).toBe(false)
+    expect(closureActiveStep('ACTIVE', 'SETTLE')).toBe('PREFLIGHT')
+    expect(closureActiveStep('CLOSING', 'SETTLE')).toBe('SETTLE')
+    expect(blockerHref({ subjectType: 'transaction', subjectId: 't1' }, 'p')).toBe(
+      '/transactions/t1',
+    )
+    expect(
+      canClickComplete({
+        projectStatus: 'CLOSING',
+        steps: [{ step: 'SETTLE', status: 'DONE' }],
+        archived: false,
+      }),
+    ).toBe(true)
+  })
+
+  it('A9 screens never import a client ledger, type number, or mention PAN', () => {
+    const files = [
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/reports')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/audit')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/closure')),
+      ...walkFiles(join(process.cwd(), 'src/app/(app)/projects/[id]/report')),
+    ]
+    expect(files.length).toBeGreaterThan(1)
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src, file).not.toContain('projectBudget')
+      expect(src, file).not.toContain("from '@/server/")
+      expect(src, file).not.toContain('type="number"')
+      expect(src, file).not.toContain('parseFloat')
+      expect(src, file).not.toContain('Math.max(0')
+      expect(src, file).not.toContain('downloadExport')
+      expect(src, file).not.toContain('useProjectAudit')
+      expect(src, file).not.toContain('useTransitionProject')
+      expect(src, file).not.toContain('usePanToken')
+      expect(src, file).not.toContain('useBudget')
+      expect(src, file).not.toMatch(/\bPAN\b/)
+      expect(src.toLowerCase(), file).not.toContain('cvv')
+      expect(src.toLowerCase(), file).not.toContain('card_number')
+    }
+  })
+
+  it('keeps requireApp, AppShell collapse, Reports then Audit then Roles, and A3 access-reviews', () => {
+    const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
+    expect(layout).toContain('requireApp()')
+    expect(layout).toContain('AppShellFrame')
+    const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
+    expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
+    expect(
+      shell.includes(
+        "{ href: '/reports', label: 'Reports' },\n  { href: '/audit', label: 'Audit' },\n  { href: '/settings/roles', label: 'Roles' }",
+      ),
+    ).toBe(true)
+    expect(
+      existsSync(join(process.cwd(), 'src/app/(app)/settings/access-reviews/AccessReviewList.tsx')),
+    ).toBe(true)
   })
 })

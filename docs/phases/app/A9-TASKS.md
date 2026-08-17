@@ -614,7 +614,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.9 — Don’t-break + invariant proofs
 
-- [ ] **A9.9** — Unclamped remaining, no client ledger, 375/768, shell unchanged, access-reviews not rebuilt
+- [x] **A9.9** — Unclamped remaining, no client ledger, 375/768, shell unchanged, access-reviews not rebuilt
   - **Files:**
     - `src/client/lib/reports.test.ts` (extend)
     - `src/client/lib/projects.test.ts` (assert `WORKSPACE_TAB_HREFS` still six, still includes `/activity`, still no settings, still no `/projects/${id}/closure` **tab**, still no `/audit` tab)
@@ -634,7 +634,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** n/a (proof) plus the manual resize check.
   - **Pattern:** A1-equivalent **A1.7** `src/client/lib/auth.ts` tests / A1 proofs. Copy A8.8 `src/client/lib/transactions.test.ts`. A2.1 shell classes (read-only).
   - **Accept:** `pnpm test client/lib/reports` and `pnpm test client/lib/projects` and `pnpm test client/lib/access` and `pnpm verify`. 375px and 768px: no page-level horizontal scrollbar on catalogue (exports), org report (Alert + table), project report (figures), audit (Diff Sheet), closure (Next / confirm reachable, rail wraps), final report (no page-level sideways scroll, no fixed width clipping actions); Menu/Sheet still works below `md`; tables may scroll inside. Aside still `hidden md:flex`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Unclamped remaining; audit cursor dropped; complete both literals; A9 screens grep clean; Reports then Audit then Roles; WORKSPACE_TAB_HREFS six; SETTINGS_NAV four; AccessReviewList still A3. `pnpm verify` green (1774 tests).
 
 ---
 

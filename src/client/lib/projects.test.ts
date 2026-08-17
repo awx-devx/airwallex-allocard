@@ -374,6 +374,19 @@ describe('A8.8 workspace tabs unchanged', () => {
   })
 })
 
+describe('A9.9 workspace tabs unchanged', () => {
+  it('still includes /activity, has length 6, and has no closure or final-report tab', () => {
+    const id = 'proj_1'
+    const hrefs = WORKSPACE_TAB_HREFS.map((tab) => tab.href(id))
+    expect(hrefs).toContain('/projects/proj_1/activity')
+    expect(WORKSPACE_TAB_HREFS).toHaveLength(6)
+    expect(hrefs.join(' ')).not.toContain('settings')
+    expect(hrefs).not.toContain('/projects/proj_1/closure')
+    expect(hrefs.join(' ')).not.toContain('/audit')
+    expect(hrefs.join(' ')).not.toContain('report/final')
+  })
+})
+
 describe('A2 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or dashboard', () => {
     function walk(dir: string): string[] {

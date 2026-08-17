@@ -488,6 +488,21 @@ describe('A8.8 SETTINGS_NAV unchanged', () => {
   })
 })
 
+describe('A9.9 SETTINGS_NAV unchanged', () => {
+  it('SETTINGS_NAV is exactly the four org settings hrefs and has no Audit, Reports, or Closure', () => {
+    expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/roles',
+      '/settings/access-reviews',
+      '/settings/rules',
+      '/settings/attributes',
+    ])
+    expect(SETTINGS_NAV.map((item) => item.href)).not.toContain('/audit')
+    expect(SETTINGS_NAV.map((item) => item.href)).not.toContain('/reports')
+    expect(SETTINGS_NAV.map((item) => item.href)).not.toContain('/projects')
+    expect(SETTINGS_NAV.map((item) => item.label).join(' ')).not.toMatch(/Audit|Reports|Closure/)
+  })
+})
+
 describe('A3 screens never mention PAN', () => {
   it('has no PAN, cvv, or card_number under projects or settings', () => {
     function walk(dir: string): string[] {

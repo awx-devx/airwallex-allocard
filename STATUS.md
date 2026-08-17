@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A9 — Reports & closure
-**Active task:** A9.9 — Don’t-break + invariant proofs
-**Last green `pnpm verify`:** 2026-08-17 (A9.8)
+**Active task:** A9 phase exit — do not start a next phase
+**Last green `pnpm verify`:** 2026-08-17 (A9.9)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | in progress  | 9 / 10  |
+| A     | A9 Reports & closure       | in progress  | 10 / 10 |
 
-A9 **in progress**. Policies locked; A9.8 chrome Links done. Next is A9.9 don’t-break proofs. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A9 **in progress**. All A9 tasks checked. Next is **A9 phase exit** — do not start a next phase. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9.9 done (2026-08-17).** Don’t-break proofs: unclamped remaining; no client ledger; Reports then Audit then Roles; workspace tabs still six with `/activity`; SETTINGS_NAV four hrefs; AccessReviewList still A3. Aside still `hidden md:flex`. `pnpm verify` green (1774 tests). Next: **A9 phase exit** — do not start a next phase.
 
 **A9.8 done (2026-08-17).** Close / Resume / Final report Links; archived Alert; Status tile hrefs; card View in audit. `pnpm verify` green (1767 tests). Next: **A9.9** don’t-break proofs.
 
