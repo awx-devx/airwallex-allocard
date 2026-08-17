@@ -12,6 +12,7 @@ import {
   useDecideChangeRequest,
 } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
+import { useProject } from '@/client/hooks/useProjects'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
   budgetHref,
@@ -23,6 +24,7 @@ import {
   type CardTransactionLimitDiff,
 } from '@/client/lib/budget'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import { qk } from '@/client/queryKeys'
 import { CardLimitMoves } from '@/app/(app)/projects/[id]/budget/CardLimitMoves'
 import { CreateChangeRequestDialog } from '@/app/(app)/projects/[id]/budget/requests/CreateChangeRequestDialog'
@@ -51,6 +53,7 @@ export function ChangeRequestList() {
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const queryClient = useQueryClient()
   const budgetQuery = useBudget(id)
+  const project = useProject(id)
   const requests = useBudgetChangeRequests(id)
   const cards = useProjectCards(id, CARD_PAGE)
   const createRequest = useCreateChangeRequest()
@@ -67,8 +70,9 @@ export function ChangeRequestList() {
     cardTotal: number
   } | null>(null)
 
-  const canRequest = permissionGateAllowed(can(Permission.BUDGET_REQUEST), isLoading)
-  const canEdit = permissionGateAllowed(can(Permission.BUDGET_EDIT), isLoading)
+  const archived = isProjectArchived(project.data?.status ?? '')
+  const canRequest = permissionGateAllowed(can(Permission.BUDGET_REQUEST), isLoading) && !archived
+  const canEdit = permissionGateAllowed(can(Permission.BUDGET_EDIT), isLoading) && !archived
 
   async function runApprove(changeRequestId: string): Promise<void> {
     const before = snapshotCardTransactionLimits(cards.data?.items ?? [])
@@ -113,9 +117,11 @@ export function ChangeRequestList() {
           title="No budget set yet"
           description="Set an approved amount. Categories and formulas come next."
         />
-        <Link href={budgetHref(id)} className={buttonVariants()}>
-          Set budget
-        </Link>
+        {archived ? null : (
+          <Link href={budgetHref(id)} className={buttonVariants()}>
+            Set budget
+          </Link>
+        )}
       </div>
     )
   }

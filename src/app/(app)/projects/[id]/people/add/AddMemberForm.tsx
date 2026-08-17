@@ -12,6 +12,7 @@ import {
   useRoles,
 } from '@/client/hooks/useMembers'
 import { useOrgMembers } from '@/client/hooks/useOrganizations'
+import { useProject } from '@/client/hooks/useProjects'
 import {
   addMemberDenialMessage,
   buildAccessScope,
@@ -23,6 +24,7 @@ import {
 } from '@/client/lib/access'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { PermissionPreview } from '@/app/(app)/projects/[id]/people/PermissionPreview'
 import { ScopePicker } from '@/app/(app)/projects/[id]/people/ScopePicker'
@@ -61,6 +63,7 @@ export function AddMemberForm() {
   const { can, isLoading } = useCan(id)
   const orgMembers = useOrgMembers(orgId ?? '')
   const projectMembers = useProjectMembers(id)
+  const project = useProject(id)
   const roles = useRoles()
   const addMember = useAddMember()
   const { mutate: previewMutate } = usePreviewMember()
@@ -126,6 +129,14 @@ export function AddMemberForm() {
   const memberNames = Object.fromEntries(
     (projectMembers.data ?? []).map((member) => [member.userId, member.user.name]),
   )
+
+  if (isProjectArchived(project.data?.status ?? '')) {
+    return (
+      <Link href={peopleHref(id)} className={buttonVariants({ variant: 'ghost' })}>
+        Back
+      </Link>
+    )
+  }
 
   return (
     <Form {...form}>

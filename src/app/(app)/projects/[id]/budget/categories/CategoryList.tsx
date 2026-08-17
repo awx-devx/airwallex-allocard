@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useBudget, useBudgetCategories, useDeleteBudgetCategory } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
-import { useWorkstreams } from '@/client/hooks/useProjects'
+import { useProject, useWorkstreams } from '@/client/hooks/useProjects'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
   allocationsExceedApproved,
@@ -21,6 +21,7 @@ import {
   type CardTransactionLimitDiff,
 } from '@/client/lib/budget'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import { qk } from '@/client/queryKeys'
 import { CardLimitMoves } from '@/app/(app)/projects/[id]/budget/CardLimitMoves'
 import { CategorySheet } from '@/app/(app)/projects/[id]/budget/categories/CategorySheet'
@@ -47,6 +48,7 @@ export function CategoryList() {
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const queryClient = useQueryClient()
   const budgetQuery = useBudget(id)
+  const project = useProject(id)
   const categoriesQuery = useBudgetCategories(id)
   const workstreams = useWorkstreams(id)
   const cards = useProjectCards(id, CARD_PAGE)
@@ -104,9 +106,11 @@ export function CategoryList() {
           title="No budget set yet"
           description="Set an approved amount. Categories and formulas come next."
         />
-        <Link href={budgetHref(id)} className={buttonVariants()}>
-          Set budget
-        </Link>
+        {isProjectArchived(project.data?.status ?? '') ? null : (
+          <Link href={budgetHref(id)} className={buttonVariants()}>
+            Set budget
+          </Link>
+        )}
       </div>
     )
   }
@@ -115,9 +119,11 @@ export function CategoryList() {
   const approvedAmount = detail.budget.approvedAmount
   const categories = categoriesQuery.data ?? []
   const canEdit = permissionGateAllowed(can(Permission.BUDGET_EDIT), isLoading)
+  const archived = isProjectArchived(project.data?.status ?? '')
+  const canMutate = canEdit && !archived
   const exceed = allocationsExceedApproved(allocationsSum(categories), approvedAmount)
 
-  const addButton = (
+  const addButton = archived ? null : (
     <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
       <Button
         type="button"
@@ -155,35 +161,36 @@ export function CategoryList() {
     {
       id: 'actions',
       header: 'Actions',
-      cell: (row) => (
-        <div className="flex flex-wrap gap-2">
-          <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              disabled={!canEdit}
-              onClick={() => {
-                setSheet({ mode: 'edit', category: row })
-                setSheetOpen(true)
-              }}
-            >
-              Edit
-            </Button>
-          </PermissionGateView>
-          <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              disabled={!canEdit}
-              onClick={() => setDeleteTarget(row)}
-            >
-              Delete
-            </Button>
-          </PermissionGateView>
-        </div>
-      ),
+      cell: (row) =>
+        archived ? null : (
+          <div className="flex flex-wrap gap-2">
+            <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!canEdit}
+                onClick={() => {
+                  setSheet({ mode: 'edit', category: row })
+                  setSheetOpen(true)
+                }}
+              >
+                Edit
+              </Button>
+            </PermissionGateView>
+            <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!canEdit}
+                onClick={() => setDeleteTarget(row)}
+              >
+                Delete
+              </Button>
+            </PermissionGateView>
+          </div>
+        ),
     },
   ]
 
@@ -228,7 +235,7 @@ export function CategoryList() {
         empty={{
           title: 'No categories yet',
           description: 'Split the approved amount into categories. An allocation may be a formula.',
-          action: canEdit
+          action: canMutate
             ? {
                 label: 'Add category',
                 onClick: () => {

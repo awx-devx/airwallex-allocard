@@ -13,6 +13,8 @@ import {
   useSetBudget,
 } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
+import { useProject } from '@/client/hooks/useProjects'
+import { useFinalReport } from '@/client/hooks/useReports'
 import { useMe } from '@/client/hooks/useSession'
 import { permissionGateAllowed } from '@/client/lib/access'
 import {
@@ -28,6 +30,12 @@ import {
   type CardTransactionLimitDiff,
 } from '@/client/lib/budget'
 import { useCan } from '@/client/lib/permissions/useCan'
+import {
+  finalReportHref,
+  finalReportLink,
+  isProjectArchived,
+  reportToBudgetBar,
+} from '@/client/lib/reports'
 import { qk } from '@/client/queryKeys'
 import { AdjustDialog } from '@/app/(app)/projects/[id]/budget/AdjustDialog'
 import { CardLimitMoves } from '@/app/(app)/projects/[id]/budget/CardLimitMoves'
@@ -46,6 +54,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
+import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { BudgetEntry } from '@/shared/types/budget'
 import type { CardList } from '@/shared/types/card'
 
@@ -64,6 +73,7 @@ export function BudgetHome() {
   } | null>(null)
   const queryClient = useQueryClient()
   const budgetQuery = useBudget(id)
+  const project = useProject(id)
   const me = useMe()
   const changeRequests = useBudgetChangeRequests(id)
   const entries = useBudgetEntries(id, { page, pageSize: ENTRY_PAGE_SIZE })
@@ -71,6 +81,10 @@ export function BudgetHome() {
   const setBudget = useSetBudget()
   const createEntry = useCreateBudgetEntry()
   const { can, isLoading } = useCan(id)
+  const projectStatus = project.data?.status ?? ''
+  const archived = isProjectArchived(projectStatus)
+  const snapshotFallback = archived || projectStatus === ProjectStatus.CLOSED
+  const finalReport = useFinalReport(snapshotFallback ? id : '')
 
   async function runWithLimitDiff(mutate: () => Promise<void>): Promise<void> {
     const before = snapshotCardTransactionLimits(cards.data?.items ?? [])
@@ -109,7 +123,7 @@ export function BudgetHome() {
   const orgCurrency = me.data?.activeOrg?.baseCurrency ?? ''
   const currency = detail?.budget?.currency ?? orgCurrency
 
-  const setApprovedControl = (
+  const setApprovedControl = archived ? null : (
     <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
       <Button
         type="button"
@@ -156,6 +170,50 @@ export function BudgetHome() {
     ) : null
 
   if (!detail || !hasBudgetRecord(detail.budget) || detail.budget === null) {
+    if (project.isPending || (snapshotFallback && finalReport.isPending)) {
+      return <LoadingState />
+    }
+    const snapshot = finalReport.data
+    if (snapshot) {
+      return (
+        <div className="flex min-w-0 flex-col gap-4">
+          <BudgetBar {...reportToBudgetBar(snapshot)} />
+          <div className="flex min-w-0 flex-wrap gap-4">
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Approved</span>
+              <MoneyDisplay
+                money={{ amount: snapshot.approved, currency: snapshot.currency }}
+                colorBySign={false}
+              />
+            </div>
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Committed</span>
+              <MoneyDisplay
+                money={{ amount: snapshot.committed, currency: snapshot.currency }}
+                colorBySign={false}
+              />
+            </div>
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Actual</span>
+              <MoneyDisplay
+                money={{ amount: snapshot.actual, currency: snapshot.currency }}
+                colorBySign={false}
+              />
+            </div>
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Remaining</span>
+              <MoneyDisplay
+                money={{ amount: snapshot.remaining, currency: snapshot.currency }}
+                colorBySign
+              />
+            </div>
+          </div>
+          <Link href={finalReportHref(id)} className={buttonVariants({ variant: 'ghost' })}>
+            {finalReportLink()}
+          </Link>
+        </div>
+      )
+    }
     return (
       <div className="flex min-w-0 flex-col gap-4">
         <EmptyState
@@ -170,7 +228,7 @@ export function BudgetHome() {
             projectId={id}
           />
         ) : null}
-        {dialogs}
+        {archived ? null : dialogs}
       </div>
     )
   }
@@ -246,27 +304,34 @@ export function BudgetHome() {
         <CardLimitMoves diffs={limitMoves.diffs} cardTotal={limitMoves.cardTotal} projectId={id} />
       ) : null}
       <div className="flex flex-wrap gap-2">
-        <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
-          <Button type="button" disabled={!canEdit} onClick={() => setSetOpen(true)}>
-            Set approved
-          </Button>
-        </PermissionGateView>
-        <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
-          <Button type="button" disabled={!canEdit} onClick={() => setAdjustOpen(true)}>
-            Record adjustment
-          </Button>
-        </PermissionGateView>
-        <PermissionGateView allowed={canRequest} denialMessage={requestBudgetDenialMessage()}>
-          {canRequest ? (
-            <Link href={budgetRequestsHref(id)} className={buttonVariants({ variant: 'outline' })}>
-              Request change
-            </Link>
-          ) : (
-            <Button type="button" variant="outline" disabled>
-              Request change
-            </Button>
-          )}
-        </PermissionGateView>
+        {archived ? null : (
+          <>
+            <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
+              <Button type="button" disabled={!canEdit} onClick={() => setSetOpen(true)}>
+                Set approved
+              </Button>
+            </PermissionGateView>
+            <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
+              <Button type="button" disabled={!canEdit} onClick={() => setAdjustOpen(true)}>
+                Record adjustment
+              </Button>
+            </PermissionGateView>
+            <PermissionGateView allowed={canRequest} denialMessage={requestBudgetDenialMessage()}>
+              {canRequest ? (
+                <Link
+                  href={budgetRequestsHref(id)}
+                  className={buttonVariants({ variant: 'outline' })}
+                >
+                  Request change
+                </Link>
+              ) : (
+                <Button type="button" variant="outline" disabled>
+                  Request change
+                </Button>
+              )}
+            </PermissionGateView>
+          </>
+        )}
       </div>
       <h2 className="text-sm font-medium">Recent entries</h2>
       <DataTable
@@ -296,7 +361,7 @@ export function BudgetHome() {
           description: 'Approvals, commitments, actuals, and adjustments appear here.',
         }}
       />
-      {dialogs}
+      {archived ? null : dialogs}
     </div>
   )
 }

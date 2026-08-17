@@ -10,6 +10,7 @@ import { budgetHref, projectionToBudgetBarProps } from '@/client/lib/budget'
 import { cardHref } from '@/client/lib/cards'
 import { requestHref } from '@/client/lib/requests'
 import { transactionHref, transactionListHref } from '@/client/lib/transactions'
+import { formatMoney } from '@/lib/money'
 import { ClosureStep } from '@/shared/enums/closureStep'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
@@ -352,6 +353,19 @@ export function canClickComplete(input: {
 }): boolean {
   return (
     input.projectStatus === ProjectStatus.CLOSING && settleIsDone(input.steps) && !input.archived
+  )
+}
+
+const BLOCKER_MONEY = /\((\d+) ([A-Z]{3})(?:, ([^)]+))?\)/g
+
+/** Preflight summaries store minor units; display with `formatMoney`. */
+export function formatBlockerSummary(summary: string): string {
+  return summary.replace(
+    BLOCKER_MONEY,
+    (_match, amount: string, currency: string, extra?: string) => {
+      const formatted = formatMoney({ amount: Number.parseInt(amount, 10), currency })
+      return extra === undefined ? `(${formatted})` : `(${formatted}, ${extra})`
+    },
   )
 }
 

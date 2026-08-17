@@ -45,7 +45,9 @@ export function ConfirmDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription className={description ? undefined : 'sr-only'}>
+            {description ?? title}
+          </DialogDescription>
         </DialogHeader>
         {typeToConfirm ? (
           <div className="space-y-2">

@@ -4,16 +4,12 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { isApiError } from '@/client/api/errors'
 import { useProjectMembers } from '@/client/hooks/useMembers'
-import { useProject } from '@/client/hooks/useProjects'
 import { useFinalReport } from '@/client/hooks/useReports'
 import {
-  archivedProjectMessage,
   auditListHref,
   budgetHref,
   finalReportMissingMessage,
-  isProjectArchived,
   memberDisplayName,
-  noReportEmpty,
   parseOptionalIdParam,
   projectNotFoundMessage,
   projectReportHref,
@@ -26,7 +22,6 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
 import { formatDateTime } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
@@ -45,7 +40,6 @@ export function FinalReport() {
   const id = parseOptionalIdParam(useParams().id) ?? ''
   const report = useFinalReport(id)
   const members = useProjectMembers(id)
-  const project = useProject(id)
 
   if (!id) {
     return <ErrorState message={projectNotFoundMessage()} />
@@ -72,8 +66,6 @@ export function FinalReport() {
 
   const data = report.data
   const memberRows = members.data ?? []
-  const empty = noReportEmpty()
-  const archived = isProjectArchived(project.data?.status ?? '')
 
   const categoryColumns: DataTableColumn<CategoryRow>[] = [
     {
@@ -119,11 +111,6 @@ export function FinalReport() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      {archived ? (
-        <Alert>
-          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
       <div className="flex min-w-0 flex-wrap gap-2">
         <Link href={budgetHref(id)} className={buttonVariants({ variant: 'ghost' })}>
           Budget
@@ -174,20 +161,24 @@ export function FinalReport() {
         <span className="min-w-0 break-words">Transactions {data.transactionCount}</span>
         <span className="min-w-0 break-words">Access history {data.accessHistoryCount}</span>
       </div>
-      <DataTable
-        columns={categoryColumns}
-        rows={data.byCategory}
-        getRowId={(row) => row.categoryId}
-        pagination={TABLE_PAGE}
-        empty={empty}
-      />
-      <DataTable
-        columns={memberColumns}
-        rows={data.byMember}
-        getRowId={(row) => row.userId}
-        pagination={TABLE_PAGE}
-        empty={empty}
-      />
+      {data.byCategory.length > 0 ? (
+        <DataTable
+          columns={categoryColumns}
+          rows={data.byCategory}
+          getRowId={(row) => row.categoryId}
+          pagination={TABLE_PAGE}
+          empty={{ title: '', description: '' }}
+        />
+      ) : null}
+      {data.byMember.length > 0 ? (
+        <DataTable
+          columns={memberColumns}
+          rows={data.byMember}
+          getRowId={(row) => row.userId}
+          pagination={TABLE_PAGE}
+          empty={{ title: '', description: '' }}
+        />
+      ) : null}
     </div>
   )
 }

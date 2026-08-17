@@ -2,9 +2,13 @@
 
 import Link from 'next/link'
 import { isApiError } from '@/client/api/errors'
+import { useProjects } from '@/client/hooks/useProjects'
 import { useOrganizationReport } from '@/client/hooks/useReports'
 import {
   auditHref,
+  finalReportHref,
+  finalReportLink,
+  isProjectArchived,
   mixedCurrencyMessage,
   noOrgProjectsEmpty,
   orgTotalsExcludeSomeProjects,
@@ -20,6 +24,7 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
+import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { OrganizationReport as OrganizationReportData } from '@/shared/types/report'
 
 type ProjectRow = OrganizationReportData['projects'][number]
@@ -32,6 +37,7 @@ const TABLE_PAGE = {
 
 export function OrganizationReport() {
   const query = useOrganizationReport()
+  const listed = useProjects({ page: 1, pageSize: 100 })
 
   if (query.isPending) {
     return <LoadingState />
@@ -51,6 +57,7 @@ export function OrganizationReport() {
 
   const data = query.data
   const empty = noOrgProjectsEmpty()
+  const statusById = new Map((listed.data?.items ?? []).map((row) => [row.id, row.status] as const))
 
   if (data.projects.length === 0) {
     return (
@@ -72,14 +79,29 @@ export function OrganizationReport() {
     {
       id: 'name',
       header: 'Project',
-      cell: (row) => (
-        <Link
-          href={projectReportHref(row.projectId)}
-          className="min-w-0 break-words hover:underline"
-        >
-          {row.name}
-        </Link>
-      ),
+      cell: (row) => {
+        const status = statusById.get(row.projectId)
+        const showFinal =
+          status !== undefined && (isProjectArchived(status) || status === ProjectStatus.CLOSED)
+        return (
+          <span className="flex min-w-0 flex-col gap-1">
+            <Link
+              href={projectReportHref(row.projectId)}
+              className="min-w-0 break-words hover:underline"
+            >
+              {row.name}
+            </Link>
+            {showFinal ? (
+              <Link
+                href={finalReportHref(row.projectId)}
+                className="text-sm underline underline-offset-4"
+              >
+                {finalReportLink()}
+              </Link>
+            ) : null}
+          </span>
+        )
+      },
     },
     {
       id: 'approved',

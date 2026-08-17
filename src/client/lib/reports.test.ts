@@ -18,6 +18,7 @@ import {
   completeClosureInput,
   exportBody,
   exportCatalogueHref,
+  formatBlockerSummary,
   finalReportHref,
   holdsMemberManage,
   holdsProjectClose,
@@ -223,6 +224,19 @@ describe('display and complete input', () => {
       'Pending transactions will still clear after cards are closed.',
     )
     expect(archiveConfirm().phrase).toBe('ARCHIVE')
+    expect(archiveConfirm().description).toBeUndefined()
+  })
+
+  it('formatBlockerSummary formats minor units', () => {
+    expect(formatBlockerSummary('Pending authorization abc (12000 USD)')).toBe(
+      'Pending authorization abc ($120.00)',
+    )
+    expect(formatBlockerSummary('Open transaction abc (25000 USD, AUTHORIZATION)')).toBe(
+      'Open transaction abc ($250.00, AUTHORIZATION)',
+    )
+    expect(formatBlockerSummary('Active card abc must be frozen before closure')).toBe(
+      'Active card abc must be frozen before closure',
+    )
   })
 })
 

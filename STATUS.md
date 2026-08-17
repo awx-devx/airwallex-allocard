@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** A9 — Reports & closure
 **Active task:** A9 phase exit — do not start a next phase
-**Last green `pnpm verify`:** 2026-08-17 (A9.9)
+**Last green `pnpm verify`:** 2026-08-18 (A9 QA patches)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9 QA patches done (2026-08-18).** Runtime findings: no “No report yet” under live figures; archived mutations hidden; budget tab uses final snapshot when archived/closed with no ledger; duplicate archived Alert removed; ARCHIVE prompt once; blocker Links underlined + formatMoney; org CLOSED/ARCHIVED Final report Links; disabled Start muted. `pnpm verify` green (1775 tests). Next: **A9 phase exit** — do not start a next phase.
 
 **A9.9 done (2026-08-17).** Don’t-break proofs: unclamped remaining; no client ledger; Reports then Audit then Roles; workspace tabs still six with `/activity`; SETTINGS_NAV four hrefs; AccessReviewList still A3. Aside still `hidden md:flex`. `pnpm verify` green (1774 tests). Next: **A9 phase exit** — do not start a next phase.
 

@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { isApiError } from '@/client/api/errors'
+import { useProject } from '@/client/hooks/useProjects'
 import { useEnableRule, useRules } from '@/client/hooks/useRules'
 import { permissionGateAllowed } from '@/client/lib/access'
 import { useCan } from '@/client/lib/permissions/useCan'
+import { isProjectArchived } from '@/client/lib/reports'
 import {
   editControlsDenialMessage,
   newProjectRuleHref,
@@ -66,7 +68,9 @@ export function ProjectControls() {
   const query = useRules({ ...listFilter, projectId: id })
   const orgQuery = useRules({ page: 1, pageSize: 100, enabled: undefined })
   const enableRule = useEnableRule()
+  const project = useProject(id)
   const { can, isLoading } = useCan(id)
+  const archived = isProjectArchived(project.data?.status ?? '')
   const canEdit = permissionGateAllowed(can(Permission.CONTROL_EDIT), isLoading)
 
   function pushFilter(next: {
@@ -131,7 +135,7 @@ export function ProjectControls() {
           <Switch
             aria-label="Enabled"
             checked={row.enabled}
-            disabled={!canEdit}
+            disabled={!canEdit || archived}
             onCheckedChange={(enabled) => enableRule.mutate({ id: row.id, input: { enabled } })}
           />
         </PermissionGateView>
@@ -164,17 +168,19 @@ export function ProjectControls() {
           </SelectContent>
         </Select>
       </div>
-      <PermissionGateView allowed={canEdit} denialMessage={editControlsDenialMessage()}>
-        {canEdit ? (
-          <Button asChild>
-            <Link href={newProjectRuleHref(id)}>New</Link>
-          </Button>
-        ) : (
-          <Button type="button" disabled>
-            New
-          </Button>
-        )}
-      </PermissionGateView>
+      {archived ? null : (
+        <PermissionGateView allowed={canEdit} denialMessage={editControlsDenialMessage()}>
+          {canEdit ? (
+            <Button asChild>
+              <Link href={newProjectRuleHref(id)}>New</Link>
+            </Button>
+          ) : (
+            <Button type="button" disabled>
+              New
+            </Button>
+          )}
+        </PermissionGateView>
+      )}
     </div>
   )
 
@@ -214,9 +220,11 @@ export function ProjectControls() {
         <Alert>
           <AlertDescription className="flex min-w-0 flex-wrap items-center gap-2">
             <span>This card was created by this rule.</span>
-            <Link href={ruleBuilderHref(highlighted.id)} className="hover:underline">
-              Edit in builder
-            </Link>
+            {archived ? null : (
+              <Link href={ruleBuilderHref(highlighted.id)} className="hover:underline">
+                Edit in builder
+              </Link>
+            )}
           </AlertDescription>
         </Alert>
       ) : null}
@@ -224,7 +232,7 @@ export function ProjectControls() {
       {query.data.total === 0 ? (
         <>
           <EmptyState title={emptyCopy.title} description={emptyCopy.description} />
-          {templateLinks}
+          {archived ? null : templateLinks}
         </>
       ) : (
         <DataTable

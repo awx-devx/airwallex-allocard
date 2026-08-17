@@ -10,7 +10,6 @@ import {
   closureHref,
   exportCatalogueHref,
   memberDisplayName,
-  noReportEmpty,
   parseOptionalIdParam,
   projectNotFoundMessage,
   reportToBudgetBar,
@@ -65,7 +64,6 @@ export function ProjectReport() {
 
   const data = report.data
   const memberRows = members.data ?? []
-  const empty = noReportEmpty()
 
   const categoryColumns: DataTableColumn<CategoryRow>[] = [
     {
@@ -156,20 +154,24 @@ export function ProjectReport() {
       <p className="min-w-0 break-words text-sm text-muted-foreground">
         Generated {formatDateTime(data.generatedAt)}
       </p>
-      <DataTable
-        columns={categoryColumns}
-        rows={data.byCategory}
-        getRowId={(row) => row.categoryId}
-        pagination={TABLE_PAGE}
-        empty={empty}
-      />
-      <DataTable
-        columns={memberColumns}
-        rows={data.byMember}
-        getRowId={(row) => row.userId}
-        pagination={TABLE_PAGE}
-        empty={empty}
-      />
+      {data.byCategory.length > 0 ? (
+        <DataTable
+          columns={categoryColumns}
+          rows={data.byCategory}
+          getRowId={(row) => row.categoryId}
+          pagination={TABLE_PAGE}
+          empty={{ title: '', description: '' }}
+        />
+      ) : null}
+      {data.byMember.length > 0 ? (
+        <DataTable
+          columns={memberColumns}
+          rows={data.byMember}
+          getRowId={(row) => row.userId}
+          pagination={TABLE_PAGE}
+          empty={{ title: '', description: '' }}
+        />
+      ) : null}
     </div>
   )
 }

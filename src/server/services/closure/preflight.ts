@@ -16,6 +16,7 @@ import { Permission } from '@/shared/enums/permissions'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
 import { TransactionStatus } from '@/shared/enums/transactionStatus'
 import { TransactionType } from '@/shared/enums/transactionType'
+import { formatMoney } from '@/lib/money'
 import type { ClosureBlockingItem, ClosurePreflight } from '@/shared/types/closure'
 
 const AUTH_TYPES: ReadonlySet<string> = new Set([
@@ -26,7 +27,7 @@ const AUTH_TYPES: ReadonlySet<string> = new Set([
 const LIST_PAGE_SIZE = 100
 
 function moneySummary(amount: number, currency: string): string {
-  return `${amount} ${currency}`
+  return formatMoney({ amount, currency })
 }
 
 /**

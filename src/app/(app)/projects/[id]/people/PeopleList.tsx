@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useCardholders, useProjectCards } from '@/client/hooks/useCards'
 import { useAccessHistory, useProjectMembers, useRemoveMember } from '@/client/hooks/useMembers'
+import { useProject } from '@/client/hooks/useProjects'
 import { useCan } from '@/client/lib/permissions/useCan'
 import {
   addMemberDenialMessage,
@@ -18,6 +19,7 @@ import {
   SCOPE_LEVEL_LABELS,
   toAccessHistoryTimelineItem,
 } from '@/client/lib/access'
+import { isProjectArchived } from '@/client/lib/reports'
 import { EditMemberSheet } from '@/app/(app)/projects/[id]/people/EditMemberSheet'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
@@ -54,6 +56,7 @@ export function PeopleList() {
   const id = typeof raw === 'string' ? raw : Array.isArray(raw) ? (raw[0] ?? '') : ''
   const router = useRouter()
   const members = useProjectMembers(id)
+  const project = useProject(id)
   const cards = useProjectCards(id, { page: 1, pageSize: 100 })
   const cardholders = useCardholders({ page: 1, pageSize: 100 })
   const history = useAccessHistory(id)
@@ -72,6 +75,7 @@ export function PeopleList() {
   }
 
   const canManage = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
+  const archived = isProjectArchived(project.data?.status ?? '')
   const cardItems = cards.data?.items ?? []
   const holderItems = cardholders.data?.items ?? []
   const historyItems = (history.data ?? []).map(toAccessHistoryTimelineItem)
@@ -133,6 +137,9 @@ export function PeopleList() {
       id: 'actions',
       header: 'Actions',
       cell: (row) => {
+        if (archived) {
+          return null
+        }
         const lastManager = isLastAccessManager(members.data ?? [], row.userId, now)
         return (
           <div className="flex flex-wrap gap-2">
@@ -180,7 +187,7 @@ export function PeopleList() {
         </Alert>
       ) : null}
       <div className="flex flex-wrap gap-2">
-        <AddMemberControl projectId={id} />
+        {archived ? null : <AddMemberControl projectId={id} />}
       </div>
       <DataTable
         columns={columns}
@@ -207,9 +214,10 @@ export function PeopleList() {
         empty={{
           title: 'No members yet',
           description: 'Add someone with a role and scope.',
-          action: canManage
-            ? { label: 'Add member', onClick: () => router.push(addMemberHref(id)) }
-            : undefined,
+          action:
+            canManage && !archived
+              ? { label: 'Add member', onClick: () => router.push(addMemberHref(id)) }
+              : undefined,
         }}
       />
       <div className="flex min-w-0 flex-col gap-2">

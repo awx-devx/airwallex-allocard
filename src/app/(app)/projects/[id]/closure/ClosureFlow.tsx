@@ -15,7 +15,6 @@ import {
   CLOSURE_STEPS,
   SETTLE_POLL_MS,
   archiveConfirm,
-  archivedProjectMessage,
   blockerHref,
   canClickComplete,
   canClickStart,
@@ -28,6 +27,7 @@ import {
   completeClosureInput,
   finalReportHref,
   finalReportLink,
+  formatBlockerSummary,
   isProjectArchived,
   isProjectCloseable,
   isProjectClosing,
@@ -103,9 +103,6 @@ export function ClosureFlow() {
   if (isProjectArchived(status)) {
     return (
       <div className="flex min-w-0 flex-col gap-4">
-        <Alert>
-          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
-        </Alert>
         <Link href={finalReportHref(id)} className={buttonVariants({ variant: 'ghost' })}>
           {finalReportLink()}
         </Link>
@@ -155,7 +152,6 @@ export function ClosureFlow() {
           if (!open) setConfirm(null)
         }}
         title={archiveCopy.title}
-        description={archiveCopy.prompt}
         confirmLabel={archiveCopy.confirmLabel}
         variant="destructive"
         typeToConfirm={{ phrase: archiveCopy.phrase, prompt: archiveCopy.prompt }}
@@ -203,43 +199,47 @@ export function ClosureFlow() {
           permission={Permission.PROJECT_CLOSE}
           fallback={<p className="text-sm">{closeProjectDenialMessage()}</p>}
         >
-          <StepWizard
-            steps={[...CLOSURE_STEPS]}
-            activeStepId="PREFLIGHT"
-            nextLabel={startClosureLabel()}
-            isStepValid={() => canClickStart({ projectStatus: status, canStart, archived: false })}
-            onNext={() => {
-              setActionError(null)
-              void start.mutateAsync({ id }).catch((error: unknown) => {
-                setActionError(isApiError(error) ? error.message : 'Unable to start closure')
-              })
-            }}
-            onBack={() => {}}
-          >
-            <div className="flex min-w-0 flex-col gap-4">
-              {canStart ? (
-                <p className="min-w-0 break-words text-sm">
-                  Start will freeze remaining non-CLOSED cards.
-                </p>
-              ) : (
-                <>
-                  <h2 className="text-sm font-medium">{closureBlockedHeading()}</h2>
-                  <ul className="flex min-w-0 flex-col gap-2">
-                    {blockers.map((item) => (
-                      <li key={`${item.subjectType}-${item.subjectId}`}>
-                        <Link
-                          href={blockerHref(item, id)}
-                          className="min-w-0 break-words underline-offset-4 hover:underline"
-                        >
-                          {item.summary}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          </StepWizard>
+          <div className="[&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
+            <StepWizard
+              steps={[...CLOSURE_STEPS]}
+              activeStepId="PREFLIGHT"
+              nextLabel={startClosureLabel()}
+              isStepValid={() =>
+                canClickStart({ projectStatus: status, canStart, archived: false })
+              }
+              onNext={() => {
+                setActionError(null)
+                void start.mutateAsync({ id }).catch((error: unknown) => {
+                  setActionError(isApiError(error) ? error.message : 'Unable to start closure')
+                })
+              }}
+              onBack={() => {}}
+            >
+              <div className="flex min-w-0 flex-col gap-4">
+                {canStart ? (
+                  <p className="min-w-0 break-words text-sm">
+                    Start will freeze remaining non-CLOSED cards.
+                  </p>
+                ) : (
+                  <>
+                    <h2 className="text-sm font-medium">{closureBlockedHeading()}</h2>
+                    <ul className="flex min-w-0 flex-col gap-2">
+                      {blockers.map((item) => (
+                        <li key={`${item.subjectType}-${item.subjectId}`}>
+                          <Link
+                            href={blockerHref(item, id)}
+                            className="min-w-0 break-words underline underline-offset-4"
+                          >
+                            {formatBlockerSummary(item.summary)}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            </StepWizard>
+          </div>
         </PermissionGate>
       </div>
     )
@@ -272,53 +272,55 @@ export function ClosureFlow() {
           permission={Permission.PROJECT_CLOSE}
           fallback={<p className="text-sm">{closeProjectDenialMessage()}</p>}
         >
-          <StepWizard
-            steps={[...CLOSURE_STEPS]}
-            activeStepId={closureActiveStep('CLOSING', currentStep)}
-            nextLabel={closeCardsAndArchiveLabel()}
-            isStepValid={() =>
-              canClickComplete({ projectStatus: 'CLOSING', steps, archived: false })
-            }
-            onNext={() => setConfirm('close')}
-            onBack={() => {}}
-          >
-            <div className="flex min-w-0 flex-col gap-4">
-              {CLOSURE_STEPS.map((step) => {
-                const stepStatus = stepStatusOf(steps, step.id)
-                return (
-                  <div key={step.id} className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="text-sm">{step.label}</span>
-                    {stepStatus !== undefined ? (
-                      <Badge variant="outline">{stepStatus}</Badge>
-                    ) : null}
-                  </div>
-                )
-              })}
-              {settleWaiting ? (
-                <Alert>
-                  <AlertDescription className="flex min-w-0 flex-col gap-2">
-                    <span>{settleWaitingMessage()}</span>
-                    {settleStep?.detail ? (
-                      <span className="min-w-0 break-words">{settleStep.detail}</span>
-                    ) : null}
-                    <Link
-                      href={transactionListHref({ projectId: id, status: 'AUTHORIZED' })}
-                      className={buttonVariants({ variant: 'ghost' })}
-                    >
-                      Transactions
-                    </Link>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => void closureStatus.refetch()}
-                    >
-                      Refresh
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              ) : null}
-            </div>
-          </StepWizard>
+          <div className="[&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
+            <StepWizard
+              steps={[...CLOSURE_STEPS]}
+              activeStepId={closureActiveStep('CLOSING', currentStep)}
+              nextLabel={closeCardsAndArchiveLabel()}
+              isStepValid={() =>
+                canClickComplete({ projectStatus: 'CLOSING', steps, archived: false })
+              }
+              onNext={() => setConfirm('close')}
+              onBack={() => {}}
+            >
+              <div className="flex min-w-0 flex-col gap-4">
+                {CLOSURE_STEPS.map((step) => {
+                  const stepStatus = stepStatusOf(steps, step.id)
+                  return (
+                    <div key={step.id} className="flex min-w-0 flex-wrap items-center gap-2">
+                      <span className="text-sm">{step.label}</span>
+                      {stepStatus !== undefined ? (
+                        <Badge variant="outline">{stepStatus}</Badge>
+                      ) : null}
+                    </div>
+                  )
+                })}
+                {settleWaiting ? (
+                  <Alert>
+                    <AlertDescription className="flex min-w-0 flex-col gap-2">
+                      <span>{settleWaitingMessage()}</span>
+                      {settleStep?.detail ? (
+                        <span className="min-w-0 break-words">{settleStep.detail}</span>
+                      ) : null}
+                      <Link
+                        href={transactionListHref({ projectId: id, status: 'AUTHORIZED' })}
+                        className={buttonVariants({ variant: 'ghost' })}
+                      >
+                        Transactions
+                      </Link>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => void closureStatus.refetch()}
+                      >
+                        Refresh
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
+              </div>
+            </StepWizard>
+          </div>
         </PermissionGate>
         {confirms}
       </div>

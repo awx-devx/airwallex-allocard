@@ -157,6 +157,7 @@ export {
   finalReportHref,
   finalReportLink,
   finalReportMissingMessage,
+  formatBlockerSummary,
   holdsMemberManage,
   holdsProjectClose,
   holdsReportExport,
