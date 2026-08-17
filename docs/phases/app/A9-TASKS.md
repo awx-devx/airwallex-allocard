@@ -482,7 +482,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.2 — Report catalogue + exports
 
-- [ ] **A9.2** — `/reports` catalogue Links; streamed CSV without blocking
+- [x] **A9.2** — `/reports` catalogue Links; streamed CSV without blocking
   - **Files:**
     - `src/app/(app)/reports/page.tsx` (replace placeholder)
     - `src/app/(app)/reports/ReportCatalogue.tsx` (`'use client'`)
@@ -497,7 +497,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** stack. Toolbar wrap. No `md:grid`. No Sheet. Export `Alert` not `hidden`. Filters wrap.
   - **Pattern:** A1-equivalent **A1.5** `src/app/(onboarding)/onboarding/page.tsx` (first Track A list). Copy A8.3 `src/app/(app)/transactions/TransactionList.tsx` toolbar wrap + URL filters. Hooks: `useExportBudget` / `useExportTransactions` / `useExportCards` / `useExportAudit` in `src/client/hooks/useReports.ts` (B9 `exportContracts`). `DateRangePicker` F3.5. Access-reviews Link: A3.8 route already exists.
   - **Accept:** `pnpm verify`. `ReportCatalogue.tsx` contains `useExportBudget` and does **not** contain `downloadExport`, `fetch(`, `call(`, `parseFloat`, or `type="number"`. Export pending does not unmount the catalogue. 375px and 768px: no page-level horizontal scrollbar; Organization / Access reviews / export Buttons reachable; filters wrap. Menu/Sheet still works below `md`.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Catalogue wrap-Links (Organization / Project when selected / View in audit / Access reviews). Four F1 export mutates; only the in-flight kind disables. `usePermissions` projects for `holdsReportExport` (me has no projects[]). `pnpm verify` green (1767 tests).
 
 ### A9.3 — Project budget versus actual
 

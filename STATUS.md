@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A9 — Reports & closure
-**Active task:** A9.2 — Report catalogue + exports
-**Last green `pnpm verify`:** 2026-08-17 (A9.1)
+**Active task:** A9.3 — Project budget versus actual
+**Last green `pnpm verify`:** 2026-08-17 (A9.2)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | in progress  | 2 / 10  |
+| A     | A9 Reports & closure       | in progress  | 3 / 10  |
 
-A9 **in progress**. Policies locked; A9.1 chrome done. Next is A9.2 report catalogue. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A9 **in progress**. Policies locked; A9.2 catalogue done. Next is A9.3 project report. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9.2 done (2026-08-17).** `/reports` catalogue wrap-Links + four F1 CSV exports; pending Alert does not unmount the page. `pnpm verify` green (1767 tests). Next: **A9.3** project budget versus actual.
 
 **A9.1 done (2026-08-17).** SideNav Audit after Reports, then Roles. Placeholders `/reports`, `/reports/organization`, `/reports/project/[id]`, `/audit`, `/projects/[id]/closure`, `/projects/[id]/report/final`. Aside still `hidden md:flex`. `pnpm verify` green (1767 tests). Next: **A9.2** report catalogue + exports.
 
