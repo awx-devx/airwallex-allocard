@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A9 — Reports & closure
-**Active task:** A9.6 — Closure wizard
-**Last green `pnpm verify`:** 2026-08-17 (A9.5)
+**Active task:** A9.7 — Complete confirms + final report
+**Last green `pnpm verify`:** 2026-08-17 (A9.6)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | in progress  | 6 / 10  |
+| A     | A9 Reports & closure       | in progress  | 7 / 10  |
 
-A9 **in progress**. Policies locked; A9.5 audit log done. Next is A9.6 closure wizard. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A9 **in progress**. Policies locked; A9.6 closure wizard done. Next is A9.7 final report. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9.6 done (2026-08-17).** `/projects/[id]/closure` StepWizard; blockers link; resume; SETTLE poll; CLOSE then ARCHIVE confirms. ACTIVE does not call `useClosureStatus` with a real id. `pnpm verify` green (1767 tests). Next: **A9.7** final report.
 
 **A9.5 done (2026-08-17).** `/audit` URL filters, actorType chips, Diff Sheet, cursor Load more. No `useProjectAudit`. `pnpm verify` green (1767 tests). Next: **A9.6** closure wizard.
 

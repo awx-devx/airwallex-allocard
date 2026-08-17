@@ -557,7 +557,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.6 — Closure wizard (preflight, start, resume, settle)
 
-- [ ] **A9.6** — `/projects/[id]/closure` StepWizard; blockers link; resumable
+- [x] **A9.6** — `/projects/[id]/closure` StepWizard; blockers link; resumable
   - **Files:**
     - `src/app/(app)/projects/[id]/closure/page.tsx` (replace placeholder)
     - `src/app/(app)/projects/[id]/closure/ClosureFlow.tsx` (`'use client'`)
@@ -572,7 +572,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** `StepWizard` rail wrap (already). Body **stack** `flex flex-col gap-4 min-w-0`. No page `md:grid`. Confirms are **Dialog**, not a second page. Blocker list stack, not `hidden`. Next / confirm reachable.
   - **Pattern:** A1-equivalent **A1.6** `src/app/(onboarding)/onboarding/create-organization/page.tsx` (first Track A form). Copy A2.4–A2.7 `src/app/(app)/projects/new/` `StepWizard` + `nextLabel`. Confirms: A5.5 `src/app/(app)/cards/[id]/CardDetail.tsx` type-to-confirm `CLOSE`. Hooks: `useClosurePreflight` / `useClosureStatus` / `useStartClosure` / `useCompleteClosure` in `src/client/hooks/useReports.ts` (B9 `closureContracts`). Freeze UX: A5.5 (link out, do not duplicate).
   - **Accept:** `pnpm verify`. `ClosureFlow.tsx` contains `useClosurePreflight` and `StepWizard` and `blockerHref` and does **not** contain `useTransitionProject`, `useCloseCard`, `usePanToken`, `parseFloat`, or `type="number"`. ACTIVE path does not call `useClosureStatus` with a real id. `canStart === false` disables Start. 375px and 768px: no page-level horizontal scrollbar; step rail wraps; blocker Links + Next / confirm reachable by vertical scroll (not `hidden`); Menu/Sheet still works; workspace tabs still wrap and still six.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Guided StepWizard; ACTIVE uses preflight only (`useClosureStatus` id `''`); CLOSING resumes + SETTLE poll; CLOSE then ARCHIVE confirms then complete. `pnpm verify` green (1767 tests).
 
 ### A9.7 — Complete confirms + final report
 
