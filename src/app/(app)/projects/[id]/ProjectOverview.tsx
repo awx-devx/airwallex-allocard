@@ -12,6 +12,7 @@ import { useProjectActivity } from '@/client/hooks/useReports'
 import { useRequests } from '@/client/hooks/useRequests'
 import { accessReviewListHref, peopleHref } from '@/client/lib/access'
 import { draftWizardHref, toTimelineItem } from '@/client/lib/projects'
+import { closureHref, finalReportHref } from '@/client/lib/reports'
 import { ErrorState, shouldShowErrorRetry } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
@@ -104,7 +105,13 @@ export function ProjectOverview() {
 
   const status = project.data?.status
   const statusHref =
-    status === ProjectStatus.DRAFT ? draftWizardHref(id) : `/projects/${id}/activity`
+    status === ProjectStatus.CLOSING
+      ? closureHref(id)
+      : status === ProjectStatus.ARCHIVED || status === ProjectStatus.CLOSED
+        ? finalReportHref(id)
+        : status === ProjectStatus.DRAFT
+          ? draftWizardHref(id)
+          : `/projects/${id}/activity`
   const pendingRows = (requests.data?.items ?? []).filter(
     (row) => row.status === PurchaseRequestStatus.PENDING,
   )

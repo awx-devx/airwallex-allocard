@@ -16,6 +16,16 @@ import {
   projectSortToSorting,
   sortingToProjectSort,
 } from '@/client/lib/projects'
+import {
+  closeProjectLink,
+  closureHref,
+  finalReportHref,
+  finalReportLink,
+  isProjectArchived,
+  isProjectCloseable,
+  isProjectClosing,
+  resumeClosureLink,
+} from '@/client/lib/reports'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
@@ -33,6 +43,7 @@ import {
 } from '@/components/ui/select'
 import { formatDate } from '@/lib/dates'
 import { permissionForTransition } from '@/shared/projectLifecycle'
+import { Permission } from '@/shared/enums/permissions'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { Project } from '@/shared/types/project'
 
@@ -173,19 +184,41 @@ export function ProjectList() {
             </PermissionGate>
           ) : null}
           {row.status === ProjectStatus.CLOSED ? (
-            <PermissionGate
-              projectId={row.id}
-              permission={permissionForTransition(ProjectStatus.ARCHIVED)}
-            >
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => void runTransition(row.id, ProjectStatus.ARCHIVED)}
+            <>
+              <PermissionGate
+                projectId={row.id}
+                permission={permissionForTransition(ProjectStatus.ARCHIVED)}
               >
-                Archive
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void runTransition(row.id, ProjectStatus.ARCHIVED)}
+                >
+                  Archive
+                </Button>
+              </PermissionGate>
+              <Button asChild size="sm" variant="outline">
+                <Link href={finalReportHref(row.id)}>{finalReportLink()}</Link>
+              </Button>
+            </>
+          ) : null}
+          {isProjectCloseable(row.status) ? (
+            <PermissionGate projectId={row.id} permission={Permission.PROJECT_CLOSE}>
+              <Button asChild size="sm" variant="outline">
+                <Link href={closureHref(row.id)}>{closeProjectLink()}</Link>
               </Button>
             </PermissionGate>
+          ) : null}
+          {isProjectClosing(row.status) ? (
+            <Button asChild size="sm" variant="outline">
+              <Link href={closureHref(row.id)}>{resumeClosureLink()}</Link>
+            </Button>
+          ) : null}
+          {isProjectArchived(row.status) ? (
+            <Button asChild size="sm" variant="outline">
+              <Link href={finalReportHref(row.id)}>{finalReportLink()}</Link>
+            </Button>
           ) : null}
         </div>
       ),

@@ -7,6 +7,17 @@ import { type ReactNode, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useTransitionProject } from '@/client/hooks/useProjects'
 import { draftWizardHref, projectFromListCache, WORKSPACE_TAB_HREFS } from '@/client/lib/projects'
+import {
+  archivedProjectMessage,
+  closeProjectLink,
+  closureHref,
+  finalReportHref,
+  finalReportLink,
+  isProjectArchived,
+  isProjectCloseable,
+  isProjectClosing,
+  resumeClosureLink,
+} from '@/client/lib/reports'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -17,6 +28,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { permissionForTransition } from '@/shared/projectLifecycle'
 import { ErrorCode } from '@/shared/enums/errors'
+import { Permission } from '@/shared/enums/permissions'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { Project } from '@/shared/types/project'
 
@@ -106,23 +118,50 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
               </PermissionGate>
             ) : null}
             {header.status === ProjectStatus.CLOSED ? (
-              <PermissionGate
-                projectId={id}
-                permission={permissionForTransition(ProjectStatus.ARCHIVED)}
-              >
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => void runTransition(ProjectStatus.ARCHIVED)}
+              <>
+                <PermissionGate
+                  projectId={id}
+                  permission={permissionForTransition(ProjectStatus.ARCHIVED)}
                 >
-                  Archive
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => void runTransition(ProjectStatus.ARCHIVED)}
+                  >
+                    Archive
+                  </Button>
+                </PermissionGate>
+                <Button asChild size="sm" variant="outline">
+                  <Link href={finalReportHref(id)}>{finalReportLink()}</Link>
+                </Button>
+              </>
+            ) : null}
+            {isProjectCloseable(header.status) ? (
+              <PermissionGate projectId={id} permission={Permission.PROJECT_CLOSE}>
+                <Button asChild size="sm" variant="outline">
+                  <Link href={closureHref(id)}>{closeProjectLink()}</Link>
                 </Button>
               </PermissionGate>
+            ) : null}
+            {isProjectClosing(header.status) ? (
+              <Button asChild size="sm" variant="outline">
+                <Link href={closureHref(id)}>{resumeClosureLink()}</Link>
+              </Button>
+            ) : null}
+            {isProjectArchived(header.status) ? (
+              <Button asChild size="sm" variant="outline">
+                <Link href={finalReportHref(id)}>{finalReportLink()}</Link>
+              </Button>
             ) : null}
           </div>
         ) : null}
       </div>
+      {header && isProjectArchived(header.status) ? (
+        <Alert>
+          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+        </Alert>
+      ) : null}
       <nav className="flex flex-wrap gap-2" aria-label="Project">
         {WORKSPACE_TAB_HREFS.map((item) => {
           const href = item.href(id)

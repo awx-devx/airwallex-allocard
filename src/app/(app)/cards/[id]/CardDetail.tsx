@@ -64,6 +64,7 @@ import {
   transactionStatusLabel,
   transactionTypeLabel,
 } from '@/client/lib/transactions'
+import { auditListHref, viewInAuditLink } from '@/client/lib/reports'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { CardVisual } from '@/components/patterns/CardVisual'
@@ -477,6 +478,12 @@ export function CardDetail() {
             Project cards
           </Link>
         ) : null}
+        <Link
+          href={auditListHref({ subjectType: 'card', subjectId: id })}
+          className={buttonVariants({ variant: 'ghost' })}
+        >
+          {viewInAuditLink()}
+        </Link>
       </div>
       <CardVisual
         nickName={card.nickName}

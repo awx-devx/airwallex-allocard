@@ -595,7 +595,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.8 — Chrome Links + archived Alert + View in audit
 
-- [ ] **A9.8** — Close / Resume / Final report Links; archived Alert; card audit Link
+- [x] **A9.8** — Close / Resume / Final report Links; archived Alert; card audit Link
   - **Files:**
     - `src/app/(app)/projects/[id]/ProjectWorkspace.tsx` (edit — header actions + archived Alert)
     - `src/app/(app)/projects/ProjectList.tsx` (edit — row actions)
@@ -610,7 +610,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** header actions `flex flex-wrap gap-2`. Overview grid unchanged. Card Link wraps. Archived Alert stack. No new Sheet. No `hidden` Close below `md`.
   - **Pattern:** A1-equivalent **A1.5** (list actions) + **A1.4** (detail Link). Copy A3.1 `ProjectOverview.tsx` tile hrefs. Workspace header: existing Cancel/Launch in `ProjectWorkspace.tsx`. Card Link: A8.6 `CardDetail.tsx` `View in transactions`.
   - **Accept:** `pnpm verify`. `ProjectWorkspace.tsx` still has `hidden` + `md:flex` only in AppShell (this file has no aside). `WORKSPACE_TAB_HREFS` still six. ACTIVE shows Close project Link to `/projects/{id}/closure`. ARCHIVED shows the locked Alert. `CardDetail.tsx` still has no `cvv` / `card_number` / `usePanToken`. 375px and 768px: no page-level horizontal scrollbar; Close / Resume / Final report reachable; overview tiles wrap; Menu/Sheet still works.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** Workspace/list Close / Resume / Final report Links; archived Alert above tabs; Status tile href for CLOSING/CLOSED/ARCHIVED; card View in audit. `pnpm verify` green (1767 tests).
 
 ### A9.9 — Don’t-break + invariant proofs
 
