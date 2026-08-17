@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A9 — Reports & closure
-**Active task:** generate `A9-TASKS.md`
-**Last green `pnpm verify`:** 2026-08-17 (A8 exit)
+**Active task:** A9.0 STOP — review helpers before A9.1
+**Last green `pnpm verify`:** 2026-08-17 (A9.0)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | not started  | —       |
+| A     | A9 Reports & closure       | in progress  | 1 / 10  |
 
-A8 **complete**. Next: generate `A9-TASKS.md`; first A9 work is reports / closure. Do not start A9 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A9 **in progress**. Helpers locked; do not start A9.1 screens until A9.0 is reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9.0 done (2026-08-17).** Helpers in `src/client/lib/reports.ts`. No new contracts; remaining unclamped; MEMBER org report/audit/export do not require `projectId`; complete needs both confirm literals; audit cursor stays out of the URL. Barrel named-exports (clash with A6/A7/A8 `parseOptionalIdParam`). `pnpm verify` green (1767 tests). STOP — review helpers before **A9.1** SideNav / route shells.
+
+**A9-TASKS locked (2026-08-17).** Policies approved: no new contracts; no rebuild of `/settings/access-reviews`; no `/projects/[id]/audit` product URL / `useProjectAudit`; workspace tabs stay six; AppShell collapse stays A2.1 (A9.1 inserts `/audit` after Reports; also placeholders for closure + final report so later Links do not 404); no `useClosureStatus` on ACTIVE; type-to-confirm `CLOSE` then `ARCHIVE`; mixed-currency Alert via approved-sum (no per-row `currency`); exports via F1 hooks only. Next: **A9.1** chrome after helper review. Do not start screens before A9.0 STOP.
 
 **A8 exit (2026-08-17).** Phase exit + `A8-activity.md` review checklist signed off. Auth vs clearing Alerts, vertical lifecycle, actorType chips, decline reason + Why this limit?, B9 activity cursor, MoneyDisplay + billed-as, 375/768 wrap/overflow. Webhook POST tests now sign with `AIRWALLEX_WEBHOOK_SECRET` from the env (route HMAC). `pnpm verify` green (1753 tests). Next: generate `A9-TASKS.md`; first A9 work is reports / closure. Do not start A9 screens before the task file is locked.
 
