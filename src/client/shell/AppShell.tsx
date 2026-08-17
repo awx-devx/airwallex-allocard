@@ -68,14 +68,16 @@ export function AppShell({
   )
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-56 shrink-0 flex-col gap-4 border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm md:flex">
-        <div className="text-sm font-semibold tracking-tight">Allocard</div>
-        {orgSwitcher}
-        <SideNav items={items} />
+    <div className="flex h-dvh overflow-hidden bg-background text-foreground">
+      <aside className="hidden w-56 min-h-0 shrink-0 flex-col gap-4 overflow-hidden border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm md:flex">
+        <div className="shrink-0 text-sm font-semibold tracking-tight">Allocard</div>
+        <div className="shrink-0">{orgSwitcher}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <SideNav items={items} />
+        </div>
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               type="button"
@@ -93,20 +95,24 @@ export function AppShell({
             <UserMenu user={user} onSignOut={onSignOut ?? (() => undefined)} />
           </div>
         </header>
-        <main className="flex-1 p-4">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</main>
       </div>
       <Sheet open={open} onOpenChange={(next) => setMenu({ open: next, at: pathname })}>
         <SheetContent side="left">
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col gap-4 px-4 pb-4">
-            <OrgSwitcher
-              memberships={memberships}
-              activeOrgId={activeOrgId}
-              onSwitch={(id) => setOrgId(id)}
-            />
-            <SideNav items={items} />
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
+            <div className="shrink-0">
+              <OrgSwitcher
+                memberships={memberships}
+                activeOrgId={activeOrgId}
+                onSwitch={(id) => setOrgId(id)}
+              />
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <SideNav items={items} />
+            </div>
           </div>
         </SheetContent>
       </Sheet>

@@ -16,20 +16,35 @@ Do not add `sm:`, `lg:`, `xl:`, or `2xl:` layouts. Do not add container queries.
 
 ### 1. Shell — A2 owns this
 
-`AppShell` currently has a always-visible `w-56` sidebar that overflows a phone. Fix it once in A2, when the shell first appears in product screens. Do not reopen F0 or F3.
+Collapse is done: aside is `hidden md:flex`; a `md:hidden` Menu button opens F3 `Sheet` with the same `SideNav` / `OrgSwitcher`. Do not build a second nav. Do not reopen F0 or F3.
+
+Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The page scrolls inside `main`. Brand + OrgSwitcher stay pinned; if nav items overflow, only the link list scrolls (`overflow-y-auto`, not `overflow-y-scroll`, not F3 `ScrollArea`). `min-h-0` on those flex children is the vertical analogue of pattern 2 — without it, overflow never activates. Do not use `position: sticky`.
 
 ```tsx
-{/* desktop */}
-<aside className="hidden w-56 shrink-0 flex-col md:flex">…existing SideNav…</aside>
+<div className="flex h-dvh overflow-hidden">
+  {/* desktop */}
+  <aside className="hidden w-56 min-h-0 shrink-0 flex-col overflow-hidden md:flex">
+    {/* brand + OrgSwitcher: shrink-0 */}
+    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      {/* existing SideNav */}
+    </div>
+  </aside>
+  <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+    <header className="shrink-0 flex-wrap">…</header>
+    <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</main>
+  </div>
+</div>
 
 {/* narrow */}
 <Button className="md:hidden" aria-label="Open menu" onClick={open}>Menu</Button>
 <Sheet open={open} onOpenChange={setOpen}>
-  <SheetContent side="left">{/* same SideNav, OrgSwitcher */}</SheetContent>
+  <SheetContent side="left">
+    {/* OrgSwitcher shrink-0; same SideNav in min-h-0 flex-1 overflow-y-auto */}
+  </SheetContent>
 </Sheet>
 ```
 
-The header stays. `Sheet` already exists in F3. Do not build a second nav.
+The header stays. `Sheet` already exists in F3. `h-dvh` is a viewport unit, not a second breakpoint.
 
 ### 2. `min-w-0` on every flex child that holds content
 

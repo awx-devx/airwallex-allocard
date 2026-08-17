@@ -18,6 +18,14 @@ Desktop is `md:` (768px). Narrower must work and show everything; it does not ha
 // ✅ table may scroll inside; the page may not
 <div className="overflow-x-auto"><DataTable … /></div>
 
+// ✅ shell chrome stays put; page / nav list scroll inside
+<div className="flex h-dvh overflow-hidden">
+  <aside className="hidden w-56 min-h-0 shrink-0 flex-col overflow-hidden md:flex">
+    <div className="min-h-0 flex-1 overflow-y-auto">{/* SideNav */}</div>
+  </aside>
+  <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
+</div>
+
 // ❌ page overflow
 <div className="flex whitespace-nowrap">
 <div className="min-w-[800px]">
@@ -28,6 +36,7 @@ Desktop is `md:` (768px). Narrower must work and show everything; it does not ha
 - **One breakpoint: `md`.** Do not add `sm:` / `lg:` / `xl:` layouts.
 - **Never `hidden` a control** on narrow unless the same action is in the nav `Sheet` or a wrapping menu.
 - **Shell collapse is A2.** `hidden md:flex` on the aside; `md:hidden` button opens F3 `Sheet` with the existing `SideNav`. Do not build a second nav.
+- **Shell scroll is nested overflow**, not `sticky`. Root `h-dvh overflow-hidden`; `main` and the SideNav list use `min-h-0 flex-1 overflow-y-auto`. Brand + OrgSwitcher stay `shrink-0`.
 - Toolbars and tabs: `flex flex-wrap gap-2`.
 - No `100vw`, no page-level `min-w-[…]`.
 
