@@ -128,9 +128,12 @@ export function AttachReceiptSheet({
               <AlertDescription>{alertMessage}</AlertDescription>
             </Alert>
           ) : null}
+          <Label htmlFor="attach-receipt-file">Attach receipt</Label>
           <input
+            id="attach-receipt-file"
             type="file"
             accept={FILE_ACCEPT}
+            aria-label="Attach receipt"
             disabled={upload.isPending || transactionId === null}
             onChange={(event) => {
               const file = event.target.files?.[0]
