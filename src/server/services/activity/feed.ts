@@ -26,6 +26,7 @@ import { listPurchaseRequestsForFeed } from '@/server/repositories/purchaseReque
 import { listRuleRunsForFeed } from '@/server/repositories/ruleRuns'
 import { listTransactionsForFeed } from '@/server/repositories/transactions'
 import {
+  auditActionFeedSummary,
   purchaseRequestFeedSummary,
   transactionFeedSummary,
 } from '@/server/services/activity/summaries'
@@ -283,7 +284,7 @@ async function collectItems(
         actorId: log.actorId,
         subjectType: log.subjectType,
         subjectId: log.subjectId,
-        summary: truncateSummary(log.action),
+        summary: truncateSummary(auditActionFeedSummary(log.action)),
         payload: {
           action: log.action,
           ...(cardholderUserId !== null ? { cardholderUserId, userId: cardholderUserId } : {}),
@@ -317,7 +318,7 @@ async function collectItems(
         actorId: log.actorId,
         subjectType: log.subjectType,
         subjectId: log.subjectId,
-        summary: truncateSummary(log.action),
+        summary: truncateSummary(auditActionFeedSummary(log.action)),
         payload: {
           action: log.action,
           ...(memberUserId !== null ? { userId: memberUserId } : {}),
@@ -371,7 +372,7 @@ async function collectItems(
         actorId: log.actorId,
         subjectType: log.subjectType,
         subjectId: log.subjectId,
-        summary: truncateSummary(log.action),
+        summary: truncateSummary(auditActionFeedSummary(log.action)),
         payload: { action: log.action },
       })
     }
