@@ -215,7 +215,7 @@ Output `transactionSchema`. Handler also caps `contentBase64.length` at `10 * 10
   subjectType: string min 1,
   subjectId: string min 1,
   summary: string min 1 max 500,
-  payload: Record<string, unknown>     // denormalised facts; do not dump domain docs
+  payload: record                      // denormalised facts; do not dump domain docs
 }
 ```
 
@@ -301,7 +301,7 @@ B8.8 sweep: `status === 'CLEARED' && receiptFileId === null && amount >= 5000` (
 3. Flatten pages. **Display-filter** with `needsReceipt`. Do **not** show API `total` as the queue size (it counts all CLEARED).
 4. EmptyState `noReceiptsEmpty()` only when `!isPending && !hasNextPage && filtered.length === 0`.
 5. DataTable of **filtered** rows. Load more still `fetchNextPage` (user may load more CLEARED rows to reveal more missing). Helper text locked `receiptsLoadMoreHint()` under the table when `hasNextPage`.
-6. Attach: row action opens `Sheet` with `<input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp">` (not `type="number"`). On change: reject via locked copy if `receiptContentType(file.type)` is null or `file.name` empty / > 255; `FileReader.readAsDataURL` → `base64FromDataUrl` → if `contentBase64.length > RECEIPT_MAX_BASE64_CHARS` reject; else `useUploadReceipt().mutate({ id, input: { fileName, contentType, contentBase64 } })`.
+6. Attach: row action opens `Sheet` with a file input (`accept=".pdf,.jpg,.jpeg,.png,.webp"`, not `type="number"`). On change: reject via locked copy if `receiptContentType(file.type)` is null or `file.name` empty / > 255; `FileReader.readAsDataURL` → `base64FromDataUrl` → if `contentBase64.length > RECEIPT_MAX_BASE64_CHARS` reject; else `useUploadReceipt().mutate({ id, input: { fileName, contentType, contentBase64 } })`.
 7. Delete: `ConfirmDialog` locked copy → `useDeleteReceipt({ id })` when `receiptFileId` is a real id (not `'optimistic-receipt'`).
 
 Do not invent OCR, preview, or download.
@@ -410,7 +410,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
     25. `declineReason(failureReason: string | null): string` — string min 1 → as-is; else `No reason recorded.`
     26. `isPendingAuthorization(status: string, types: ReadonlyArray<{ type: string }>): boolean` — `status === 'AUTHORIZED'` and no event `type === 'CLEARING' \|\| type === 'PARTIAL_CLEARING'`.
     27. `isReversalType(type: string): boolean` — `REVERSAL_AUTH` \| `PARTIAL_REVERSAL` \| `CLEARING_REVERSAL`.
-    28. `lifecycleSorted<T extends { transactedAt: string; id: string }>(events: readonly T[]): T[]` — copy, sort `transactedAt` asc then `id` asc. Do not mutate input.
+    28. `lifecycleSorted(events)` — events are objects with `transactedAt` and `id`. Copy, sort `transactedAt` asc then `id` asc. Return a new array. Do not mutate input.
     29. `authorizationAmount(events: ReadonlyArray<{ type: string; amount: number }>): number | null` — last `type === 'AUTHORIZATION'` or `INCREMENTAL_AUTHORIZATION` amount; else null.
     30. `clearingAmount(events: ReadonlyArray<{ type: string; amount: number }>): number | null` — last `CLEARING` or `PARTIAL_CLEARING` amount; else null.
     31. `authClearingDiffer(events: ReadonlyArray<{ type: string; amount: number }>): boolean` — both amounts numbers and `a !== b`.
@@ -554,7 +554,7 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
     1. Receipts page: MEMBER/`projectId` gate like A8.3 using `parseReceiptsSearchParams` / `receiptsListHref`.
     2. `useTransactions({ ...filter, status: 'CLEARED', pageSize: 20 })`. Flatten. `rows = flattened.filter(needsReceipt)`. **Do not** show `total` as the missing count. Hint `receiptsLoadMoreHint()` when `hasNextPage`. Empty per policy §7.
     3. Columns: `transactedAt`, merchant `Link` `transactionHref`, `MoneyDisplay` `colorBySign`, amount vs threshold is already `needsReceipt`. Row action `Attach receipt` opens F3 `Sheet` `side="right"` (not a new page).
-    4. Sheet: `<input type="file" accept=".pdf,image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">`. On file: `receiptContentType(file.type)`; `file.name` min 1 max 255; `FileReader.readAsDataURL` → `base64FromDataUrl` → length vs `RECEIPT_MAX_BASE64_CHARS` → `useUploadReceipt().mutate({ id: row.id, input: { fileName: file.name, contentType, contentBase64 } })`. Errors: locked type/size copy or `error.message`. Close Sheet on success.
+    4. Sheet: file input `accept=".pdf,image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"`. On file: `receiptContentType(file.type)`; `file.name` min 1 max 255; `FileReader.readAsDataURL` → `base64FromDataUrl` → length vs `RECEIPT_MAX_BASE64_CHARS` → `useUploadReceipt().mutate({ id: row.id, input: { fileName: file.name, contentType, contentBase64 } })`. Errors: locked type/size copy or `error.message`. Close Sheet on success.
     5. Detail (A8.4 page): if `needsReceipt` or `receiptFileId` min 1, actions `flex-wrap`: `Attach receipt` same Sheet; `Remove receipt` `ConfirmDialog` when `receiptFileId` min 1 and `!isOptimisticReceiptId` → `useDeleteReceipt({ id })`. `PermissionGate` `transaction.view` on `data.projectId` for attach; delete still offered (API 403 is truth) — wrap delete in `PermissionGate` `card.manage` `subject={{ cardId: data.cardId }}` `projectId={data.projectId}` `denialMessage` from `manageCardDenialMessage()` (cards.ts). Always visible when the row qualifies (disabled + tooltip when denied).
     6. Do not GET/download bytes. Do not OCR. Do not `type="number"`.
   - **Layout:** receipts table inside overflow; toolbar wrap. Upload is **Sheet**, not a stacked inline form that blows 375px. Detail actions wrap. Do not `hidden` Attach below `md`.
