@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** A9 — Reports & closure
-**Active task:** A9.0 STOP — review helpers before A9.1
-**Last green `pnpm verify`:** 2026-08-17 (A9.0)
+**Active task:** A9.2 — Report catalogue + exports
+**Last green `pnpm verify`:** 2026-08-17 (A9.1)
 **Blocked on:** _nothing_
 
 ---
@@ -35,9 +35,9 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A6 Controls & automation   | **complete** | 12 / 12 |
 | A     | A7 Purchase requests       | **complete** | 10 / 10 |
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
-| A     | A9 Reports & closure       | in progress  | 1 / 10  |
+| A     | A9 Reports & closure       | in progress  | 2 / 10  |
 
-A9 **in progress**. Helpers locked; do not start A9.1 screens until A9.0 is reviewed. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A9 **in progress**. Policies locked; A9.1 chrome done. Next is A9.2 report catalogue. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A9.1 done (2026-08-17).** SideNav Audit after Reports, then Roles. Placeholders `/reports`, `/reports/organization`, `/reports/project/[id]`, `/audit`, `/projects/[id]/closure`, `/projects/[id]/report/final`. Aside still `hidden md:flex`. `pnpm verify` green (1767 tests). Next: **A9.2** report catalogue + exports.
 
 **A9.0 done (2026-08-17).** Helpers in `src/client/lib/reports.ts`. No new contracts; remaining unclamped; MEMBER org report/audit/export do not require `projectId`; complete needs both confirm literals; audit cursor stays out of the URL. Barrel named-exports (clash with A6/A7/A8 `parseOptionalIdParam`). `pnpm verify` green (1767 tests). STOP — review helpers before **A9.1** SideNav / route shells.
 

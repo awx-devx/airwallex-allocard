@@ -462,7 +462,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
 
 ### A9.1 — SideNav + route shells
 
-- [ ] **A9.1** — Insert Audit; placeholders so Reports / Audit links do not 404
+- [x] **A9.1** — Insert Audit; placeholders so Reports / Audit links do not 404
   - **Files:**
     - `src/client/shell/AppShell.tsx` (edit — `DEFAULT_NAV` only)
     - `src/app/(app)/reports/page.tsx` (create — placeholder until A9.2)
@@ -478,7 +478,7 @@ Step rail labels (exact): `Pre-flight`, `Freeze`, `Settle`, `Revoke access`, `Cl
   - **Layout:** n/a for placeholders (stack `min-w-0`). Shell collapse unchanged. New Audit href is in the aside at `md` and in the Menu `Sheet` below `md` (same `SideNav`).
   - **Pattern:** A1-equivalent **A1.1** `src/app/(auth)/layout.tsx` (first Track A route chrome — centred column; A9 still uses AppShell). Copy A8.1 `src/client/shell/AppShell.tsx` `DEFAULT_NAV` insert. Collapse already A2.1 — `docs/RESPONSIVENESS.md` §1; do **not** copy A2.1’s aside rewrite. Placeholders: A8.1 `/transactions` pages. Static segment win: A8.1 `transactions/declined/page.tsx` vs `[id]`.
   - **Accept:** `pnpm verify`. `/reports`, `/reports/organization`, `/reports/project/any-id`, `/audit`, `/projects/any-id/closure`, `/projects/any-id/report/final` are not 404. `/reports/organization` is **not** a project-report page. SideNav at 768px shows Reports, then Audit, then Roles; at 375px those labels appear inside the existing Menu Sheet. 375px and 768px: no page-level horizontal scrollbar; Menu/Sheet still works below `md`. Aside still `hidden md:flex`. `AppShell.tsx` does not lose `hidden` or `md:flex`. `SETTINGS_NAV` still four hrefs (no Audit / Reports / Closure). `WORKSPACE_TAB_HREFS` still six.
-  - **Notes:** _{filled in on completion}_
+  - **Notes:** SideNav Audit immediately after Reports, before Roles. Placeholders `/reports`, `/reports/organization`, `/reports/project/[id]`, `/audit`, `/projects/[id]/closure`, `/projects/[id]/report/final`. Static `organization` wins over any `[id]`. Aside still `hidden md:flex`. SETTINGS_NAV four hrefs. WORKSPACE_TAB_HREFS still six. `pnpm verify` green (1767 tests).
 
 ### A9.2 — Report catalogue + exports
 
