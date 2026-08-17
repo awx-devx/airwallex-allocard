@@ -589,20 +589,20 @@ Org `/activity` and project activity render the **full merged feed** (all `Activ
 
 ## Phase exit
 
-- [ ] All tasks checked and committed
-- [ ] `pnpm verify` green
-- [ ] Spec’s review checklist in `A8-activity.md` signed off:
-  - [ ] Authorization versus clearing is unambiguous
-  - [ ] The lifecycle chain is visible on detail views
-  - [ ] Rule-driven entries are visually distinct from human ones
-  - [ ] Declines show a reason and, where applicable, the responsible rule
-  - [ ] Cursor pagination is stable when new items arrive at the head
-  - [ ] Amounts render through F2's helpers, with billing currency shown where it differs
-  - [ ] 375px and 768px: no page-level horizontal scrollbar; filters wrap; tables may scroll internally
-- [ ] `/dev/shell` still works (unchanged collapse)
-- [ ] No new F3 primitive files
-- [ ] No `call()` / `fetch` / `@/server` in `'use client'` screens
-- [ ] `STATUS.md` updated with the next phase (**A9**)
+- [x] All tasks checked and committed
+- [x] `pnpm verify` green
+- [x] Spec’s review checklist in `A8-activity.md` signed off:
+  - [x] Authorization versus clearing is unambiguous
+  - [x] The lifecycle chain is visible on detail views
+  - [x] Rule-driven entries are visually distinct from human ones
+  - [x] Declines show a reason and, where applicable, the responsible rule
+  - [x] Cursor pagination is stable when new items arrive at the head
+  - [x] Amounts render through F2's helpers, with billing currency shown where it differs
+  - [x] 375px and 768px: no page-level horizontal scrollbar; filters wrap; tables may scroll internally
+- [x] `/dev/shell` still works (unchanged collapse)
+- [x] No new F3 primitive files
+- [x] No `call()` / `fetch` / `@/server` in `'use client'` screens
+- [x] `STATUS.md` updated with the next phase (**A9**)
 
 ## Out of scope (do not do in A8)
 

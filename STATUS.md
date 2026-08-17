@@ -2,42 +2,42 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** A8 — Activity & transactions
-**Active task:** _none — A8.8 done. STOP — A8 phase exit. Do not start A9._
-**Last green `pnpm verify`:** 2026-08-17 (A8 QA runtime — 1753 passed)
+**Active phase:** A9 — Reports & closure
+**Active task:** generate `A9-TASKS.md`
+**Last green `pnpm verify`:** 2026-08-17 (A8 exit)
 **Blocked on:** _nothing_
 
 ---
 
 ## Progress
 
-| Track | Phase                      | Status          | Tasks   |
-| ----- | -------------------------- | --------------- | ------- |
-| B     | B0 Foundation              | **complete**    | 13 / 13 |
-| B     | B1 Auth & organisations    | **complete**    | 15 / 15 |
-| B     | B2 Projects                | **complete**    | 12 / 12 |
-| B     | B3 Access control          | **complete**    | 14 / 14 |
-| B     | B4 Budget                  | **complete**    | 16 / 16 |
-| B     | B5 Cards                   | **complete**    | 15 / 15 |
-| B     | B6 Rules engine            | **complete**    | 15 / 15 |
-| B     | B7 Requests & approvals    | **complete**    | 11 / 11 |
-| B     | B8 Money in motion         | **complete**    | 11 / 11 |
-| B     | B9 Reporting & closure     | **complete**    | 11 / 11 |
-| F     | F0 Client foundation       | **complete**    | 17 / 17 |
-| F     | F1 Data layer              | **complete**    | 15 / 15 |
-| F     | F2 Utils                   | **complete**    | 11 / 11 |
-| F     | F3 UI library              | **complete**    | 26 / 26 |
-| A     | A1 Auth & onboarding       | **complete**    | 8 / 8   |
-| A     | A2 Dashboard & projects    | **complete**    | 10 / 10 |
-| A     | A3 People & access         | **complete**    | 10 / 10 |
-| A     | A4 Budget                  | **complete**    | 10 / 10 |
-| A     | A5 Cards                   | **complete**    | 11 / 11 |
-| A     | A6 Controls & automation   | **complete**    | 12 / 12 |
-| A     | A7 Purchase requests       | **complete**    | 10 / 10 |
-| A     | A8 Activity & transactions | **in progress** | 9 / 9   |
-| A     | A9 Reports & closure       | not started     | —       |
+| Track | Phase                      | Status       | Tasks   |
+| ----- | -------------------------- | ------------ | ------- |
+| B     | B0 Foundation              | **complete** | 13 / 13 |
+| B     | B1 Auth & organisations    | **complete** | 15 / 15 |
+| B     | B2 Projects                | **complete** | 12 / 12 |
+| B     | B3 Access control          | **complete** | 14 / 14 |
+| B     | B4 Budget                  | **complete** | 16 / 16 |
+| B     | B5 Cards                   | **complete** | 15 / 15 |
+| B     | B6 Rules engine            | **complete** | 15 / 15 |
+| B     | B7 Requests & approvals    | **complete** | 11 / 11 |
+| B     | B8 Money in motion         | **complete** | 11 / 11 |
+| B     | B9 Reporting & closure     | **complete** | 11 / 11 |
+| F     | F0 Client foundation       | **complete** | 17 / 17 |
+| F     | F1 Data layer              | **complete** | 15 / 15 |
+| F     | F2 Utils                   | **complete** | 11 / 11 |
+| F     | F3 UI library              | **complete** | 26 / 26 |
+| A     | A1 Auth & onboarding       | **complete** | 8 / 8   |
+| A     | A2 Dashboard & projects    | **complete** | 10 / 10 |
+| A     | A3 People & access         | **complete** | 10 / 10 |
+| A     | A4 Budget                  | **complete** | 10 / 10 |
+| A     | A5 Cards                   | **complete** | 11 / 11 |
+| A     | A6 Controls & automation   | **complete** | 12 / 12 |
+| A     | A7 Purchase requests       | **complete** | 10 / 10 |
+| A     | A8 Activity & transactions | **complete** | 9 / 9   |
+| A     | A9 Reports & closure       | not started  | —       |
 
-A8 **in progress**. All tasks checked. Next is **A8 phase exit**. Do not start A9. Visual direction: `docs/VISUAL-DIRECTION.md`.
+A8 **complete**. Next: generate `A9-TASKS.md`; first A9 work is reports / closure. Do not start A9 screens before the task file is locked. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**A8 exit (2026-08-17).** Phase exit + `A8-activity.md` review checklist signed off. Auth vs clearing Alerts, vertical lifecycle, actorType chips, decline reason + Why this limit?, B9 activity cursor, MoneyDisplay + billed-as, 375/768 wrap/overflow. Webhook POST tests now sign with `AIRWALLEX_WEBHOOK_SECRET` from the env (route HMAC). `pnpm verify` green (1753 tests). Next: generate `A9-TASKS.md`; first A9 work is reports / closure. Do not start A9 screens before the task file is locked.
 
 **A8 QA runtime (2026-08-17).** Should-fixes: named attach file input `8428e2a`; card Type humanised `f0e9f5c`; activity audit summaries hide pan_token `0f1c1a6`; seed FX + lifecycle mismatch rows `7744da3`. Seed Member viewer stays OWN — list 403 without a user subject is correct; use Approver/Procurement for PROJECT-scoped MEMBER. Re-run seed to load new txs. Next: **A8 phase exit** — do not start A9. `pnpm verify` green (1753 tests).
 

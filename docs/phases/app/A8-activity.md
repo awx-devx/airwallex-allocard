@@ -38,10 +38,10 @@ Filter bars `flex flex-wrap gap-2`. Transaction `DataTable` scrolls inside. Time
 
 ## Review checklist
 
-- [ ] Authorization versus clearing is unambiguous
-- [ ] The lifecycle chain is visible on detail views
-- [ ] Rule-driven entries are visually distinct from human ones
-- [ ] Declines show a reason and, where applicable, the responsible rule
-- [ ] Cursor pagination is stable when new items arrive at the head
-- [ ] Amounts render through F2's helpers, with billing currency shown where it differs
-- [ ] 375px and 768px: no page-level horizontal scrollbar; filters wrap; tables may scroll internally
+- [x] Authorization versus clearing is unambiguous
+- [x] The lifecycle chain is visible on detail views
+- [x] Rule-driven entries are visually distinct from human ones
+- [x] Declines show a reason and, where applicable, the responsible rule
+- [x] Cursor pagination is stable when new items arrive at the head
+- [x] Amounts render through F2's helpers, with billing currency shown where it differs
+- [x] 375px and 768px: no page-level horizontal scrollbar; filters wrap; tables may scroll internally

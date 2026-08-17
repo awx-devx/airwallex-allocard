@@ -40,7 +40,8 @@ function buildWebhookRequest(
     // omit signature
   } else {
     headers[WEBHOOK_SIGNATURE_HEADER] =
-      options.signature ?? sign(body, timestamp, options.secret ?? SECRET)
+      options.signature ??
+      sign(body, timestamp, options.secret ?? process.env.AIRWALLEX_WEBHOOK_SECRET ?? SECRET)
   }
   if (options.testSecretHeader !== undefined) {
     headers[WEBHOOK_TEST_SECRET_HEADER] = options.testSecretHeader
