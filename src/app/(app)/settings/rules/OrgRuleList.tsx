@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects } from '@/client/hooks/useProjects'
 import { useEnableRule, useRules } from '@/client/hooks/useRules'
@@ -186,10 +187,14 @@ export function OrgRuleList() {
         <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
           {allowed ? (
             <Button asChild>
-              <Link href={newRuleHref()}>New</Link>
+              <Link href={newRuleHref()}>
+                <PlusIcon className="size-4 shrink-0" aria-hidden />
+                New
+              </Link>
             </Button>
           ) : (
             <Button type="button" disabled>
+              <PlusIcon className="size-4 shrink-0" aria-hidden />
               New
             </Button>
           )}

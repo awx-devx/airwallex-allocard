@@ -1,3 +1,4 @@
+import { CircleAlertIcon, RefreshCwIcon } from 'lucide-react'
 import type { ErrorStateProps } from '@/components/patterns/types'
 import { Button } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
@@ -18,9 +19,13 @@ export function ErrorState({ message, onRetry, code }: ErrorStateProps) {
   const showRetry = shouldShowErrorRetry(code, typeof onRetry === 'function')
   return (
     <div role="alert" className="space-y-3 rounded-md border border-border p-4">
-      <p className="text-sm">{message}</p>
+      <div className="flex items-start gap-2">
+        <CircleAlertIcon className="size-4 shrink-0" aria-hidden />
+        <p className="text-sm">{message}</p>
+      </div>
       {showRetry ? (
         <Button type="button" variant="outline" onClick={onRetry}>
+          <RefreshCwIcon className="size-4 shrink-0" aria-hidden />
           Retry
         </Button>
       ) : null}

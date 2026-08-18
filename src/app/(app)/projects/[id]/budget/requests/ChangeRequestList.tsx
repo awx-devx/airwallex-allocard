@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { CheckIcon, XIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import {
   useBudget,
@@ -167,6 +168,7 @@ export function ChangeRequestList() {
                 disabled={!canEdit}
                 onClick={() => setDecideDialog({ id: row.id, decision: 'APPROVE' })}
               >
+                <CheckIcon className="size-4 shrink-0" aria-hidden />
                 Approve
               </Button>
             </PermissionGateView>
@@ -178,6 +180,7 @@ export function ChangeRequestList() {
                 disabled={!canEdit}
                 onClick={() => setDecideDialog({ id: row.id, decision: 'REJECT' })}
               >
+                <XIcon className="size-4 shrink-0" aria-hidden />
                 Reject
               </Button>
             </PermissionGateView>

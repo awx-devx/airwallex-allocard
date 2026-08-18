@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { ReactNode } from 'react'
+import { FileTextIcon, PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects } from '@/client/hooks/useProjects'
 import { useRequests } from '@/client/hooks/useRequests'
@@ -52,6 +53,7 @@ function NewRequestControl({ projectId }: { projectId: string }) {
   if (!ready) {
     return (
       <Button type="button" disabled>
+        <PlusIcon className="size-4 shrink-0" aria-hidden />
         New request
       </Button>
     )
@@ -60,10 +62,14 @@ function NewRequestControl({ projectId }: { projectId: string }) {
     <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
       {allowed ? (
         <Button asChild>
-          <Link href={newRequestHref(projectId)}>New request</Link>
+          <Link href={newRequestHref(projectId)}>
+            <PlusIcon className="size-4 shrink-0" aria-hidden />
+            New request
+          </Link>
         </Button>
       ) : (
         <Button type="button" disabled>
+          <PlusIcon className="size-4 shrink-0" aria-hidden />
           New request
         </Button>
       )}
@@ -223,7 +229,11 @@ function RequestListForProject({
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
         {archivedAlert}
-        <EmptyState title={empty.title} description={empty.description} />
+        <EmptyState
+          title={empty.title}
+          description={empty.description}
+          illustration={<FileTextIcon className="size-8 text-muted-foreground" aria-hidden />}
+        />
       </div>
     )
   }

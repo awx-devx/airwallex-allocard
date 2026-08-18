@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { type ReactNode, useState } from 'react'
+import { ArchiveIcon, BanIcon, FileChartColumnIcon, PlayIcon, RocketIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useTransitionProject } from '@/client/hooks/useProjects'
 import { draftWizardHref, projectFromListCache, WORKSPACE_TAB_HREFS } from '@/client/lib/projects'
+import { chromeTabIcon } from '@/client/shell/navIcons'
 import {
   archivedProjectMessage,
   closeProjectLink,
@@ -85,7 +87,10 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
             {header.status === ProjectStatus.DRAFT ? (
               <>
                 <Button asChild size="sm" variant="outline">
-                  <Link href={draftWizardHref(id)}>Resume</Link>
+                  <Link href={draftWizardHref(id)}>
+                    <PlayIcon className="size-4 shrink-0" aria-hidden />
+                    Resume
+                  </Link>
                 </Button>
                 <PermissionGate
                   projectId={id}
@@ -113,6 +118,7 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
                   variant="outline"
                   onClick={() => void runTransition(ProjectStatus.ACTIVE)}
                 >
+                  <RocketIcon className="size-4 shrink-0" aria-hidden />
                   Launch
                 </Button>
               </PermissionGate>
@@ -129,29 +135,42 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
                     variant="outline"
                     onClick={() => void runTransition(ProjectStatus.ARCHIVED)}
                   >
+                    <ArchiveIcon className="size-4 shrink-0" aria-hidden />
                     Archive
                   </Button>
                 </PermissionGate>
                 <Button asChild size="sm" variant="outline">
-                  <Link href={finalReportHref(id)}>{finalReportLink()}</Link>
+                  <Link href={finalReportHref(id)}>
+                    <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
+                    {finalReportLink()}
+                  </Link>
                 </Button>
               </>
             ) : null}
             {isProjectCloseable(header.status) ? (
               <PermissionGate projectId={id} permission={Permission.PROJECT_CLOSE}>
                 <Button asChild size="sm" variant="outline">
-                  <Link href={closureHref(id)}>{closeProjectLink()}</Link>
+                  <Link href={closureHref(id)}>
+                    <BanIcon className="size-4 shrink-0" aria-hidden />
+                    {closeProjectLink()}
+                  </Link>
                 </Button>
               </PermissionGate>
             ) : null}
             {isProjectClosing(header.status) ? (
               <Button asChild size="sm" variant="outline">
-                <Link href={closureHref(id)}>{resumeClosureLink()}</Link>
+                <Link href={closureHref(id)}>
+                  <PlayIcon className="size-4 shrink-0" aria-hidden />
+                  {resumeClosureLink()}
+                </Link>
               </Button>
             ) : null}
             {isProjectArchived(header.status) ? (
               <Button asChild size="sm" variant="outline">
-                <Link href={finalReportHref(id)}>{finalReportLink()}</Link>
+                <Link href={finalReportHref(id)}>
+                  <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
+                  {finalReportLink()}
+                </Link>
               </Button>
             ) : null}
           </div>
@@ -169,12 +188,14 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
           const active = overview
             ? pathname === href
             : pathname === href || pathname.startsWith(`${href}/`)
+          const Icon = chromeTabIcon(item.tab)
           return (
             <Link
               key={item.tab}
               href={href}
               className={cn(buttonVariants({ variant: 'ghost' }), active && 'bg-accent')}
             >
+              {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
               {item.tab}
             </Link>
           )

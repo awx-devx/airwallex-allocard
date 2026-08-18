@@ -3,6 +3,14 @@
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import {
+  ArchiveIcon,
+  BanIcon,
+  FileChartColumnIcon,
+  PlayIcon,
+  PlusIcon,
+  RocketIcon,
+} from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects, useTransitionProject } from '@/client/hooks/useProjects'
 import { useMe, usePermissions } from '@/client/hooks/useSession'
@@ -61,10 +69,14 @@ function CreateProjectControl() {
     <PermissionGateView allowed={allowed} denialMessage={createProjectDenialMessage()}>
       {allowed ? (
         <Button asChild>
-          <Link href="/projects/new">Create project</Link>
+          <Link href="/projects/new">
+            <PlusIcon className="size-4 shrink-0" aria-hidden />
+            Create project
+          </Link>
         </Button>
       ) : (
         <Button type="button" disabled>
+          <PlusIcon className="size-4 shrink-0" aria-hidden />
           Create project
         </Button>
       )}
@@ -151,7 +163,10 @@ export function ProjectList() {
           {row.status === ProjectStatus.DRAFT ? (
             <>
               <Button asChild size="sm" variant="outline">
-                <Link href={draftWizardHref(row.id)}>Resume</Link>
+                <Link href={draftWizardHref(row.id)}>
+                  <PlayIcon className="size-4 shrink-0" aria-hidden />
+                  Resume
+                </Link>
               </Button>
               <PermissionGate
                 projectId={row.id}
@@ -179,6 +194,7 @@ export function ProjectList() {
                 variant="outline"
                 onClick={() => void runTransition(row.id, ProjectStatus.ACTIVE)}
               >
+                <RocketIcon className="size-4 shrink-0" aria-hidden />
                 Launch
               </Button>
             </PermissionGate>
@@ -195,29 +211,42 @@ export function ProjectList() {
                   variant="outline"
                   onClick={() => void runTransition(row.id, ProjectStatus.ARCHIVED)}
                 >
+                  <ArchiveIcon className="size-4 shrink-0" aria-hidden />
                   Archive
                 </Button>
               </PermissionGate>
               <Button asChild size="sm" variant="outline">
-                <Link href={finalReportHref(row.id)}>{finalReportLink()}</Link>
+                <Link href={finalReportHref(row.id)}>
+                  <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
+                  {finalReportLink()}
+                </Link>
               </Button>
             </>
           ) : null}
           {isProjectCloseable(row.status) ? (
             <PermissionGate projectId={row.id} permission={Permission.PROJECT_CLOSE}>
               <Button asChild size="sm" variant="outline">
-                <Link href={closureHref(row.id)}>{closeProjectLink()}</Link>
+                <Link href={closureHref(row.id)}>
+                  <BanIcon className="size-4 shrink-0" aria-hidden />
+                  {closeProjectLink()}
+                </Link>
               </Button>
             </PermissionGate>
           ) : null}
           {isProjectClosing(row.status) ? (
             <Button asChild size="sm" variant="outline">
-              <Link href={closureHref(row.id)}>{resumeClosureLink()}</Link>
+              <Link href={closureHref(row.id)}>
+                <PlayIcon className="size-4 shrink-0" aria-hidden />
+                {resumeClosureLink()}
+              </Link>
             </Button>
           ) : null}
           {isProjectArchived(row.status) ? (
             <Button asChild size="sm" variant="outline">
-              <Link href={finalReportHref(row.id)}>{finalReportLink()}</Link>
+              <Link href={finalReportHref(row.id)}>
+                <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
+                {finalReportLink()}
+              </Link>
             </Button>
           ) : null}
         </div>

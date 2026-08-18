@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
+import { PaperclipIcon, ReceiptIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useProjects } from '@/client/hooks/useProjects'
 import { useMe } from '@/client/hooks/useSession'
@@ -158,6 +159,7 @@ function AttachReceiptButton({ projectId, onClick }: { projectId: string; onClic
   return (
     <PermissionGateView allowed={allowed} denialMessage={viewTransactionsDenialMessage()}>
       <Button type="button" disabled={!allowed} onClick={onClick}>
+        <PaperclipIcon className="size-4 shrink-0" aria-hidden />
         Attach receipt
       </Button>
     </PermissionGateView>
@@ -260,7 +262,11 @@ export function ReceiptsQueue() {
     return (
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
-        <EmptyState title={empty.title} description={empty.description} />
+        <EmptyState
+          title={empty.title}
+          description={empty.description}
+          illustration={<ReceiptIcon className="size-8 text-muted-foreground" aria-hidden />}
+        />
       </div>
     )
   }
@@ -296,7 +302,11 @@ function ReceiptsQueueResults({
     return (
       <div className="flex min-w-0 flex-col gap-4">
         {toolbar}
-        <EmptyState title={empty.title} description={empty.description} />
+        <EmptyState
+          title={empty.title}
+          description={empty.description}
+          illustration={<ReceiptIcon className="size-8 text-muted-foreground" aria-hidden />}
+        />
       </div>
     )
   }

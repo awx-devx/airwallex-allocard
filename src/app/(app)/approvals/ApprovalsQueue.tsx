@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { CheckIcon, ClipboardCheckIcon, XIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useBudget } from '@/client/hooks/useBudget'
 import { useProjectCards } from '@/client/hooks/useCards'
@@ -276,6 +277,7 @@ function QueueItem({
                 loading={decide.isPending}
                 onClick={() => void onApprove()}
               >
+                <CheckIcon className="size-4 shrink-0" aria-hidden />
                 Approve
               </Button>
             </PermissionGateView>
@@ -288,6 +290,7 @@ function QueueItem({
                 disabled={!allowed}
                 onClick={() => setRejectOpen(true)}
               >
+                <XIcon className="size-4 shrink-0" aria-hidden />
                 Reject
               </Button>
             </PermissionGateView>
@@ -354,7 +357,13 @@ export function ApprovalsQueue() {
   const rows = mergeHeldQueueRows(query.data.items, held)
   if (rows.length === 0) {
     const empty = noApprovalsEmpty()
-    return <EmptyState title={empty.title} description={empty.description} />
+    return (
+      <EmptyState
+        title={empty.title}
+        description={empty.description}
+        illustration={<ClipboardCheckIcon className="size-8 text-muted-foreground" aria-hidden />}
+      />
+    )
   }
 
   const page = query.data.page

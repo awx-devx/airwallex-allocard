@@ -1,5 +1,6 @@
 'use client'
 
+import { LogOutIcon } from 'lucide-react'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,7 +40,10 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
           <div className="text-xs font-normal text-muted-foreground">{user.email}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={onSignOut}>Sign out</DropdownMenuItem>
+        <DropdownMenuItem onSelect={onSignOut}>
+          <LogOutIcon className="size-4 shrink-0" aria-hidden />
+          Sign out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

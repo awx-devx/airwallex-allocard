@@ -19,6 +19,7 @@ Chrome may carry **cool ice / steel tints** and a **controlled gloss** (inset hi
 5. **Status chroma is medium.** Punchier than the original desaturated steel/forest/ochre/brick, still not Tailwind `*-500` traffic lights. BudgetBar: actual = ink; committed = info; remaining = track; over = danger.
 6. **Type:** `system-ui, sans-serif`. No display / serif / Google font.
 7. **Dark mode** is class `.dark` on `<html>` — same token names, lifted lightness, same gloss model (highlight softens).
+8. **Icons are Lucide.** `lucide-react` only (`XxxIcon` suffix). Next to a label: `className="size-4 shrink-0"` and `aria-hidden`. EmptyState illustration: `size-8`. Inherit `currentColor` — no per-icon hex/hsl. Icon-only controls still need `aria-label`. Do not rainbow the nav; status colour stays on StatusBadge, money, and Alert variants. No icons on every heading, StatusBadge, MoneyDisplay, or form field. No second icon pack (no Google brand mark). Button `asChild`: the icon goes _inside_ the single child (`Link`), never as a sibling.
 
 ## Where to change
 

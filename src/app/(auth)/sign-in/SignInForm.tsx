@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
+import { LogInIcon } from 'lucide-react'
 import { GoogleButton } from '@/app/(auth)/_components/GoogleButton'
 import { isSafeReturnPath } from '@/client/api/errorBehaviour'
 import {
@@ -131,6 +132,7 @@ export function SignInForm({
             />
             <div className="flex flex-col gap-2">
               <Button type="submit" className="w-full" loading={pending}>
+                <LogInIcon className="size-4 shrink-0" aria-hidden />
                 Sign in
               </Button>
               {googleEnabled ? <Separator /> : null}

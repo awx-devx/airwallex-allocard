@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** _none_ — Track A complete
 **Active task:** _none_ — wait for the user to name the next phase
-**Last green `pnpm verify`:** 2026-08-18 (AppShell viewport lock)
+**Last green `pnpm verify`:** 2026-08-18 (Lucide icons)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Lucide icons (2026-08-18).** `lucide-react` is the only icon pack. SideNav / Settings / workspace / budget chrome share `navIcons.ts` (href and tab maps — `DEFAULT_NAV` / `SETTINGS_NAV` stay href+label). Alert injects a variant icon; EmptyState defaults to Inbox; ErrorState Retry uses RefreshCw. Decorative icons are `aria-hidden`. `pnpm verify` green (1785 tests). Next: wait for the user to name the next phase.
 
 **AppShell viewport lock (2026-08-18).** Chrome stays put: root `h-dvh overflow-hidden`; header `shrink-0`; page scrolls in `main` (`min-h-0 overflow-y-auto`). Brand + OrgSwitcher stay pinned; SideNav list (aside + Menu Sheet) scrolls only when items overflow, only as far as the last link. Aside still `hidden md:flex` / `w-56`. No `sticky`, no `ScrollArea`, no new breakpoint. Pattern 1 in `docs/RESPONSIVENESS.md`. `pnpm verify` green (1778 tests). Next: wait for the user to name the next phase.
 

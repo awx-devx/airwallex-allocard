@@ -2,6 +2,13 @@
 
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import {
+  ActivityIcon,
+  ClipboardCheckIcon,
+  FolderKanbanIcon,
+  PlusIcon,
+  TriangleAlertIcon,
+} from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects } from '@/client/hooks/useProjects'
 import { useActivity } from '@/client/hooks/useReports'
@@ -69,10 +76,14 @@ function CreateProjectControl() {
     <PermissionGateView allowed={allowed} denialMessage={createProjectDenialMessage()}>
       {allowed ? (
         <Button asChild>
-          <Link href="/projects/new">Create project</Link>
+          <Link href="/projects/new">
+            <PlusIcon className="size-4 shrink-0" aria-hidden />
+            Create project
+          </Link>
         </Button>
       ) : (
         <Button type="button" disabled>
+          <PlusIcon className="size-4 shrink-0" aria-hidden />
           Create project
         </Button>
       )}
@@ -111,7 +122,11 @@ export function DashboardHome() {
       <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
-            <Link href="/projects?status=ACTIVE" className="hover:underline">
+            <Link
+              href="/projects?status=ACTIVE"
+              className="inline-flex items-center gap-2 hover:underline"
+            >
+              <FolderKanbanIcon className="size-4 shrink-0" aria-hidden />
               Active projects
             </Link>
           </CardTitle>
@@ -127,6 +142,9 @@ export function DashboardHome() {
                 <EmptyState
                   title="No projects yet"
                   description="Create a project to get started."
+                  illustration={
+                    <FolderKanbanIcon className="size-8 text-muted-foreground" aria-hidden />
+                  }
                 />
                 <CreateProjectControl />
               </div>
@@ -153,7 +171,8 @@ export function DashboardHome() {
       <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
-            <Link href="/approvals" className="hover:underline">
+            <Link href="/approvals" className="inline-flex items-center gap-2 hover:underline">
+              <ClipboardCheckIcon className="size-4 shrink-0" aria-hidden />
               Pending approvals ({count})
             </Link>
           </CardTitle>
@@ -188,7 +207,8 @@ export function DashboardHome() {
       <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
-            <Link href="/activity" className="hover:underline">
+            <Link href="/activity" className="inline-flex items-center gap-2 hover:underline">
+              <ActivityIcon className="size-4 shrink-0" aria-hidden />
               Recent activity
             </Link>
           </CardTitle>
@@ -207,7 +227,11 @@ export function DashboardHome() {
       <Card className="min-w-0">
         <CardHeader>
           <CardTitle>
-            <Link href="/projects?status=DRAFT" className="hover:underline">
+            <Link
+              href="/projects?status=DRAFT"
+              className="inline-flex items-center gap-2 hover:underline"
+            >
+              <TriangleAlertIcon className="size-4 shrink-0" aria-hidden />
               Alerts
             </Link>
           </CardTitle>

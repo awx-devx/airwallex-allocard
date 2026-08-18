@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
+import { MenuIcon } from 'lucide-react'
 import { ApprovalsBadge } from '@/client/shell/ApprovalsBadge'
 import { OrgSwitcher } from '@/client/shell/OrgSwitcher'
 import { ProjectContext } from '@/client/shell/ProjectContext'
@@ -85,6 +86,7 @@ export function AppShell({
               aria-label="Open menu"
               onClick={() => setMenu({ open: true, at: pathname })}
             >
+              <MenuIcon className="size-4 shrink-0" aria-hidden />
               Menu
             </Button>
             <ProjectContext project={project} />

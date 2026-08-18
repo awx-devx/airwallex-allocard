@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProject } from '@/client/hooks/useProjects'
 import { useEnableRule, useRules } from '@/client/hooks/useRules'
@@ -172,10 +173,14 @@ export function ProjectControls() {
         <PermissionGateView allowed={canEdit} denialMessage={editControlsDenialMessage()}>
           {canEdit ? (
             <Button asChild>
-              <Link href={newProjectRuleHref(id)}>New</Link>
+              <Link href={newProjectRuleHref(id)}>
+                <PlusIcon className="size-4 shrink-0" aria-hidden />
+                New
+              </Link>
             </Button>
           ) : (
             <Button type="button" disabled>
+              <PlusIcon className="size-4 shrink-0" aria-hidden />
               New
             </Button>
           )}

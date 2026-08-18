@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useCardholders, useProjectCards } from '@/client/hooks/useCards'
 import { useAccessHistory, useProjectMembers, useRemoveMember } from '@/client/hooks/useMembers'
@@ -40,10 +41,14 @@ function AddMemberControl({ projectId }: { projectId: string }) {
     <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
       {allowed ? (
         <Button asChild>
-          <Link href={addMemberHref(projectId)}>Add member</Link>
+          <Link href={addMemberHref(projectId)}>
+            <PlusIcon className="size-4 shrink-0" aria-hidden />
+            Add member
+          </Link>
         </Button>
       ) : (
         <Button type="button" disabled>
+          <PlusIcon className="size-4 shrink-0" aria-hidden />
           Add member
         </Button>
       )}

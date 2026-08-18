@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { CircleAlertIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -25,18 +27,48 @@ const alertVariants = cva(
   },
 )
 
+const ALERT_ICONS: Record<
+  NonNullable<VariantProps<typeof alertVariants>['variant']>,
+  LucideIcon
+> = {
+  default: InfoIcon,
+  info: InfoIcon,
+  success: CircleCheckIcon,
+  warning: TriangleAlertIcon,
+  destructive: CircleAlertIcon,
+}
+
+function alertHasSvgChild(children: React.ReactNode): boolean {
+  return React.Children.toArray(children).some((child) => {
+    if (!React.isValidElement(child)) return false
+    if (child.type === 'svg') return true
+    const type = child.type
+    if (typeof type === 'object' && type !== null && 'displayName' in type) {
+      const name = String((type as { displayName?: string }).displayName ?? '')
+      return name.endsWith('Icon') || name.startsWith('Lucide')
+    }
+    return false
+  })
+}
+
 function Alert({
   className,
-  variant,
+  variant = 'default',
+  children,
   ...props
 }: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
+  const Icon = ALERT_ICONS[variant ?? 'default']
+  const inject = !alertHasSvgChild(children)
   return (
     <div
       data-slot="alert"
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {inject ? <Icon aria-hidden /> : null}
+      {children}
+    </div>
   )
 }
 

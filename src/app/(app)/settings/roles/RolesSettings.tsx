@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useCreateRole } from '@/client/hooks/useMembers'
 import { useMe, usePermissions } from '@/client/hooks/useSession'
@@ -72,6 +73,7 @@ export function RolesSettings() {
         <h1 className="text-sm font-medium">Roles</h1>
         <PermissionGateView allowed={allowed} denialMessage={assignRoleDenialMessage()}>
           <Button type="button" disabled={!allowed} onClick={() => setCreateOpen(true)}>
+            <PlusIcon className="size-4 shrink-0" aria-hidden />
             Create role
           </Button>
         </PermissionGateView>

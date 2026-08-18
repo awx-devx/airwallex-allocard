@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
+import { UserPlusIcon } from 'lucide-react'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 import { isApiError } from '@/client/api/errors'
 import { useSignUp } from '@/client/hooks/useSession'
@@ -165,6 +166,7 @@ export function SignUpForm({
             />
             <div className="flex flex-col gap-2">
               <Button type="submit" className="w-full" loading={mutation.isPending}>
+                <UserPlusIcon className="size-4 shrink-0" aria-hidden />
                 Sign up
               </Button>
               {googleEnabled ? <Separator /> : null}

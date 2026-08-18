@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { PlusIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useAttributes, useCreateAttribute, useUpdateAttribute } from '@/client/hooks/useRules'
 import { useMe, usePermissions } from '@/client/hooks/useSession'
@@ -206,6 +207,7 @@ export function AttributeRegistry() {
           </Select>
           <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
             <Button type="button" disabled={!allowed} onClick={() => setCreateOpen(true)}>
+              <PlusIcon className="size-4 shrink-0" aria-hidden />
               Create attribute
             </Button>
           </PermissionGateView>

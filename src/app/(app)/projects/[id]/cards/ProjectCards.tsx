@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { CreditCardIcon, EyeIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjectCards } from '@/client/hooks/useCards'
 import { useProject } from '@/client/hooks/useProjects'
@@ -46,6 +47,7 @@ function RevealControl({ card, allowed }: { card: Card; allowed: boolean }) {
     return (
       <PermissionGateView allowed={false} denialMessage={revealCardDenialMessage()}>
         <Button type="button" variant="outline" disabled>
+          <EyeIcon className="size-4 shrink-0" aria-hidden />
           Reveal
         </Button>
       </PermissionGateView>
@@ -54,12 +56,14 @@ function RevealControl({ card, allowed }: { card: Card; allowed: boolean }) {
   if (!eligible) {
     return (
       <Button type="button" variant="outline" disabled>
+        <EyeIcon className="size-4 shrink-0" aria-hidden />
         Reveal
       </Button>
     )
   }
   return (
     <Link href={cardRevealHref(card.id)} className={buttonVariants({ variant: 'outline' })}>
+      <EyeIcon className="size-4 shrink-0" aria-hidden />
       Reveal
     </Link>
   )
@@ -166,6 +170,7 @@ export function ProjectCards() {
           <EmptyState
             title="No cards yet"
             description="Cards are issued by rules when this project launches."
+            illustration={<CreditCardIcon className="size-8 text-muted-foreground" aria-hidden />}
           />
           <Link href={controlsHref(id)} className={buttonVariants({ variant: 'outline' })}>
             View controls

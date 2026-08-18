@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
+import { BanIcon, EyeIcon, RefreshCwIcon, SnowflakeIcon, SunIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { AccessListSheet } from '@/app/(app)/cards/[id]/AccessListSheet'
 import {
@@ -198,6 +199,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
               disabled={!revealAllowed || !revealEligible}
               onClick={() => router.push(cardRevealHref(card.id))}
             >
+              <EyeIcon className="size-4 shrink-0" aria-hidden />
               Reveal
             </Button>
           </PermissionGateView>
@@ -205,6 +207,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
         {showFreeze ? (
           <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
             <Button type="button" disabled={!manageAllowed} onClick={() => setDialog('freeze')}>
+              <SnowflakeIcon className="size-4 shrink-0" aria-hidden />
               Freeze
             </Button>
           </PermissionGateView>
@@ -212,6 +215,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
         {showUnfreeze ? (
           <PermissionGateView allowed={manageAllowed} denialMessage={manageCardDenialMessage()}>
             <Button type="button" disabled={!manageAllowed} onClick={() => setDialog('unfreeze')}>
+              <SunIcon className="size-4 shrink-0" aria-hidden />
               Unfreeze
             </Button>
           </PermissionGateView>
@@ -224,6 +228,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
               disabled={!manageAllowed}
               onClick={() => setDialog('close')}
             >
+              <BanIcon className="size-4 shrink-0" aria-hidden />
               Close
             </Button>
           </PermissionGateView>
@@ -235,6 +240,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
               disabled={!manageAllowed || reconcile.isPending}
               onClick={() => void run(() => reconcile.mutateAsync({ id: card.id }))}
             >
+              <RefreshCwIcon className="size-4 shrink-0" aria-hidden />
               Reconcile
             </Button>
           </PermissionGateView>

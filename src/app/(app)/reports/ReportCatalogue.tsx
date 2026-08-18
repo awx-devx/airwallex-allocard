@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { DownloadIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
 import { useProjects } from '@/client/hooks/useProjects'
 import {
@@ -100,6 +101,7 @@ export function ReportCatalogue() {
         disabled={!canExport || exportBudget.isPending}
         onClick={() => exportBudget.mutate(exportBody(filter))}
       >
+        <DownloadIcon className="size-4 shrink-0" aria-hidden />
         Export budget
       </Button>
       <Button
@@ -107,6 +109,7 @@ export function ReportCatalogue() {
         disabled={!canExport || exportTransactions.isPending}
         onClick={() => exportTransactions.mutate(exportBody(filter))}
       >
+        <DownloadIcon className="size-4 shrink-0" aria-hidden />
         Export transactions
       </Button>
       <Button
@@ -114,6 +117,7 @@ export function ReportCatalogue() {
         disabled={!canExport || exportCards.isPending}
         onClick={() => exportCards.mutate(exportBody(filter))}
       >
+        <DownloadIcon className="size-4 shrink-0" aria-hidden />
         Export cards
       </Button>
       <Button
@@ -121,6 +125,7 @@ export function ReportCatalogue() {
         disabled={!canExport || exportAudit.isPending}
         onClick={() => exportAudit.mutate(exportBody(filter))}
       >
+        <DownloadIcon className="size-4 shrink-0" aria-hidden />
         Export audit
       </Button>
     </div>

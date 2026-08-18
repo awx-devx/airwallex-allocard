@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
+import { PaperclipIcon } from 'lucide-react'
 import { AttachReceiptSheet } from '@/app/(app)/receipts/ReceiptsQueue'
 import { isApiError } from '@/client/api/errors'
 import { useCard } from '@/client/hooks/useCards'
@@ -147,6 +148,7 @@ function ReceiptActions({ data }: { data: TransactionDetailData }) {
         {showAttach ? (
           <PermissionGateView allowed={canView} denialMessage={viewTransactionsDenialMessage()}>
             <Button type="button" disabled={!canView} onClick={() => setAttachOpen(true)}>
+              <PaperclipIcon className="size-4 shrink-0" aria-hidden />
               Attach receipt
             </Button>
           </PermissionGateView>
