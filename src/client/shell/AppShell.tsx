@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
 import { MenuIcon } from 'lucide-react'
 import { ApprovalsBadge } from '@/client/shell/ApprovalsBadge'
+import { BrandLogo } from '@/client/shell/BrandLogo'
 import { OrgSwitcher } from '@/client/shell/OrgSwitcher'
 import { ProjectContext } from '@/client/shell/ProjectContext'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
@@ -71,7 +72,9 @@ export function AppShell({
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
       <aside className="hidden w-56 min-h-0 shrink-0 flex-col gap-4 overflow-hidden border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm md:flex">
-        <div className="shrink-0 text-sm font-semibold tracking-tight">Allocard</div>
+        <div className="shrink-0">
+          <BrandLogo priority />
+        </div>
         <div className="shrink-0">{orgSwitcher}</div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <SideNav items={items} />
@@ -105,6 +108,9 @@ export function AppShell({
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
+            <div className="shrink-0">
+              <BrandLogo />
+            </div>
             <div className="shrink-0">
               <OrgSwitcher
                 memberships={memberships}

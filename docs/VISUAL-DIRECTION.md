@@ -17,17 +17,18 @@ Chrome may carry **cool ice / steel tints** and a **controlled gloss** (inset hi
 3. **Gloss is structural, not decorative noise.** Primary buttons, cards, and elevated panels use `--shadow-gloss-*` / `--shadow-elevated`. Do not add per-screen gradients or glow stacks.
 4. **Tints are cool.** Ice-mist backgrounds, steel-cyan accent wash, deep slate-teal primary. Forbidden: indigo/violet primary, neon dark mode, warm stone/cream canvas, Airwallex marketing palette.
 5. **Status chroma is medium.** Punchier than the original desaturated steel/forest/ochre/brick, still not Tailwind `*-500` traffic lights. BudgetBar: actual = ink; committed = info; remaining = track; over = danger.
-6. **Type:** `system-ui, sans-serif`. No display / serif / Google font.
+6. **Type:** UI is `system-ui, sans-serif`. The brand wordmark is **Satoshi Black** (`font-brand`, weight 900) next to `public/brand/logomark.png` — wordmark only, never body copy. No display / serif / Google font.
 7. **Dark mode** is class `.dark` on `<html>` — same token names, lifted lightness, same gloss model (highlight softens).
 8. **Icons are Lucide.** `lucide-react` only (`XxxIcon` suffix). Next to a label: `className="size-4 shrink-0"` and `aria-hidden`. EmptyState illustration: `size-8`. Inherit `currentColor` — no per-icon hex/hsl. Icon-only controls still need `aria-label`. Do not rainbow the nav; status colour stays on StatusBadge, money, and Alert variants. No icons on every heading, StatusBadge, MoneyDisplay, or form field. No second icon pack (no Google brand mark). Button `asChild`: the icon goes _inside_ the single child (`Link`), never as a sibling.
 
 ## Where to change
 
-| Change                          | File                                        |
-| ------------------------------- | ------------------------------------------- |
-| Colours, radius, shadows, gloss | `src/app/globals.css`                       |
-| Locked F3 policies + HSL table  | `docs/phases/frontend/F3-TASKS.md` (§ F3.0) |
-| Phase summary                   | `docs/phases/frontend/F3-ui-library.md`     |
-| Review in browser               | `/dev/ui` (both themes)                     |
+| Change                             | File                                              |
+| ---------------------------------- | ------------------------------------------------- |
+| Colours, radius, shadows, gloss    | `src/app/globals.css`                             |
+| Brand lockup (logomark + wordmark) | `src/client/shell/BrandLogo.tsx`, `public/brand/` |
+| Locked F3 policies + HSL table     | `docs/phases/frontend/F3-TASKS.md` (§ F3.0)       |
+| Phase summary                      | `docs/phases/frontend/F3-ui-library.md`           |
+| Review in browser                  | `/dev/ui` (both themes)                           |
 
 Do not fork a second theme in Track A. If a screen needs a new colour, add a named token first.

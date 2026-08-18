@@ -66,6 +66,7 @@
   --z-index-tooltip: var(--z-tooltip);
   --z-index-toast: var(--z-toast);
   --font-sans: var(--font-sans-family);
+  --font-brand: var(--font-satoshi, var(--font-sans-family));
   --shadow-gloss-primary: var(--shadow-gloss-primary);
   --shadow-elevated: var(--shadow-elevated);
   --shadow-inset-field: var(--shadow-inset-field);

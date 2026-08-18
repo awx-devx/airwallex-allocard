@@ -1,3 +1,4 @@
+export * from '@/lib/assets'
 export * from '@/lib/money'
 export * from '@/lib/dates'
 export * from '@/lib/format'

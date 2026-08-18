@@ -45,6 +45,7 @@ import { PartialState } from '@/components/patterns/PartialState'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Timeline } from '@/components/patterns/Timeline'
 import { toastStore } from '@/client/providers/toastStore'
+import { BrandLogo } from '@/client/shell/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -55,6 +56,12 @@ import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 export function PatternGallery() {
   return (
     <>
+      <section id="brand-logo" className="space-y-4">
+        <h3 className="font-medium">BrandLogo</h3>
+        <BrandLogo />
+        <BrandLogo size="lg" />
+      </section>
+
       <section id="money-display" className="space-y-2">
         <h3 className="font-medium">MoneyDisplay</h3>
         <div className="flex flex-wrap gap-4 text-sm">
