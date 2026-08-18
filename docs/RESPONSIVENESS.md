@@ -18,15 +18,19 @@ Do not add `sm:`, `lg:`, `xl:`, or `2xl:` layouts. Do not add container queries.
 
 Collapse is done: aside is `hidden md:flex`; a `md:hidden` Menu button opens F3 `Sheet` with the same `SideNav` / `OrgSwitcher`. Do not build a second nav. Do not reopen F0 or F3.
 
+On desktop the aside is an icon rail (`w-16` in layout). Hover, keyboard focus, or an open org menu expands a panel to `w-56` over the page — labels are hidden when collapsed. Do not reflow `main` on hover. Narrow widths still use the Menu `Sheet` (full labels, no icon rail).
+
 Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The page scrolls inside `main`. Brand + OrgSwitcher stay pinned; if nav items overflow, only the link list scrolls (`overflow-y-auto`, not `overflow-y-scroll`, not F3 `ScrollArea`). `min-h-0` on those flex children is the vertical analogue of pattern 2 — without it, overflow never activates. Do not use `position: sticky`.
 
 ```tsx
 <div className="flex h-dvh overflow-hidden">
-  {/* desktop */}
-  <aside className="hidden w-56 min-h-0 shrink-0 flex-col overflow-hidden md:flex">
-    {/* brand + OrgSwitcher: shrink-0 */}
-    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      {/* existing SideNav */}
+  {/* desktop — icon rail; hover/focus expands over the page */}
+  <aside className="relative hidden w-16 min-h-0 shrink-0 md:flex">
+    <div className="group/sidenav absolute inset-y-0 left-0 flex w-16 min-h-0 flex-col overflow-hidden data-[expanded=true]:w-56">
+      {/* brand + OrgSwitcher: shrink-0 */}
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        {/* existing SideNav */}
+      </div>
     </div>
   </aside>
   <div className="flex min-h-0 min-w-0 flex-1 flex-col">

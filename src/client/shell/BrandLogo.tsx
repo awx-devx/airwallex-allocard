@@ -37,11 +37,11 @@ export function BrandLogo({
         alt=""
         width={1268}
         height={950}
-        className={scale.mark}
+        className={cn(scale.mark, '[[data-expanded]_&]:h-6')}
         unoptimized
         priority={priority}
       />
-      <BrandWordmark className={scale.word} />
+      <BrandWordmark className={cn(scale.word, 'group-data-[expanded=false]/sidenav:hidden')} />
     </div>
   )
 }

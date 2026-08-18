@@ -19,12 +19,16 @@ export function SideNav({ items }: { items: SideNavItem[] }) {
               <Link
                 href={item.href}
                 title={item.label}
-                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                className="flex h-8 items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               >
                 {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
-                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                <span className="min-w-0 flex-1 truncate group-data-[expanded=false]/sidenav:hidden">
+                  {item.label}
+                </span>
                 {item.badge !== undefined && item.badge > 0 ? (
-                  <Badge variant="secondary">{item.badge}</Badge>
+                  <Badge variant="secondary" className="group-data-[expanded=false]/sidenav:hidden">
+                    {item.badge}
+                  </Badge>
                 ) : null}
               </Link>
             </li>

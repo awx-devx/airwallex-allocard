@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useState, type ReactNode } from 'react'
+import { useState, type FocusEvent, type PointerEvent, type ReactNode } from 'react'
 import { MenuIcon } from 'lucide-react'
 import { ApprovalsBadge } from '@/client/shell/ApprovalsBadge'
 import { BrandLogo } from '@/client/shell/BrandLogo'
@@ -56,28 +56,60 @@ export function AppShell({
   const { setOrgId } = useActiveOrg()
   const pathname = usePathname()
   const [menu, setMenu] = useState({ open: false, at: pathname })
+  const [rail, setRail] = useState({ hover: false, focus: false, org: false })
   const open = menu.open && menu.at === pathname
+  const expanded = rail.hover || rail.focus || rail.org
   const items = navItems.map((item) =>
     item.href === '/approvals' ? { ...item, badge: approvalsCount } : item,
   )
 
-  const orgSwitcher = (
-    <OrgSwitcher
-      memberships={memberships}
-      activeOrgId={activeOrgId}
-      onSwitch={(id) => setOrgId(id)}
-    />
-  )
+  function focusRail(event: FocusEvent<HTMLElement>) {
+    const target = event.target
+    if (!(target instanceof HTMLElement) || !target.matches(':focus-visible')) return
+    setRail((current) => ({ ...current, focus: true }))
+  }
+
+  function blurRail(event: FocusEvent<HTMLElement>) {
+    const next = event.relatedTarget
+    if (next instanceof Node && event.currentTarget.contains(next)) return
+    setRail((current) => ({ ...current, focus: false }))
+  }
+
+  function leaveRail(event: PointerEvent<HTMLElement>) {
+    const orgOpen = rail.org
+    setRail((current) =>
+      orgOpen ? { ...current, hover: false } : { ...current, hover: false, focus: false },
+    )
+    if (orgOpen) return
+    const active = document.activeElement
+    if (active instanceof HTMLElement && event.currentTarget.contains(active)) active.blur()
+  }
 
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
-      <aside className="hidden w-56 min-h-0 shrink-0 flex-col gap-4 overflow-hidden border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm md:flex">
-        <div className="shrink-0">
-          <BrandLogo priority />
-        </div>
-        <div className="shrink-0">{orgSwitcher}</div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <SideNav items={items} />
+      <aside className="relative hidden w-16 min-h-0 shrink-0 md:flex">
+        <div
+          className="group/sidenav absolute inset-y-0 left-0 z-20 flex w-16 min-h-0 flex-col gap-4 overflow-hidden border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm transition-[width] duration-200 ease-out data-[expanded=true]:w-56"
+          data-expanded={expanded ? 'true' : 'false'}
+          onPointerEnter={() => setRail((current) => ({ ...current, hover: true }))}
+          onPointerLeave={leaveRail}
+          onFocusCapture={focusRail}
+          onBlurCapture={blurRail}
+        >
+          <div className="shrink-0 overflow-hidden">
+            <BrandLogo priority />
+          </div>
+          <div className="shrink-0">
+            <OrgSwitcher
+              memberships={memberships}
+              activeOrgId={activeOrgId}
+              onSwitch={(id) => setOrgId(id)}
+              onOpenChange={(next) => setRail((current) => ({ ...current, org: next }))}
+            />
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <SideNav items={items} />
+          </div>
         </div>
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">

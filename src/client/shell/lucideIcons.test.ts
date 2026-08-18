@@ -10,6 +10,9 @@ describe('Lucide chrome and pattern icons', () => {
     expect(src).toContain('navIcon(item.href)')
     expect(src).toContain('aria-hidden')
     expect(src).toContain('truncate')
+    expect(src).toContain('size-4')
+    expect(src).toContain('h-8')
+    expect(src).toContain('group-data-[expanded=false]/sidenav:hidden')
     expect(src).not.toMatch(/icon:/)
   })
 
