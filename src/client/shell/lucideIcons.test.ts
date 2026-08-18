@@ -12,7 +12,8 @@ describe('Lucide chrome and pattern icons', () => {
     expect(src).toContain('truncate')
     expect(src).toContain('size-4')
     expect(src).toContain('h-8')
-    expect(src).toContain('group-data-[expanded=false]/sidenav:hidden')
+    expect(src).toContain("aria-current={active ? 'page' : undefined}")
+    expect(src).toContain('activeNavHref')
     expect(src).not.toMatch(/icon:/)
   })
 
