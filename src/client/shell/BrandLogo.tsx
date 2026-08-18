@@ -37,7 +37,7 @@ export function BrandLogo({
         alt=""
         width={1268}
         height={950}
-        className={cn(scale.mark, '[[data-expanded]_&]:h-6')}
+        className={scale.mark}
         unoptimized
         priority={priority}
       />

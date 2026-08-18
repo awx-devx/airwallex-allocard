@@ -8,7 +8,7 @@ How Allocard looks. Components inherit this; Track A does not invent a second pa
 
 Dense finance / procurement ops UI — sharp and intentional, not a consumer fintech marketing site, not Linear indigo, not purple SaaS, not Airwallex brand.
 
-Chrome may carry **cool ice / steel tints** and a **controlled gloss** (inset highlight + soft elevation). Meaning colour still lives on money, status, and budget segments — do not rainbow the nav.
+Chrome is the **frame**, not another card: charcoal sidebar (`--sidebar`, matches the logomark field) and a light frosted header strip. Active nav uses a left-edge laser on `--sidebar-primary` (hot mid, fade to the caps) — that is brand, not a rainbow. Content cards keep `--card` + `--shadow-elevated`. Meaning colour still lives on money, status, and budget segments.
 
 ## Rules
 

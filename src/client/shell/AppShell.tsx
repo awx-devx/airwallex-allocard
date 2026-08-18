@@ -2,16 +2,11 @@
 
 import { usePathname } from 'next/navigation'
 import { useState, type FocusEvent, type PointerEvent, type ReactNode } from 'react'
-import { MenuIcon } from 'lucide-react'
-import { ApprovalsBadge } from '@/client/shell/ApprovalsBadge'
+import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
+import { AppHeader } from '@/client/shell/AppHeader'
 import { BrandLogo } from '@/client/shell/BrandLogo'
 import { OrgSwitcher } from '@/client/shell/OrgSwitcher'
-import { ProjectContext } from '@/client/shell/ProjectContext'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
-import { ThemeToggle } from '@/client/shell/ThemeToggle'
-import { UserMenu } from '@/client/shell/UserMenu'
-import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
-import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 const DEFAULT_NAV: SideNavItem[] = [
@@ -89,7 +84,7 @@ export function AppShell({
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
       <aside className="relative hidden w-16 min-h-0 shrink-0 md:flex">
         <div
-          className="group/sidenav absolute inset-y-0 left-0 z-20 flex w-16 min-h-0 flex-col gap-4 overflow-hidden border-r border-sidebar-border bg-sidebar/90 p-4 text-sidebar-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm transition-[width] duration-200 ease-out data-[expanded=true]:w-56"
+          className="group/sidenav absolute inset-y-0 left-0 z-20 flex w-16 min-h-0 flex-col gap-3 overflow-hidden border-r border-sidebar-border bg-sidebar px-2 py-3 text-sidebar-foreground transition-[width] duration-200 ease-out data-[expanded=true]:w-56"
           data-expanded={expanded ? 'true' : 'false'}
           onPointerEnter={() => setRail((current) => ({ ...current, hover: true }))}
           onPointerLeave={leaveRail}
@@ -113,31 +108,19 @@ export function AppShell({
         </div>
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-card/60 px-4 py-3 shadow-[inset_0_-1px_0_0_hsl(var(--gloss-highlight)/0.35)] backdrop-blur-sm">
-          <div className="flex min-w-0 items-center gap-3">
-            <Button
-              type="button"
-              className="md:hidden"
-              aria-label="Open menu"
-              onClick={() => setMenu({ open: true, at: pathname })}
-            >
-              <MenuIcon className="size-4 shrink-0" aria-hidden />
-              Menu
-            </Button>
-            <ProjectContext project={project} />
-          </div>
-          <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
-            <ThemeToggle />
-            <ApprovalsBadge count={approvalsCount} />
-            <UserMenu user={user} onSignOut={onSignOut ?? (() => undefined)} />
-          </div>
-        </header>
+        <AppHeader
+          user={user}
+          approvalsCount={approvalsCount}
+          projectName={project?.name}
+          onSignOut={onSignOut ?? (() => undefined)}
+          onOpenMenu={() => setMenu({ open: true, at: pathname })}
+        />
         <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</main>
       </div>
       <Sheet open={open} onOpenChange={(next) => setMenu({ open: next, at: pathname })}>
-        <SheetContent side="left">
+        <SheetContent side="left" className="bg-sidebar text-sidebar-foreground">
           <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
+            <SheetTitle className="text-sidebar-foreground">Menu</SheetTitle>
           </SheetHeader>
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
             <div className="shrink-0">

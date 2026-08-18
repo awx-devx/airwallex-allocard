@@ -11,7 +11,7 @@ describe('OrgSwitcher', () => {
     expect(src).toContain("from '@/components/ui/avatar'")
     expect(src).toContain('<Avatar')
     expect(src).toContain('aria-label={activeName}')
-    expect(src).toContain('hover:bg-accent')
+    expect(src).toContain('hover:bg-sidebar-accent')
     expect(src).toContain('group-data-[expanded=false]/sidenav:[&_[data-slot=select-value]]:hidden')
   })
 })

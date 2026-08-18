@@ -33,8 +33,8 @@ export function SideNav({ items }: { items: SideNavItem[] }) {
                 title={item.label}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex h-8 items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                  active && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                  'relative flex h-8 items-center gap-2 rounded-md px-2 text-sm text-sidebar-foreground/55 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
+                  active && 'sidenav-current bg-sidebar-accent text-sidebar-foreground',
                 )}
               >
                 {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}

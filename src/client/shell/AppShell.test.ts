@@ -3,7 +3,9 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 describe('AppShell viewport lock', () => {
-  const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
+  const root = process.cwd()
+  const shell = readFileSync(join(root, 'src/client/shell/AppShell.tsx'), 'utf8')
+  const header = readFileSync(join(root, 'src/client/shell/AppHeader.tsx'), 'utf8')
 
   it('locks chrome to the viewport; page and nav list scroll inside', () => {
     expect(shell).toMatch(/className="[^"]*\bh-dvh\b[^"]*\boverflow-hidden\b/)
@@ -33,5 +35,41 @@ describe('AppShell viewport lock', () => {
     expect(shell).toContain('onOpenChange')
     expect(shell).toContain('absolute inset-y-0 left-0')
     expect(shell).toMatch(/aside className="[^"]*\bhidden\b[^"]*\bw-16\b/)
+  })
+
+  it('header is a frosted strip, not a card island', () => {
+    expect(header).toContain('shrink-0')
+    expect(header).toContain('border-b')
+    expect(header).toContain('bg-background/80')
+    expect(header).toContain('backdrop-blur-xl')
+    expect(header).toContain('md:hidden')
+    expect(header).toContain('AppBreadcrumbs')
+    expect(header).not.toContain('sticky')
+    expect(header).not.toContain('ScrollArea')
+    expect(header).not.toContain('bg-card')
+    expect(header).not.toContain('rounded-lg')
+    expect(header).not.toContain('shadow-[var(--shadow-elevated)]')
+    expect(shell).toContain('<AppHeader')
+    expect(shell).toContain('bg-sidebar')
+    expect(shell).not.toContain('ProjectContext')
+  })
+
+  it('breadcrumbs compose F3 Breadcrumb and Next Link', () => {
+    const crumbs = readFileSync(join(root, 'src/client/shell/AppBreadcrumbs.tsx'), 'utf8')
+    expect(crumbs).toContain('crumbsForPathname')
+    expect(crumbs).toContain('BreadcrumbLink')
+    expect(crumbs).toContain('asChild')
+    expect(crumbs).toContain('BreadcrumbPage')
+    expect(crumbs).toContain('title={crumb.label}')
+    expect(crumbs).not.toMatch(/\bsm:/)
+    expect(header).not.toMatch(/\bsm:/)
+    expect(header).not.toMatch(/\blg:/)
+  })
+
+  it('AppShellFrame fills the project name from useProject when the path has an id', () => {
+    const frame = readFileSync(join(root, 'src/client/shell/AppShellFrame.tsx'), 'utf8')
+    expect(frame).toContain('projectIdFromPathname')
+    expect(frame).toContain('useProject')
+    expect(frame).not.toContain('project={null}')
   })
 })

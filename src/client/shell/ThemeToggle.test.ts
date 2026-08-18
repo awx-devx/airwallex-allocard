@@ -15,8 +15,10 @@ describe('ThemeToggle', () => {
   })
 
   it('sits in AppShell header chrome on every width', () => {
+    const header = readFileSync(join(process.cwd(), 'src/client/shell/AppHeader.tsx'), 'utf8')
     const shell = readFileSync(join(process.cwd(), 'src/client/shell/AppShell.tsx'), 'utf8')
-    expect(shell).toContain('<ThemeToggle />')
+    expect(header).toContain('<ThemeToggle />')
+    expect(shell).toContain('<AppHeader')
     expect(shell).toMatch(/aside className="[^"]*\bhidden\b/)
     expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
   })

@@ -107,14 +107,15 @@
   --chart-3: hsl(215 40% 28%);
   --chart-4: hsl(36 78% 48%);
   --chart-5: hsl(4 65% 50%);
-  --sidebar: hsl(210 40% 97.5%);
-  --sidebar-foreground: hsl(222 47% 8%);
-  --sidebar-primary: hsl(210 48% 16%);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: hsl(199 50% 92%);
-  --sidebar-accent-foreground: hsl(210 48% 16%);
-  --sidebar-border: hsl(214 32% 86%);
-  --sidebar-ring: hsl(199 78% 38%);
+  /* Charcoal dock — stands off the ice canvas; orange tick matches the logomark */
+  --sidebar: hsl(222 16% 9%);
+  --sidebar-foreground: hsl(40 18% 96%);
+  --sidebar-primary: hsl(22 88% 54%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(222 12% 16%);
+  --sidebar-accent-foreground: hsl(40 18% 96%);
+  --sidebar-border: hsl(222 12% 14%);
+  --sidebar-ring: hsl(22 88% 54%);
 
   /* Gloss — white sheen + depth (use via --shadow-*) */
   --gloss-highlight: 0 0% 100%;
@@ -171,14 +172,14 @@
   --chart-3: hsl(36 78% 55%);
   --chart-4: hsl(215 50% 55%);
   --chart-5: hsl(4 70% 58%);
-  --sidebar: hsl(222 40% 7.5%);
-  --sidebar-foreground: hsl(210 40% 98%);
-  --sidebar-primary: hsl(199 70% 52%);
-  --sidebar-primary-foreground: hsl(222 47% 8%);
-  --sidebar-accent: hsl(199 28% 14%);
-  --sidebar-accent-foreground: hsl(199 80% 78%);
-  --sidebar-border: hsl(217 24% 16%);
-  --sidebar-ring: hsl(199 70% 52%);
+  --sidebar: hsl(222 20% 8%);
+  --sidebar-foreground: hsl(40 18% 96%);
+  --sidebar-primary: hsl(22 88% 58%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(222 14% 14%);
+  --sidebar-accent-foreground: hsl(40 18% 96%);
+  --sidebar-border: hsl(222 14% 13%);
+  --sidebar-ring: hsl(22 88% 58%);
 
   --gloss-highlight: 0 0% 100%;
   --shadow-gloss-primary:
@@ -232,5 +233,52 @@
     background-image:
       radial-gradient(1000px 500px at 0% 0%, hsl(199 70% 40% / 0.14), transparent 50%),
       radial-gradient(800px 480px at 100% 0%, hsl(222 50% 30% / 0.25), transparent 55%);
+  }
+}
+
+/* Active SideNav — sharp laser on the left, hottest at mid, fade to the caps */
+@layer components {
+  .sidenav-current::before,
+  .sidenav-current::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    mask-image: linear-gradient(180deg, transparent 0%, black 32%, black 68%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      black 32%,
+      black 68%,
+      transparent 100%
+    );
+  }
+
+  .sidenav-current::before {
+    width: 10px;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--sidebar-primary) 50%,
+      transparent 100%
+    );
+    opacity: 0.55;
+    filter: blur(5px);
+  }
+
+  .sidenav-current::after {
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--sidebar-primary) 36%,
+      var(--sidebar-primary-foreground) 50%,
+      var(--sidebar-primary) 64%,
+      transparent 100%
+    );
+    box-shadow: 0 0 6px 0 var(--sidebar-primary);
   }
 }

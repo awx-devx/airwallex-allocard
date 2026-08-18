@@ -31,7 +31,7 @@ export function OrgSwitcher({
         aria-label={activeName}
         title={activeName}
         size="sm"
-        className="h-8 w-full justify-start gap-2 rounded-md border-0 bg-transparent px-2 py-1 shadow-none hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:hover:bg-accent/50 group-data-[expanded=false]/sidenav:[&_svg]:hidden group-data-[expanded=false]/sidenav:[&_[data-slot=select-value]]:hidden"
+        className="h-8 w-full justify-start gap-2 rounded-md border-0 bg-transparent px-2 py-1 text-sidebar-foreground shadow-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground dark:bg-transparent dark:hover:bg-sidebar-accent [&_svg]:text-sidebar-foreground/50 group-data-[expanded=false]/sidenav:[&_svg]:hidden group-data-[expanded=false]/sidenav:[&_[data-slot=select-value]]:hidden"
       >
         <Avatar alt={activeName} name={activeName} size="sm" aria-hidden />
         <SelectValue placeholder="Select organisation" />

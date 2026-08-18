@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** _none_ — Track A complete
 **Active task:** _none_ — wait for the user to name the next phase
-**Last green `pnpm verify`:** 2026-08-18 (desktop icon rail, 1797 tests)
+**Last green `pnpm verify`:** 2026-08-19 (charcoal sidenav + laser, 1815 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Charcoal sidenav + laser (2026-08-19).** Desktop aside is a charcoal dock (`--sidebar`). Active item uses `.sidenav-current` (2px left-edge laser, hot mid, fade to the caps). Menu Sheet uses the same dock. Header is a frosted `border-b` strip (`AppHeader` + breadcrumbs). `pnpm verify` green (1815 tests). Next: wait for the user to name the next phase.
 
 **Desktop icon rail (2026-08-18).** Desktop aside is a `w-16` icon column (`hidden md:flex` unchanged). Hover, keyboard focus, or an open org menu expands a `w-56` overlay over the page — labels clip, `main` does not reflow. Menu `Sheet` below `md` still shows full labels. Pattern 1 in `docs/RESPONSIVENESS.md`. `pnpm verify` green (1797 tests). Next: wait for the user to name the next phase.
 

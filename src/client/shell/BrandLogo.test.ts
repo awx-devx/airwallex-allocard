@@ -15,7 +15,6 @@ describe('BrandLogo', () => {
     expect(src).toContain('publicAsset.logomark')
     expect(src).toContain("from '@/client/shell/BrandWordmark'")
     expect(src).toContain('aria-label="Allocard"')
-    expect(src).toContain('[[data-expanded]_&]:h-6')
     expect(src).not.toContain('truncate')
     expect(src).not.toContain('font-brand')
   })

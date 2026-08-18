@@ -14,15 +14,17 @@ describe('Lucide chrome and pattern icons', () => {
     expect(src).toContain('h-8')
     expect(src).toContain("aria-current={active ? 'page' : undefined}")
     expect(src).toContain('activeNavHref')
+    expect(src).toContain('sidenav-current')
     expect(src).not.toMatch(/icon:/)
   })
 
   it('AppShell Menu keeps the word Menu next to MenuIcon', () => {
-    const src = readFileSync(join(root, 'src/client/shell/AppShell.tsx'), 'utf8')
-    expect(src).toContain('MenuIcon')
-    expect(src).toMatch(/<MenuIcon[^/]*\/>\s*Menu/)
-    expect(src).toContain("{ href: '/projects', label: 'Projects' }")
-    expect(src).toContain("{ href: '/cards', label: 'Cards' }")
+    const header = readFileSync(join(root, 'src/client/shell/AppHeader.tsx'), 'utf8')
+    const shell = readFileSync(join(root, 'src/client/shell/AppShell.tsx'), 'utf8')
+    expect(header).toContain('MenuIcon')
+    expect(header).toMatch(/<MenuIcon[^/]*\/>\s*Menu/)
+    expect(shell).toContain("{ href: '/projects', label: 'Projects' }")
+    expect(shell).toContain("{ href: '/cards', label: 'Cards' }")
   })
 
   it('Alert injects a variant icon and skips when a child SVG already exists', () => {
