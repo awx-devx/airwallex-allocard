@@ -1,10 +1,11 @@
-import { beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { useTestDb } from '../../../test/helpers/db'
 import { createMongooseAdapter } from '@/server/auth/adapter'
 import {
   authorizeCredentials,
   createAuthConfig,
   isGoogleAuthEnabled,
+  shouldRefreshOrgClaims,
   type AuthEnv,
 } from '@/server/auth/config'
 import { resolveOrgContextForUser } from '@/server/auth/session'
@@ -28,6 +29,10 @@ const baseEnv: AuthEnv = {
 
 describe('auth/config', () => {
   useTestDb()
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
   beforeAll(async () => {
     await Promise.all([
@@ -243,6 +248,102 @@ describe('auth/config', () => {
         orgRole: OrgRole.ADMIN,
         onboarded: true,
         user: { id: user.id },
+      })
+    })
+
+    it('shouldRefreshOrgClaims is true on sign-in, update, or a token missing onboarded', () => {
+      expect(shouldRefreshOrgClaims({ onboarded: true }, 'signIn', true)).toBe(true)
+      expect(shouldRefreshOrgClaims({ onboarded: true }, 'update', false)).toBe(true)
+      expect(shouldRefreshOrgClaims({}, undefined, false)).toBe(true)
+      expect(shouldRefreshOrgClaims({ onboarded: true }, undefined, false)).toBe(false)
+      expect(shouldRefreshOrgClaims({ onboarded: false }, undefined, false)).toBe(false)
+    })
+
+    it('keeps cached org claims on a session poll and does not hit memberships', async () => {
+      const spy = vi.spyOn(memberships, 'hasActiveMembership')
+      const config = createAuthConfig(baseEnv)
+      const token = await config.callbacks!.jwt!({
+        token: {
+          userId: 'cached-user',
+          orgId: 'cached-org',
+          orgRole: OrgRole.OWNER,
+          onboarded: true,
+        },
+      } as never)
+
+      expect(token).toMatchObject({
+        userId: 'cached-user',
+        orgId: 'cached-org',
+        orgRole: OrgRole.OWNER,
+        onboarded: true,
+      })
+      expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('recomputes org claims on session update after membership change', async () => {
+      const passwordHash = await hashPassword('password123')
+      const user = await users.createUser({
+        email: `jwt-update-${Date.now()}@example.com`,
+        name: 'Jwt Update',
+        passwordHash,
+      })
+      const org = await organizations.createOrganization({
+        name: 'Jwt Update Org',
+        slug: `jwt-update-${Date.now()}`,
+        country: 'US',
+        baseCurrency: 'USD',
+        createdBy: user.id,
+      })
+      await memberships.createMembership(
+        { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER },
+        { userId: user.id, orgRole: OrgRole.OWNER },
+      )
+
+      const config = createAuthConfig(baseEnv)
+      await memberships.updateMembership(
+        { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER },
+        user.id,
+        { status: MembershipStatus.SUSPENDED },
+      )
+
+      const token = await config.callbacks!.jwt!({
+        token: {
+          userId: user.id,
+          orgId: org.id,
+          orgRole: OrgRole.OWNER,
+          onboarded: true,
+        },
+        trigger: 'update',
+      } as never)
+
+      expect(token).toMatchObject({
+        userId: user.id,
+        orgId: null,
+        orgRole: null,
+        onboarded: false,
+      })
+    })
+
+    it('keeps cached claims when org refresh throws instead of wiping the session', async () => {
+      vi.spyOn(memberships, 'hasActiveMembership').mockRejectedValueOnce(
+        new Error('getaddrinfo ENOTFOUND'),
+      )
+      const config = createAuthConfig(baseEnv)
+      const token = await config.callbacks!.jwt!({
+        token: {
+          userId: 'still-here',
+          orgId: 'still-org',
+          orgRole: OrgRole.ADMIN,
+          onboarded: true,
+        },
+        trigger: 'update',
+      } as never)
+
+      expect(token).toMatchObject({
+        userId: 'still-here',
+        orgId: 'still-org',
+        orgRole: OrgRole.ADMIN,
+        onboarded: true,
       })
     })
   })

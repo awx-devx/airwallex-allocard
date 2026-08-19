@@ -48,6 +48,20 @@ export async function authorizeCredentials(
   }
 }
 
+/**
+ * B1 caches org claims on the JWT and recomputes on org create / invite accept
+ * (`update()`), not on every SessionProvider poll. A Mongo blip in jwt() becomes
+ * JWTSessionError and the next mutation (e.g. create project) is 401.
+ */
+export function shouldRefreshOrgClaims(
+  token: { onboarded?: boolean },
+  trigger: string | undefined,
+  hasUser: boolean,
+): boolean {
+  if (hasUser || trigger === 'update') return true
+  return typeof token.onboarded !== 'boolean'
+}
+
 export function createAuthConfig(env: AuthEnv = loadServerEnv()): NextAuthConfig {
   const providers: NextAuthConfig['providers'] = [
     Credentials({
@@ -81,19 +95,26 @@ export function createAuthConfig(env: AuthEnv = loadServerEnv()): NextAuthConfig
     session: { strategy: 'jwt' },
     providers,
     callbacks: {
-      async jwt({ token, user }) {
+      async jwt({ token, user, trigger }) {
         const userId = user?.id ?? (typeof token.userId === 'string' ? token.userId : undefined)
         if (!userId) {
           return token
         }
 
-        await connectDb()
         token.userId = userId
-        // Recompute on every token refresh so org create / invite accept show up next request.
-        const ctx = await resolveOrgContextForUser(userId)
-        token.orgId = ctx.orgId
-        token.orgRole = ctx.orgRole
-        token.onboarded = ctx.onboarded
+        if (!shouldRefreshOrgClaims(token, trigger, Boolean(user))) {
+          return token
+        }
+
+        try {
+          await connectDb()
+          const ctx = await resolveOrgContextForUser(userId)
+          token.orgId = ctx.orgId
+          token.orgRole = ctx.orgRole
+          token.onboarded = ctx.onboarded
+        } catch {
+          // Keep cached claims. Throwing here logs the user out (JWTSessionError).
+        }
         return token
       },
       async session({ session, token }) {

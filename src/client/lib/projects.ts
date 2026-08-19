@@ -12,25 +12,18 @@ import { listProjectsQuery, projectReadyForApproval } from '@/shared/schemas/pro
 import type { MePermissions } from '@/shared/types/mePermissions'
 import type { ListProjectsQuery, Project, ProjectSort } from '@/shared/types/project'
 
-export type WizardFilledBy = 'A2' | 'A3' | 'A4' | 'A5' | 'A6' | 'A7'
-
 export type WizardStep = {
   id: string
   label: string
   optional: boolean
-  filledBy: WizardFilledBy
 }
 
 export const WIZARD_STEPS: readonly WizardStep[] = [
-  { id: 'details', label: 'Details', optional: false, filledBy: 'A2' },
-  { id: 'budget', label: 'Budget', optional: false, filledBy: 'A2' },
-  { id: 'members', label: 'Members', optional: true, filledBy: 'A3' },
-  { id: 'roles', label: 'Roles', optional: true, filledBy: 'A3' },
-  { id: 'card-structure', label: 'Card structure', optional: false, filledBy: 'A2' },
-  { id: 'controls', label: 'Controls', optional: true, filledBy: 'A6' },
-  { id: 'approval-rules', label: 'Approval rules', optional: true, filledBy: 'A7' },
-  { id: 'review', label: 'Review', optional: false, filledBy: 'A2' },
-  { id: 'launch', label: 'Launch', optional: false, filledBy: 'A2' },
+  { id: 'details', label: 'Details', optional: false },
+  { id: 'budget', label: 'Budget', optional: false },
+  { id: 'card-structure', label: 'Card structure', optional: false },
+  { id: 'review', label: 'Review', optional: false },
+  { id: 'launch', label: 'Launch', optional: false },
 ]
 
 const SORT_COLUMN_IDS = ['updatedAt', 'name', 'createdAt', 'startDate', 'status'] as const
@@ -107,6 +100,25 @@ export function parseDraftId(input: { draftId?: string | string[] | undefined })
     return null
   }
   return raw
+}
+
+/** Trim a workstream name for Add / first-save. Empty after trim is omitted. */
+export function normalisedWorkstreamName(raw: string): string | null {
+  const name = raw.trim()
+  if (name.length < 1 || name.length > 120) return null
+  return name
+}
+
+/** Pending chips plus a typed-but-not-added name, in order. */
+export function queueWorkstreamNames(pending: string[], draft: string): string[] {
+  const next = normalisedWorkstreamName(draft)
+  return next ? [...pending, next] : pending
+}
+
+/** Drop a locally queued workstream by index. Out of range is a no-op. */
+export function withoutPendingWorkstream(pending: string[], index: number): string[] {
+  if (index < 0 || index >= pending.length) return pending
+  return pending.filter((_, i) => i !== index)
 }
 
 export function parseProjectListSearchParams(input: {
@@ -280,6 +292,33 @@ export function cardStructureReviewLines(cs: {
     cs.vendor ? 'Will issue vendor cards.' : 'Not issuing vendor cards.',
     cs.oneTime ? 'Will issue one-time cards.' : 'Not issuing one-time cards.',
   ]
+}
+
+export const CARD_STRUCTURE_FLAGS = [
+  {
+    key: 'shared' as const,
+    label: 'Shared',
+    description: 'One card the whole project can spend from.',
+  },
+  {
+    key: 'perMember' as const,
+    label: 'Per-member',
+    description: 'A personal card for each person, with their own limit.',
+  },
+  {
+    key: 'vendor' as const,
+    label: 'Vendor',
+    description: 'Cards for paying a specific supplier.',
+  },
+  {
+    key: 'oneTime' as const,
+    label: 'One-time',
+    description: 'A single-use card that closes after one payment.',
+  },
+]
+
+export function launchExplainerMessage(): string {
+  return 'When you launch, the project goes live and cards are issued from the structure you chose.'
 }
 
 /** Workspace route tabs — exactly these six; no Settings. */

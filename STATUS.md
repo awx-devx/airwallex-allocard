@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** Visual language and layout (post–Track A)
-**Active task:** Form field grid alignment (helper text after inputs)
-**Last green `pnpm verify`:** 2026-08-20 (FormItem self-start; 1846 tests)
+**Active task:** _wait for the user to name the next phase_
+**Last green `pnpm verify`:** 2026-08-20 (launch redirects to project; 1856 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,20 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Launch redirects to the project (2026-08-20).** After a successful launch (or opening the wizard on an already ACTIVE project), the wizard goes to `/projects/:id` instead of dumping the activity timeline. Approval-needed stays on Launch with the info alert. `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
+
+**Wizard copy and card-structure help (2026-08-20).** Dropped budget/cards tab shortcut buttons from the wizard. Each card-structure switch has a one-line description. Launch copy is “When you launch, the project goes live and cards are issued from the structure you chose.” `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
+
+**Wizard drop placeholder steps (2026-08-20).** Create flow is Details → Budget → Card structure → Review → Launch. Members, Roles, Controls, and Approval rules came out of the rail (still on People / Settings / Controls after launch). `DeferredStep` removed. `pnpm verify` green (1854 tests). Next: wait for the user to name the next phase.
+
+**Wizard workstream remove (2026-08-20).** Details chips are Remove buttons. Pending names drop locally; saved names `DELETE /api/projects/:id/workstreams/:wsId` (409 if a budget category still references it). `pnpm verify` green (1854 tests). Next: wait for the user to name the next phase.
+
+**Wizard workstreams always visible (2026-08-20).** Details step no longer hides Workstreams until `draftId`. Names queue locally on first visit; Continue creates the draft then POSTs each workstream. Typed-but-not-Added name is included. `pnpm verify` green (1853 tests). Next: wait for the user to name the next phase.
+
+**Unauthenticated on create project (2026-08-20).** SessionProvider polls ran `jwt()` → Mongo every time. Atlas DNS timeout threw `JWTSessionError` and wiped the session, so `POST /api/projects` returned 401. Org claims stay cached on the token and refresh on sign-in / `update()` only; a DB error keeps the cached claims. `pnpm verify` green (1851 tests). Sign in again after this fix. Next: wait for the user to name the next phase.
+
+**Favicon and document metadata (2026-08-20).** App Router file convention: `src/app/favicon.ico` (32×32 RGBA PNG-in-ICO — paletted ICO fails Turbopack), `icon.png` (192 cutout, transparent field, matches `public/brand/icon.png`), `apple-icon.png` (180, opaque, matches `apple-touch-icon.png`). Root metadata: application name, title template `%s · Allocard`, description, Open Graph, Twitter, apple-web-app, no format-detection. Viewport `themeColor` follows light/dark canvas; `colorScheme: light dark`. OG/Twitter images stay `opengraph-image.tsx` / `twitter-image.tsx`. `pnpm verify` green (1851 tests). Next: wait for the user to name the next phase.
 
 **Form field grid alignment (2026-08-20).** `FormItem` is `content-start self-start` so a helper line (e.g. Code: “Letters, numbers, hyphens.”) no longer stretches the sibling input. Inputs stay aligned; info text sits under its field; the next row starts after that. `pnpm verify` green (1846 tests). Next: wait for the user to name the next phase.
 

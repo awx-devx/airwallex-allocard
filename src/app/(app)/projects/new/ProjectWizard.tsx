@@ -2,19 +2,16 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject } from '@/client/hooks/useProjects'
 import { useMe } from '@/client/hooks/useSession'
-import { controlsHref } from '@/client/lib/cards'
 import {
   nextWizardStepId,
   parseDraftId,
   prevWizardStepId,
   WIZARD_STEPS,
 } from '@/client/lib/projects'
-import { wizardControlsLinkMessage } from '@/client/lib/rules'
-import { wizardApprovalRulesLinkMessage } from '@/client/lib/requests'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
@@ -27,7 +24,6 @@ import {
   CardStructureStep,
   type CardStructureStepHandle,
 } from '@/app/(app)/projects/new/steps/CardStructureStep'
-import { DeferredStep } from '@/app/(app)/projects/new/steps/DeferredStep'
 import { DetailsStep, type DetailsStepHandle } from '@/app/(app)/projects/new/steps/DetailsStep'
 import { LaunchStep, type LaunchStepHandle } from '@/app/(app)/projects/new/steps/LaunchStep'
 import { ReviewStep } from '@/app/(app)/projects/new/steps/ReviewStep'
@@ -61,9 +57,13 @@ export function ProjectWizard() {
   const project = projectQuery.data
   const launched = project !== undefined && project.status !== ProjectStatus.DRAFT
 
+  useEffect(() => {
+    if (project?.status === ProjectStatus.ACTIVE) {
+      router.replace(`/projects/${project.id}`)
+    }
+  }, [project, router])
+
   function isStepValid(id: string): boolean {
-    const step = WIZARD_STEPS.find((item) => item.id === id)
-    if (step?.optional) return true
     if (id === 'details') return detailsValid && !saving && !launched
     if (id === 'budget') return budgetValid && !saving && !launched && draftId !== null
     if (id === 'card-structure') return true
@@ -165,6 +165,9 @@ export function ProjectWizard() {
     if (projectQuery.isPending) {
       return <LoadingState label="Loading draft" />
     }
+    if (project?.status === ProjectStatus.ACTIVE) {
+      return <LoadingState label="Opening project" />
+    }
     if (projectQuery.error) {
       const notFound =
         isApiError(projectQuery.error) && projectQuery.error.code === ErrorCode.NOT_FOUND
@@ -207,30 +210,8 @@ export function ProjectWizard() {
             onDirtyChange={setBudgetDirty}
           />
         )
-      case 'members':
-        return <DeferredStep title="Members" phase="A3" />
-      case 'roles':
-        return <DeferredStep title="Roles" phase="A3" />
       case 'card-structure':
         return <CardStructureStep ref={cardRef} draftId={draftId} onDirtyChange={setCardDirty} />
-      case 'controls':
-        return (
-          <DeferredStep
-            title="Controls"
-            phase="A6"
-            href={controlsHref(draftId)}
-            linkLabel={wizardControlsLinkMessage()}
-          />
-        )
-      case 'approval-rules':
-        return (
-          <DeferredStep
-            title="Approval rules"
-            phase="A7"
-            href={draftId.length >= 1 ? controlsHref(draftId) : undefined}
-            linkLabel={wizardApprovalRulesLinkMessage()}
-          />
-        )
       case 'review':
         return <ReviewStep draftId={draftId} />
       case 'launch':

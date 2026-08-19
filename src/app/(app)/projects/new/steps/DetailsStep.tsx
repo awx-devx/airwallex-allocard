@@ -7,12 +7,18 @@ import { isApiError } from '@/client/api/errors'
 import {
   useCreateProject,
   useCreateWorkstream,
+  useDeleteWorkstream,
   useUpdateProject,
   useWorkstreams,
 } from '@/client/hooks/useProjects'
 import { useMe } from '@/client/hooks/useSession'
 import { applyServerErrorsFromApiError, useZodForm } from '@/client/lib/forms'
-import { draftWizardHref } from '@/client/lib/projects'
+import {
+  draftWizardHref,
+  normalisedWorkstreamName,
+  queueWorkstreamNames,
+  withoutPendingWorkstream,
+} from '@/client/lib/projects'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
@@ -54,6 +60,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
   const create = useCreateProject()
   const update = useUpdateProject()
   const createWorkstream = useCreateWorkstream()
+  const deleteWorkstream = useDeleteWorkstream()
   const workstreams = useWorkstreams(draftId ?? '')
   const form = useZodForm(createProjectInput, {
     mode: 'onChange',
@@ -69,6 +76,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
   })
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [workstreamName, setWorkstreamName] = useState('')
+  const [pendingWorkstreams, setPendingWorkstreams] = useState<string[]>([])
   const hydratedId = useRef<string | null>(null)
   const activeOrg = me.data?.activeOrg
   const costCentreOptions = (activeOrg?.costCentres ?? []).map((centre) => ({
@@ -81,8 +89,10 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
   }, [form.formState.isValid, onValidChange])
 
   useEffect(() => {
-    onDirtyChange(form.formState.isDirty)
-  }, [form.formState.isDirty, onDirtyChange])
+    onDirtyChange(
+      form.formState.isDirty || pendingWorkstreams.length > 0 || workstreamName.trim().length > 0,
+    )
+  }, [form.formState.isDirty, onDirtyChange, pendingWorkstreams.length, workstreamName])
 
   useEffect(() => {
     if (!project || hydratedId.current === project.id) return
@@ -98,10 +108,21 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
     })
   }, [form, project, user.id])
 
+  async function persistQueuedWorkstreams(projectId: string, names: string[]): Promise<void> {
+    setWorkstreamName('')
+    setPendingWorkstreams(names)
+    for (let i = 0; i < names.length; i++) {
+      await createWorkstream.mutateAsync({ id: projectId, input: { name: names[i]! } })
+      setPendingWorkstreams(names.slice(i + 1))
+    }
+  }
+
   async function submit(): Promise<string | null> {
     if (launched) return null
     setErrorMessage(null)
     const values = form.getValues()
+    const queued = queueWorkstreamNames(pendingWorkstreams, workstreamName)
+    let projectId: string
     try {
       if (!draftId) {
         const created = await create.mutateAsync({
@@ -115,21 +136,22 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
           ...(values.startDate ? { startDate: values.startDate } : {}),
           ...(values.endDate ? { endDate: values.endDate } : {}),
         })
+        projectId = created.id
         router.replace(draftWizardHref(created.id))
-        return created.id
+      } else {
+        await update.mutateAsync({
+          id: draftId,
+          input: {
+            name: values.name,
+            code: values.code,
+            description: values.description ?? '',
+            costCentre: values.costCentre ?? null,
+            startDate: values.startDate ?? null,
+            endDate: values.endDate ?? null,
+          },
+        })
+        projectId = draftId
       }
-      await update.mutateAsync({
-        id: draftId,
-        input: {
-          name: values.name,
-          code: values.code,
-          description: values.description ?? '',
-          costCentre: values.costCentre ?? null,
-          startDate: values.startDate ?? null,
-          endDate: values.endDate ?? null,
-        },
-      })
-      return draftId
     } catch (error) {
       if (isApiError(error) && error.code === ErrorCode.VALIDATION_FAILED) {
         applyServerErrorsFromApiError(form as unknown as UseFormReturn<FieldValues>, error)
@@ -138,19 +160,45 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
       setErrorMessage(isApiError(error) ? error.message : 'Unable to save project')
       return null
     }
+
+    try {
+      await persistQueuedWorkstreams(projectId, queued)
+    } catch (error) {
+      setErrorMessage(isApiError(error) ? error.message : 'Unable to add workstream')
+    }
+    return projectId
   }
 
   useImperativeHandle(ref, () => ({ submit }))
 
   async function addWorkstream() {
-    if (!draftId || launched) return
-    const name = workstreamName.trim()
-    if (name.length < 1) return
+    if (launched) return
+    const name = normalisedWorkstreamName(workstreamName)
+    if (!name) return
+    if (!draftId) {
+      setPendingWorkstreams((current) => [...current, name])
+      setWorkstreamName('')
+      return
+    }
     try {
       await createWorkstream.mutateAsync({ id: draftId, input: { name } })
       setWorkstreamName('')
     } catch (error) {
       setErrorMessage(isApiError(error) ? error.message : 'Unable to add workstream')
+    }
+  }
+
+  function removePending(index: number) {
+    if (launched) return
+    setPendingWorkstreams((current) => withoutPendingWorkstream(current, index))
+  }
+
+  async function removeSaved(wsId: string) {
+    if (!draftId || launched) return
+    try {
+      await deleteWorkstream.mutateAsync({ id: draftId, wsId })
+    } catch (error) {
+      setErrorMessage(isApiError(error) ? error.message : 'Unable to remove workstream')
     }
   }
 
@@ -252,40 +300,62 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
           <p className="text-sm text-muted-foreground md:col-span-2">Owner: {user.name}</p>
         </div>
       </Form>
-      {draftId ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium">Workstreams</p>
-          <div className="flex flex-wrap items-end gap-2">
-            <Input
-              value={workstreamName}
-              onChange={(event) => setWorkstreamName(event.target.value)}
-              maxLength={120}
-              disabled={launched}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault()
-                  void addWorkstream()
-                }
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => void addWorkstream()}
-              disabled={launched || createWorkstream.isPending}
-            >
-              Add
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {(workstreams.data ?? project?.workstreams ?? []).map((item) => (
-              <span key={item.id} className="rounded-md border px-2 py-1 text-sm">
-                {item.name}
-              </span>
-            ))}
-          </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium">Workstreams</p>
+        <p className="text-sm text-muted-foreground">
+          Optional. Named slices for budget and access.
+        </p>
+        <div className="flex flex-wrap items-end gap-2">
+          <Input
+            value={workstreamName}
+            onChange={(event) => setWorkstreamName(event.target.value)}
+            maxLength={120}
+            disabled={launched}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                void addWorkstream()
+              }
+            }}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void addWorkstream()}
+            disabled={launched || createWorkstream.isPending}
+          >
+            Add
+          </Button>
         </div>
-      ) : null}
+        <div className="flex flex-wrap gap-2">
+          {(workstreams.data ?? project?.workstreams ?? []).map((item) => (
+            <Button
+              key={item.id}
+              type="button"
+              size="sm"
+              variant="outline"
+              aria-label={`Remove ${item.name}`}
+              disabled={launched || deleteWorkstream.isPending}
+              onClick={() => void removeSaved(item.id)}
+            >
+              {item.name}
+            </Button>
+          ))}
+          {pendingWorkstreams.map((name, index) => (
+            <Button
+              key={`pending-${index}-${name}`}
+              type="button"
+              size="sm"
+              variant="outline"
+              aria-label={`Remove ${name}`}
+              disabled={launched}
+              onClick={() => removePending(index)}
+            >
+              {name}
+            </Button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 })

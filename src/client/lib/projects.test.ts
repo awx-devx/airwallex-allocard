@@ -13,21 +13,26 @@ import {
   WIZARD_STEPS,
   activeOrgRole,
   canCreateProject,
+  CARD_STRUCTURE_FLAGS,
   cardStructureReviewLines,
   createProjectDenialMessage,
   draftWizardHref,
   hasBudgetFrom,
   isReadyForApprovalInput,
+  launchExplainerMessage,
   nextWizardStepId,
+  normalisedWorkstreamName,
   parseDraftId,
   parseProjectListSearchParams,
   prevWizardStepId,
   projectFromListCache,
   projectListHref,
   projectSortToSorting,
+  queueWorkstreamNames,
   sortingToProjectSort,
   toTimelineItem,
   wizardStepIndex,
+  withoutPendingWorkstream,
   WORKSPACE_TAB_HREFS,
 } from '@/client/lib/projects'
 
@@ -54,29 +59,22 @@ const MEMBER_VIEW_ONLY: MePermissions = {
 }
 
 describe('WIZARD_STEPS', () => {
-  it('is the nine kitchen-sink ids in order', () => {
+  it('is details, budget, card structure, review, launch', () => {
     expect(WIZARD_STEPS.map((step) => step.id)).toEqual([
       'details',
       'budget',
-      'members',
-      'roles',
       'card-structure',
-      'controls',
-      'approval-rules',
       'review',
       'launch',
     ])
-    expect(WIZARD_STEPS.filter((step) => step.optional).map((step) => step.id)).toEqual([
-      'members',
-      'roles',
-      'controls',
-      'approval-rules',
-    ])
+    expect(WIZARD_STEPS.filter((step) => step.optional)).toEqual([])
   })
 
   it('walks next/prev and throws on unknown ids', () => {
     expect(wizardStepIndex('details')).toBe(0)
     expect(nextWizardStepId('details')).toBe('budget')
+    expect(nextWizardStepId('budget')).toBe('card-structure')
+    expect(nextWizardStepId('card-structure')).toBe('review')
     expect(prevWizardStepId('details')).toBeNull()
     expect(nextWizardStepId('launch')).toBeNull()
     expect(prevWizardStepId('launch')).toBe('review')
@@ -138,6 +136,28 @@ describe('draftWizardHref / parseDraftId', () => {
     expect(parseDraftId({})).toBeNull()
     expect(parseDraftId({ draftId: '' })).toBeNull()
     expect(parseDraftId({ draftId: [] })).toBeNull()
+  })
+})
+
+describe('normalisedWorkstreamName / queueWorkstreamNames', () => {
+  it('trims and rejects empty or over-long names', () => {
+    expect(normalisedWorkstreamName('  APAC  ')).toBe('APAC')
+    expect(normalisedWorkstreamName('   ')).toBeNull()
+    expect(normalisedWorkstreamName('')).toBeNull()
+    expect(normalisedWorkstreamName('x'.repeat(121))).toBeNull()
+    expect(normalisedWorkstreamName('x'.repeat(120))).toBe('x'.repeat(120))
+  })
+
+  it('appends a typed draft name after pending chips', () => {
+    expect(queueWorkstreamNames(['Retail'], '  Field  ')).toEqual(['Retail', 'Field'])
+    expect(queueWorkstreamNames(['Retail'], '   ')).toEqual(['Retail'])
+    expect(queueWorkstreamNames([], 'Launch')).toEqual(['Launch'])
+  })
+
+  it('removes a pending chip by index', () => {
+    expect(withoutPendingWorkstream(['Retail', 'Field'], 0)).toEqual(['Field'])
+    expect(withoutPendingWorkstream(['Retail', 'Field'], 1)).toEqual(['Retail'])
+    expect(withoutPendingWorkstream(['Retail'], 4)).toEqual(['Retail'])
   })
 })
 
@@ -279,6 +299,29 @@ describe('cardStructureReviewLines', () => {
       'Will issue vendor cards.',
       'Not issuing one-time cards.',
     ])
+  })
+
+  it('explains each card-structure toggle in plain language', () => {
+    expect(CARD_STRUCTURE_FLAGS.map((flag) => flag.key)).toEqual([
+      'shared',
+      'perMember',
+      'vendor',
+      'oneTime',
+    ])
+    for (const flag of CARD_STRUCTURE_FLAGS) {
+      expect(flag.description.length).toBeGreaterThan(10)
+      expect(flag.description.toLowerCase()).not.toContain('pan')
+    }
+  })
+})
+
+describe('launchExplainerMessage', () => {
+  it('does not mention events or status enums', () => {
+    const copy = launchExplainerMessage()
+    expect(copy.toLowerCase()).toContain('launch')
+    expect(copy.toLowerCase()).toContain('card')
+    expect(copy).not.toContain('project.launched')
+    expect(copy).not.toContain('ACTIVE')
   })
 })
 

@@ -2,26 +2,17 @@
 
 /** Card structure flags only — never a PAN. */
 
-import Link from 'next/link'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useProject, useUpdateProject } from '@/client/hooks/useProjects'
-import { projectCardsHref } from '@/client/lib/cards'
+import { CARD_STRUCTURE_FLAGS } from '@/client/lib/projects'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { buttonVariants } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 
 export type CardStructureStepHandle = {
   submit: () => Promise<boolean>
 }
-
-const FLAGS = [
-  { key: 'shared', label: 'Shared' },
-  { key: 'perMember', label: 'Per-member' },
-  { key: 'vendor', label: 'Vendor' },
-  { key: 'oneTime', label: 'One-time' },
-] as const
 
 export const CardStructureStep = forwardRef<
   CardStructureStepHandle,
@@ -88,17 +79,20 @@ export const CardStructureStep = forwardRef<
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       ) : null}
-      {FLAGS.map((flag) => (
-        <div key={flag.key} className="flex items-center gap-3">
-          <Switch id={flag.key} checked={values[flag.key]} onCheckedChange={setters[flag.key]} />
-          <Label htmlFor={flag.key}>{flag.label}</Label>
+      {CARD_STRUCTURE_FLAGS.map((flag) => (
+        <div key={flag.key} className="flex items-start gap-3">
+          <Switch
+            id={flag.key}
+            className="mt-0.5"
+            checked={values[flag.key]}
+            onCheckedChange={setters[flag.key]}
+          />
+          <div className="flex min-w-0 flex-col gap-1">
+            <Label htmlFor={flag.key}>{flag.label}</Label>
+            <p className="text-sm text-muted-foreground">{flag.description}</p>
+          </div>
         </div>
       ))}
-      {draftId.length >= 1 ? (
-        <Link href={projectCardsHref(draftId)} className={buttonVariants({ variant: 'outline' })}>
-          Issue and manage cards on the project cards tab.
-        </Link>
-      ) : null}
     </div>
   )
 })

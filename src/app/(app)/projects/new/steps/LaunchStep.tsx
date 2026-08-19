@@ -1,15 +1,16 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useBudget } from '@/client/hooks/useBudget'
 import { useProject, useTransitionProject } from '@/client/hooks/useProjects'
-import { useProjectActivity } from '@/client/hooks/useReports'
-import { hasBudgetFrom, isReadyForApprovalInput, toTimelineItem } from '@/client/lib/projects'
-import { Timeline } from '@/components/patterns/Timeline'
+import {
+  hasBudgetFrom,
+  isReadyForApprovalInput,
+  launchExplainerMessage,
+} from '@/client/lib/projects'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 
@@ -26,13 +27,12 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
   { draftId, onValidChange },
   ref,
 ) {
+  const router = useRouter()
   const projectQuery = useProject(draftId)
   const budgetQuery = useBudget(draftId)
-  const activity = useProjectActivity(draftId)
   const transition = useTransitionProject()
   const [info, setInfo] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [attempted, setAttempted] = useState(false)
 
   const project = projectQuery.data
   const approved = budgetQuery.data?.budget?.approvedAmount ?? null
@@ -44,6 +44,12 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
   useEffect(() => {
     onValidChange(ready && !transition.isPending)
   }, [onValidChange, ready, transition.isPending])
+
+  useEffect(() => {
+    if (project?.status === ProjectStatus.ACTIVE) {
+      router.replace(`/projects/${draftId}`)
+    }
+  }, [draftId, project?.status, router])
 
   async function submit(): Promise<boolean> {
     if (!project || transition.isPending) return false
@@ -60,12 +66,9 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
         id: draftId,
         input: { to: ProjectStatus.ACTIVE },
       })
-      setAttempted(true)
-      await activity.refetch()
+      router.replace(`/projects/${draftId}`)
       return true
     } catch (error) {
-      setAttempted(true)
-      void activity.refetch()
       if (isApiError(error) && error.code === ErrorCode.PERMISSION_DENIED) {
         setInfo('Submitted for approval. You need request.approve to launch.')
         return true
@@ -81,16 +84,9 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
 
   useImperativeHandle(ref, () => ({ submit }))
 
-  const items = (activity.data?.pages[0]?.items ?? []).map(toTimelineItem)
-  const launched = project?.status === ProjectStatus.ACTIVE
-  const showTimeline = attempted || launched
-
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <p className="text-sm">
-        Launch moves this project to ACTIVE and emits project.launched, which is what causes cards
-        to appear.
-      </p>
+      <p className="text-sm">{launchExplainerMessage()}</p>
       {info ? (
         <Alert variant="info">
           <AlertDescription>{info}</AlertDescription>
@@ -101,14 +97,6 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       ) : null}
-      {showTimeline ? <Timeline items={items} loading={activity.isPending} /> : null}
-      <div className="flex flex-wrap gap-2">
-        {launched ? (
-          <Button asChild>
-            <Link href={`/projects/${draftId}`}>Open project</Link>
-          </Button>
-        ) : null}
-      </div>
     </div>
   )
 })

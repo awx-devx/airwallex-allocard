@@ -15,13 +15,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatRange } from '@/lib/dates'
 
-const DEFERRED = [
-  { title: 'Members', phase: 'A3' },
-  { title: 'Roles', phase: 'A3' },
-  { title: 'Controls', phase: 'A6' },
-  { title: 'Approval rules', phase: 'A7' },
-] as const
-
 export function ReviewStep({ draftId }: { draftId: string }) {
   const me = useMe()
   const projectQuery = useProject(draftId)
@@ -105,13 +98,6 @@ export function ReviewStep({ draftId }: { draftId: string }) {
           </ul>
         </CardContent>
       </Card>
-      {DEFERRED.map((item) => (
-        <Alert key={item.title} variant="info">
-          <AlertDescription>
-            {item.title} land in {item.phase}.
-          </AlertDescription>
-        </Alert>
-      ))}
     </div>
   )
 }
