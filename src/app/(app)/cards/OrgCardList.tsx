@@ -17,7 +17,7 @@ import {
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageFill } from '@/components/patterns/PageBody'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
@@ -119,7 +119,7 @@ export function OrgCardList() {
 
   return (
     <PageFill>
-      <div className="flex shrink-0 flex-wrap gap-3">
+      <FilterBar>
         <FilterSelect
           label="Project"
           value={filter.projectId ?? ALL}
@@ -174,7 +174,7 @@ export function OrgCardList() {
             </SelectItem>
           ))}
         </FilterSelect>
-      </div>
+      </FilterBar>
       <DataTable
         columns={columns}
         rows={query.data?.items ?? []}

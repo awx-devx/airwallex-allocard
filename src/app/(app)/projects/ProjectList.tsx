@@ -37,7 +37,7 @@ import {
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageFill } from '@/components/patterns/PageBody'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGate, PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -156,7 +156,7 @@ export function ProjectList() {
       id: 'actions',
       header: 'Actions',
       cell: (row) => (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {row.status === ProjectStatus.DRAFT ? (
             <>
               <Button asChild size="sm" variant="outline">
@@ -263,7 +263,7 @@ export function ProjectList() {
         title="Projects"
         actions={<CreateProjectControl />}
       />
-      <div className="flex shrink-0 flex-wrap gap-2">
+      <FilterBar>
         <FilterSelect
           label="Status"
           value={filter.status ?? ALL}
@@ -300,7 +300,7 @@ export function ProjectList() {
             </SelectItem>
           ))}
         </FilterSelect>
-      </div>
+      </FilterBar>
       <DataTable
         columns={columns}
         rows={query.data?.items ?? []}

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { DownloadIcon } from 'lucide-react'
 import { isApiError } from '@/client/api/errors'
@@ -29,13 +28,13 @@ import {
   type ExportSearch,
 } from '@/client/lib/reports'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { PageFlow } from '@/components/patterns/PageBody'
+import { StatTile } from '@/components/patterns/StatTile'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Label } from '@/components/ui/label'
 import { SelectItem } from '@/components/ui/select'
@@ -132,68 +131,33 @@ export function ReportCatalogue() {
   return (
     <PageFlow>
       <PageHeader title="Reports" />
-      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <Link href={organizationReportHref()} className="hover:underline">
-                Organization
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+      <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2">
+        <StatTile href={organizationReportHref()} label="Organization">
+          <span className="text-muted-foreground">
             Roll-up totals across projects in this organisation.
-          </CardContent>
-        </Card>
+          </span>
+        </StatTile>
         {filter.projectId !== undefined && filter.projectId.length >= 1 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <Link href={projectReportHref(filter.projectId)} className="hover:underline">
-                  Project
-                </Link>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
+          <StatTile href={projectReportHref(filter.projectId)} label="Project">
+            <span className="text-muted-foreground">
               Budget versus actual for the selected project.
-            </CardContent>
-          </Card>
+            </span>
+          </StatTile>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Project</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
+          <StatTile label="Project">
+            <span className="text-muted-foreground">
               Choose a project above to open its report.
-            </CardContent>
-          </Card>
+            </span>
+          </StatTile>
         )}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <Link href={auditLink} className="hover:underline">
-                {viewInAuditLink()}
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Audit trail for this organisation.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <Link href={accessReviewListHref({})} className="hover:underline">
-                Access reviews
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Open access-review flags.
-          </CardContent>
-        </Card>
+        <StatTile href={auditLink} label={viewInAuditLink()}>
+          <span className="text-muted-foreground">Audit trail for this organisation.</span>
+        </StatTile>
+        <StatTile href={accessReviewListHref({})} label="Access reviews">
+          <span className="text-muted-foreground">Open access-review flags.</span>
+        </StatTile>
       </div>
-      <div className="flex min-w-0 flex-wrap gap-2">
+      <FilterBar>
         <FilterSelect
           label="Project"
           value={filter.projectId ?? ALL}
@@ -225,7 +189,7 @@ export function ReportCatalogue() {
             }
           />
         </div>
-      </div>
+      </FilterBar>
       {canExport ? (
         exportButtons
       ) : (

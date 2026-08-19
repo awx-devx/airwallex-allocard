@@ -56,7 +56,7 @@ function QueryBody({
   children: ReactNode
 }) {
   if (isPending) {
-    return <LoadingState rows={3} />
+    return <LoadingState rows={2} />
   }
   if (error) {
     const { message, code } = queryError(error)

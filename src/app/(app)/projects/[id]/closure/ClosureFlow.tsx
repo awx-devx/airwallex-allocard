@@ -202,7 +202,7 @@ export function ClosureFlow() {
           fallback={<p className="text-sm">{closeProjectDenialMessage()}</p>}
         >
           <Card>
-            <CardContent className="pt-6 [&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
+            <CardContent className="[&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
               <StepWizard
                 steps={[...CLOSURE_STEPS]}
                 activeStepId="PREFLIGHT"
@@ -277,7 +277,7 @@ export function ClosureFlow() {
           fallback={<p className="text-sm">{closeProjectDenialMessage()}</p>}
         >
           <Card>
-            <CardContent className="pt-6 [&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
+            <CardContent className="[&_button:disabled]:bg-muted [&_button:disabled]:text-muted-foreground [&_button:disabled]:opacity-100 [&_button:disabled]:shadow-none">
               <StepWizard
                 steps={[...CLOSURE_STEPS]}
                 activeStepId={closureActiveStep('CLOSING', currentStep)}

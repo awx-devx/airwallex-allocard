@@ -84,6 +84,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { StatTile } from '@/components/patterns/StatTile'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -194,7 +195,7 @@ function CardActions({ card, archived }: { card: Card; archived: boolean }) {
           <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {archived ? null : (
           <PermissionGateView allowed={revealAllowed} denialMessage={revealCardDenialMessage()}>
             <Button
@@ -339,7 +340,7 @@ function CardMetaEditor({ card, projectId }: { card: Card; projectId: string }) 
       ) : null}
       <Form {...form}>
         <form
-          className="flex flex-wrap gap-2"
+          className="flex flex-wrap items-end gap-2"
           onSubmit={form.handleSubmit((values) => void onSaveNick(values))}
         >
           <FormField
@@ -516,7 +517,7 @@ export function CardDetail() {
         </Alert>
       ) : null}
       <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-3">
           <CardVisual
             nickName={card.nickName}
             maskedNumber={card.maskedNumber}
@@ -529,53 +530,6 @@ export function CardDetail() {
             cardholderStatus={cardholderQuery.data?.status}
             transactionCount={txRows.length}
           />
-          {card.managedByRuleIds.length > 0 ? (
-            <p className="text-sm">
-              Created by rule{' '}
-              {card.managedByRuleIds.map((ruleId, index) => (
-                <span key={ruleId}>
-                  {index > 0 ? ', ' : null}
-                  {card.projectId !== null && card.projectId.length >= 1 ? (
-                    <Link href={ruleHref(card.projectId, ruleId)} className="hover:underline">
-                      {ruleId}
-                    </Link>
-                  ) : (
-                    ruleId
-                  )}
-                </span>
-              ))}
-            </p>
-          ) : null}
-          <div className="flex min-w-0 flex-col gap-2">
-            <h2 className="text-sm font-medium">Holder</h2>
-            <p className="text-sm">{holder ? holderLabel(holder, userName) : card.cardholderId}</p>
-            {holder ? (
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">{holder.type}</Badge>
-                <Badge variant="outline">{holder.status}</Badge>
-              </div>
-            ) : null}
-          </div>
-          <div className="flex min-w-0 flex-col gap-2">
-            <h2 className="text-sm font-medium">Access list</h2>
-            {accessNames.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No one on the access list.</p>
-            ) : (
-              <ul className="flex min-w-0 flex-col gap-1">
-                {accessNames.map((row) => (
-                  <li key={row.userId} className="min-w-0 break-all text-sm">
-                    {row.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          {!archived &&
-          canEditCardMeta(card.status) &&
-          card.projectId !== null &&
-          card.projectId.length >= 1 ? (
-            <CardMetaEditor card={card} projectId={card.projectId} />
-          ) : null}
         </div>
         <GlassCard>
           <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
@@ -586,7 +540,7 @@ export function CardDetail() {
           </CardHeader>
           <CardContent className="flex min-w-0 flex-col gap-3">
             {limitsQuery.isPending ? (
-              <LoadingState />
+              <LoadingState rows={2} />
             ) : limitsQuery.error ? (
               <ErrorState
                 message={
@@ -610,6 +564,64 @@ export function CardDetail() {
           </CardContent>
         </GlassCard>
       </div>
+      <div className="grid min-w-0 grid-cols-2 gap-2 md:grid-cols-3">
+        <StatTile label="Holder">
+          {cardholderQuery.isPending ? (
+            <LoadingState rows={1} />
+          ) : (
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="min-w-0 break-all">
+                {holder ? holderLabel(holder, userName) : card.cardholderId}
+              </p>
+              {holder ? (
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant="outline">{holder.type}</Badge>
+                  <Badge variant="outline">{holder.status}</Badge>
+                </div>
+              ) : null}
+            </div>
+          )}
+        </StatTile>
+        <StatTile label="Access list">
+          {membersQuery.isPending ? (
+            <LoadingState rows={1} />
+          ) : accessNames.length === 0 ? (
+            <p className="text-muted-foreground">No one on the access list.</p>
+          ) : (
+            <ul className="flex min-w-0 flex-col gap-0.5">
+              {accessNames.map((row) => (
+                <li key={row.userId} className="min-w-0 break-all">
+                  {row.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </StatTile>
+        {card.managedByRuleIds.length > 0 ? (
+          <StatTile label="Created by rule">
+            <p className="min-w-0 break-all">
+              {card.managedByRuleIds.map((ruleId, index) => (
+                <span key={ruleId}>
+                  {index > 0 ? ', ' : null}
+                  {card.projectId !== null && card.projectId.length >= 1 ? (
+                    <Link href={ruleHref(card.projectId, ruleId)} className="hover:underline">
+                      {ruleId}
+                    </Link>
+                  ) : (
+                    ruleId
+                  )}
+                </span>
+              ))}
+            </p>
+          </StatTile>
+        ) : null}
+      </div>
+      {!archived &&
+      canEditCardMeta(card.status) &&
+      card.projectId !== null &&
+      card.projectId.length >= 1 ? (
+        <CardMetaEditor card={card} projectId={card.projectId} />
+      ) : null}
       {diff ? (
         <div className="flex min-w-0 flex-col gap-2">
           <h2 className="text-sm font-medium">Desired vs applied</h2>

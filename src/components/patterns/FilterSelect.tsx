@@ -13,6 +13,15 @@ import { cn } from '@/lib/utils'
 
 export const FILTER_ALL = '__all__'
 
+/** Labeled filters + unlabeled buttons share a baseline (controls, not labels). */
+export function FilterBar({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn('flex min-w-0 shrink-0 flex-wrap items-end gap-2', className)}>
+      {children}
+    </div>
+  )
+}
+
 export function FilterSelect({
   label,
   value,
@@ -41,7 +50,7 @@ export function FilterSelect({
         {label}
       </Label>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger id={id} aria-label={label} size="sm" className="min-w-40">
+        <SelectTrigger id={id} aria-label={label} className="min-w-40">
           <SelectValue placeholder={shownPlaceholder} />
         </SelectTrigger>
         <SelectContent>

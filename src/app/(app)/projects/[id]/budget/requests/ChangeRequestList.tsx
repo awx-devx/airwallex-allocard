@@ -161,7 +161,7 @@ export function ChangeRequestList() {
       header: 'Actions',
       cell: (row) =>
         row.status === BudgetChangeRequestStatus.PENDING ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
               <Button
                 type="button"

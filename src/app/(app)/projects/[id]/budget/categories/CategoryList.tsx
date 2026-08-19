@@ -164,7 +164,7 @@ export function CategoryList() {
       header: 'Actions',
       cell: (row) =>
         archived ? null : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
               <Button
                 type="button"

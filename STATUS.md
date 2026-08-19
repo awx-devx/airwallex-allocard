@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** Visual language and layout (post–Track A)
-**Active task:** Fill leftover table height without clipping — page scroll is allowed
-**Last green `pnpm verify`:** 2026-08-19 (TimelinePanel for activity/history; 1824 tests)
+**Active task:** Align filter toolbars with unlabeled buttons
+**Last green `pnpm verify`:** 2026-08-20 (FilterBar items-end; 1826 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**FilterBar alignment (2026-08-20).** Labeled filters (`FilterSelect`, date range, id inputs) sit in `FilterBar` (`items-end`) so unlabeled buttons line up with the control, not the field label. Filter triggers are `h-9` to match default `Button` / `Input`. `pnpm verify` green (1826 tests). Next: wait for the user to name the next phase.
+
+**Compact fact tiles (2026-08-20).** Skinny one-line Cards (status, member count, remaining/spent, org-report totals, report catalogue links) are `StatTile` (`px-3 py-2.5`, not Card padding). Lists stay Cards. Card detail: visual + limits on one row; holder / access / rule as tiles. Shared `Card` padding is `py-4` / `px-4`. `LoadingState` only forces `min-h-[120px]` at 3+ rows. `pnpm verify` green (1826 tests). Next: wait for the user to name the next phase.
 
 **Fill leftover table height (2026-08-19).** Page scroll in `main` is allowed. `PageFill` is `min-h-full` only (not `flex-1`, not `overflow-hidden`) so a short list can grow into leftover space. `DataTable` is `flex-1 min-h-64`. `TimelinePanel` is the same rule for activity/history: `fill` on dedicated pages, `max-h-80` when stacked (People access history, dashboard, overview, approval trails). Workspace/budget slots are `flex-1` without `min-h-0`.
 

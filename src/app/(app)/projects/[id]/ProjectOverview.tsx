@@ -17,6 +17,7 @@ import { ErrorState, shouldShowErrorRetry } from '@/components/patterns/ErrorSta
 import { PageFlow } from '@/components/patterns/PageBody'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { StatTile } from '@/components/patterns/StatTile'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -44,7 +45,7 @@ function QueryBody({
   children: ReactNode
 }) {
   if (isPending) {
-    return <LoadingState rows={3} />
+    return <LoadingState rows={2} />
   }
   if (error) {
     const { message, code } = queryError(error)
@@ -75,7 +76,7 @@ function OverviewTile({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-2">{children}</div>
+        <div className="flex flex-col gap-1.5">{children}</div>
       </CardContent>
     </Card>
   )
@@ -122,100 +123,78 @@ export function ProjectOverview() {
   const activityItems = (activity.data?.pages[0]?.items ?? []).map(toTimelineItem)
   const budgetDetail = budget.data
   const overview = project.data?.overview
-  const showBudgetFallback = budget.isPending && overview != null
   const cardTotal = cards.data?.total ?? (cards.isPending ? overview?.activeCardCount : undefined)
+
+  const budgetHref = `/projects/${id}/budget`
+  const remainingMoney =
+    budgetDetail?.budget != null
+      ? { amount: budgetDetail.projection.remaining, currency: budgetDetail.budget.currency }
+      : budget.isPending
+        ? overview?.budgetRemaining
+        : undefined
+  const spentMoney =
+    budgetDetail?.budget != null
+      ? { amount: budgetDetail.projection.actual, currency: budgetDetail.budget.currency }
+      : budget.isPending
+        ? overview?.budgetSpent
+        : undefined
 
   return (
     <PageFlow>
-      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
-        <OverviewTile href={statusHref} title="Status">
+      <div className="grid min-w-0 grid-cols-2 gap-2 md:grid-cols-3">
+        <StatTile href={statusHref} label="Status">
           {status ? <StatusBadge kind="project" status={status} /> : null}
-        </OverviewTile>
-
-        <OverviewTile href={peopleHref(id)} title={`Members (${members.data?.length ?? 0})`}>
+        </StatTile>
+        <StatTile href={peopleHref(id)} label="Members">
           <QueryBody
             isPending={members.isPending}
             error={members.error}
             onRetry={() => void members.refetch()}
           >
-            <p className="text-sm text-muted-foreground">
-              {members.data?.length ?? 0} member{(members.data?.length ?? 0) === 1 ? '' : 's'}
-            </p>
+            <span className="tabular-nums">{members.data?.length ?? 0}</span>
           </QueryBody>
-        </OverviewTile>
-
-        <OverviewTile href={`/projects/${id}/budget`} title="Remaining / spent">
-          {showBudgetFallback &&
-          (overview.budgetRemaining != null || overview.budgetSpent != null) ? (
-            <div className="flex flex-col gap-2">
-              {overview.budgetRemaining ? (
-                <p className="flex min-w-0 flex-wrap items-center gap-2">
-                  <span>Remaining</span>
-                  <MoneyDisplay money={overview.budgetRemaining} />
-                </p>
-              ) : null}
-              {overview.budgetSpent ? (
-                <p className="flex min-w-0 flex-wrap items-center gap-2">
-                  <span>Spent</span>
-                  <MoneyDisplay money={overview.budgetSpent} />
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <QueryBody
-              isPending={budget.isPending}
-              error={budget.error}
-              onRetry={() => void budget.refetch()}
-            >
-              {budgetDetail?.budget == null ? (
-                <p>No budget set</p>
-              ) : (
-                <>
-                  <p className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span>Remaining</span>
-                    <MoneyDisplay
-                      money={{
-                        amount: budgetDetail.projection.remaining,
-                        currency: budgetDetail.budget.currency,
-                      }}
-                    />
-                  </p>
-                  <p className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span>Spent</span>
-                    <MoneyDisplay
-                      money={{
-                        amount: budgetDetail.projection.actual,
-                        currency: budgetDetail.budget.currency,
-                      }}
-                    />
-                  </p>
-                </>
-              )}
+        </StatTile>
+        {budget.error ? (
+          <StatTile href={budgetHref} label="Budget" className="col-span-2 md:col-span-1">
+            <QueryBody isPending={false} error={budget.error} onRetry={() => void budget.refetch()}>
+              {null}
             </QueryBody>
-          )}
-        </OverviewTile>
-
-        <OverviewTile href={`/projects/${id}/cards`} title={`Active cards (${cardTotal ?? 0})`}>
+          </StatTile>
+        ) : budget.isPending && remainingMoney == null && spentMoney == null ? (
+          <>
+            <StatTile href={budgetHref} label="Remaining">
+              <LoadingState rows={1} />
+            </StatTile>
+            <StatTile href={budgetHref} label="Spent">
+              <LoadingState rows={1} />
+            </StatTile>
+          </>
+        ) : remainingMoney == null && spentMoney == null ? (
+          <StatTile href={budgetHref} label="Budget">
+            No budget set
+          </StatTile>
+        ) : (
+          <>
+            <StatTile href={budgetHref} label="Remaining">
+              {remainingMoney != null ? <MoneyDisplay money={remainingMoney} /> : '—'}
+            </StatTile>
+            <StatTile href={budgetHref} label="Spent">
+              {spentMoney != null ? <MoneyDisplay money={spentMoney} /> : '—'}
+            </StatTile>
+          </>
+        )}
+        <StatTile href={accessReviewListHref({ status: 'OPEN', projectId: id })} label="Alerts">
           <QueryBody
-            isPending={cards.isPending}
-            error={cards.error}
-            onRetry={() => void cards.refetch()}
+            isPending={alerts.isPending}
+            error={alerts.error}
+            onRetry={() => void alerts.refetch()}
           >
-            {(cards.data?.items.length ?? 0) === 0 ? (
-              <p>No cards yet.</p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {cards.data?.items.map((card) => (
-                  <li key={card.id} className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="min-w-0 break-all">{card.nickName}</span>
-                    <span className="text-sm text-muted-foreground">{card.maskedNumber}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <span className="tabular-nums">{alerts.data?.length ?? 0}</span>
           </QueryBody>
-        </OverviewTile>
+        </StatTile>
+      </div>
 
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         <OverviewTile href="/approvals" title={`Pending approvals (${pendingRows.length})`}>
           <QueryBody
             isPending={requests.isPending}
@@ -225,7 +204,7 @@ export function ProjectOverview() {
             {pendingRows.length === 0 ? (
               <p className="text-sm text-muted-foreground">No pending approvals on this page.</p>
             ) : (
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col gap-1.5">
                 {pendingRows.map((row) => (
                   <li key={row.id} className="flex min-w-0 flex-wrap items-center gap-2">
                     <span className="min-w-0 break-all">{row.vendor}</span>
@@ -238,22 +217,20 @@ export function ProjectOverview() {
           </QueryBody>
         </OverviewTile>
 
-        <OverviewTile
-          href={accessReviewListHref({ status: 'OPEN', projectId: id })}
-          title={`Alerts (${alerts.data?.length ?? 0})`}
-        >
+        <OverviewTile href={`/projects/${id}/cards`} title={`Active cards (${cardTotal ?? 0})`}>
           <QueryBody
-            isPending={alerts.isPending}
-            error={alerts.error}
-            onRetry={() => void alerts.refetch()}
+            isPending={cards.isPending}
+            error={cards.error}
+            onRetry={() => void cards.refetch()}
           >
-            {(alerts.data?.length ?? 0) === 0 ? (
-              <p className="text-sm text-muted-foreground">No open access reviews.</p>
+            {(cards.data?.items.length ?? 0) === 0 ? (
+              <p>No cards yet.</p>
             ) : (
-              <ul className="flex flex-col gap-2">
-                {alerts.data?.map((row) => (
-                  <li key={row.id} className="min-w-0 break-all">
-                    {row.reason}
+              <ul className="flex flex-col gap-1.5">
+                {cards.data?.items.map((card) => (
+                  <li key={card.id} className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="min-w-0 break-all">{card.nickName}</span>
+                    <span className="text-sm text-muted-foreground">{card.maskedNumber}</span>
                   </li>
                 ))}
               </ul>

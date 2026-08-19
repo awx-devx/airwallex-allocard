@@ -35,7 +35,7 @@ import type { TxFilter } from '@/client/queryKeys'
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -174,7 +174,7 @@ function ReceiptsToolbar({
   onChange: (next: ReceiptsListSearch) => void
 }) {
   return (
-    <div className="flex min-w-0 flex-wrap gap-2">
+    <FilterBar>
       <FilterSelect
         label="Project"
         value={filter.projectId ?? (allowAllProjects ? ALL : undefined)}
@@ -207,7 +207,7 @@ function ReceiptsToolbar({
           }
         />
       </div>
-    </div>
+    </FilterBar>
   )
 }
 

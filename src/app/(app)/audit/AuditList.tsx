@@ -24,7 +24,7 @@ import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { timelineActorChipLabel } from '@/components/patterns/timelineActor'
@@ -64,7 +64,7 @@ function AuditToolbar({
   onChange: (next: AuditListSearch) => void
 }) {
   return (
-    <div className="flex min-w-0 flex-wrap gap-2">
+    <FilterBar>
       <FilterSelect
         label="Project"
         value={filter.projectId ?? ALL}
@@ -148,7 +148,7 @@ function AuditToolbar({
           }
         />
       </div>
-    </div>
+    </FilterBar>
   )
 }
 

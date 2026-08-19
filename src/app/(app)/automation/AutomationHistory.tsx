@@ -18,7 +18,7 @@ import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { PageFill } from '@/components/patterns/PageBody'
@@ -125,7 +125,7 @@ export function AutomationHistory() {
 
   return (
     <PageFill>
-      <div className="flex shrink-0 flex-wrap gap-2">
+      <FilterBar>
         <FilterSelect
           label="Rule"
           value={filter.ruleId ?? ALL}
@@ -189,7 +189,7 @@ export function AutomationHistory() {
             </SelectItem>
           ))}
         </FilterSelect>
-      </div>
+      </FilterBar>
       <DataTable
         columns={columns}
         rows={rows}

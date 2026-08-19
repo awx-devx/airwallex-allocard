@@ -21,7 +21,7 @@ import { isProjectArchived } from '@/client/lib/reports'
 import { CardVisual } from '@/components/patterns/CardVisual'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { PageFill } from '@/components/patterns/PageBody'
@@ -106,7 +106,7 @@ export function ProjectCards() {
 
   return (
     <PageFill>
-      <div className="flex shrink-0 flex-wrap gap-3">
+      <FilterBar>
         <FilterSelect
           label="Status"
           value={filter.status ?? ALL}
@@ -143,7 +143,7 @@ export function ProjectCards() {
             </SelectItem>
           ))}
         </FilterSelect>
-      </div>
+      </FilterBar>
       {query.isPending ? (
         <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
           <LoadingState />

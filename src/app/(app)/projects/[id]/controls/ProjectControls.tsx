@@ -25,7 +25,7 @@ import { ApprovalRuleEditor } from '@/app/(app)/projects/[id]/controls/ApprovalR
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
@@ -140,7 +140,7 @@ export function ProjectControls() {
   ]
 
   const toolbar = (
-    <div className="flex flex-wrap gap-2">
+    <FilterBar>
       <FilterSelect
         label="Enabled"
         value={enabledSelectValue(filter.enabled)}
@@ -174,7 +174,7 @@ export function ProjectControls() {
           )}
         </PermissionGateView>
       )}
-    </div>
+    </FilterBar>
   )
 
   const templateLinks = (

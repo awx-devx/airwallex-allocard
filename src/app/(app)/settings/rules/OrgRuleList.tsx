@@ -23,7 +23,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
@@ -133,7 +133,7 @@ export function OrgRuleList() {
   return (
     <PageFill>
       <PageHeader title="Rules" />
-      <div className="flex shrink-0 flex-wrap gap-2">
+      <FilterBar>
         <FilterSelect
           label="Project"
           value={filter.projectId ?? ALL}
@@ -182,7 +182,7 @@ export function OrgRuleList() {
             </Button>
           )}
         </PermissionGateView>
-      </div>
+      </FilterBar>
       {!query.isPending && query.data?.total === 0 ? (
         <>
           <EmptyState title={emptyCopy.title} description={emptyCopy.description} />

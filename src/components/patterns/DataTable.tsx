@@ -122,7 +122,7 @@ export function DataTable<T>({
   return (
     <div className="flex min-h-64 min-w-0 flex-1 flex-col gap-3 overflow-hidden">
       {showToolbar ? (
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+        <div className="flex shrink-0 flex-wrap items-end justify-between gap-2">
           <div>{toolbar}</div>
           {columnVisibility ? (
             <DropdownMenu>

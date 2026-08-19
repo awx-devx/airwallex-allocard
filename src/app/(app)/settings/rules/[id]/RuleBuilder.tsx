@@ -409,7 +409,7 @@ export function RuleBuilder() {
             cardOptions={cardOptions}
             hasProjectScope={draft.scope.level === RuleScopeLevel.PROJECT}
           />
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
               <Button
                 type="button"

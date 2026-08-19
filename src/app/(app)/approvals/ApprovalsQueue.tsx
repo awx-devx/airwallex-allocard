@@ -269,7 +269,7 @@ function QueueItem({
             )}
           </div>
         ) : null}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {showDecide ? (
             <PermissionGateView allowed={allowed} denialMessage={decideRequestDenialMessage()}>
               <Button

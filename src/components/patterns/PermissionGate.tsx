@@ -29,7 +29,7 @@ export function PermissionGateView({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="inline-flex" aria-disabled="true">
+        <span className="inline-flex items-center" aria-disabled="true">
           {content}
         </span>
       </TooltipTrigger>

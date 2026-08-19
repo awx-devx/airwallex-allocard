@@ -24,9 +24,9 @@ import { PageHeader } from '@/components/patterns/PageHeader'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { PageFlow } from '@/components/patterns/PageBody'
+import { StatTile } from '@/components/patterns/StatTile'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { OrganizationReport as OrganizationReportData } from '@/shared/types/report'
 
@@ -158,48 +158,28 @@ export function OrganizationReport() {
         </Link>
       </div>
       <PageHeader title="Organization report" />
-      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              money={{ amount: data.totals.approved, currency: data.currency }}
-              colorBySign={false}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Committed</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              money={{ amount: data.totals.committed, currency: data.currency }}
-              colorBySign={false}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Actual</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              money={{ amount: data.totals.actual, currency: data.currency }}
-              colorBySign={false}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay money={{ amount: data.totals.remaining, currency: data.currency }} />
-          </CardContent>
-        </Card>
+      <div className="grid min-w-0 grid-cols-2 gap-2 md:grid-cols-4">
+        <StatTile label="Approved">
+          <MoneyDisplay
+            money={{ amount: data.totals.approved, currency: data.currency }}
+            colorBySign={false}
+          />
+        </StatTile>
+        <StatTile label="Committed">
+          <MoneyDisplay
+            money={{ amount: data.totals.committed, currency: data.currency }}
+            colorBySign={false}
+          />
+        </StatTile>
+        <StatTile label="Actual">
+          <MoneyDisplay
+            money={{ amount: data.totals.actual, currency: data.currency }}
+            colorBySign={false}
+          />
+        </StatTile>
+        <StatTile label="Remaining">
+          <MoneyDisplay money={{ amount: data.totals.remaining, currency: data.currency }} />
+        </StatTile>
       </div>
       {orgTotalsExcludeSomeProjects(data.projects, data.totals) ? (
         <Alert>

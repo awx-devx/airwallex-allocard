@@ -15,7 +15,7 @@ import {
 import { useCan } from '@/client/lib/permissions/useCan'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
@@ -43,7 +43,7 @@ function ResolveActions({
   const { can, isLoading } = useCan(row.projectId)
   const allowed = permissionGateAllowed(can(Permission.MEMBER_MANAGE), isLoading)
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <PermissionGateView allowed={allowed} denialMessage={manageAccessReviewDenialMessage()}>
         <Button type="button" size="sm" disabled={!allowed} onClick={onConfirm}>
           Confirm
@@ -137,7 +137,7 @@ export function AccessReviewList() {
         </Alert>
       ) : null}
       <PageHeader title="Access reviews" />
-      <div className="flex flex-wrap gap-2">
+      <FilterBar>
         <FilterSelect
           label="Status"
           value={filter.status ?? ALL}
@@ -155,7 +155,7 @@ export function AccessReviewList() {
           <SelectItem value={AccessReviewStatus.OPEN}>OPEN</SelectItem>
           <SelectItem value={AccessReviewStatus.RESOLVED}>RESOLVED</SelectItem>
         </FilterSelect>
-      </div>
+      </FilterBar>
       <DataTable
         columns={columns}
         rows={query.data ?? []}

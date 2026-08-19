@@ -34,7 +34,7 @@ function DateRangePicker({ from, to, onChange, disabled }: DateRangePickerProps)
           type="button"
           variant="outline"
           disabled={disabled}
-          className="w-full justify-start font-normal"
+          className="h-9 w-full justify-start font-normal"
         >
           <CalendarIcon />
           {label ?? <span className="text-muted-foreground">Pick a date range</span>}

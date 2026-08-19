@@ -179,7 +179,7 @@ function ActionRow({
 
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border/80 p-3">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Select
           value={action.action}
           onValueChange={(next) =>

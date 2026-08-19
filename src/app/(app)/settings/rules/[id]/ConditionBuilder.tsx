@@ -240,7 +240,7 @@ function LeafRow({
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-0 flex-1">
           <Combobox
             options={options}
@@ -267,7 +267,7 @@ function LeafRow({
             onChange(next)
           }}
         >
-          <SelectTrigger aria-label="Operator" size="sm" className="w-40">
+          <SelectTrigger aria-label="Operator" className="w-40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -279,7 +279,7 @@ function LeafRow({
           </SelectContent>
         </Select>
         {onRemove ? (
-          <Button type="button" variant="outline" size="sm" onClick={onRemove}>
+          <Button type="button" variant="outline" onClick={onRemove}>
             Remove
           </Button>
         ) : null}

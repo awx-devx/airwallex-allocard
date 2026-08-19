@@ -22,7 +22,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { AttributeValueSheet } from '@/app/(app)/settings/attributes/AttributeValueSheet'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
@@ -107,12 +107,12 @@ export function AttributeRegistry() {
       id: 'actions',
       header: 'Actions',
       cell: (row) => (
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={() => setValuesFor(row)}>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" variant="outline" onClick={() => setValuesFor(row)}>
             Values
           </Button>
           {row.source === AttributeSource.WEBHOOK ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Input
                 type="password"
                 value={rotateSecret[row.key] ?? ''}
@@ -123,7 +123,6 @@ export function AttributeRegistry() {
               />
               <Button
                 type="button"
-                size="sm"
                 disabled={!allowed || (rotateSecret[row.key] ?? '').length < 16}
                 onClick={() => {
                   const webhookSecret = rotateSecret[row.key] ?? ''
@@ -164,7 +163,7 @@ export function AttributeRegistry() {
       </section>
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
         <h2 className="text-sm font-medium">Custom attributes</h2>
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <FilterBar>
           <FilterSelect
             label="Scope"
             value={filter.scope ?? ALL}
@@ -207,7 +206,7 @@ export function AttributeRegistry() {
               Create attribute
             </Button>
           </PermissionGateView>
-        </div>
+        </FilterBar>
         <DataTable
           columns={columns}
           rows={query.data?.items ?? []}

@@ -24,7 +24,7 @@ import {
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { FilterBar, FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -120,7 +120,7 @@ export function RequestList() {
     const empty = selectProjectEmpty()
     return (
       <PageFill>
-        <div className="flex flex-wrap gap-2">{projectSelect}</div>
+        <FilterBar>{projectSelect}</FilterBar>
         <EmptyState title={empty.title} description={empty.description} />
       </PageFill>
     )
@@ -164,10 +164,10 @@ function RequestListForProject({
   const query = useRequests(projectId, { page, pageSize })
   const newControl = archived ? null : <NewRequestControl projectId={projectId} />
   const toolbar = (
-    <div className="flex flex-wrap gap-2">
+    <FilterBar>
       {projectSelect}
       {newControl}
-    </div>
+    </FilterBar>
   )
   const archivedAlert = archived ? (
     <Alert>

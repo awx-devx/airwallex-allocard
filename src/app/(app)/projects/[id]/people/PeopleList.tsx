@@ -148,7 +148,7 @@ export function PeopleList() {
         }
         const lastManager = isLastAccessManager(members.data ?? [], row.userId, now)
         return (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PermissionGateView allowed={canManage} denialMessage={addMemberDenialMessage()}>
               <Button
                 type="button"

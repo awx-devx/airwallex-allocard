@@ -31,6 +31,7 @@ describe('DataTable panel', () => {
     expect(src).toContain('min-h-64')
     expect(src).toContain('flex-1')
     expect(src).toContain('flex min-h-64 min-w-0 flex-1 flex-col gap-3 overflow-hidden')
+    expect(src).toContain('items-end justify-between')
     expect(src).toContain('<TablePanel>')
     expect(src).toContain('<LoadingState />')
     expect(src).toContain('<EmptyState')
