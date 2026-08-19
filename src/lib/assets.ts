@@ -3,7 +3,8 @@
  *
  * - Official logomark: `public/brand/logomark.png` → `/brand/logomark.png`
  * - Wordmark outlines: `public/brand/wordmark.svg` → `/brand/wordmark.svg`
- * - Square derivatives (favicon / apple): `public/brand/icon.png`, `apple-touch-icon.png`
+ * - Square derivatives: `public/brand/icon.png` is a cutout (transparent field) for the tab favicon; `apple-touch-icon.png` stays opaque for iOS
+ * - App Router copies Next.js reads from `src/app/`: `favicon.ico` (32×32 RGBA PNG-in-ICO; paletted PNGs fail Turbopack), `icon.png`, `apple-icon.png`
  * - Everything else: `public/images/` → `/images/hero.png`
  */
 export const publicAsset = {

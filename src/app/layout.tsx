@@ -1,7 +1,6 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { AppProviders } from '@/client/providers/AppProviders'
 import { satoshiBlack } from '@/app/fonts'
-import { publicAsset } from '@/lib/assets'
 import { loadServerEnv } from '@/server/env'
 import './globals.css'
 
@@ -9,14 +8,15 @@ const description = 'Dynamic attribute-based budget cards on Airwallex'
 
 export const metadata: Metadata = {
   metadataBase: new URL(loadServerEnv().AUTH_URL),
-  title: 'Allocard',
-  description,
-  icons: {
-    icon: [{ url: publicAsset.icon, type: 'image/png', sizes: '192x192' }],
-    apple: publicAsset.appleTouchIcon,
+  applicationName: 'Allocard',
+  title: {
+    default: 'Allocard',
+    template: '%s · Allocard',
   },
+  description,
   openGraph: {
     type: 'website',
+    locale: 'en',
     siteName: 'Allocard',
     title: 'Allocard',
     description,
@@ -26,6 +26,24 @@ export const metadata: Metadata = {
     title: 'Allocard',
     description,
   },
+  appleWebApp: {
+    capable: true,
+    title: 'Allocard',
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: {
+    telephone: false,
+    address: false,
+    email: false,
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#e9eaec' },
+    { media: '(prefers-color-scheme: dark)', color: '#101113' },
+  ],
+  colorScheme: 'light dark',
 }
 
 export default function RootLayout({
