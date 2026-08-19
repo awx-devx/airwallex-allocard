@@ -7,6 +7,7 @@ import { budgetHistoryReason, toBudgetHistoryTimelineItem } from '@/client/lib/b
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { Timeline } from '@/components/patterns/Timeline'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorCode } from '@/shared/enums/errors'
 
 export function BudgetHistory() {
@@ -40,14 +41,19 @@ export function BudgetHistory() {
   })
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <Timeline
-        items={items}
-        empty={{
-          title: 'No budget changes yet',
-          description: 'Approved amount, categories, and requests will show up here.',
-        }}
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>History</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Timeline
+          items={items}
+          empty={{
+            title: 'No budget changes yet',
+            description: 'Approved amount, categories, and requests will show up here.',
+          }}
+        />
+      </CardContent>
+    </Card>
   )
 }

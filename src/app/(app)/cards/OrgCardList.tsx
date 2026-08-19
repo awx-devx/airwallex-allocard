@@ -17,17 +17,11 @@ import {
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { formatMaskedCard } from '@/lib/format/cardNumber'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -125,81 +119,60 @@ export function OrgCardList() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-wrap gap-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Project</Label>
-          <Select
-            value={filter.projectId ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                projectId: value === ALL ? undefined : value,
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Project" size="sm">
-              <SelectValue placeholder="All projects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Status</Label>
-          <Select
-            value={filter.status ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                status: value === ALL ? undefined : (value as CardStatus),
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Status" size="sm">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {Object.values(CardStatus).map((status) => (
-                <SelectItem key={status} value={status}>
-                  {status}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Purpose</Label>
-          <Select
-            value={filter.purpose ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                purpose: value === ALL ? undefined : (value as CardPurpose),
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Purpose" size="sm">
-              <SelectValue placeholder="All purposes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {Object.values(CardPurpose).map((purpose) => (
-                <SelectItem key={purpose} value={purpose}>
-                  {purpose}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FilterSelect
+          label="Project"
+          value={filter.projectId ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              projectId: value === ALL ? undefined : value,
+              page: 1,
+            })
+          }
+          allLabel="All projects"
+        >
+          {(projects.data?.items ?? []).map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </FilterSelect>
+        <FilterSelect
+          label="Status"
+          value={filter.status ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              status: value === ALL ? undefined : (value as CardStatus),
+              page: 1,
+            })
+          }
+          allLabel="All statuses"
+        >
+          {Object.values(CardStatus).map((status) => (
+            <SelectItem key={status} value={status}>
+              {status}
+            </SelectItem>
+          ))}
+        </FilterSelect>
+        <FilterSelect
+          label="Purpose"
+          value={filter.purpose ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              purpose: value === ALL ? undefined : (value as CardPurpose),
+              page: 1,
+            })
+          }
+          allLabel="All purposes"
+        >
+          {Object.values(CardPurpose).map((purpose) => (
+            <SelectItem key={purpose} value={purpose}>
+              {purpose}
+            </SelectItem>
+          ))}
+        </FilterSelect>
       </div>
       <DataTable
         columns={columns}

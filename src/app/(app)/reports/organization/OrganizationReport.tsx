@@ -20,10 +20,12 @@ import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type { OrganizationReport as OrganizationReportData } from '@/shared/types/report'
 
@@ -154,35 +156,49 @@ export function OrganizationReport() {
           {viewInAuditLink()}
         </Link>
       </div>
-      <div className="flex min-w-0 flex-wrap gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Approved</span>
-          <MoneyDisplay
-            money={{ amount: data.totals.approved, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Committed</span>
-          <MoneyDisplay
-            money={{ amount: data.totals.committed, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Actual</span>
-          <MoneyDisplay
-            money={{ amount: data.totals.actual, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Remaining</span>
-          <MoneyDisplay
-            money={{ amount: data.totals.remaining, currency: data.currency }}
-            colorBySign
-          />
-        </div>
+      <PageHeader title="Organization report" />
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MoneyDisplay
+              money={{ amount: data.totals.approved, currency: data.currency }}
+              colorBySign={false}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Committed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MoneyDisplay
+              money={{ amount: data.totals.committed, currency: data.currency }}
+              colorBySign={false}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Actual</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MoneyDisplay
+              money={{ amount: data.totals.actual, currency: data.currency }}
+              colorBySign={false}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MoneyDisplay money={{ amount: data.totals.remaining, currency: data.currency }} />
+          </CardContent>
+        </Card>
       </div>
       {orgTotalsExcludeSomeProjects(data.projects, data.totals) ? (
         <Alert>

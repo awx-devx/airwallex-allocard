@@ -18,6 +18,7 @@ import { wizardApprovalRulesLinkMessage } from '@/client/lib/requests'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { StepWizard } from '@/components/patterns/StepWizard'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BudgetStep, type BudgetStepHandle } from '@/app/(app)/projects/new/steps/BudgetStep'
@@ -250,6 +251,7 @@ export function ProjectWizard() {
           </AlertDescription>
         </Alert>
       ) : null}
+      <PageHeader title="New project" />
       <StepWizard
         steps={STEPS}
         activeStepId={activeStepId}

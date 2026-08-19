@@ -19,6 +19,7 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { Timeline } from '@/components/patterns/Timeline'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
@@ -56,13 +57,15 @@ function OverviewTile({
   href,
   title,
   children,
+  className,
 }: {
   href: string
   title: string
   children: ReactNode
+  className?: string
 }) {
   return (
-    <Card className="min-w-0">
+    <Card className={cn('min-w-0', className)}>
       <CardHeader>
         <CardTitle>
           <Link href={href} className="hover:underline">
@@ -256,7 +259,11 @@ export function ProjectOverview() {
         </QueryBody>
       </OverviewTile>
 
-      <OverviewTile href={`/projects/${id}/activity`} title="Recent activity">
+      <OverviewTile
+        href={`/projects/${id}/activity`}
+        title="Recent activity"
+        className="md:col-span-2"
+      >
         <QueryBody
           isPending={activity.isPending}
           error={activity.error}

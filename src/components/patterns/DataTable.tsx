@@ -49,119 +49,30 @@ export function DataTable<T>({
     return <EmptyState title={empty.title} description={empty.description} action={empty.action} />
   }
 
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>{toolbar}</div>
-        {columnVisibility ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="sm">
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {columns.map((col) => (
-                <DropdownMenuCheckboxItem
-                  key={col.id}
-                  checked={!hidden.has(col.id)}
-                  onCheckedChange={(checked) => {
-                    const next = new Set(hidden)
-                    if (checked) next.delete(col.id)
-                    else next.add(col.id)
-                    columnVisibility.onChange([...next])
-                  }}
-                >
-                  {col.header}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+  const pager =
+    pagination.mode === 'page' ? (
+      <div className="flex justify-end gap-2 border-t border-border bg-muted/30 px-3 py-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={pagination.page <= 1}
+          onClick={() => pagination.onPageChange(pagination.page - 1)}
+        >
+          Previous
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={pageNextParam(pagination) === undefined}
+          onClick={() => pagination.onPageChange(pagination.page + 1)}
+        >
+          Next
+        </Button>
       </div>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {rowSelection ? (
-                <TableHead>
-                  <Checkbox
-                    checked={allSelected}
-                    onCheckedChange={(checked) => {
-                      rowSelection.onChange(checked ? ids : [])
-                    }}
-                    aria-label="Select all rows"
-                  />
-                </TableHead>
-              ) : null}
-              {visibleCols.map((col) => (
-                <TableHead key={col.id}>
-                  {col.sortable ? (
-                    <button
-                      type="button"
-                      className="font-medium"
-                      onClick={() => onSortingChange?.(nextSorting(sorting, col.id))}
-                    >
-                      {col.header}
-                      {sorting?.id === col.id ? (sorting.direction === 'asc' ? ' ↑' : ' ↓') : ''}
-                    </button>
-                  ) : (
-                    col.header
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => {
-              const id = getRowId(row)
-              return (
-                <TableRow key={id} data-state={selected.has(id) ? 'selected' : undefined}>
-                  {rowSelection ? (
-                    <TableCell>
-                      <Checkbox
-                        checked={selected.has(id)}
-                        onCheckedChange={(checked) => {
-                          const next = new Set(selected)
-                          if (checked) next.add(id)
-                          else next.delete(id)
-                          rowSelection.onChange([...next])
-                        }}
-                        aria-label={`Select ${id}`}
-                      />
-                    </TableCell>
-                  ) : null}
-                  {visibleCols.map((col) => (
-                    <TableCell key={col.id}>{col.cell(row)}</TableCell>
-                  ))}
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
-      {pagination.mode === 'page' ? (
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={pagination.page <= 1}
-            onClick={() => pagination.onPageChange(pagination.page - 1)}
-          >
-            Previous
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={pageNextParam(pagination) === undefined}
-            onClick={() => pagination.onPageChange(pagination.page + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      ) : cursorNextParam({ nextCursor: pagination.nextCursor }) ? (
+    ) : cursorNextParam({ nextCursor: pagination.nextCursor }) ? (
+      <div className="flex justify-end border-t border-border bg-muted/30 px-3 py-2">
         <Button
           type="button"
           variant="outline"
@@ -170,7 +81,110 @@ export function DataTable<T>({
         >
           Load more
         </Button>
+      </div>
+    ) : null
+
+  const showToolbar = toolbar !== undefined || columnVisibility !== undefined
+
+  return (
+    <div className="flex min-w-0 flex-col gap-3">
+      {showToolbar ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>{toolbar}</div>
+          {columnVisibility ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {columns.map((col) => (
+                  <DropdownMenuCheckboxItem
+                    key={col.id}
+                    checked={!hidden.has(col.id)}
+                    onCheckedChange={(checked) => {
+                      const next = new Set(hidden)
+                      if (checked) next.delete(col.id)
+                      else next.add(col.id)
+                      columnVisibility.onChange([...next])
+                    }}
+                  >
+                    {col.header}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
+        </div>
       ) : null}
+      <div
+        data-slot="data-table"
+        className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]"
+      >
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {rowSelection ? (
+                  <TableHead>
+                    <Checkbox
+                      checked={allSelected}
+                      onCheckedChange={(checked) => {
+                        rowSelection.onChange(checked ? ids : [])
+                      }}
+                      aria-label="Select all rows"
+                    />
+                  </TableHead>
+                ) : null}
+                {visibleCols.map((col) => (
+                  <TableHead key={col.id}>
+                    {col.sortable ? (
+                      <button
+                        type="button"
+                        className="font-medium"
+                        onClick={() => onSortingChange?.(nextSorting(sorting, col.id))}
+                      >
+                        {col.header}
+                        {sorting?.id === col.id ? (sorting.direction === 'asc' ? ' ↑' : ' ↓') : ''}
+                      </button>
+                    ) : (
+                      col.header
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => {
+                const id = getRowId(row)
+                return (
+                  <TableRow key={id} data-state={selected.has(id) ? 'selected' : undefined}>
+                    {rowSelection ? (
+                      <TableCell>
+                        <Checkbox
+                          checked={selected.has(id)}
+                          onCheckedChange={(checked) => {
+                            const next = new Set(selected)
+                            if (checked) next.add(id)
+                            else next.delete(id)
+                            rowSelection.onChange([...next])
+                          }}
+                          aria-label={`Select ${id}`}
+                        />
+                      </TableCell>
+                    ) : null}
+                    {visibleCols.map((col) => (
+                      <TableCell key={col.id}>{col.cell(row)}</TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {pager}
+      </div>
     </div>
   )
 }

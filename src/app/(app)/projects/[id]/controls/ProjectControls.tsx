@@ -25,20 +25,14 @@ import { ApprovalRuleEditor } from '@/app/(app)/projects/[id]/controls/ApprovalR
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
@@ -146,29 +140,22 @@ export function ProjectControls() {
 
   const toolbar = (
     <div className="flex flex-wrap gap-2">
-      <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Enabled</Label>
-        <Select
-          value={enabledSelectValue(filter.enabled)}
-          onValueChange={(value) =>
-            pushFilter({
-              enabled: value === ALL ? undefined : value === 'true',
-              page: 1,
-              pageSize: filter.pageSize,
-              ruleId,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Enabled" size="sm">
-            <SelectValue placeholder="All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            <SelectItem value="true">Enabled</SelectItem>
-            <SelectItem value="false">Disabled</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <FilterSelect
+        label="Enabled"
+        value={enabledSelectValue(filter.enabled)}
+        onValueChange={(value) =>
+          pushFilter({
+            enabled: value === ALL ? undefined : value === 'true',
+            page: 1,
+            pageSize: filter.pageSize,
+            ruleId,
+          })
+        }
+        allLabel="All states"
+      >
+        <SelectItem value="true">Enabled</SelectItem>
+        <SelectItem value="false">Disabled</SelectItem>
+      </FilterSelect>
       {archived ? null : (
         <PermissionGateView allowed={canEdit} denialMessage={editControlsDenialMessage()}>
           {canEdit ? (

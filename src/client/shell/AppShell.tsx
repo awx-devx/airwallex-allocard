@@ -5,8 +5,9 @@ import { useState, type FocusEvent, type PointerEvent, type ReactNode } from 're
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { AppHeader } from '@/client/shell/AppHeader'
 import { BrandLogo } from '@/client/shell/BrandLogo'
-import { OrgSwitcher } from '@/client/shell/OrgSwitcher'
+import { OrgSwitcher, type ShellMembership } from '@/client/shell/OrgSwitcher'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
+import { WalkCrowd } from '@/client/shell/WalkCrowd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 const DEFAULT_NAV: SideNavItem[] = [
@@ -29,7 +30,7 @@ const DEFAULT_NAV: SideNavItem[] = [
 
 export type AppShellProps = {
   children: ReactNode
-  memberships: { orgId: string; name: string; slug: string }[]
+  memberships: ShellMembership[]
   activeOrgId: string | null
   user: { name: string; email: string; image?: string }
   approvalsCount: number
@@ -107,7 +108,8 @@ export function AppShell({
           </div>
         </div>
       </aside>
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+        <WalkCrowd />
         <AppHeader
           user={user}
           approvalsCount={approvalsCount}
@@ -115,7 +117,9 @@ export function AppShell({
           onSignOut={onSignOut ?? (() => undefined)}
           onOpenMenu={() => setMenu({ open: true, at: pathname })}
         />
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</main>
+        <main className="relative z-1 min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
+          {children}
+        </main>
       </div>
       <Sheet open={open} onOpenChange={(next) => setMenu({ open: next, at: pathname })}>
         <SheetContent side="left" className="bg-sidebar text-sidebar-foreground">

@@ -1,7 +1,10 @@
+import { OrgRole } from '@/shared/enums/orgRole'
+import type { ShellMembership } from '@/client/shell/OrgSwitcher'
+
 export const mockShellData = {
   memberships: [
-    { orgId: 'org_seed', name: 'Seed Org', slug: 'seed-org' },
-    { orgId: 'org_demo', name: 'Demo Org', slug: 'demo-org' },
+    { orgId: 'org_seed', name: 'Seed Org', slug: 'seed-org', orgRole: OrgRole.OWNER },
+    { orgId: 'org_demo', name: 'Demo Org', slug: 'demo-org', orgRole: OrgRole.ADMIN },
   ],
   activeOrgId: 'org_seed',
   user: {
@@ -16,7 +19,7 @@ export const mockShellData = {
     status: 'ACTIVE',
   },
 } as {
-  memberships: { orgId: string; name: string; slug: string }[]
+  memberships: ShellMembership[]
   activeOrgId: string | null
   user: { name: string; email: string; image?: string }
   approvalsCount: number

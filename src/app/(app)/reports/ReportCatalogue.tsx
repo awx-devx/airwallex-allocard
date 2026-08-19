@@ -29,18 +29,15 @@ import {
   type ExportSearch,
 } from '@/client/lib/reports'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 
 const ALL = '__all__'
 
@@ -133,33 +130,88 @@ export function ReportCatalogue() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
+      <PageHeader title="Reports" />
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Link href={organizationReportHref()} className="hover:underline">
+                Organization
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Roll-up totals across projects in this organisation.
+          </CardContent>
+        </Card>
+        {filter.projectId !== undefined && filter.projectId.length >= 1 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <Link href={projectReportHref(filter.projectId)} className="hover:underline">
+                  Project
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Budget versus actual for the selected project.
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Project</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Choose a project above to open its report.
+            </CardContent>
+          </Card>
+        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Link href={auditLink} className="hover:underline">
+                {viewInAuditLink()}
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Audit trail for this organisation.
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Link href={accessReviewListHref({})} className="hover:underline">
+                Access reviews
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Open access-review flags.
+          </CardContent>
+        </Card>
+      </div>
       <div className="flex min-w-0 flex-wrap gap-2">
+        <FilterSelect
+          label="Project"
+          value={filter.projectId ?? ALL}
+          onValueChange={(value) =>
+            replaceFilter({
+              ...filter,
+              projectId: value === ALL ? undefined : value,
+            })
+          }
+          allLabel="All projects"
+        >
+          {(projects.data?.items ?? []).map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </FilterSelect>
         <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Project</Label>
-          <Select
-            value={filter.projectId ?? ALL}
-            onValueChange={(value) =>
-              replaceFilter({
-                ...filter,
-                projectId: value === ALL ? undefined : value,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Project">
-              <SelectValue placeholder="All projects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Dates</Label>
+          <Label className="text-xs font-medium text-muted-foreground">Dates</Label>
           <DateRangePicker
             from={filter.from ?? null}
             to={filter.to ?? null}
@@ -172,25 +224,6 @@ export function ReportCatalogue() {
             }
           />
         </div>
-      </div>
-      <div className="flex min-w-0 flex-wrap gap-2">
-        <Link href={organizationReportHref()} className={buttonVariants({ variant: 'ghost' })}>
-          Organization
-        </Link>
-        {filter.projectId !== undefined && filter.projectId.length >= 1 ? (
-          <Link
-            href={projectReportHref(filter.projectId)}
-            className={buttonVariants({ variant: 'ghost' })}
-          >
-            Project
-          </Link>
-        ) : null}
-        <Link href={auditLink} className={buttonVariants({ variant: 'ghost' })}>
-          {viewInAuditLink()}
-        </Link>
-        <Link href={accessReviewListHref({})} className={buttonVariants({ variant: 'ghost' })}>
-          Access reviews
-        </Link>
       </div>
       {canExport ? (
         exportButtons

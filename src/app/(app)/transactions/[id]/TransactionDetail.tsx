@@ -46,10 +46,12 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -217,64 +219,83 @@ export function TransactionDetail() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex min-w-0 flex-wrap gap-2">
-        <Link
-          href={transactionListHref({ projectId: data.projectId })}
-          className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
-        >
-          Back
-        </Link>
-        <Link
-          href={cardHref(data.cardId)}
-          className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
-        >
-          Card
-        </Link>
-      </div>
-      <div className="flex min-w-0 flex-wrap gap-2">
-        <h1 className="min-w-0 break-words text-lg font-medium">{data.merchant.name}</h1>
-        <Badge variant="outline">{transactionStatusLabel(data.status)}</Badge>
-        <Badge variant="outline">{transactionTypeLabel(data.type)}</Badge>
-        <AmountBlock
-          amount={data.amount}
-          currency={data.currency}
-          billingAmount={data.billingAmount}
-          billingCurrency={data.billingCurrency}
-        />
-      </div>
-      <p className="min-w-0 break-words text-sm text-muted-foreground">
-        MCC {data.merchant.mcc} · {data.merchant.country}
-      </p>
-      {isPendingAuthorization(data.status, chain) ? (
-        <Alert>
-          <AlertDescription>{pendingAuthMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {authClearingDiffer(chain) ? (
-        <Alert>
-          <AlertDescription>{authClearingDifferMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.type === TransactionType.PARTIAL_CLEARING ? (
-        <Alert>
-          <AlertDescription>{partialClearingMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {isReversalType(data.type) || data.status === TransactionStatus.REVERSED ? (
-        <Alert>
-          <AlertDescription>{reversalMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {showClosed ? (
-        <Alert>
-          <AlertDescription>{closedCardMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      <div className="flex min-w-0 flex-col gap-3">
-        <h2 className="text-sm font-medium">{lifecycleHeading()}</h2>
-        {chain.map((event) => (
-          <LifecycleEvent key={event.id} event={event} currentId={data.id} />
-        ))}
+      <PageHeader
+        title={data.merchant.name}
+        status={
+          <>
+            <Badge variant="outline">{transactionStatusLabel(data.status)}</Badge>
+            <Badge variant="outline">{transactionTypeLabel(data.type)}</Badge>
+          </>
+        }
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={transactionListHref({ projectId: data.projectId })}
+              className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+            >
+              Back
+            </Link>
+            <Link
+              href={cardHref(data.cardId)}
+              className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+            >
+              Card
+            </Link>
+          </div>
+        }
+      />
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="flex min-w-0 flex-col gap-3">
+            <AmountBlock
+              amount={data.amount}
+              currency={data.currency}
+              billingAmount={data.billingAmount}
+              billingCurrency={data.billingCurrency}
+            />
+            <p className="min-w-0 break-words text-sm text-muted-foreground">
+              MCC {data.merchant.mcc} · {data.merchant.country}
+            </p>
+            {isPendingAuthorization(data.status, chain) ? (
+              <Alert>
+                <AlertDescription>{pendingAuthMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {authClearingDiffer(chain) ? (
+              <Alert>
+                <AlertDescription>{authClearingDifferMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.type === TransactionType.PARTIAL_CLEARING ? (
+              <Alert>
+                <AlertDescription>{partialClearingMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {isReversalType(data.type) || data.status === TransactionStatus.REVERSED ? (
+              <Alert>
+                <AlertDescription>{reversalMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {showClosed ? (
+              <Alert>
+                <AlertDescription>{closedCardMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>{lifecycleHeading()}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex min-w-0 flex-col gap-3">
+            {chain.map((event) => (
+              <LifecycleEvent key={event.id} event={event} currentId={data.id} />
+            ))}
+          </CardContent>
+        </Card>
       </div>
       <ReceiptActions data={data} />
       {data.status === TransactionStatus.DECLINED ? (

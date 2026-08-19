@@ -15,6 +15,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { currencyExponent } from '@/shared/constants/currency'
@@ -137,47 +138,58 @@ export const BudgetStep = forwardRef<BudgetStepHandle, BudgetStepProps>(function
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       ) : null}
-      <p className="text-sm">
-        Currency: {currency.length === 3 ? currency : '—'}
-        {currency.length === 3 ? (
-          <>
-            {' '}
-            <MoneyDisplay money={{ amount: 0, currency }} colorBySign={false} />
-          </>
-        ) : null}
-      </p>
-      {approved !== null && currency.length === 3 ? (
-        <p className="text-sm">
-          Current approved:{' '}
-          <MoneyDisplay money={{ amount: approved, currency }} colorBySign={false} />
-        </p>
-      ) : null}
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="approved-amount">Approved amount</Label>
-        <Input
-          id="approved-amount"
-          type="text"
-          inputMode="decimal"
-          autoComplete="off"
-          value={raw}
-          onChange={(event) => {
-            setRaw(event.target.value)
-            setAmountError(null)
-          }}
-        />
-        {amountError ? <p className="text-sm text-destructive">{amountError}</p> : null}
-      </div>
-      {projection && currency.length === 3 ? (
-        <BudgetBar
-          currency={currency}
-          approved={projection.approved}
-          committed={projection.committed}
-          actual={projection.actual}
-          remaining={projection.remaining}
-          utilisationPct={projection.utilisationPct}
-          overCommitted={projection.overCommitted}
-        />
-      ) : null}
+      <Card className="laser-cap">
+        <CardHeader>
+          <CardTitle>Approved amount</CardTitle>
+        </CardHeader>
+        <CardContent className="flex min-w-0 flex-col gap-4 md:flex-row">
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            <p className="text-sm">
+              Currency: {currency.length === 3 ? currency : '—'}
+              {currency.length === 3 ? (
+                <>
+                  {' '}
+                  <MoneyDisplay money={{ amount: 0, currency }} colorBySign={false} />
+                </>
+              ) : null}
+            </p>
+            {approved !== null && currency.length === 3 ? (
+              <p className="text-sm">
+                Current approved:{' '}
+                <MoneyDisplay money={{ amount: approved, currency }} colorBySign={false} />
+              </p>
+            ) : null}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="approved-amount">Approved amount</Label>
+              <Input
+                id="approved-amount"
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={raw}
+                onChange={(event) => {
+                  setRaw(event.target.value)
+                  setAmountError(null)
+                }}
+              />
+              {amountError ? <p className="text-sm text-destructive">{amountError}</p> : null}
+            </div>
+          </div>
+          {projection && currency.length === 3 ? (
+            <div className="min-w-0 flex-1">
+              <BudgetBar
+                currency={currency}
+                approved={projection.approved}
+                committed={projection.committed}
+                actual={projection.actual}
+                remaining={projection.remaining}
+                utilisationPct={projection.utilisationPct}
+                overCommitted={projection.overCommitted}
+              />
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
       {draftId.length >= 1 ? (
         <Link
           href={budgetCategoriesHref(draftId)}

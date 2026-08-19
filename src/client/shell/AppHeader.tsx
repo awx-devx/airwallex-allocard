@@ -23,7 +23,7 @@ export function AppHeader({
   onOpenMenu,
 }: AppHeaderProps) {
   return (
-    <header className="shrink-0 border-b border-border/70 bg-background/80 px-4 py-2.5 backdrop-blur-xl">
+    <header className="relative z-1 shrink-0 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <Button

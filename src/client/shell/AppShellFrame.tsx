@@ -23,6 +23,7 @@ export function AppShellFrame({ children }: { children: ReactNode }) {
       orgId: m.orgId,
       name: m.org.name,
       slug: m.org.slug,
+      orgRole: m.orgRole,
     })) ?? []
 
   const user = me.data?.user

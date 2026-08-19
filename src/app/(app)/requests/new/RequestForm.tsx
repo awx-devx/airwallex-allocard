@@ -27,9 +27,11 @@ import {
 } from '@/client/lib/requests'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -333,150 +335,162 @@ export function RequestForm() {
             )}
           </Alert>
         ) : null}
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Project</Label>
-          <Select
-            value={projectId.length >= 1 ? projectId : undefined}
-            onValueChange={selectProject}
-          >
-            <SelectTrigger aria-label="Project">
-              <SelectValue placeholder="Select a project" />
-            </SelectTrigger>
-            <SelectContent>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <FormField
-          control={form.control}
-          name="vendor"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Vendor</FormLabel>
-              <FormControl>
-                <Input {...field} maxLength={200} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount ({currency})</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="text"
-                  inputMode="decimal"
-                  onBlur={(event) => {
-                    field.onBlur()
-                    parsedAmountOrNull(event.target.value, currency)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {omitCategory ? null : (
-          <FormField
-            control={form.control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  value={field.value && field.value.length >= 1 ? field.value : NONE}
-                  onValueChange={field.onChange}
-                >
+        <PageHeader title="New request" />
+        <div className="flex min-w-0 flex-col gap-4 md:flex-row">
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            <div className="flex min-w-0 flex-col gap-1">
+              <Label className="text-xs text-muted-foreground">Project</Label>
+              <Select
+                value={projectId.length >= 1 ? projectId : undefined}
+                onValueChange={selectProject}
+              >
+                <SelectTrigger aria-label="Project">
+                  <SelectValue placeholder="Select a project" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(projects.data?.items ?? []).map((project) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      {project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <FormField
+              control={form.control}
+              name="vendor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vendor</FormLabel>
                   <FormControl>
-                    <SelectTrigger aria-label="Category">
-                      <SelectValue placeholder="None" />
-                    </SelectTrigger>
+                    <Input {...field} maxLength={200} />
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value={NONE}>None</SelectItem>
-                    {(categoriesQuery.data ?? []).map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} maxLength={2000} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="justification"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Justification</FormLabel>
-              <FormControl>
-                <Textarea {...field} maxLength={2000} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {previewReady ? (
-          <div className="min-w-0">
-            <PolicyPreviewPane
-              decision={previewBusy ? null : decision}
-              error={previewBusy ? null : previewError}
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+            <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount ({currency})</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        inputMode="decimal"
+                        onBlur={(event) => {
+                          field.onBlur()
+                          parsedAmountOrNull(event.target.value, currency)
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {omitCategory ? null : (
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select
+                        value={field.value && field.value.length >= 1 ? field.value : NONE}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger aria-label="Category">
+                            <SelectValue placeholder="None" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={NONE}>None</SelectItem>
+                          {(categoriesQuery.data ?? []).map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} maxLength={2000} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="justification"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Justification</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} maxLength={2000} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-wrap gap-2">
+              {archived ? null : gateReady ? (
+                <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
+                  <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
+                    Submit request
+                  </Button>
+                </PermissionGateView>
+              ) : (
+                <Button type="submit" disabled>
+                  Submit request
+                </Button>
+              )}
+              {archived ? null : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={draftDisabled}
+                  onClick={() => void onSaveDraft()}
+                >
+                  Save draft
+                </Button>
+              )}
+              <Link
+                href={requestListHref({ projectId: projectId.length >= 1 ? projectId : undefined })}
+                className={buttonVariants({ variant: 'ghost' })}
+              >
+                Cancel
+              </Link>
+            </div>
           </div>
-        ) : null}
-        <div className="flex flex-wrap gap-2">
-          {archived ? null : gateReady ? (
-            <PermissionGateView allowed={allowed} denialMessage={createRequestDenialMessage()}>
-              <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
-                Submit request
-              </Button>
-            </PermissionGateView>
-          ) : (
-            <Button type="submit" disabled>
-              Submit request
-            </Button>
-          )}
-          {archived ? null : (
-            <Button
-              type="button"
-              variant="outline"
-              disabled={draftDisabled}
-              onClick={() => void onSaveDraft()}
-            >
-              Save draft
-            </Button>
-          )}
-          <Link
-            href={requestListHref({ projectId: projectId.length >= 1 ? projectId : undefined })}
-            className={buttonVariants({ variant: 'ghost' })}
-          >
-            Cancel
-          </Link>
+          {previewReady ? (
+            <Card className="min-w-0 flex-1">
+              <CardHeader>
+                <CardTitle>Policy</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PolicyPreviewPane
+                  decision={previewBusy ? null : decision}
+                  error={previewBusy ? null : previewError}
+                />
+              </CardContent>
+            </Card>
+          ) : null}
         </div>
       </form>
     </Form>

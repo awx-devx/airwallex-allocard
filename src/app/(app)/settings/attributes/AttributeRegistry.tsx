@@ -22,6 +22,8 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { AttributeValueSheet } from '@/app/(app)/settings/attributes/AttributeValueSheet'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -148,6 +150,7 @@ export function AttributeRegistry() {
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
+      <PageHeader title="Attributes" />
       <section className="flex min-w-0 flex-col gap-2">
         <h2 className="text-sm font-medium">Built-in attributes</h2>
         <ul className="flex min-w-0 flex-col gap-1">
@@ -161,7 +164,8 @@ export function AttributeRegistry() {
       <section className="flex min-w-0 flex-col gap-3">
         <h2 className="text-sm font-medium">Custom attributes</h2>
         <div className="flex flex-wrap gap-2">
-          <Select
+          <FilterSelect
+            label="Scope"
             value={filter.scope ?? ALL}
             onValueChange={(value) =>
               pushFilter({
@@ -170,20 +174,16 @@ export function AttributeRegistry() {
                 page: 1,
               })
             }
+            allLabel="All scopes"
           >
-            <SelectTrigger aria-label="Scope" size="sm">
-              <SelectValue placeholder="All scopes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {Object.values(AttributeScope).map((scope) => (
-                <SelectItem key={scope} value={scope}>
-                  {scope}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
+            {Object.values(AttributeScope).map((scope) => (
+              <SelectItem key={scope} value={scope}>
+                {scope}
+              </SelectItem>
+            ))}
+          </FilterSelect>
+          <FilterSelect
+            label="Source"
             value={filter.source ?? ALL}
             onValueChange={(value) =>
               pushFilter({
@@ -192,19 +192,14 @@ export function AttributeRegistry() {
                 page: 1,
               })
             }
+            allLabel="All sources"
           >
-            <SelectTrigger aria-label="Source" size="sm">
-              <SelectValue placeholder="All sources" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {Object.values(AttributeSource).map((source) => (
-                <SelectItem key={source} value={source}>
-                  {source}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {Object.values(AttributeSource).map((source) => (
+              <SelectItem key={source} value={source}>
+                {source}
+              </SelectItem>
+            ))}
+          </FilterSelect>
           <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
             <Button type="button" disabled={!allowed} onClick={() => setCreateOpen(true)}>
               <PlusIcon className="size-4 shrink-0" aria-hidden />

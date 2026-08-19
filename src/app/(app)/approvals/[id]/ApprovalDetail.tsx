@@ -51,12 +51,14 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { Timeline } from '@/components/patterns/Timeline'
 import type { TimelineItem } from '@/components/patterns/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ActorType } from '@/shared/enums/audit'
@@ -262,17 +264,27 @@ export function ApprovalDetail() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <Link href={approvalsHref()} className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}>
-          Back
-        </Link>
-        <Link
-          href={requestHref(data.id)}
-          className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
-        >
-          View as request
-        </Link>
-      </div>
+      <PageHeader
+        title={data.vendor}
+        status={<StatusBadge kind="request" status={data.status} />}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <MoneyDisplay money={{ amount: data.amount, currency: data.currency }} />
+            <Link
+              href={approvalsHref()}
+              className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+            >
+              Back
+            </Link>
+            <Link
+              href={requestHref(data.id)}
+              className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+            >
+              View as request
+            </Link>
+          </div>
+        }
+      />
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
@@ -283,69 +295,81 @@ export function ApprovalDetail() {
           <AlertDescription>{archivedProjectMessage()}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex min-w-0 flex-wrap gap-2">
-        <h1 className="min-w-0 text-lg font-medium">{data.vendor}</h1>
-        <StatusBadge kind="request" status={data.status} />
-        <MoneyDisplay money={{ amount: data.amount, currency: data.currency }} />
-      </div>
-      <p className="min-w-0 text-sm">Requester: {requesterName}</p>
-      {categoryName ? <p className="min-w-0 text-sm">Category: {categoryName}</p> : null}
-      <p className="min-w-0 break-words text-sm">{data.description}</p>
-      <p className="min-w-0 break-words text-sm">{data.justification}</p>
-      {data.status === PurchaseRequestStatus.REJECTED ? (
-        <Alert variant="destructive">
-          <AlertTitle>Rejected</AlertTitle>
-          <AlertDescription>{rejected ?? rejectedFallbackMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.status === PurchaseRequestStatus.EXPIRED ? (
-        <Alert>
-          <AlertDescription>{expiredRequestMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.escalatedAt ? (
-        <p className="text-sm">{formatEscalatedAt(data.escalatedAt, formatDate)}</p>
-      ) : null}
-      {remaining !== undefined ? (
-        <div className="min-w-0">
-          <p className="text-sm">
-            Remaining <MoneyDisplay money={{ amount: remaining, currency: remainingCurrency }} />
-          </p>
-          {remainingShortfall(remaining, data.amount) ? (
-            <Alert>
-              <AlertDescription>{budgetShortfallMessage()}</AlertDescription>
-            </Alert>
-          ) : null}
-        </div>
-      ) : null}
-      {omitRecent || spend.length === 0 ? null : (
-        <ul className="flex min-w-0 flex-col gap-1">
-          {spend.map((item) => (
-            <li key={`${item.vendor}-${item.amount}`} className="flex min-w-0 flex-wrap gap-2">
-              <span className="min-w-0 break-words text-sm">{item.vendor}</span>
-              <MoneyDisplay money={{ amount: item.amount, currency: item.currency }} />
-            </li>
-          ))}
-        </ul>
-      )}
-      {data.policyDecision && showLivePolicyDecision(data.status) ? (
-        <div className="flex min-w-0 flex-col gap-1">
-          <PolicyPane decision={data.policyDecision} />
-          {data.policyDecision.reasons.map((policyReason) =>
-            data.policyDecision?.outcome === PolicyOutcome.NOT_PERMITTED ? null : (
-              <p key={policyReason} className="text-sm">
-                {policyReason}
-              </p>
-            ),
-          )}
-          {progress.required > 0 ? (
-            <p className="text-sm">{formatApprovalProgress(progress)}</p>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="min-w-0">
-        <h2 className="mb-2 text-sm font-medium">Approval trail</h2>
-        <Timeline items={trail} />
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="flex min-w-0 flex-col gap-3">
+            <p className="min-w-0 text-sm">Requester: {requesterName}</p>
+            {categoryName ? <p className="min-w-0 text-sm">Category: {categoryName}</p> : null}
+            <p className="min-w-0 break-words text-sm">{data.description}</p>
+            <p className="min-w-0 break-words text-sm">{data.justification}</p>
+            {data.status === PurchaseRequestStatus.REJECTED ? (
+              <Alert variant="destructive">
+                <AlertTitle>Rejected</AlertTitle>
+                <AlertDescription>{rejected ?? rejectedFallbackMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.status === PurchaseRequestStatus.EXPIRED ? (
+              <Alert>
+                <AlertDescription>{expiredRequestMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.escalatedAt ? (
+              <p className="text-sm">{formatEscalatedAt(data.escalatedAt, formatDate)}</p>
+            ) : null}
+            {remaining !== undefined ? (
+              <div className="min-w-0">
+                <p className="text-sm">
+                  Remaining{' '}
+                  <MoneyDisplay money={{ amount: remaining, currency: remainingCurrency }} />
+                </p>
+                {remainingShortfall(remaining, data.amount) ? (
+                  <Alert>
+                    <AlertDescription>{budgetShortfallMessage()}</AlertDescription>
+                  </Alert>
+                ) : null}
+              </div>
+            ) : null}
+            {omitRecent || spend.length === 0 ? null : (
+              <ul className="flex min-w-0 flex-col gap-1">
+                {spend.map((item) => (
+                  <li
+                    key={`${item.vendor}-${item.amount}`}
+                    className="flex min-w-0 flex-wrap gap-2"
+                  >
+                    <span className="min-w-0 break-words text-sm">{item.vendor}</span>
+                    <MoneyDisplay money={{ amount: item.amount, currency: item.currency }} />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {data.policyDecision && showLivePolicyDecision(data.status) ? (
+              <div className="flex min-w-0 flex-col gap-1">
+                <PolicyPane decision={data.policyDecision} />
+                {data.policyDecision.reasons.map((policyReason) =>
+                  data.policyDecision?.outcome === PolicyOutcome.NOT_PERMITTED ? null : (
+                    <p key={policyReason} className="text-sm">
+                      {policyReason}
+                    </p>
+                  ),
+                )}
+                {progress.required > 0 ? (
+                  <p className="text-sm">{formatApprovalProgress(progress)}</p>
+                ) : null}
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Approval trail</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Timeline items={trail} />
+          </CardContent>
+        </Card>
       </div>
       {self ? (
         <Alert>

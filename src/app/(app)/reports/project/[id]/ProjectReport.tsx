@@ -18,9 +18,11 @@ import { BudgetBar } from '@/components/patterns/BudgetBar'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import type { ProjectReport as ProjectReportData } from '@/shared/types/report'
@@ -123,34 +125,15 @@ export function ProjectReport() {
           Close project
         </Link>
       </div>
-      <BudgetBar {...reportToBudgetBar(data)} />
-      <div className="flex min-w-0 flex-wrap gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Approved</span>
-          <MoneyDisplay
-            money={{ amount: data.approved, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Committed</span>
-          <MoneyDisplay
-            money={{ amount: data.committed, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Actual</span>
-          <MoneyDisplay
-            money={{ amount: data.actual, currency: data.currency }}
-            colorBySign={false}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Remaining</span>
-          <MoneyDisplay money={{ amount: data.remaining, currency: data.currency }} colorBySign />
-        </div>
-      </div>
+      <PageHeader title="Project report" />
+      <Card className="laser-cap">
+        <CardHeader>
+          <CardTitle>Budget</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BudgetBar {...reportToBudgetBar(data)} />
+        </CardContent>
+      </Card>
       <p className="min-w-0 break-words text-sm text-muted-foreground">
         Generated {formatDateTime(data.generatedAt)}
       </p>

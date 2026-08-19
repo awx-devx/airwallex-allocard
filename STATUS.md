@@ -2,9 +2,9 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** _none_ — Track A complete
-**Active task:** _none_ — wait for the user to name the next phase
-**Last green `pnpm verify`:** 2026-08-19 (charcoal sidenav + laser, 1815 tests)
+**Active phase:** Visual language and layout (post–Track A)
+**Active task:** _complete_ — tokens, org switcher, walkers, PageHeader, screen layout
+**Last green `pnpm verify`:** 2026-08-19 (opaque cards/buttons, no overlay; 1821 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -37,7 +37,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 | A     | A8 Activity & transactions | **complete** | 9 / 9   |
 | A     | A9 Reports & closure       | **complete** | 10 / 10 |
 
-Track A **complete**. A9 phase exit signed off. Next is whatever the user names — do not invent a phase. Visual direction: `docs/VISUAL-DIRECTION.md`.
+Track A **complete**. Visual language and layout (tokens, org switcher, walkers, PageHeader, screen composition) shipped after Track A. Next is whatever the user names — do not invent a phase. Visual direction: `docs/VISUAL-DIRECTION.md`.
 
 ---
 
@@ -68,7 +68,9 @@ _None yet._
 
 ## Notes for the next session
 
-**Charcoal sidenav + laser (2026-08-19).** Desktop aside is a charcoal dock (`--sidebar`). Active item uses `.sidenav-current` (2px left-edge laser, hot mid, fade to the caps). Menu Sheet uses the same dock. Header is a frosted `border-b` strip (`AppHeader` + breadcrumbs). `pnpm verify` green (1815 tests). Next: wait for the user to name the next phase.
+**Visual language and layout (2026-08-19).** Neutral cool-grey canvas. Cards, alerts, and outline buttons are opaque paper (`bg-card` + border) — no overlay on copy. Header is a solid frosted strip. OrgSwitcher dropdown uses popper to the right of the rail. DataTable sits in a bordered `bg-card` panel. List filters use `FilterSelect`. `/dev/direction` consumes product tokens (no `--p-*` theme).
+
+**Charcoal sidenav + laser (2026-08-19).** Desktop aside is a charcoal dock (`--sidebar`). Active item uses `.sidenav-current` (1px left-edge laser, hot mid, fade to the caps). Menu Sheet uses the same dock. Header is a frosted strip (`AppHeader` + breadcrumbs), not a fading laser tick.
 
 **Desktop icon rail (2026-08-18).** Desktop aside is a `w-16` icon column (`hidden md:flex` unchanged). Hover, keyboard focus, or an open org menu expands a `w-56` overlay over the page — labels clip, `main` does not reflow. Menu `Sheet` below `md` still shows full labels. Pattern 1 in `docs/RESPONSIVENESS.md`. `pnpm verify` green (1797 tests). Next: wait for the user to name the next phase.
 

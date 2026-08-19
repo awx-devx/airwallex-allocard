@@ -37,18 +37,14 @@ import {
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGate, PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { formatDate } from '@/lib/dates'
 import { permissionForTransition } from '@/shared/projectLifecycle'
 import { Permission } from '@/shared/enums/permissions'
@@ -261,8 +257,14 @@ export function ProjectList() {
           <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       ) : null}
+      <PageHeader
+        kicker={me.data?.activeOrg?.name}
+        title="Projects"
+        actions={<CreateProjectControl />}
+      />
       <div className="flex flex-wrap gap-2">
-        <Select
+        <FilterSelect
+          label="Status"
           value={filter.status ?? ALL}
           onValueChange={(value) =>
             replaceFilter({
@@ -271,20 +273,16 @@ export function ProjectList() {
               page: 1,
             })
           }
+          allLabel="All statuses"
         >
-          <SelectTrigger aria-label="Status" size="sm">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {Object.values(ProjectStatus).map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
+          {Object.values(ProjectStatus).map((status) => (
+            <SelectItem key={status} value={status}>
+              {status}
+            </SelectItem>
+          ))}
+        </FilterSelect>
+        <FilterSelect
+          label="Cost centre"
           value={filter.costCentre ?? ALL}
           onValueChange={(value) =>
             replaceFilter({
@@ -293,20 +291,14 @@ export function ProjectList() {
               page: 1,
             })
           }
+          allLabel="All cost centres"
         >
-          <SelectTrigger aria-label="Cost centre" size="sm">
-            <SelectValue placeholder="All cost centres" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {costCentres.map((centre) => (
-              <SelectItem key={centre} value={centre}>
-                {centre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <CreateProjectControl />
+          {costCentres.map((centre) => (
+            <SelectItem key={centre} value={centre}>
+              {centre}
+            </SelectItem>
+          ))}
+        </FilterSelect>
       </div>
       <DataTable
         columns={columns}

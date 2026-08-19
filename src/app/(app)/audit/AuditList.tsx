@@ -24,6 +24,7 @@ import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { timelineActorChipLabel } from '@/components/patterns/timelineActor'
@@ -33,13 +34,7 @@ import { Button } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { formatDateTime } from '@/lib/dates'
 import type { AuditEntry } from '@/shared/types/auditQuery'
@@ -69,32 +64,25 @@ function AuditToolbar({
 }) {
   return (
     <div className="flex min-w-0 flex-wrap gap-2">
+      <FilterSelect
+        label="Project"
+        value={filter.projectId ?? ALL}
+        onValueChange={(value) =>
+          onChange({
+            ...filter,
+            projectId: value === ALL ? undefined : value,
+          })
+        }
+        allLabel="All projects"
+      >
+        {projectItems.map((project) => (
+          <SelectItem key={project.id} value={project.id}>
+            {project.name}
+          </SelectItem>
+        ))}
+      </FilterSelect>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Project</Label>
-        <Select
-          value={filter.projectId ?? ALL}
-          onValueChange={(value) =>
-            onChange({
-              ...filter,
-              projectId: value === ALL ? undefined : value,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Project">
-            <SelectValue placeholder="All projects" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            {projectItems.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Subject type</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Subject type</Label>
         <Input
           value={filter.subjectType ?? ''}
           onChange={(event) =>
@@ -107,7 +95,7 @@ function AuditToolbar({
         />
       </div>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Subject id</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Subject id</Label>
         <Input
           value={filter.subjectId ?? ''}
           onChange={(event) =>
@@ -120,7 +108,7 @@ function AuditToolbar({
         />
       </div>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Actor id</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Actor id</Label>
         <Input
           value={filter.actorId ?? ''}
           onChange={(event) =>
@@ -133,7 +121,7 @@ function AuditToolbar({
         />
       </div>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Action</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Action</Label>
         <Input
           value={filter.action ?? ''}
           onChange={(event) =>
@@ -146,7 +134,7 @@ function AuditToolbar({
         />
       </div>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Dates</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Dates</Label>
         <DateRangePicker
           from={filter.from ?? null}
           to={filter.to ?? null}

@@ -15,18 +15,14 @@ import {
 import { useCan } from '@/client/lib/permissions/useCan'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { formatDate } from '@/lib/dates'
 import { AccessReviewResolution, AccessReviewStatus } from '@/shared/enums/accessReviewStatus'
 import { Permission } from '@/shared/enums/permissions'
@@ -139,8 +135,10 @@ export function AccessReviewList() {
           <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       ) : null}
+      <PageHeader title="Access reviews" />
       <div className="flex flex-wrap gap-2">
-        <Select
+        <FilterSelect
+          label="Status"
           value={filter.status ?? ALL}
           onValueChange={(value) =>
             replaceFilter({
@@ -151,16 +149,11 @@ export function AccessReviewList() {
                   : (value as typeof AccessReviewStatus.OPEN | typeof AccessReviewStatus.RESOLVED),
             })
           }
+          allLabel="All statuses"
         >
-          <SelectTrigger aria-label="Status" size="sm">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>All</SelectItem>
-            <SelectItem value={AccessReviewStatus.OPEN}>OPEN</SelectItem>
-            <SelectItem value={AccessReviewStatus.RESOLVED}>RESOLVED</SelectItem>
-          </SelectContent>
-        </Select>
+          <SelectItem value={AccessReviewStatus.OPEN}>OPEN</SelectItem>
+          <SelectItem value={AccessReviewStatus.RESOLVED}>RESOLVED</SelectItem>
+        </FilterSelect>
       </div>
       <DataTable
         columns={columns}

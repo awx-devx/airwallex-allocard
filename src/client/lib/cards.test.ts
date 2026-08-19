@@ -471,14 +471,14 @@ describe('A5.10 invariant proofs', () => {
     expect(list).toContain('useOrgMembers')
     expect(list).toContain('memberNameByUserId')
     expect(list).not.toMatch(/holderLabel\(holder,\s*undefined\)/)
-    expect(list).toContain('>Project</Label>')
-    expect(list).toContain('>Status</Label>')
-    expect(list).toContain('>Purpose</Label>')
+    expect(list).toContain('label="Project"')
+    expect(list).toContain('label="Status"')
+    expect(list).toContain('label="Purpose"')
     const project = readFileSync(
       join(process.cwd(), 'src/app/(app)/projects/[id]/cards/ProjectCards.tsx'),
       'utf8',
     )
-    expect(project).toContain('>Status</Label>')
-    expect(project).toContain('>Purpose</Label>')
+    expect(project).toContain('label="Status"')
+    expect(project).toContain('label="Purpose"')
   })
 })

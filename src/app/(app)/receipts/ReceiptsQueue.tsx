@@ -35,6 +35,7 @@ import type { TxFilter } from '@/client/queryKeys'
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -43,13 +44,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { formatDateTime } from '@/lib/dates'
 import { Permission } from '@/shared/enums/permissions'
@@ -179,32 +174,26 @@ function ReceiptsToolbar({
 }) {
   return (
     <div className="flex min-w-0 flex-wrap gap-2">
+      <FilterSelect
+        label="Project"
+        value={filter.projectId ?? (allowAllProjects ? ALL : undefined)}
+        onValueChange={(value) =>
+          onChange({
+            ...filter,
+            projectId: value === ALL ? undefined : value,
+          })
+        }
+        allLabel={allowAllProjects ? 'All projects' : undefined}
+        placeholder={allowAllProjects ? 'All projects' : 'Select a project'}
+      >
+        {projectItems.map((project) => (
+          <SelectItem key={project.id} value={project.id}>
+            {project.name}
+          </SelectItem>
+        ))}
+      </FilterSelect>
       <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Project</Label>
-        <Select
-          value={filter.projectId ?? (allowAllProjects ? ALL : undefined)}
-          onValueChange={(value) =>
-            onChange({
-              ...filter,
-              projectId: value === ALL ? undefined : value,
-            })
-          }
-        >
-          <SelectTrigger aria-label="Project">
-            <SelectValue placeholder="Select a project" />
-          </SelectTrigger>
-          <SelectContent>
-            {allowAllProjects ? <SelectItem value={ALL}>All</SelectItem> : null}
-            {projectItems.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex min-w-0 flex-col gap-1">
-        <Label className="text-xs text-muted-foreground">Dates</Label>
+        <Label className="text-xs font-medium text-muted-foreground">Dates</Label>
         <DateRangePicker
           from={filter.from ?? null}
           to={filter.to ?? null}

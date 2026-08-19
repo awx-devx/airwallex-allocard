@@ -24,6 +24,7 @@ import {
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
@@ -31,14 +32,7 @@ import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
@@ -87,21 +81,18 @@ function ProjectSelect({
   onChange: (projectId: string) => void
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1">
-      <Label className="text-xs text-muted-foreground">Project</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger aria-label="Project">
-          <SelectValue placeholder="Select a project" />
-        </SelectTrigger>
-        <SelectContent>
-          {items.map((project) => (
-            <SelectItem key={project.id} value={project.id}>
-              {project.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <FilterSelect
+      label="Project"
+      value={value}
+      onValueChange={onChange}
+      placeholder="Select a project"
+    >
+      {items.map((project) => (
+        <SelectItem key={project.id} value={project.id}>
+          {project.name}
+        </SelectItem>
+      ))}
+    </FilterSelect>
   )
 }
 

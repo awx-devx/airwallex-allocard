@@ -18,19 +18,14 @@ import { AttributeValue } from '@/components/patterns/AttributeValue'
 import { DataTable } from '@/components/patterns/DataTable'
 import { DiffView } from '@/components/patterns/DiffView'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { formatDate } from '@/lib/dates'
 import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
@@ -130,50 +125,36 @@ export function AutomationHistory() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-wrap gap-2">
+        <FilterSelect
+          label="Rule"
+          value={filter.ruleId ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({ ...filter, ruleId: value === ALL ? undefined : value, page: 1 })
+          }
+          allLabel="All rules"
+        >
+          {(rules.data?.items ?? []).map((rule) => (
+            <SelectItem key={rule.id} value={rule.id}>
+              {rule.name}
+            </SelectItem>
+          ))}
+        </FilterSelect>
+        <FilterSelect
+          label="Project"
+          value={filter.projectId ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({ ...filter, projectId: value === ALL ? undefined : value, page: 1 })
+          }
+          allLabel="All projects"
+        >
+          {(projects.data?.items ?? []).map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </FilterSelect>
         <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Rule</Label>
-          <Select
-            value={filter.ruleId ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({ ...filter, ruleId: value === ALL ? undefined : value, page: 1 })
-            }
-          >
-            <SelectTrigger aria-label="Rule" size="sm">
-              <SelectValue placeholder="All rules" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {(rules.data?.items ?? []).map((rule) => (
-                <SelectItem key={rule.id} value={rule.id}>
-                  {rule.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Project</Label>
-          <Select
-            value={filter.projectId ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({ ...filter, projectId: value === ALL ? undefined : value, page: 1 })
-            }
-          >
-            <SelectTrigger aria-label="Project" size="sm">
-              <SelectValue placeholder="All projects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label htmlFor="automation-card" className="text-xs text-muted-foreground">
+          <Label htmlFor="automation-card" className="text-xs font-medium text-muted-foreground">
             Card
           </Label>
           <Input
@@ -189,31 +170,24 @@ export function AutomationHistory() {
             placeholder="Card id"
           />
         </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Status</Label>
-          <Select
-            value={filter.status ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                status: value === ALL ? undefined : (value as RuleRunStatus),
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Status" size="sm">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {Object.values(RuleRunStatus).map((status) => (
-                <SelectItem key={status} value={status}>
-                  {status}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FilterSelect
+          label="Status"
+          value={filter.status ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              status: value === ALL ? undefined : (value as RuleRunStatus),
+              page: 1,
+            })
+          }
+          allLabel="All statuses"
+        >
+          {Object.values(RuleRunStatus).map((status) => (
+            <SelectItem key={status} value={status}>
+              {status}
+            </SelectItem>
+          ))}
+        </FilterSelect>
       </div>
       <DataTable
         columns={columns}

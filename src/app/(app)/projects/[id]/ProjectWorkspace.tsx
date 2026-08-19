@@ -24,6 +24,7 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGate } from '@/components/patterns/PermissionGate'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -72,110 +73,108 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
           <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        {header ? (
-          <>
-            <strong className="text-sm font-medium">{header.name}</strong>
-            <span className="text-sm text-muted-foreground">{header.code}</span>
-            <StatusBadge kind="project" status={header.status} />
-          </>
-        ) : (
-          <LoadingState label="Loading project" rows={1} />
-        )}
-        {header ? (
-          <div className="flex flex-wrap gap-2">
-            {header.status === ProjectStatus.DRAFT ? (
-              <>
+      <PageHeader
+        kicker={header?.code}
+        title={header ? header.name : 'Project'}
+        status={header ? <StatusBadge kind="project" status={header.status} /> : undefined}
+        actions={
+          header ? (
+            <div className="flex flex-wrap gap-2">
+              {header.status === ProjectStatus.DRAFT ? (
+                <>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={draftWizardHref(id)}>
+                      <PlayIcon className="size-4 shrink-0" aria-hidden />
+                      Resume
+                    </Link>
+                  </Button>
+                  <PermissionGate
+                    projectId={id}
+                    permission={permissionForTransition(ProjectStatus.CANCELLED)}
+                  >
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setCancelOpen(true)}
+                    >
+                      Cancel project
+                    </Button>
+                  </PermissionGate>
+                </>
+              ) : null}
+              {header.status === ProjectStatus.PENDING_APPROVAL ? (
+                <PermissionGate
+                  projectId={id}
+                  permission={permissionForTransition(ProjectStatus.ACTIVE)}
+                >
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => void runTransition(ProjectStatus.ACTIVE)}
+                  >
+                    <RocketIcon className="size-4 shrink-0" aria-hidden />
+                    Launch
+                  </Button>
+                </PermissionGate>
+              ) : null}
+              {header.status === ProjectStatus.CLOSED ? (
+                <>
+                  <PermissionGate
+                    projectId={id}
+                    permission={permissionForTransition(ProjectStatus.ARCHIVED)}
+                  >
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void runTransition(ProjectStatus.ARCHIVED)}
+                    >
+                      <ArchiveIcon className="size-4 shrink-0" aria-hidden />
+                      Archive
+                    </Button>
+                  </PermissionGate>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={finalReportHref(id)}>
+                      <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
+                      {finalReportLink()}
+                    </Link>
+                  </Button>
+                </>
+              ) : null}
+              {isProjectCloseable(header.status) ? (
+                <PermissionGate projectId={id} permission={Permission.PROJECT_CLOSE}>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={closureHref(id)}>
+                      <BanIcon className="size-4 shrink-0" aria-hidden />
+                      {closeProjectLink()}
+                    </Link>
+                  </Button>
+                </PermissionGate>
+              ) : null}
+              {isProjectClosing(header.status) ? (
                 <Button asChild size="sm" variant="outline">
-                  <Link href={draftWizardHref(id)}>
+                  <Link href={closureHref(id)}>
                     <PlayIcon className="size-4 shrink-0" aria-hidden />
-                    Resume
+                    {resumeClosureLink()}
                   </Link>
                 </Button>
-                <PermissionGate
-                  projectId={id}
-                  permission={permissionForTransition(ProjectStatus.CANCELLED)}
-                >
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setCancelOpen(true)}
-                  >
-                    Cancel project
-                  </Button>
-                </PermissionGate>
-              </>
-            ) : null}
-            {header.status === ProjectStatus.PENDING_APPROVAL ? (
-              <PermissionGate
-                projectId={id}
-                permission={permissionForTransition(ProjectStatus.ACTIVE)}
-              >
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => void runTransition(ProjectStatus.ACTIVE)}
-                >
-                  <RocketIcon className="size-4 shrink-0" aria-hidden />
-                  Launch
-                </Button>
-              </PermissionGate>
-            ) : null}
-            {header.status === ProjectStatus.CLOSED ? (
-              <>
-                <PermissionGate
-                  projectId={id}
-                  permission={permissionForTransition(ProjectStatus.ARCHIVED)}
-                >
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => void runTransition(ProjectStatus.ARCHIVED)}
-                  >
-                    <ArchiveIcon className="size-4 shrink-0" aria-hidden />
-                    Archive
-                  </Button>
-                </PermissionGate>
+              ) : null}
+              {isProjectArchived(header.status) ? (
                 <Button asChild size="sm" variant="outline">
                   <Link href={finalReportHref(id)}>
                     <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
                     {finalReportLink()}
                   </Link>
                 </Button>
-              </>
-            ) : null}
-            {isProjectCloseable(header.status) ? (
-              <PermissionGate projectId={id} permission={Permission.PROJECT_CLOSE}>
-                <Button asChild size="sm" variant="outline">
-                  <Link href={closureHref(id)}>
-                    <BanIcon className="size-4 shrink-0" aria-hidden />
-                    {closeProjectLink()}
-                  </Link>
-                </Button>
-              </PermissionGate>
-            ) : null}
-            {isProjectClosing(header.status) ? (
-              <Button asChild size="sm" variant="outline">
-                <Link href={closureHref(id)}>
-                  <PlayIcon className="size-4 shrink-0" aria-hidden />
-                  {resumeClosureLink()}
-                </Link>
-              </Button>
-            ) : null}
-            {isProjectArchived(header.status) ? (
-              <Button asChild size="sm" variant="outline">
-                <Link href={finalReportHref(id)}>
-                  <FileChartColumnIcon className="size-4 shrink-0" aria-hidden />
-                  {finalReportLink()}
-                </Link>
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+              ) : null}
+            </div>
+          ) : (
+            <LoadingState label="Loading project" rows={1} />
+          )
+        }
+      />
       {header && isProjectArchived(header.status) ? (
         <Alert>
           <AlertDescription>{archivedProjectMessage()}</AlertDescription>

@@ -24,6 +24,8 @@ const TOKEN_SWATCHES: { name: string; className: string }[] = [
   { name: '--money-positive', className: 'bg-money-positive' },
   { name: '--money-negative', className: 'bg-money-negative' },
   { name: '--money-zero', className: 'bg-money-zero' },
+  { name: '--laser', className: 'bg-laser' },
+  { name: '--laser-cool', className: 'bg-laser-cool' },
 ]
 
 export default function DevUiPage() {
@@ -39,7 +41,7 @@ export default function DevUiPage() {
 
       <section id="tokens" className="space-y-4">
         <h2 className="text-lg font-medium">Tokens</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {TOKEN_SWATCHES.map((token) => (
             <div key={token.name} className="flex items-center gap-2 text-sm">
               <div

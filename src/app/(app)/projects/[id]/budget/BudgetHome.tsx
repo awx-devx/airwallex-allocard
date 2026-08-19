@@ -51,6 +51,7 @@ import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate } from '@/lib/dates'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
@@ -177,37 +178,14 @@ export function BudgetHome() {
     if (snapshot) {
       return (
         <div className="flex min-w-0 flex-col gap-4">
-          <BudgetBar {...reportToBudgetBar(snapshot)} />
-          <div className="flex min-w-0 flex-wrap gap-4">
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Approved</span>
-              <MoneyDisplay
-                money={{ amount: snapshot.approved, currency: snapshot.currency }}
-                colorBySign={false}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Committed</span>
-              <MoneyDisplay
-                money={{ amount: snapshot.committed, currency: snapshot.currency }}
-                colorBySign={false}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Actual</span>
-              <MoneyDisplay
-                money={{ amount: snapshot.actual, currency: snapshot.currency }}
-                colorBySign={false}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Remaining</span>
-              <MoneyDisplay
-                money={{ amount: snapshot.remaining, currency: snapshot.currency }}
-                colorBySign
-              />
-            </div>
-          </div>
+          <Card className="laser-cap">
+            <CardHeader>
+              <CardTitle>Budget</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BudgetBar {...reportToBudgetBar(snapshot)} />
+            </CardContent>
+          </Card>
           <Link href={finalReportHref(id)} className={buttonVariants({ variant: 'ghost' })}>
             {finalReportLink()}
           </Link>
@@ -271,7 +249,14 @@ export function BudgetHome() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <BudgetBar {...projectionToBudgetBarProps(projection, currency)} />
+      <Card className="laser-cap">
+        <CardHeader>
+          <CardTitle>Budget</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BudgetBar {...projectionToBudgetBarProps(projection, currency)} />
+        </CardContent>
+      </Card>
       {overCommitted ? (
         <Alert variant="destructive">
           <AlertDescription>{overCommittedMessage()}</AlertDescription>

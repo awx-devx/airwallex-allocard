@@ -10,6 +10,7 @@ import { activeOrgRole } from '@/client/lib/projects'
 import { useCan } from '@/client/lib/permissions/useCan'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { RoleMatrix } from '@/app/(app)/settings/roles/RoleMatrix'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -69,15 +70,17 @@ export function RolesSettings() {
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-sm font-medium">Roles</h1>
-        <PermissionGateView allowed={allowed} denialMessage={assignRoleDenialMessage()}>
-          <Button type="button" disabled={!allowed} onClick={() => setCreateOpen(true)}>
-            <PlusIcon className="size-4 shrink-0" aria-hidden />
-            Create role
-          </Button>
-        </PermissionGateView>
-      </div>
+      <PageHeader
+        title="Roles"
+        actions={
+          <PermissionGateView allowed={allowed} denialMessage={assignRoleDenialMessage()}>
+            <Button type="button" disabled={!allowed} onClick={() => setCreateOpen(true)}>
+              <PlusIcon className="size-4 shrink-0" aria-hidden />
+              Create role
+            </Button>
+          </PermissionGateView>
+        }
+      />
       <RoleMatrix />
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>

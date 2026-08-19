@@ -162,7 +162,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
         </Alert>
       ) : null}
       <Form {...form}>
-        <div className="flex flex-col gap-4">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="name"
@@ -194,7 +194,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-2">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea {...field} maxLength={2000} disabled={launched} />
@@ -249,7 +249,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
               </FormItem>
             )}
           />
-          <p className="text-sm">Owner: {user.name}</p>
+          <p className="text-sm md:col-span-2">Owner: {user.name}</p>
         </div>
       </Form>
       {draftId ? (

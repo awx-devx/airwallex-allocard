@@ -46,11 +46,13 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { Timeline } from '@/components/patterns/Timeline'
 import type { TimelineItem } from '@/components/patterns/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -556,61 +558,78 @@ export function RequestDetail() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <Link
-        href={requestListHref({ projectId: data.projectId })}
-        className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
-      >
-        Back
-      </Link>
-      <div className="flex min-w-0 flex-wrap gap-2">
-        <h1 className="min-w-0 text-lg font-medium">{data.vendor}</h1>
-        <StatusBadge kind="request" status={data.status} />
-        <MoneyDisplay money={{ amount: data.amount, currency: data.currency }} />
-      </div>
-      <p className="min-w-0 break-words text-sm">{data.description}</p>
-      <p className="min-w-0 break-words text-sm">{data.justification}</p>
-      {archived ? (
-        <Alert>
-          <AlertDescription>{archivedProjectMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.status === PurchaseRequestStatus.REJECTED ? (
-        <Alert variant="destructive">
-          <AlertTitle>Rejected</AlertTitle>
-          <AlertDescription>{rejected ?? rejectedFallbackMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.status === PurchaseRequestStatus.EXPIRED ? (
-        <Alert>
-          <AlertDescription>{expiredRequestMessage()}</AlertDescription>
-        </Alert>
-      ) : null}
-      {data.escalatedAt ? (
-        <p className="text-sm">{formatEscalatedAt(data.escalatedAt, formatDate)}</p>
-      ) : null}
-      {data.policyDecision && showLivePolicyDecision(data.status) ? (
-        <div className="flex min-w-0 flex-col gap-1">
-          <PolicyPreviewPane decision={data.policyDecision} />
-          {data.policyDecision.reasons.map((reason) =>
-            data.policyDecision?.outcome === PolicyOutcome.NOT_PERMITTED ? null : (
-              <p key={reason} className="text-sm">
-                {reason}
-              </p>
-            ),
-          )}
-          {progress.required > 0 ? (
-            <p className="text-sm">{formatApprovalProgress(progress)}</p>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="min-w-0">
-        <h2 className="mb-2 text-sm font-medium">Approval trail</h2>
-        <Timeline items={trail} />
-        {trail.length === 0 &&
-        data.status === PurchaseRequestStatus.PENDING &&
-        progress.required > 0 ? (
-          <p className="text-sm">{formatApprovalProgress(progress)}</p>
-        ) : null}
+      <PageHeader
+        title={data.vendor}
+        status={<StatusBadge kind="request" status={data.status} />}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <MoneyDisplay money={{ amount: data.amount, currency: data.currency }} />
+            <Link
+              href={requestListHref({ projectId: data.projectId })}
+              className={cn(buttonVariants({ variant: 'ghost' }), 'w-fit')}
+            >
+              Back
+            </Link>
+          </div>
+        }
+      />
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="flex min-w-0 flex-col gap-3">
+            <p className="min-w-0 break-words text-sm">{data.description}</p>
+            <p className="min-w-0 break-words text-sm">{data.justification}</p>
+            {archived ? (
+              <Alert>
+                <AlertDescription>{archivedProjectMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.status === PurchaseRequestStatus.REJECTED ? (
+              <Alert variant="destructive">
+                <AlertTitle>Rejected</AlertTitle>
+                <AlertDescription>{rejected ?? rejectedFallbackMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.status === PurchaseRequestStatus.EXPIRED ? (
+              <Alert>
+                <AlertDescription>{expiredRequestMessage()}</AlertDescription>
+              </Alert>
+            ) : null}
+            {data.escalatedAt ? (
+              <p className="text-sm">{formatEscalatedAt(data.escalatedAt, formatDate)}</p>
+            ) : null}
+            {data.policyDecision && showLivePolicyDecision(data.status) ? (
+              <div className="flex min-w-0 flex-col gap-1">
+                <PolicyPreviewPane decision={data.policyDecision} />
+                {data.policyDecision.reasons.map((reason) =>
+                  data.policyDecision?.outcome === PolicyOutcome.NOT_PERMITTED ? null : (
+                    <p key={reason} className="text-sm">
+                      {reason}
+                    </p>
+                  ),
+                )}
+                {progress.required > 0 ? (
+                  <p className="text-sm">{formatApprovalProgress(progress)}</p>
+                ) : null}
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Approval trail</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Timeline items={trail} />
+            {trail.length === 0 &&
+            data.status === PurchaseRequestStatus.PENDING &&
+            progress.required > 0 ? (
+              <p className="text-sm">{formatApprovalProgress(progress)}</p>
+            ) : null}
+          </CardContent>
+        </Card>
       </div>
       {data.status === PurchaseRequestStatus.APPROVED ? <UnlockedBlock request={data} /> : null}
       {editable && !archived ? <DraftEditor request={data} /> : null}

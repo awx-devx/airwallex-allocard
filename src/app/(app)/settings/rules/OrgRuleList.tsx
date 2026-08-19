@@ -23,18 +23,13 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SelectItem } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import type { Rule } from '@/shared/types/rule'
@@ -136,54 +131,41 @@ export function OrgRuleList() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
+      <PageHeader title="Rules" />
       <div className="flex flex-wrap gap-2">
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Project</Label>
-          <Select
-            value={filter.projectId ?? ALL}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                projectId: value === ALL ? undefined : value,
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Project" size="sm">
-              <SelectValue placeholder="All projects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label className="text-xs text-muted-foreground">Enabled</Label>
-          <Select
-            value={enabledSelectValue(filter.enabled)}
-            onValueChange={(value) =>
-              pushFilter({
-                ...filter,
-                enabled: value === ALL ? undefined : value === 'true',
-                page: 1,
-              })
-            }
-          >
-            <SelectTrigger aria-label="Enabled" size="sm">
-              <SelectValue placeholder="All" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All</SelectItem>
-              <SelectItem value="true">Enabled</SelectItem>
-              <SelectItem value="false">Disabled</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <FilterSelect
+          label="Project"
+          value={filter.projectId ?? ALL}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              projectId: value === ALL ? undefined : value,
+              page: 1,
+            })
+          }
+          allLabel="All projects"
+        >
+          {(projects.data?.items ?? []).map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </FilterSelect>
+        <FilterSelect
+          label="Enabled"
+          value={enabledSelectValue(filter.enabled)}
+          onValueChange={(value) =>
+            pushFilter({
+              ...filter,
+              enabled: value === ALL ? undefined : value === 'true',
+              page: 1,
+            })
+          }
+          allLabel="All states"
+        >
+          <SelectItem value="true">Enabled</SelectItem>
+          <SelectItem value="false">Disabled</SelectItem>
+        </FilterSelect>
         <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
           {allowed ? (
             <Button asChild>

@@ -34,7 +34,7 @@ Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The pag
     </div>
   </aside>
   <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-    <header className="shrink-0 border-b border-border/70 bg-background/80 px-4 py-2.5 backdrop-blur-xl">
+    <header className="relative z-1 shrink-0 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-xl">
       <div className="flex flex-wrap">…</div>
     </header>
     <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</main>
@@ -50,7 +50,7 @@ Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The pag
 </Sheet>
 ```
 
-The header is a full-bleed frosted strip (`border-b`, `bg-background/80`, `backdrop-blur-xl`) — not a rounded card island. Breadcrumbs on the left; theme / account on the right. The desktop aside is a charcoal dock (`bg-sidebar`). `Sheet` already exists in F3. `h-dvh` is a viewport unit, not a second breakpoint.
+The header is a full-bleed frosted strip (`bg-background/95`, `border-b`, `backdrop-blur-xl`) — not a rounded card island, not a fading laser tick. Breadcrumbs on the left; theme / account on the right. Quiet walkers sit `z-0` behind header/main. The desktop aside is a charcoal dock (`bg-sidebar`). `Sheet` already exists in F3. `h-dvh` is a viewport unit, not a second breakpoint.
 
 ### 2. `min-w-0` on every flex child that holds content
 

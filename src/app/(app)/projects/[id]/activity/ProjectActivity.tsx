@@ -8,6 +8,7 @@ import { noProjectActivityEmpty, parseOptionalIdParam } from '@/client/lib/trans
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { Timeline } from '@/components/patterns/Timeline'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorCode } from '@/shared/enums/errors'
 
 export function ProjectActivity() {
@@ -33,9 +34,12 @@ export function ProjectActivity() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <Timeline items={items} loading={query.isPending} empty={noProjectActivityEmpty()} />
-      <div className="flex flex-wrap gap-2">
+    <Card>
+      <CardHeader>
+        <CardTitle>Activity</CardTitle>
+      </CardHeader>
+      <CardContent className="flex min-w-0 flex-col gap-4">
+        <Timeline items={items} loading={query.isPending} empty={noProjectActivityEmpty()} />
         {query.hasNextPage ? (
           <Button
             type="button"
@@ -45,7 +49,7 @@ export function ProjectActivity() {
             Load more
           </Button>
         ) : null}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

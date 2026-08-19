@@ -191,50 +191,52 @@ export function RoleMatrix() {
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Permission</TableHead>
-              {roles.map((role) => (
-                <TableHead key={role.id}>
-                  <div className="flex flex-col gap-1">
-                    <span>{role.name}</span>
-                    <Badge>{role.isTemplate ? 'Template' : 'Custom'}</Badge>
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {PERMISSION_GROUPS.map((group) => (
-              <Fragment key={group.id}>
-                <TableRow>
-                  <TableCell colSpan={1 + roles.length} className="font-medium">
-                    {group.label}
-                  </TableCell>
-                </TableRow>
-                {group.permissions.map((permission) => (
-                  <TableRow key={permission}>
-                    <TableCell>{PERMISSION_LABELS[permission]}</TableCell>
-                    {roles.map((role) => {
-                      const checked = permissionsFor(role).includes(permission)
-                      return (
-                        <TableCell key={role.id}>
-                          <Checkbox
-                            checked={checked}
-                            aria-label={`${role.name} ${PERMISSION_LABELS[permission]}`}
-                            onCheckedChange={(state) => toggle(role, permission, state === true)}
-                          />
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Permission</TableHead>
+                {roles.map((role) => (
+                  <TableHead key={role.id}>
+                    <div className="flex flex-col gap-1">
+                      <span>{role.name}</span>
+                      <Badge>{role.isTemplate ? 'Template' : 'Custom'}</Badge>
+                    </div>
+                  </TableHead>
                 ))}
-              </Fragment>
-            ))}
-          </TableBody>
-        </Table>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {PERMISSION_GROUPS.map((group) => (
+                <Fragment key={group.id}>
+                  <TableRow>
+                    <TableCell colSpan={1 + roles.length} className="font-medium">
+                      {group.label}
+                    </TableCell>
+                  </TableRow>
+                  {group.permissions.map((permission) => (
+                    <TableRow key={permission}>
+                      <TableCell>{PERMISSION_LABELS[permission]}</TableCell>
+                      {roles.map((role) => {
+                        const checked = permissionsFor(role).includes(permission)
+                        return (
+                          <TableCell key={role.id}>
+                            <Checkbox
+                              checked={checked}
+                              aria-label={`${role.name} ${PERMISSION_LABELS[permission]}`}
+                              onCheckedChange={(state) => toggle(role, permission, state === true)}
+                            />
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  ))}
+                </Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         {roles.map((role) => {
