@@ -107,6 +107,17 @@ describe('auth/session', () => {
       })
     })
 
+    it('ignores a leftover explicit orgId when the user is not onboarded', async () => {
+      const user = await users.createUser({ email: 'fresh@example.com', name: 'Fresh' })
+      const { org } = await seedUserWithOrg()
+
+      await expect(resolveOrgContextForUser(user.id, org.id)).resolves.toEqual({
+        orgId: null,
+        orgRole: null,
+        onboarded: false,
+      })
+    })
+
     it('throws NOT_FOUND when membership exists but is SUSPENDED', async () => {
       const { user, org } = await seedUserWithOrg({ role: OrgRole.MEMBER })
       await memberships.updateMembership(
@@ -226,6 +237,39 @@ describe('auth/session', () => {
 
       expect(res.status).toBe(404)
       expect(body.error.code).toBe(ErrorCode.NOT_FOUND)
+    })
+
+    it('does not 404 a not-onboarded user with a leftover x-org-id', async () => {
+      const user = await users.createUser({ email: 'signup@example.com', name: 'Signup' })
+      const { org } = await seedUserWithOrg()
+      setAuthUserIdReader(async () => user.id)
+      const { installAuthSessionResolver } = await import('@/server/auth/session')
+      installAuthSessionResolver()
+
+      await expect(
+        resolveAuthSession(
+          new Request('http://localhost/api/onboarding/status', {
+            headers: { 'x-org-id': org.id },
+          }),
+        ),
+      ).resolves.toEqual({
+        userId: user.id,
+        orgId: null,
+        orgRole: null,
+        onboarded: false,
+      })
+
+      const handler = withAuth(async (session) => ok({ onboarded: session.onboarded }), {
+        requireOnboarded: false,
+      })
+      const res = await handler(
+        new Request('http://localhost/api/onboarding/status', {
+          headers: { 'x-org-id': org.id },
+        }),
+      )
+      const body = (await res.json()) as { onboarded: boolean }
+      expect(res.status).toBe(200)
+      expect(body.onboarded).toBe(false)
     })
   })
 })

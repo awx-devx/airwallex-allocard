@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** Restore Input/Textarea borders (invalid hsl(var(--border)) ring)
-**Last green `pnpm verify`:** 2026-08-20 (Input/Textarea real border-input; 1827 tests)
+**Last green `pnpm verify`:** 2026-08-20 (stale org after sign-up; 1841 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Stale org after sign-up (2026-08-20).** A leftover `allocard:activeOrgId` was sent as `x-org-id` on `/api/onboarding/status`, which 404'd new users. Session resolution now ignores an unmatched explicit org when the user is not onboarded; `useCall` omits the header until onboarded; active-org storage is bound to `userId`. `pnpm verify` green (1841 tests). Next: wait for the user to name the next phase.
 
 **FilterBar alignment (2026-08-20).** Labeled filters (`FilterSelect`, date range, id inputs) sit in `FilterBar` (`items-end`) so unlabeled buttons line up with the control, not the field label. Filter triggers are `h-9` to match default `Button` / `Input`. `pnpm verify` green (1826 tests). Next: wait for the user to name the next phase.
 

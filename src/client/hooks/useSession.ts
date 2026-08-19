@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import type { z } from 'zod'
 import { invalidateFor } from '@/client/hooks/invalidationMap'
 import { useCall } from '@/client/hooks/useCall'
-import { initActiveOrgId } from '@/client/providers/activeOrg'
+import { reconcileActiveOrg } from '@/client/providers/activeOrg'
 import { qk } from '@/client/queryKeys'
 import { authContracts } from '@/shared/contracts/auth'
 import { mePermissionsContracts } from '@/shared/contracts/mePermissions'
@@ -43,11 +43,12 @@ export function useMe() {
   const query = useQuery(meQueryOptions(callWithOrg))
 
   useEffect(() => {
-    const activeOrgId = query.data?.activeOrg?.id
-    if (activeOrgId) {
-      initActiveOrgId(activeOrgId)
-    }
-  }, [query.data?.activeOrg?.id])
+    if (!query.data) return
+    reconcileActiveOrg({
+      membershipOrgIds: query.data.memberships.map((row) => row.orgId),
+      fallback: query.data.activeOrg?.id ?? null,
+    })
+  }, [query.data])
 
   return query
 }

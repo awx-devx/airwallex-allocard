@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { withActiveOrgId } from '@/client/hooks/useCall'
+import { orgIdForSession, withActiveOrgId } from '@/client/hooks/useCall'
 
 describe('withActiveOrgId', () => {
   afterEach(() => {
@@ -22,5 +22,25 @@ describe('withActiveOrgId', () => {
 
   it('omits orgId when neither source has one', () => {
     expect(withActiveOrgId(undefined, null)).toEqual({ orgId: undefined })
+  })
+})
+
+describe('orgIdForSession', () => {
+  it('keeps the stored org while session is loading', () => {
+    expect(orgIdForSession('org_seed', { status: 'loading' })).toBe('org_seed')
+  })
+
+  it('keeps the stored org when onboarded', () => {
+    expect(orgIdForSession('org_seed', { status: 'authenticated', onboarded: true })).toBe(
+      'org_seed',
+    )
+  })
+
+  it('drops the stored org when signed out', () => {
+    expect(orgIdForSession('org_seed', { status: 'unauthenticated' })).toBeNull()
+  })
+
+  it('drops the stored org when authenticated but not onboarded', () => {
+    expect(orgIdForSession('org_seed', { status: 'authenticated', onboarded: false })).toBeNull()
   })
 })

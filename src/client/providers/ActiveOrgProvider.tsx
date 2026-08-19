@@ -9,11 +9,13 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react'
+import { useSession } from 'next-auth/react'
 import {
   getActiveOrgId,
   initActiveOrgId,
   setActiveOrgId,
   subscribeActiveOrg,
+  syncActiveOrgForSession,
 } from '@/client/providers/activeOrg'
 
 type ActiveOrgContextValue = {
@@ -31,9 +33,19 @@ export function ActiveOrgProvider({
   /** From meResponse.activeOrg.id when available. */
   initialOrgId?: string | null
 }) {
+  const { data: session, status } = useSession()
+
   useEffect(() => {
     initActiveOrgId(initialOrgId)
   }, [initialOrgId])
+
+  useEffect(() => {
+    if (status === 'loading') return
+    syncActiveOrgForSession({
+      userId: session?.userId ?? null,
+      onboarded: Boolean(session?.onboarded),
+    })
+  }, [status, session?.userId, session?.onboarded])
 
   const orgId = useSyncExternalStore(subscribeActiveOrg, getActiveOrgId, () => null)
   const setOrgId = useCallback((id: string | null) => {
