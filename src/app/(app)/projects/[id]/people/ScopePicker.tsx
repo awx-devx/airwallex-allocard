@@ -18,6 +18,8 @@ export type ScopePickerProps = {
   onChange: (next: AccessScope) => void
   members?: { userId: string; user: { name: string } }[]
   excludeUserId?: string
+  /** When false, the caller renders Active between elsewhere. */
+  showValidity?: boolean
 }
 
 function toggleId(ids: string[] | undefined, id: string, checked: boolean): string[] {
@@ -71,6 +73,7 @@ export function ScopePicker({
   onChange,
   members = [],
   excludeUserId,
+  showValidity = true,
 }: ScopePickerProps) {
   const workstreams = useWorkstreams(projectId)
   const categories = useBudgetCategories(projectId)
@@ -100,9 +103,17 @@ export function ScopePicker({
   return (
     <div className="flex min-w-0 flex-col gap-3">
       <RadioGroup
-        className="flex flex-col gap-2"
+        className="flex flex-wrap gap-x-4 gap-y-2"
         value={value.level}
-        onValueChange={(level) => onChange(buildAccessScope({ level: level as AccessScopeLevel }))}
+        onValueChange={(level) =>
+          onChange(
+            buildAccessScope({
+              level: level as AccessScopeLevel,
+              validFrom: value.validFrom,
+              validTo: value.validTo,
+            }),
+          )
+        }
       >
         {Object.values(AccessScopeLevel).map((level) => {
           const inputId = `scope-level-${level}`
@@ -178,26 +189,28 @@ export function ScopePicker({
         />
       ) : null}
 
-      <div className="flex min-w-0 flex-col gap-2">
-        <Label>Active between (optional)</Label>
-        <DateRangePicker
-          from={value.validFrom ?? null}
-          to={value.validTo ?? null}
-          onChange={({ from, to }) =>
-            onChange(
-              buildAccessScope({
-                level: value.level,
-                workstreamIds: value.workstreamIds,
-                categoryIds: value.categoryIds,
-                cardIds: value.cardIds,
-                memberIds: value.memberIds,
-                validFrom: from,
-                validTo: to,
-              }),
-            )
-          }
-        />
-      </div>
+      {showValidity ? (
+        <div className="flex min-w-0 flex-col gap-2">
+          <Label>Active between (optional)</Label>
+          <DateRangePicker
+            from={value.validFrom ?? null}
+            to={value.validTo ?? null}
+            onChange={({ from, to }) =>
+              onChange(
+                buildAccessScope({
+                  level: value.level,
+                  workstreamIds: value.workstreamIds,
+                  categoryIds: value.categoryIds,
+                  cardIds: value.cardIds,
+                  memberIds: value.memberIds,
+                  validFrom: from,
+                  validTo: to,
+                }),
+              )
+            }
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

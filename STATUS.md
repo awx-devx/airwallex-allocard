@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-20 (launch redirects to project; 1856 tests)
+**Last green `pnpm verify`:** 2026-08-20 (add-member layout; 1856 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Add-member layout (2026-08-20).** Person, Role, and Active between sit in `grid-cols-1 md:grid-cols-3`. Scope radios wrap on one row. Permissions preview is a second card only after role + scope are complete. Combobox options can grow past the trigger and wrap. `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
 
 **Launch redirects to the project (2026-08-20).** After a successful launch (or opening the wizard on an already ACTIVE project), the wizard goes to `/projects/:id` instead of dumping the activity timeline. Approval-needed stays on Launch with the info alert. `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
 

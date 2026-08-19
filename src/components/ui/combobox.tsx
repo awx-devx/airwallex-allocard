@@ -47,13 +47,17 @@ function Combobox({
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
-          className="w-full justify-between font-normal"
+          title={selected?.label}
+          className="min-w-0 w-full shrink justify-between font-normal"
         >
-          {selected ? selected.label : placeholder}
-          <ChevronsUpDownIcon className="opacity-50" />
+          <span className="min-w-0 truncate">{selected ? selected.label : placeholder}</span>
+          <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" aria-hidden />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+      <PopoverContent
+        align="start"
+        className="w-auto min-w-[var(--radix-popover-trigger-width)] max-w-[min(36rem,calc(100vw-2rem))] p-0"
+      >
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
@@ -69,9 +73,12 @@ function Combobox({
                   }}
                 >
                   <CheckIcon
-                    className={cn('size-4', option.value === value ? 'opacity-100' : 'opacity-0')}
+                    className={cn(
+                      'size-4 shrink-0',
+                      option.value === value ? 'opacity-100' : 'opacity-0',
+                    )}
                   />
-                  {option.label}
+                  <span className="min-w-0 whitespace-normal break-words">{option.label}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
