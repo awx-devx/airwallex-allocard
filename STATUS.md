@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** Visual language and layout (post–Track A)
-**Active task:** Align filter toolbars with unlabeled buttons
-**Last green `pnpm verify`:** 2026-08-20 (FilterBar items-end; 1826 tests)
+**Active task:** Restore Input/Textarea borders (invalid hsl(var(--border)) ring)
+**Last green `pnpm verify`:** 2026-08-20 (Input/Textarea real border-input; 1827 tests)
 **Blocked on:** _nothing_
 
 ---
