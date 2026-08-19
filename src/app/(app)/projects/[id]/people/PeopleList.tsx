@@ -31,6 +31,7 @@ import type { DataTableColumn } from '@/components/patterns/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Permission } from '@/shared/enums/permissions'
 import type { ProjectMemberDetail } from '@/shared/types/projectMember'
 
@@ -225,16 +226,21 @@ export function PeopleList() {
               : undefined,
         }}
       />
-      <div className="flex min-w-0 flex-col gap-2">
-        <h2 className="text-sm font-medium">Access history</h2>
-        {history.isPending ? (
-          <Timeline items={[]} loading />
-        ) : historyItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No access changes yet.</p>
-        ) : (
-          <Timeline items={historyItems} />
-        )}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Access history</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Timeline
+            items={historyItems}
+            loading={history.isPending}
+            empty={{
+              title: 'No access changes yet',
+              description: 'Adds, edits, and removals will show up here.',
+            }}
+          />
+        </CardContent>
+      </Card>
       <EditMemberSheet
         projectId={id}
         member={editing}

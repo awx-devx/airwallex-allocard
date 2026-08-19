@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { nextSorting } from '@/components/patterns/dataTableSort'
 import type { DataTableProps } from '@/components/patterns/types'
 import { EmptyState } from '@/components/patterns/EmptyState'
@@ -23,6 +24,17 @@ import {
 } from '@/components/ui/table'
 import { cursorNextParam, pageNextParam } from '@/lib/pagination'
 
+const PANEL =
+  'overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]'
+
+function TablePanel({ children }: { children: ReactNode }) {
+  return (
+    <div data-slot="data-table" className={PANEL}>
+      {children}
+    </div>
+  )
+}
+
 export function DataTable<T>({
   columns,
   rows,
@@ -43,10 +55,30 @@ export function DataTable<T>({
   const selected = new Set(rowSelection?.selectedIds ?? [])
   const allSelected = ids.length > 0 && ids.every((id) => selected.has(id))
 
-  if (loading) return <LoadingState />
-  if (error) return <ErrorState message={error.message} onRetry={error.onRetry} />
+  if (loading) {
+    return (
+      <TablePanel>
+        <div className="p-4">
+          <LoadingState />
+        </div>
+      </TablePanel>
+    )
+  }
+  if (error) {
+    return (
+      <TablePanel>
+        <div className="p-4">
+          <ErrorState message={error.message} onRetry={error.onRetry} />
+        </div>
+      </TablePanel>
+    )
+  }
   if (rows.length === 0) {
-    return <EmptyState title={empty.title} description={empty.description} action={empty.action} />
+    return (
+      <TablePanel>
+        <EmptyState title={empty.title} description={empty.description} action={empty.action} />
+      </TablePanel>
+    )
   }
 
   const pager =
@@ -118,10 +150,7 @@ export function DataTable<T>({
           ) : null}
         </div>
       ) : null}
-      <div
-        data-slot="data-table"
-        className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]"
-      >
+      <TablePanel>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -184,7 +213,7 @@ export function DataTable<T>({
           </Table>
         </div>
         {pager}
-      </div>
+      </TablePanel>
     </div>
   )
 }

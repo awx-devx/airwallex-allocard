@@ -23,12 +23,12 @@ import {
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
-import { PermissionGate } from '@/components/patterns/PermissionGate'
 import { PageHeader } from '@/components/patterns/PageHeader'
+import { PermissionGate } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { SubNav } from '@/components/patterns/SubNav'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { permissionForTransition } from '@/shared/projectLifecycle'
 import { ErrorCode } from '@/shared/enums/errors'
 import { Permission } from '@/shared/enums/permissions'
@@ -180,26 +180,22 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
           <AlertDescription>{archivedProjectMessage()}</AlertDescription>
         </Alert>
       ) : null}
-      <nav className="flex flex-wrap gap-2" aria-label="Project">
-        {WORKSPACE_TAB_HREFS.map((item) => {
+      <SubNav
+        label="Project"
+        items={WORKSPACE_TAB_HREFS.map((item) => {
           const href = item.href(id)
           const overview = item.tab === 'Overview'
           const active = overview
             ? pathname === href
             : pathname === href || pathname.startsWith(`${href}/`)
-          const Icon = chromeTabIcon(item.tab)
-          return (
-            <Link
-              key={item.tab}
-              href={href}
-              className={cn(buttonVariants({ variant: 'ghost' }), active && 'bg-accent')}
-            >
-              {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
-              {item.tab}
-            </Link>
-          )
+          return {
+            href,
+            label: item.tab,
+            active,
+            icon: chromeTabIcon(item.tab),
+          }
         })}
-      </nav>
+      />
       <div className="min-w-0 flex-1">{children}</div>
       <ConfirmDialog
         open={cancelOpen}

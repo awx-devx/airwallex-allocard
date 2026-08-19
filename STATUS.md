@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _complete_ — tokens, org switcher, walkers, PageHeader, screen layout
-**Last green `pnpm verify`:** 2026-08-19 (opaque cards/buttons, no overlay; 1821 tests)
+**Last green `pnpm verify`:** 2026-08-19 (table panels + segmented SubNav; 1822 tests)
 **Blocked on:** _nothing_
 
 ---
