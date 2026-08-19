@@ -50,9 +50,11 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { FormPanel } from '@/components/patterns/FormPanel'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -311,7 +313,60 @@ export function RuleBuilder() {
   return (
     <PageFlow>
       <div className="flex min-w-0 flex-col gap-6 md:flex-row">
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <FormPanel
+          className="flex-1"
+          footer={
+            <>
+              <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                <Button
+                  type="button"
+                  disabled={!canSave || !allowed}
+                  loading={createRule.isPending || updateRule.isPending}
+                  onClick={() => void onSave()}
+                >
+                  Save rule
+                </Button>
+              </PermissionGateView>
+              {!isNew ? (
+                <>
+                  <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="rule-enabled"
+                        aria-label="Enabled"
+                        checked={enabled}
+                        disabled={!allowed}
+                        onCheckedChange={(next) => {
+                          setEnabledOverride(next)
+                          enableRule.mutate({ id, input: { enabled: next } })
+                        }}
+                      />
+                      <Label htmlFor="rule-enabled" className="font-normal">
+                        Enabled
+                      </Label>
+                    </div>
+                  </PermissionGateView>
+                  <Link
+                    href={ruleSimulateHref(id)}
+                    className={buttonVariants({ variant: 'outline' })}
+                  >
+                    Simulate
+                  </Link>
+                  <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={!allowed}
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      Delete
+                    </Button>
+                  </PermissionGateView>
+                </>
+              ) : null}
+            </>
+          }
+        >
           {alertMessage ? (
             <Alert variant="destructive">
               <AlertDescription>
@@ -409,85 +464,40 @@ export function RuleBuilder() {
             cardOptions={cardOptions}
             hasProjectScope={draft.scope.level === RuleScopeLevel.PROJECT}
           />
-          <div className="flex flex-wrap items-center gap-2">
-            <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-              <Button
-                type="button"
-                disabled={!canSave || !allowed}
-                loading={createRule.isPending || updateRule.isPending}
-                onClick={() => void onSave()}
-              >
-                Save rule
-              </Button>
-            </PermissionGateView>
-            {!isNew ? (
-              <>
-                <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="rule-enabled"
-                      aria-label="Enabled"
-                      checked={enabled}
-                      disabled={!allowed}
-                      onCheckedChange={(next) => {
-                        setEnabledOverride(next)
-                        enableRule.mutate({ id, input: { enabled: next } })
-                      }}
-                    />
-                    <Label htmlFor="rule-enabled" className="font-normal">
-                      Enabled
-                    </Label>
-                  </div>
-                </PermissionGateView>
-                <Link
-                  href={ruleSimulateHref(id)}
-                  className={buttonVariants({ variant: 'outline' })}
-                >
-                  Simulate
-                </Link>
-                <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    disabled={!allowed}
-                    onClick={() => setDeleteOpen(true)}
-                  >
-                    Delete
-                  </Button>
-                </PermissionGateView>
-              </>
+        </FormPanel>
+        <Card className="min-w-0 flex-1">
+          <CardHeader>
+            <CardTitle>Rule</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RuleSentence
+              rule={{ name: draft.name, when: draft.when, then: draft.then, else: draft.else }}
+            />
+            {validateErrors.length > 0 ? (
+              <ul className="mt-3 flex min-w-0 flex-col gap-1 text-sm text-destructive">
+                {validateErrors.map((error) => (
+                  <li key={`${error.path}:${error.message}`}>
+                    {error.path}: {error.message}
+                  </li>
+                ))}
+              </ul>
             ) : null}
-          </div>
-        </div>
-        <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-medium">Rule</h2>
-          <RuleSentence
-            rule={{ name: draft.name, when: draft.when, then: draft.then, else: draft.else }}
-          />
-          {validateErrors.length > 0 ? (
-            <ul className="mt-3 flex min-w-0 flex-col gap-1 text-sm text-destructive">
-              {validateErrors.map((error) => (
-                <li key={`${error.path}:${error.message}`}>
-                  {error.path}: {error.message}
-                </li>
+            <MatchPreview output={lastSimulate} />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {attributeOptions(attributes.data?.items ?? []).map((option) => (
+                <Button
+                  key={option.value}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertAttributeKey(option.value)}
+                >
+                  {option.value}
+                </Button>
               ))}
-            </ul>
-          ) : null}
-          <MatchPreview output={lastSimulate} />
-          <div className="mt-3 flex flex-wrap gap-2">
-            {attributeOptions(attributes.data?.items ?? []).map((option) => (
-              <Button
-                key={option.value}
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => insertAttributeKey(option.value)}
-              >
-                {option.value}
-              </Button>
-            ))}
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
         <ConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}

@@ -162,7 +162,7 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
         </Alert>
       ) : null}
       <Form {...form}>
-        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="name"
@@ -249,13 +249,13 @@ export const DetailsStep = forwardRef<DetailsStepHandle, DetailsStepProps>(funct
               </FormItem>
             )}
           />
-          <p className="text-sm md:col-span-2">Owner: {user.name}</p>
+          <p className="text-sm text-muted-foreground md:col-span-2">Owner: {user.name}</p>
         </div>
       </Form>
       {draftId ? (
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium">Workstreams</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <Input
               value={workstreamName}
               onChange={(event) => setWorkstreamName(event.target.value)}

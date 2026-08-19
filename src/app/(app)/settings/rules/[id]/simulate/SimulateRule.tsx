@@ -29,6 +29,7 @@ import { EmptyState } from '@/components/patterns/EmptyState'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { FormPanel } from '@/components/patterns/FormPanel'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -149,7 +150,15 @@ export function SimulateRule() {
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex min-w-0 flex-col gap-3">
+      <FormPanel
+        footer={
+          <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+            <Button type="button" disabled={!allowed} loading={simulate.isPending} onClick={onRun}>
+              Run simulation
+            </Button>
+          </PermissionGateView>
+        }
+      >
         <p className="text-sm text-muted-foreground">These overrides are temporary.</p>
         {overrides.map((row, index) => (
           <div key={index} className="flex min-w-0 flex-col gap-2">
@@ -217,18 +226,7 @@ export function SimulateRule() {
         >
           Add override
         </Button>
-      </div>
-      <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-        <Button
-          type="button"
-          className="w-fit"
-          disabled={!allowed}
-          loading={simulate.isPending}
-          onClick={onRun}
-        >
-          Run simulation
-        </Button>
-      </PermissionGateView>
+      </FormPanel>
       {result ? (
         <SimulateResults result={result} nickNames={nickNames} emptyCopy={emptyCopy} />
       ) : null}

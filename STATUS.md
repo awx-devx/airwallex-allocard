@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** Visual language and layout (post–Track A)
-**Active task:** Restore Input/Textarea borders (invalid hsl(var(--border)) ring)
-**Last green `pnpm verify`:** 2026-08-20 (stale org after sign-up; 1841 tests)
+**Active task:** Form field grid alignment (helper text after inputs)
+**Last green `pnpm verify`:** 2026-08-20 (FormItem self-start; 1846 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,10 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Form field grid alignment (2026-08-20).** `FormItem` is `content-start self-start` so a helper line (e.g. Code: “Letters, numbers, hyphens.”) no longer stretches the sibling input. Inputs stay aligned; info text sits under its field; the next row starts after that. `pnpm verify` green (1846 tests). Next: wait for the user to name the next phase.
+
+**FormPanel + numbered StepWizard (2026-08-20).** Wizard rail is a numbered progress list (index, check on complete, connector, wraps). Step body and Cancel/Back/Continue sit on `FormPanel` (Card + optional footer). Same surface on New request, Add member, Rule builder, Approval rule editor, and Simulate. Closure no longer double-wraps the wizard in a Card. Auth / create-org / invite already had Cards. `pnpm verify` green (1845 tests). Next: wait for the user to name the next phase.
 
 **Stale org after sign-up (2026-08-20).** A leftover `allocard:activeOrgId` was sent as `x-org-id` on `/api/onboarding/status`, which 404'd new users. Session resolution now ignores an unmatched explicit org when the user is not onboarded; `useCall` omits the header until onboarded; active-org storage is bound to `userId`. `pnpm verify` green (1841 tests). Next: wait for the user to name the next phase.
 

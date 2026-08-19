@@ -17,6 +17,7 @@ import { editControlsDenialMessage } from '@/client/lib/rules'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { FormPanel } from '@/components/patterns/FormPanel'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -288,7 +289,25 @@ export function ApprovalRuleEditor({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <FormPanel
+      footer={
+        <>
+          <Button type="button" variant="outline" onClick={addRow}>
+            Add
+          </Button>
+          <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+            <Button
+              type="button"
+              disabled={saveDisabled}
+              loading={put.isPending}
+              onClick={() => void onSave()}
+            >
+              Save approval rules
+            </Button>
+          </PermissionGateView>
+        </>
+      }
+    >
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
@@ -356,21 +375,6 @@ export function ApprovalRuleEditor({ projectId }: { projectId: string }) {
           </div>
         </div>
       ))}
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={addRow}>
-          Add
-        </Button>
-        <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-          <Button
-            type="button"
-            disabled={saveDisabled}
-            loading={put.isPending}
-            onClick={() => void onSave()}
-          >
-            Save approval rules
-          </Button>
-        </PermissionGateView>
-      </div>
-    </div>
+    </FormPanel>
   )
 }

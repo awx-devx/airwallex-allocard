@@ -30,6 +30,7 @@ import { PermissionPreview } from '@/app/(app)/projects/[id]/people/PermissionPr
 import { ScopePicker } from '@/app/(app)/projects/[id]/people/ScopePicker'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { FormPanel } from '@/components/patterns/FormPanel'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
@@ -146,7 +147,25 @@ export function AddMemberForm() {
           onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
           className="flex min-w-0 flex-col gap-6 md:flex-row"
         >
-          <div className="flex min-w-0 flex-1 flex-col gap-4">
+          <FormPanel
+            className="flex-1"
+            footer={
+              <>
+                <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
+                  <Button
+                    type="submit"
+                    disabled={!canSubmit || !allowed}
+                    loading={addMember.isPending}
+                  >
+                    Add member
+                  </Button>
+                </PermissionGateView>
+                <Link href={peopleHref(id)} className={buttonVariants({ variant: 'outline' })}>
+                  Cancel
+                </Link>
+              </>
+            }
+          >
             {alertMessage ? (
               <Alert variant="destructive">
                 <AlertDescription>{alertMessage}</AlertDescription>
@@ -230,21 +249,7 @@ export function AddMemberForm() {
                 </FormItem>
               )}
             />
-            <div className="flex flex-wrap gap-2">
-              <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
-                <Button
-                  type="submit"
-                  disabled={!canSubmit || !allowed}
-                  loading={addMember.isPending}
-                >
-                  Add member
-                </Button>
-              </PermissionGateView>
-              <Link href={peopleHref(id)} className={buttonVariants({ variant: 'outline' })}>
-                Cancel
-              </Link>
-            </div>
-          </div>
+          </FormPanel>
           <div className="min-w-0 flex-1">
             <PermissionPreview
               complete={previewReady}

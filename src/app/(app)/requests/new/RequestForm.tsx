@@ -30,6 +30,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { FormPanel } from '@/components/patterns/FormPanel'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -339,7 +340,45 @@ export function RequestForm() {
           ) : null}
           <PageHeader title="New request" />
           <div className="flex min-w-0 flex-col gap-4 md:flex-row">
-            <div className="flex min-w-0 flex-1 flex-col gap-4">
+            <FormPanel
+              className="flex-1"
+              footer={
+                <>
+                  {archived ? null : gateReady ? (
+                    <PermissionGateView
+                      allowed={allowed}
+                      denialMessage={createRequestDenialMessage()}
+                    >
+                      <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
+                        Submit request
+                      </Button>
+                    </PermissionGateView>
+                  ) : (
+                    <Button type="submit" disabled>
+                      Submit request
+                    </Button>
+                  )}
+                  {archived ? null : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={draftDisabled}
+                      onClick={() => void onSaveDraft()}
+                    >
+                      Save draft
+                    </Button>
+                  )}
+                  <Link
+                    href={requestListHref({
+                      projectId: projectId.length >= 1 ? projectId : undefined,
+                    })}
+                    className={buttonVariants({ variant: 'ghost' })}
+                  >
+                    Cancel
+                  </Link>
+                </>
+              }
+            >
               <div className="flex min-w-0 flex-col gap-1">
                 <Label className="text-xs text-muted-foreground">Project</Label>
                 <Select
@@ -371,7 +410,7 @@ export function RequestForm() {
                   </FormItem>
                 )}
               />
-              <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="amount"
@@ -450,41 +489,7 @@ export function RequestForm() {
                   </FormItem>
                 )}
               />
-              <div className="flex flex-wrap gap-2">
-                {archived ? null : gateReady ? (
-                  <PermissionGateView
-                    allowed={allowed}
-                    denialMessage={createRequestDenialMessage()}
-                  >
-                    <Button type="submit" disabled={submitDisabled} loading={pendingWrite}>
-                      Submit request
-                    </Button>
-                  </PermissionGateView>
-                ) : (
-                  <Button type="submit" disabled>
-                    Submit request
-                  </Button>
-                )}
-                {archived ? null : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={draftDisabled}
-                    onClick={() => void onSaveDraft()}
-                  >
-                    Save draft
-                  </Button>
-                )}
-                <Link
-                  href={requestListHref({
-                    projectId: projectId.length >= 1 ? projectId : undefined,
-                  })}
-                  className={buttonVariants({ variant: 'ghost' })}
-                >
-                  Cancel
-                </Link>
-              </div>
-            </div>
+            </FormPanel>
             {previewReady ? (
               <Card className="min-w-0 flex-1">
                 <CardHeader>
