@@ -24,6 +24,7 @@ import {
 import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
@@ -128,27 +129,27 @@ export function RevealCard() {
 
   if (archived) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         {back}
         <Alert>
           <AlertDescription>{archivedProjectMessage()}</AlertDescription>
         </Alert>
-      </div>
+      </PageFlow>
     )
   }
 
   if (!eligible || isPendingAirwallexId(card.airwallexCardId)) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         {back}
         <ErrorState message={iframePendingMessage()} />
-      </div>
+      </PageFlow>
     )
   }
 
   if (frameError || tokenError) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         {back}
         <Alert>
           <AlertDescription>{revealAuditedMessage()}</AlertDescription>
@@ -164,7 +165,7 @@ export function RevealCard() {
             setRetry((n) => n + 1)
           }}
         />
-      </div>
+      </PageFlow>
     )
   }
 
@@ -174,7 +175,7 @@ export function RevealCard() {
       : null
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       {back}
       <Alert>
         <AlertDescription>{revealAuditedMessage()}</AlertDescription>
@@ -197,6 +198,6 @@ export function RevealCard() {
           </div>
         ) : null}
       </div>
-    </div>
+    </PageFlow>
   )
 }

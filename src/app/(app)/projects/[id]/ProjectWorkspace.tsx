@@ -27,6 +27,7 @@ import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGate } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import { SubNav } from '@/components/patterns/SubNav'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { permissionForTransition } from '@/shared/projectLifecycle'
@@ -67,7 +68,7 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-4">
+    <PageFill>
       {actionError ? (
         <Alert variant="destructive">
           <AlertDescription>{actionError}</AlertDescription>
@@ -196,7 +197,7 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
           }
         })}
       />
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="flex min-w-0 flex-1 flex-col">{children}</div>
       <ConfirmDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}
@@ -210,6 +211,6 @@ export function ProjectWorkspace({ children }: { children: ReactNode }) {
           void runTransition(ProjectStatus.CANCELLED)
         }}
       />
-    </div>
+    </PageFill>
   )
 }

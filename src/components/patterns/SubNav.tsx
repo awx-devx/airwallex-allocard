@@ -12,7 +12,7 @@ export type SubNavItem = {
 export function SubNav({ label, items }: { label: string; items: SubNavItem[] }) {
   return (
     <nav
-      className="flex w-fit max-w-full flex-wrap gap-1 rounded-lg border border-border bg-muted p-1"
+      className="flex w-fit max-w-full shrink-0 flex-wrap gap-1 rounded-lg border border-border bg-muted p-1"
       aria-label={label}
     >
       {items.map((item) => {

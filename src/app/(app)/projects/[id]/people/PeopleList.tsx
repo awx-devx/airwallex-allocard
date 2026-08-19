@@ -26,12 +26,12 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
-import { Timeline } from '@/components/patterns/Timeline'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Permission } from '@/shared/enums/permissions'
 import type { ProjectMemberDetail } from '@/shared/types/projectMember'
 
@@ -186,13 +186,13 @@ export function PeopleList() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {actionError ? (
         <Alert variant="destructive">
           <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         {archived ? null : <AddMemberControl projectId={id} />}
       </div>
       <DataTable
@@ -226,21 +226,16 @@ export function PeopleList() {
               : undefined,
         }}
       />
-      <Card>
-        <CardHeader>
-          <CardTitle>Access history</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Timeline
-            items={historyItems}
-            loading={history.isPending}
-            empty={{
-              title: 'No access changes yet',
-              description: 'Adds, edits, and removals will show up here.',
-            }}
-          />
-        </CardContent>
-      </Card>
+      <TimelinePanel title="Access history">
+        <Timeline
+          items={historyItems}
+          loading={history.isPending}
+          empty={{
+            title: 'No access changes yet',
+            description: 'Adds, edits, and removals will show up here.',
+          }}
+        />
+      </TimelinePanel>
       <EditMemberSheet
         projectId={id}
         member={editing}
@@ -272,6 +267,6 @@ export function PeopleList() {
           })
         }}
       />
-    </div>
+    </PageFill>
   )
 }

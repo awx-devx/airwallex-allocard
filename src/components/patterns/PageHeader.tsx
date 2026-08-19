@@ -15,7 +15,9 @@ export function PageHeader({
   className?: string
 }) {
   return (
-    <div className={cn('flex min-w-0 flex-wrap items-start justify-between gap-3', className)}>
+    <div
+      className={cn('flex min-w-0 shrink-0 flex-wrap items-start justify-between gap-3', className)}
+    >
       <div className="min-w-0">
         {kicker ? (
           <p className="text-[0.625rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">

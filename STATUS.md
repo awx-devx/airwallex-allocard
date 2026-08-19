@@ -3,8 +3,8 @@
 Single source of truth for _where the build is_. Update at the end of every task.
 
 **Active phase:** Visual language and layout (post–Track A)
-**Active task:** _complete_ — tokens, org switcher, walkers, PageHeader, screen layout
-**Last green `pnpm verify`:** 2026-08-19 (table panels + segmented SubNav; 1822 tests)
+**Active task:** Fill leftover table height without clipping — page scroll is allowed
+**Last green `pnpm verify`:** 2026-08-19 (TimelinePanel for activity/history; 1824 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -68,6 +68,8 @@ _None yet._
 
 ## Notes for the next session
 
+**Fill leftover table height (2026-08-19).** Page scroll in `main` is allowed. `PageFill` is `min-h-full` only (not `flex-1`, not `overflow-hidden`) so a short list can grow into leftover space. `DataTable` is `flex-1 min-h-64`. `TimelinePanel` is the same rule for activity/history: `fill` on dedicated pages, `max-h-80` when stacked (People access history, dashboard, overview, approval trails). Workspace/budget slots are `flex-1` without `min-h-0`.
+
 **Visual language and layout (2026-08-19).** Neutral cool-grey canvas. Cards, alerts, and outline buttons are opaque paper (`bg-card` + border) — no overlay on copy. Header is a solid frosted strip. OrgSwitcher dropdown uses popper to the right of the rail. DataTable sits in a bordered `bg-card` panel. List filters use `FilterSelect`. `/dev/direction` consumes product tokens (no `--p-*` theme).
 
 **Charcoal sidenav + laser (2026-08-19).** Desktop aside is a charcoal dock (`--sidebar`). Active item uses `.sidenav-current` (1px left-edge laser, hot mid, fade to the caps). Menu Sheet uses the same dock. Header is a frosted strip (`AppHeader` + breadcrumbs), not a fading laser tick.
@@ -76,7 +78,7 @@ _None yet._
 
 **Lucide icons (2026-08-18).** `lucide-react` is the only icon pack. SideNav / Settings / workspace / budget chrome share `navIcons.ts` (href and tab maps — `DEFAULT_NAV` / `SETTINGS_NAV` stay href+label). Alert injects a variant icon; EmptyState defaults to Inbox; ErrorState Retry uses RefreshCw. Decorative icons are `aria-hidden`. `pnpm verify` green (1785 tests). Next: wait for the user to name the next phase.
 
-**AppShell viewport lock (2026-08-18).** Chrome stays put: root `h-dvh overflow-hidden`; header `shrink-0`; page scrolls in `main` (`min-h-0 overflow-y-auto`). Brand + OrgSwitcher stay pinned; SideNav list (aside + Menu Sheet) scrolls only when items overflow, only as far as the last link. Aside still `hidden md:flex`. No `sticky`, no `ScrollArea`, no new breakpoint. Pattern 1 in `docs/RESPONSIVENESS.md`.
+**AppShell viewport lock (2026-08-18).** Chrome stays put: root `h-dvh overflow-hidden`; header `shrink-0`; page may scroll in `main` (`min-h-0 overflow-y-auto`). Brand + OrgSwitcher stay pinned; SideNav list (aside + Menu Sheet) scrolls only when items overflow, only as far as the last link. Aside still `hidden md:flex`. No `sticky` chrome, no `ScrollArea`, no new breakpoint. Pattern 1 in `docs/RESPONSIVENESS.md`.
 
 **Theme toggle (2026-08-18).** `Switch` stays binary. Three-step Light / System / Dark `ThemeToggle` (next-themes) lives in the AppShell header as icon-only on every width (`aria-label` for Light / System / Dark). `/dev/ui` re-exports the same control. `pnpm verify` green (1777 tests). Next: wait for the user to name the next phase.
 

@@ -26,6 +26,7 @@ import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -144,14 +145,14 @@ export function AttributeRegistry() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-6">
+    <PageFill>
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
       <PageHeader title="Attributes" />
-      <section className="flex min-w-0 flex-col gap-2">
+      <section className="flex min-w-0 shrink-0 flex-col gap-2">
         <h2 className="text-sm font-medium">Built-in attributes</h2>
         <ul className="flex min-w-0 flex-col gap-1">
           {BUILTIN_ATTRIBUTE_KEYS.map((item) => (
@@ -161,9 +162,9 @@ export function AttributeRegistry() {
           ))}
         </ul>
       </section>
-      <section className="flex min-w-0 flex-col gap-3">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
         <h2 className="text-sm font-medium">Custom attributes</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2">
           <FilterSelect
             label="Scope"
             value={filter.scope ?? ALL}
@@ -248,7 +249,7 @@ export function AttributeRegistry() {
         open={valuesFor !== null}
         onOpenChange={(open) => !open && setValuesFor(null)}
       />
-    </div>
+    </PageFill>
   )
 }
 

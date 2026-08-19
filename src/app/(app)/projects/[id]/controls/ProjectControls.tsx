@@ -30,6 +30,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SelectItem } from '@/components/ui/select'
@@ -207,7 +208,7 @@ export function ProjectControls() {
     ) : null
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {highlighted ? (
         <Alert>
           <AlertDescription className="flex min-w-0 flex-wrap items-center gap-2">
@@ -252,6 +253,6 @@ export function ProjectControls() {
         <h2 className="text-sm font-medium">Approval rules</h2>
         <ApprovalRuleEditor projectId={id} />
       </section>
-    </div>
+    </PageFill>
   )
 }

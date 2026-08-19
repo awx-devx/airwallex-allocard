@@ -34,6 +34,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
@@ -101,7 +102,7 @@ export function CategoryList() {
   const detail = budgetQuery.data
   if (!detail || !hasBudgetRecord(detail.budget) || detail.budget === null) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         <EmptyState
           title="No budget set yet"
           description="Set an approved amount. Categories and formulas come next."
@@ -111,7 +112,7 @@ export function CategoryList() {
             Set budget
           </Link>
         )}
-      </div>
+      </PageFill>
     )
   }
 
@@ -195,7 +196,7 @@ export function CategoryList() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
@@ -283,6 +284,6 @@ export function CategoryList() {
           })
         }}
       />
-    </div>
+    </PageFill>
   )
 }

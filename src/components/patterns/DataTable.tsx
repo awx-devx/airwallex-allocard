@@ -23,13 +23,14 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cursorNextParam, pageNextParam } from '@/lib/pagination'
+import { cn } from '@/lib/utils'
 
 const PANEL =
-  'overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]'
+  'flex min-h-64 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]'
 
-function TablePanel({ children }: { children: ReactNode }) {
+function TablePanel({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div data-slot="data-table" className={PANEL}>
+    <div data-slot="data-table" className={cn(PANEL, className)}>
       {children}
     </div>
   )
@@ -57,7 +58,7 @@ export function DataTable<T>({
 
   if (loading) {
     return (
-      <TablePanel>
+      <TablePanel className="justify-center">
         <div className="p-4">
           <LoadingState />
         </div>
@@ -66,7 +67,7 @@ export function DataTable<T>({
   }
   if (error) {
     return (
-      <TablePanel>
+      <TablePanel className="justify-center">
         <div className="p-4">
           <ErrorState message={error.message} onRetry={error.onRetry} />
         </div>
@@ -75,7 +76,7 @@ export function DataTable<T>({
   }
   if (rows.length === 0) {
     return (
-      <TablePanel>
+      <TablePanel className="justify-center">
         <EmptyState title={empty.title} description={empty.description} action={empty.action} />
       </TablePanel>
     )
@@ -119,9 +120,9 @@ export function DataTable<T>({
   const showToolbar = toolbar !== undefined || columnVisibility !== undefined
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <div className="flex min-h-64 min-w-0 flex-1 flex-col gap-3 overflow-hidden">
       {showToolbar ? (
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
           <div>{toolbar}</div>
           {columnVisibility ? (
             <DropdownMenu>
@@ -151,7 +152,7 @@ export function DataTable<T>({
         </div>
       ) : null}
       <TablePanel>
-        <div className="overflow-x-auto">
+        <div className="min-h-0 flex-1 overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -212,7 +213,7 @@ export function DataTable<T>({
             </TableBody>
           </Table>
         </div>
-        {pager}
+        {pager ? <div className="shrink-0">{pager}</div> : null}
       </TablePanel>
     </div>
   )

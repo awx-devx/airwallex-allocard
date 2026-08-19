@@ -44,6 +44,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGate } from '@/components/patterns/PermissionGate'
 import { StepWizard } from '@/components/patterns/StepWizard'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -103,17 +104,17 @@ export function ClosureFlow() {
 
   if (isProjectArchived(status)) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         <Link href={finalReportHref(id)} className={buttonVariants({ variant: 'ghost' })}>
           {finalReportLink()}
         </Link>
-      </div>
+      </PageFlow>
     )
   }
 
   if (status === ProjectStatus.CLOSED) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         <Alert>
           <AlertDescription>
             <Link href={finalReportHref(id)} className="underline-offset-4 hover:underline">
@@ -121,7 +122,7 @@ export function ClosureFlow() {
             </Link>
           </AlertDescription>
         </Alert>
-      </div>
+      </PageFlow>
     )
   }
 
@@ -193,7 +194,7 @@ export function ClosureFlow() {
     const canStart = preflight.data?.canStart === true
     const blockers = preflight.data?.blockers ?? []
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         {errorAlert}
         <PermissionGate
           projectId={id}
@@ -244,7 +245,7 @@ export function ClosureFlow() {
             </CardContent>
           </Card>
         </PermissionGate>
-      </div>
+      </PageFlow>
     )
   }
 
@@ -265,7 +266,7 @@ export function ClosureFlow() {
       currentStep === 'SETTLE' &&
       (settleStep?.status === 'BLOCKED' || settleStep?.status === 'IN_PROGRESS')
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         {errorAlert}
         <Alert>
           <AlertDescription>{closureResumeMessage()}</AlertDescription>
@@ -328,7 +329,7 @@ export function ClosureFlow() {
           </Card>
         </PermissionGate>
         {confirms}
-      </div>
+      </PageFlow>
     )
   }
 

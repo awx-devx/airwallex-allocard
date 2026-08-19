@@ -19,6 +19,7 @@ import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -129,7 +130,7 @@ export function AccessReviewList() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {actionError ? (
         <Alert variant="destructive">
           <AlertDescription>{actionError}</AlertDescription>
@@ -216,6 +217,6 @@ export function AccessReviewList() {
             })
         }}
       />
-    </div>
+    </PageFill>
   )
 }

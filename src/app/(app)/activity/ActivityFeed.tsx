@@ -6,10 +6,10 @@ import { useActivity } from '@/client/hooks/useReports'
 import { toTimelineItem } from '@/client/lib/projects'
 import { noActivityEmpty, transactionsHref } from '@/client/lib/transactions'
 import { ErrorState } from '@/components/patterns/ErrorState'
+import { PageFill } from '@/components/patterns/PageBody'
 import { PageHeader } from '@/components/patterns/PageHeader'
-import { Timeline } from '@/components/patterns/Timeline'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function ActivityFeed() {
   const query = useActivity({ limit: 20 })
@@ -24,7 +24,7 @@ export function ActivityFeed() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       <PageHeader
         title="Activity"
         actions={
@@ -33,23 +33,18 @@ export function ActivityFeed() {
           </Link>
         }
       />
-      <Card>
-        <CardHeader>
-          <CardTitle>Timeline</CardTitle>
-        </CardHeader>
-        <CardContent className="flex min-w-0 flex-col gap-4">
-          <Timeline items={items} loading={query.isPending} empty={noActivityEmpty()} />
-          {query.hasNextPage ? (
-            <Button
-              type="button"
-              onClick={() => void query.fetchNextPage()}
-              disabled={query.isFetchingNextPage}
-            >
-              Load more
-            </Button>
-          ) : null}
-        </CardContent>
-      </Card>
-    </div>
+      <TimelinePanel title="Timeline" fill>
+        <Timeline items={items} loading={query.isPending} empty={noActivityEmpty()} />
+        {query.hasNextPage ? (
+          <Button
+            type="button"
+            onClick={() => void query.fetchNextPage()}
+            disabled={query.isFetchingNextPage}
+          >
+            Load more
+          </Button>
+        ) : null}
+      </TimelinePanel>
+    </PageFill>
   )
 }

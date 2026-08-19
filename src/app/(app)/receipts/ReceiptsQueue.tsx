@@ -40,6 +40,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
@@ -239,24 +240,24 @@ export function ReceiptsQueue() {
 
   if (me.isPending) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <LoadingState />
-      </div>
+      </PageFill>
     )
   }
 
   if (needsProject && filter.projectId === undefined) {
     const empty = selectProjectEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <EmptyState
           title={empty.title}
           description={empty.description}
           illustration={<ReceiptIcon className="size-8 text-muted-foreground" aria-hidden />}
         />
-      </div>
+      </PageFill>
     )
   }
 
@@ -277,26 +278,26 @@ function ReceiptsQueueResults({
 
   if (query.error) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <ErrorState
           message={isApiError(query.error) ? query.error.message : 'Unable to load receipts'}
         />
-      </div>
+      </PageFill>
     )
   }
 
   if (!query.isPending && !query.hasNextPage && rows.length === 0) {
     const empty = noReceiptsEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <EmptyState
           title={empty.title}
           description={empty.description}
           illustration={<ReceiptIcon className="size-8 text-muted-foreground" aria-hidden />}
         />
-      </div>
+      </PageFill>
     )
   }
 
@@ -332,7 +333,7 @@ function ReceiptsQueueResults({
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {toolbar}
       <DataTable
         columns={columns}
@@ -359,6 +360,6 @@ function ReceiptsQueueResults({
           if (!open) setAttachId(null)
         }}
       />
-    </div>
+    </PageFill>
   )
 }

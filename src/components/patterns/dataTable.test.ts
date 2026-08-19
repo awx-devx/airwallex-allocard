@@ -27,7 +27,10 @@ describe('DataTable panel', () => {
   it('sits in a bordered card panel and scrolls inside', () => {
     expect(src).toContain('data-slot="data-table"')
     expect(src).toContain('rounded-lg border border-border bg-card')
-    expect(src).toContain('overflow-x-auto')
+    expect(src).toContain('overflow-auto')
+    expect(src).toContain('min-h-64')
+    expect(src).toContain('flex-1')
+    expect(src).toContain('flex min-h-64 min-w-0 flex-1 flex-col gap-3 overflow-hidden')
     expect(src).toContain('<TablePanel>')
     expect(src).toContain('<LoadingState />')
     expect(src).toContain('<EmptyState')

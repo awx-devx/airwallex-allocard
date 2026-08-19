@@ -17,6 +17,7 @@ describe('AppShell viewport lock', () => {
     expect(shell).not.toContain('sticky')
     expect(shell).not.toContain('ScrollArea')
     expect(shell).toMatch(/<main className="[^"]*\boverflow-y-auto\b/)
+    expect(shell).toMatch(/<main className="[^"]*\bflex-col\b/)
     const wrappedNav = [
       ...shell.matchAll(/overflow-y-auto overscroll-contain">\s*<SideNav items=\{items\} \/>/g),
     ]

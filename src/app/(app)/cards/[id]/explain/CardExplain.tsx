@@ -17,6 +17,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageHeader } from '@/components/patterns/PageHeader'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
@@ -59,7 +60,7 @@ export function CardExplain() {
   const limits = explain.finalControls.transactionLimits
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <PageHeader
         title="Why this limit?"
         status={<Badge variant="outline">{explain.finalStatus}</Badge>}
@@ -170,6 +171,6 @@ export function CardExplain() {
       {explain.lastRuleRunId ? (
         <p className="min-w-0 break-all text-sm">Last run {explain.lastRuleRunId}</p>
       ) : null}
-    </div>
+    </PageFlow>
   )
 }

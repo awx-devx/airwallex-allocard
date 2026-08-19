@@ -38,6 +38,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { DataTable } from '@/components/patterns/DataTable'
 import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageFill } from '@/components/patterns/PageBody'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGate, PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
@@ -251,7 +252,7 @@ export function ProjectList() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {actionError ? (
         <Alert variant="destructive">
           <AlertDescription>{actionError}</AlertDescription>
@@ -262,7 +263,7 @@ export function ProjectList() {
         title="Projects"
         actions={<CreateProjectControl />}
       />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         <FilterSelect
           label="Status"
           value={filter.status ?? ALL}
@@ -354,6 +355,6 @@ export function ProjectList() {
           void runTransition(id, ProjectStatus.CANCELLED)
         }}
       />
-    </div>
+    </PageFill>
   )
 }

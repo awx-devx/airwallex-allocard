@@ -48,6 +48,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -218,7 +219,7 @@ export function TransactionDetail() {
   const showClosed = cardQuery.data?.status === CardStatus.CLOSED
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <PageHeader
         title={data.merchant.name}
         status={
@@ -309,6 +310,6 @@ export function TransactionDetail() {
           </Link>
         </div>
       ) : null}
-    </div>
+    </PageFlow>
   )
 }

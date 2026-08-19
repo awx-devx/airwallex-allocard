@@ -24,6 +24,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SelectItem } from '@/components/ui/select'
 import { pageNextParam } from '@/lib/pagination'
@@ -104,8 +105,8 @@ export function ProjectCards() {
   const items = query.data?.items ?? []
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-3">
+    <PageFill>
+      <div className="flex shrink-0 flex-wrap gap-3">
         <FilterSelect
           label="Status"
           value={filter.status ?? ALL}
@@ -144,9 +145,11 @@ export function ProjectCards() {
         </FilterSelect>
       </div>
       {query.isPending ? (
-        <LoadingState />
+        <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
+          <LoadingState />
+        </div>
       ) : total === 0 ? (
-        <div className="flex min-w-0 flex-col items-center gap-3">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center gap-3 overflow-y-auto">
           <EmptyState
             title="No cards yet"
             description="Cards are issued by rules when this project launches."
@@ -157,8 +160,8 @@ export function ProjectCards() {
           </Link>
         </div>
       ) : (
-        <>
-          <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <ul className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-2">
             {items.map((card) => {
               const revealAllowed = permissionGateAllowed(
                 can(Permission.CARD_VIEW_DETAILS, { cardId: card.id }),
@@ -186,7 +189,7 @@ export function ProjectCards() {
             })}
           </ul>
           {total > pageSize ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex shrink-0 flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -205,8 +208,8 @@ export function ProjectCards() {
               </Button>
             </div>
           ) : null}
-        </>
+        </div>
       )}
-    </div>
+    </PageFill>
   )
 }

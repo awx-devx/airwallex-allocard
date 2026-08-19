@@ -117,7 +117,7 @@ export function AppShell({
           onSignOut={onSignOut ?? (() => undefined)}
           onOpenMenu={() => setMenu({ open: true, at: pathname })}
         />
-        <main className="relative z-1 min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
+        <main className="relative z-1 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4">
           {children}
         </main>
       </div>

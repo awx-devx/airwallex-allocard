@@ -18,6 +18,7 @@ import { wizardApprovalRulesLinkMessage } from '@/client/lib/requests'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { StepWizard } from '@/components/patterns/StepWizard'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -240,7 +241,7 @@ export function ProjectWizard() {
   }
 
   return (
-    <div className="min-w-0">
+    <PageFlow>
       {launched ? (
         <Alert variant="info" className="mb-4">
           <AlertDescription>
@@ -276,6 +277,6 @@ export function ProjectWizard() {
           leave()
         }}
       />
-    </div>
+    </PageFlow>
   )
 }

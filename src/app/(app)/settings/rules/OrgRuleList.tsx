@@ -28,6 +28,7 @@ import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SelectItem } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
@@ -130,9 +131,9 @@ export function OrgRuleList() {
   )
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       <PageHeader title="Rules" />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         <FilterSelect
           label="Project"
           value={filter.projectId ?? ALL}
@@ -203,6 +204,6 @@ export function OrgRuleList() {
           empty={emptyCopy}
         />
       )}
-    </div>
+    </PageFill>
   )
 }

@@ -28,6 +28,7 @@ import { isProjectArchived } from '@/client/lib/reports'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { PermissionPreview } from '@/app/(app)/projects/[id]/people/PermissionPreview'
 import { ScopePicker } from '@/app/(app)/projects/[id]/people/ScopePicker'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -139,115 +140,121 @@ export function AddMemberForm() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
-        className="flex min-w-0 flex-col gap-6 md:flex-row"
-      >
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
-          {alertMessage ? (
-            <Alert variant="destructive">
-              <AlertDescription>{alertMessage}</AlertDescription>
-            </Alert>
-          ) : null}
-          <FormField
-            control={form.control}
-            name="userId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Person</FormLabel>
-                <FormControl>
-                  <Combobox
-                    options={eligible.map((user) => ({
-                      value: user.id,
-                      label: `${user.name} (${user.email})`,
-                    }))}
-                    value={field.value || null}
-                    onChange={(value) => field.onChange(value ?? '')}
-                    placeholder="Select a person"
-                    emptyText={
-                      orgMembers.data && projectMembers.data && eligible.length === 0
-                        ? noEligibleMembersToAddMessage()
-                        : 'No results'
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="roleId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Role</FormLabel>
-                <Select
-                  value={field.value || undefined}
-                  onValueChange={(nextRoleId) => {
-                    const role = (roles.data ?? []).find((row) => row.id === nextRoleId)
-                    field.onChange(nextRoleId)
-                    form.setValue('scope', role?.defaultScope ?? DEFAULT_SCOPE, {
-                      shouldDirty: true,
-                    })
-                  }}
-                >
+    <PageFlow>
+      <Form {...form}>
+        <form
+          onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+          className="flex min-w-0 flex-col gap-6 md:flex-row"
+        >
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            {alertMessage ? (
+              <Alert variant="destructive">
+                <AlertDescription>{alertMessage}</AlertDescription>
+              </Alert>
+            ) : null}
+            <FormField
+              control={form.control}
+              name="userId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Person</FormLabel>
                   <FormControl>
-                    <SelectTrigger className="w-full" aria-label="Role">
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
+                    <Combobox
+                      options={eligible.map((user) => ({
+                        value: user.id,
+                        label: `${user.name} (${user.email})`,
+                      }))}
+                      value={field.value || null}
+                      onChange={(value) => field.onChange(value ?? '')}
+                      placeholder="Select a person"
+                      emptyText={
+                        orgMembers.data && projectMembers.data && eligible.length === 0
+                          ? noEligibleMembersToAddMessage()
+                          : 'No results'
+                      }
+                    />
                   </FormControl>
-                  <SelectContent>
-                    {(roles.data ?? []).map((role) => (
-                      <SelectItem key={role.id} value={role.id}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="scope"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Scope</FormLabel>
-                <FormControl>
-                  <ScopePicker
-                    projectId={id}
-                    value={field.value}
-                    onChange={field.onChange}
-                    members={projectMembers.data}
-                    excludeUserId={userId || undefined}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex flex-wrap gap-2">
-            <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
-              <Button type="submit" disabled={!canSubmit || !allowed} loading={addMember.isPending}>
-                Add member
-              </Button>
-            </PermissionGateView>
-            <Link href={peopleHref(id)} className={buttonVariants({ variant: 'outline' })}>
-              Cancel
-            </Link>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="roleId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    value={field.value || undefined}
+                    onValueChange={(nextRoleId) => {
+                      const role = (roles.data ?? []).find((row) => row.id === nextRoleId)
+                      field.onChange(nextRoleId)
+                      form.setValue('scope', role?.defaultScope ?? DEFAULT_SCOPE, {
+                        shouldDirty: true,
+                      })
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full" aria-label="Role">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {(roles.data ?? []).map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="scope"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Scope</FormLabel>
+                  <FormControl>
+                    <ScopePicker
+                      projectId={id}
+                      value={field.value}
+                      onChange={field.onChange}
+                      members={projectMembers.data}
+                      excludeUserId={userId || undefined}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-wrap gap-2">
+              <PermissionGateView allowed={allowed} denialMessage={addMemberDenialMessage()}>
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || !allowed}
+                  loading={addMember.isPending}
+                >
+                  Add member
+                </Button>
+              </PermissionGateView>
+              <Link href={peopleHref(id)} className={buttonVariants({ variant: 'outline' })}>
+                Cancel
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="min-w-0 flex-1">
-          <PermissionPreview
-            complete={previewReady}
-            scope={scope}
-            reasons={previewResult?.reasons}
-            names={{ members: memberNames }}
-          />
-        </div>
-      </form>
-    </Form>
+          <div className="min-w-0 flex-1">
+            <PermissionPreview
+              complete={previewReady}
+              scope={scope}
+              reasons={previewResult?.reasons}
+              names={{ members: memberNames }}
+            />
+          </div>
+        </form>
+      </Form>
+    </PageFlow>
   )
 }

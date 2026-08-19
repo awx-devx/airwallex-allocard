@@ -6,9 +6,9 @@ import { useProjectActivity } from '@/client/hooks/useReports'
 import { toTimelineItem } from '@/client/lib/projects'
 import { noProjectActivityEmpty, parseOptionalIdParam } from '@/client/lib/transactions'
 import { ErrorState } from '@/components/patterns/ErrorState'
-import { Timeline } from '@/components/patterns/Timeline'
+import { PageFill } from '@/components/patterns/PageBody'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorCode } from '@/shared/enums/errors'
 
 export function ProjectActivity() {
@@ -34,11 +34,8 @@ export function ProjectActivity() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Activity</CardTitle>
-      </CardHeader>
-      <CardContent className="flex min-w-0 flex-col gap-4">
+    <PageFill>
+      <TimelinePanel title="Activity" fill>
         <Timeline items={items} loading={query.isPending} empty={noProjectActivityEmpty()} />
         {query.hasNextPage ? (
           <Button
@@ -49,7 +46,7 @@ export function ProjectActivity() {
             Load more
           </Button>
         ) : null}
-      </CardContent>
-    </Card>
+      </TimelinePanel>
+    </PageFill>
   )
 }

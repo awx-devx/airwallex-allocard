@@ -50,6 +50,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -371,13 +372,13 @@ export function ApprovalsQueue() {
   const next = pageNextParam(query.data)
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-col gap-4">
+    <PageFill>
+      <div className="flex min-h-64 min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
         {rows.map((row) => (
           <QueueItem key={row.id} row={row} onHold={holdRow} />
         ))}
       </div>
-      <div className="flex flex-wrap justify-end gap-2">
+      <div className="flex shrink-0 flex-wrap justify-end gap-2">
         <Button
           type="button"
           variant="outline"
@@ -397,6 +398,6 @@ export function ApprovalsQueue() {
           Next
         </Button>
       </div>
-    </div>
+    </PageFill>
   )
 }

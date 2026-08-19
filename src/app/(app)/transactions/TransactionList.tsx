@@ -33,6 +33,7 @@ import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
@@ -164,20 +165,20 @@ export function TransactionList() {
 
   if (me.isPending) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <LoadingState />
-      </div>
+      </PageFill>
     )
   }
 
   if (needsProject && filter.projectId === undefined) {
     const empty = selectProjectEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <EmptyState title={empty.title} description={empty.description} />
-      </div>
+      </PageFill>
     )
   }
 
@@ -196,22 +197,22 @@ function TransactionListResults({
 
   if (query.error) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <ErrorState
           message={isApiError(query.error) ? query.error.message : 'Unable to load transactions'}
         />
-      </div>
+      </PageFill>
     )
   }
 
   if (!query.isPending && !query.hasNextPage && rows.length === 0) {
     const empty = noTransactionsEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <EmptyState title={empty.title} description={empty.description} />
-      </div>
+      </PageFill>
     )
   }
 
@@ -261,7 +262,7 @@ function TransactionListResults({
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {toolbar}
       <DataTable
         columns={columns}
@@ -278,6 +279,6 @@ function TransactionListResults({
         loading={query.isPending}
         empty={noTransactionsEmpty()}
       />
-    </div>
+    </PageFill>
   )
 }

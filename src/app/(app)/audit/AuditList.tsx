@@ -29,6 +29,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { timelineActorChipLabel } from '@/components/patterns/timelineActor'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
@@ -185,21 +186,21 @@ export function AuditList() {
 
   if (me.isPending || permissions.isPending) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <LoadingState />
-      </div>
+      </PageFill>
     )
   }
 
   if (!canView) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <PermissionGateView allowed={false} denialMessage={viewAuditDenialMessage()}>
           <p className="text-sm text-muted-foreground">{viewAuditDenialMessage()}</p>
         </PermissionGateView>
-      </div>
+      </PageFill>
     )
   }
 
@@ -214,21 +215,21 @@ function AuditListResults({ filter, toolbar }: { filter: AuditListSearch; toolba
 
   if (query.error) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <ErrorState
           message={isApiError(query.error) ? query.error.message : 'Unable to load audit'}
         />
-      </div>
+      </PageFill>
     )
   }
 
   if (!query.isPending && !query.hasNextPage && rows.length === 0) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         <EmptyState title={empty.title} description={empty.description} />
-      </div>
+      </PageFill>
     )
   }
 
@@ -291,7 +292,7 @@ function AuditListResults({ filter, toolbar }: { filter: AuditListSearch; toolba
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {toolbar}
       <DataTable
         columns={columns}
@@ -330,6 +331,6 @@ function AuditListResults({ filter, toolbar }: { filter: AuditListSearch; toolba
           ) : null}
         </SheetContent>
       </Sheet>
-    </div>
+    </PageFill>
   )
 }

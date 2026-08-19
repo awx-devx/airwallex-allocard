@@ -32,6 +32,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -129,7 +130,7 @@ export function ReportCatalogue() {
   )
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <PageHeader title="Reports" />
       <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         <Card>
@@ -242,6 +243,6 @@ export function ReportCatalogue() {
           <AlertDescription>{exportError}</AlertDescription>
         </Alert>
       ) : null}
-    </div>
+    </PageFlow>
   )
 }

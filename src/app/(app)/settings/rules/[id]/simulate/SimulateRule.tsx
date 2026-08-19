@@ -30,6 +30,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
@@ -133,7 +134,7 @@ export function SimulateRule() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <Link
         href={ruleBuilderHref(id)}
         className={cn(buttonVariants({ variant: 'outline' }), 'w-fit')}
@@ -231,7 +232,7 @@ export function SimulateRule() {
       {result ? (
         <SimulateResults result={result} nickNames={nickNames} emptyCopy={emptyCopy} />
       ) : null}
-    </div>
+    </PageFlow>
   )
 }
 
@@ -245,7 +246,7 @@ function SimulateResults({
   emptyCopy: { title: string; description: string }
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       {result.conflicts.length > 0 ? (
         <Alert variant="destructive">
           <AlertDescription>
@@ -278,7 +279,7 @@ function SimulateResults({
           ))}
         </div>
       )}
-    </div>
+    </PageFlow>
   )
 }
 

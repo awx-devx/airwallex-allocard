@@ -18,6 +18,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { FilterSelect } from '@/components/patterns/FilterSelect'
+import { PageFill } from '@/components/patterns/PageBody'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
 import { Badge } from '@/components/ui/badge'
@@ -117,8 +118,8 @@ export function OrgCardList() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-3">
+    <PageFill>
+      <div className="flex shrink-0 flex-wrap gap-3">
         <FilterSelect
           label="Project"
           value={filter.projectId ?? ALL}
@@ -191,6 +192,6 @@ export function OrgCardList() {
           description: 'Cards are issued by rules when a project launches.',
         }}
       />
-    </div>
+    </PageFill>
   )
 }

@@ -30,7 +30,8 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
-import { Timeline } from '@/components/patterns/Timeline'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -124,7 +125,7 @@ export function DashboardHome() {
   const count = approvalCount.data?.count ?? 0
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <PageHeader kicker={orgName} title="Dashboard" actions={<CreateProjectControl />} />
       <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="min-w-0">
@@ -214,25 +215,22 @@ export function DashboardHome() {
           </CardContent>
         </Card>
 
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>
-              <Link href="/activity" className="inline-flex items-center gap-2 hover:underline">
-                <ActivityIcon className="size-4 shrink-0" aria-hidden />
-                Recent activity
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <QueryBody
-              isPending={activity.isPending}
-              error={activity.error}
-              onRetry={() => void activity.refetch()}
-            >
-              <Timeline items={activityItems} />
-            </QueryBody>
-          </CardContent>
-        </Card>
+        <TimelinePanel
+          title={
+            <Link href="/activity" className="inline-flex items-center gap-2 hover:underline">
+              <ActivityIcon className="size-4 shrink-0" aria-hidden />
+              Recent activity
+            </Link>
+          }
+        >
+          <QueryBody
+            isPending={activity.isPending}
+            error={activity.error}
+            onRetry={() => void activity.refetch()}
+          >
+            <Timeline items={activityItems} />
+          </QueryBody>
+        </TimelinePanel>
 
         <Card className="min-w-0">
           <CardHeader>
@@ -285,6 +283,6 @@ export function DashboardHome() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageFlow>
   )
 }

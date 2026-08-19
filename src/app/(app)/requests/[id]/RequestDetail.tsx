@@ -48,8 +48,9 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
-import { Timeline } from '@/components/patterns/Timeline'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import type { TimelineItem } from '@/components/patterns/types'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -557,7 +558,7 @@ export function RequestDetail() {
   const cancellable = canCancelRequest(data.status, data.requestedBy, viewerId)
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <PageHeader
         title={data.vendor}
         status={<StatusBadge kind="request" status={data.status} />}
@@ -617,19 +618,14 @@ export function RequestDetail() {
             ) : null}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Approval trail</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Timeline items={trail} />
-            {trail.length === 0 &&
-            data.status === PurchaseRequestStatus.PENDING &&
-            progress.required > 0 ? (
-              <p className="text-sm">{formatApprovalProgress(progress)}</p>
-            ) : null}
-          </CardContent>
-        </Card>
+        <TimelinePanel title="Approval trail">
+          <Timeline items={trail} />
+          {trail.length === 0 &&
+          data.status === PurchaseRequestStatus.PENDING &&
+          progress.required > 0 ? (
+            <p className="text-sm">{formatApprovalProgress(progress)}</p>
+          ) : null}
+        </TimelinePanel>
       </div>
       {data.status === PurchaseRequestStatus.APPROVED ? <UnlockedBlock request={data} /> : null}
       {editable && !archived ? <DraftEditor request={data} /> : null}
@@ -641,6 +637,6 @@ export function RequestDetail() {
           />
         </div>
       ) : null}
-    </div>
+    </PageFlow>
   )
 }

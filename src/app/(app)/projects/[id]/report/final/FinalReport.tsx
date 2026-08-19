@@ -23,6 +23,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/lib/dates'
@@ -112,7 +113,7 @@ export function FinalReport() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <div className="flex min-w-0 flex-wrap gap-2">
         <Link href={budgetHref(id)} className={buttonVariants({ variant: 'ghost' })}>
           Budget
@@ -162,6 +163,6 @@ export function FinalReport() {
           empty={{ title: '', description: '' }}
         />
       ) : null}
-    </div>
+    </PageFlow>
   )
 }

@@ -3,6 +3,7 @@
 import { useParams, usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { BUDGET_NAV, budgetNavHref, isBudgetNavActive } from '@/client/lib/budget'
+import { PageFill } from '@/components/patterns/PageBody'
 import { SubNav } from '@/components/patterns/SubNav'
 
 export function BudgetChrome({ children }: { children: ReactNode }) {
@@ -11,7 +12,7 @@ export function BudgetChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       <SubNav
         label="Budget"
         items={BUDGET_NAV.map((item) => {
@@ -24,7 +25,7 @@ export function BudgetChrome({ children }: { children: ReactNode }) {
           }
         })}
       />
-      <div className="min-w-0">{children}</div>
-    </div>
+      <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+    </PageFill>
   )
 }

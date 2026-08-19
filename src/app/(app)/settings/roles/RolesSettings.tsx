@@ -12,6 +12,7 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { RoleMatrix } from '@/app/(app)/settings/roles/RoleMatrix'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -64,7 +65,7 @@ export function RolesSettings() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
@@ -108,6 +109,6 @@ export function RolesSettings() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageFill>
   )
 }

@@ -6,8 +6,8 @@ import { useBudgetHistory } from '@/client/hooks/useBudget'
 import { budgetHistoryReason, toBudgetHistoryTimelineItem } from '@/client/lib/budget'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
-import { Timeline } from '@/components/patterns/Timeline'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { PageFill } from '@/components/patterns/PageBody'
+import { Timeline, TimelinePanel } from '@/components/patterns/Timeline'
 import { ErrorCode } from '@/shared/enums/errors'
 
 export function BudgetHistory() {
@@ -41,11 +41,8 @@ export function BudgetHistory() {
   })
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>History</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <PageFill>
+      <TimelinePanel title="History" fill>
         <Timeline
           items={items}
           empty={{
@@ -53,7 +50,7 @@ export function BudgetHistory() {
             description: 'Approved amount, categories, and requests will show up here.',
           }}
         />
-      </CardContent>
-    </Card>
+      </TimelinePanel>
+    </PageFill>
   )
 }

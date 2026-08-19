@@ -48,6 +48,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -177,8 +178,8 @@ export function BudgetHome() {
     const snapshot = finalReport.data
     if (snapshot) {
       return (
-        <div className="flex min-w-0 flex-col gap-4">
-          <Card className="laser-cap">
+        <PageFill>
+          <Card className="laser-cap shrink-0">
             <CardHeader>
               <CardTitle>Budget</CardTitle>
             </CardHeader>
@@ -189,11 +190,11 @@ export function BudgetHome() {
           <Link href={finalReportHref(id)} className={buttonVariants({ variant: 'ghost' })}>
             {finalReportLink()}
           </Link>
-        </div>
+        </PageFill>
       )
     }
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         <EmptyState
           title="No budget set yet"
           description="Set an approved amount. Categories and formulas come next."
@@ -207,7 +208,7 @@ export function BudgetHome() {
           />
         ) : null}
         {archived ? null : dialogs}
-      </div>
+      </PageFill>
     )
   }
 
@@ -248,8 +249,8 @@ export function BudgetHome() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <Card className="laser-cap">
+    <PageFill>
+      <Card className="laser-cap shrink-0">
         <CardHeader>
           <CardTitle>Budget</CardTitle>
         </CardHeader>
@@ -288,7 +289,7 @@ export function BudgetHome() {
       {limitMoves ? (
         <CardLimitMoves diffs={limitMoves.diffs} cardTotal={limitMoves.cardTotal} projectId={id} />
       ) : null}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         {archived ? null : (
           <>
             <PermissionGateView allowed={canEdit} denialMessage={editBudgetDenialMessage()}>
@@ -318,7 +319,7 @@ export function BudgetHome() {
           </>
         )}
       </div>
-      <h2 className="text-sm font-medium">Recent entries</h2>
+      <h2 className="shrink-0 text-sm font-medium">Recent entries</h2>
       <DataTable
         columns={columns}
         rows={entries.data?.items ?? []}
@@ -347,6 +348,6 @@ export function BudgetHome() {
         }}
       />
       {archived ? null : dialogs}
-    </div>
+    </PageFill>
   )
 }

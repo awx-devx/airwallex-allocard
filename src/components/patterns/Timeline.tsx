@@ -1,10 +1,13 @@
+import type { ReactNode } from 'react'
 import { CogIcon, CreditCardIcon, UserIcon, ZapIcon } from 'lucide-react'
 import { timelineActorChipLabel } from '@/components/patterns/timelineActor'
 import type { TimelineItem, TimelineProps } from '@/components/patterns/types'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/client/states/EmptyState'
 import { LoadingState } from '@/client/states/LoadingState'
 import { formatDateTime } from '@/lib/dates'
+import { cn } from '@/lib/utils'
 import { ActorType } from '@/shared/enums/audit'
 
 const ACTOR = {
@@ -45,5 +48,35 @@ export function Timeline({ items, loading, empty }: TimelineProps) {
         <TimelineRow key={item.id} item={item} />
       ))}
     </ol>
+  )
+}
+
+/** Activity / history panel: fills leftover when it's the page's main block; caps when stacked. */
+export function TimelinePanel({
+  title,
+  children,
+  fill = false,
+  className,
+}: {
+  title: ReactNode
+  children: ReactNode
+  fill?: boolean
+  className?: string
+}) {
+  return (
+    <Card
+      className={cn(
+        'flex min-h-64 min-w-0 flex-col overflow-hidden',
+        fill ? 'flex-1' : 'max-h-80',
+        className,
+      )}
+    >
+      <CardHeader className="shrink-0">
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
+        {children}
+      </CardContent>
+    </Card>
   )
 }

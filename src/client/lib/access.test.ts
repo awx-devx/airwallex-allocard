@@ -556,6 +556,7 @@ describe('A3.9 layout classes', () => {
       'utf8',
     )
     expect(people).toContain('flex-wrap')
+    expect(people).toContain('TimelinePanel')
 
     const add = readFileSync(
       join(process.cwd(), 'src/app/(app)/projects/[id]/people/add/AddMemberForm.tsx'),

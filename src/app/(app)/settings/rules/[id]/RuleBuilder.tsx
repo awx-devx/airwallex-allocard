@@ -48,6 +48,7 @@ import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { RuleSentence } from '@/components/patterns/RuleSentence'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -308,200 +309,205 @@ export function RuleBuilder() {
   })
 
   return (
-    <div className="flex min-w-0 flex-col gap-6 md:flex-row">
-      <div className="flex min-w-0 flex-1 flex-col gap-4">
-        {alertMessage ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              <p>{alertMessage}</p>
-              {fieldErrors.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </AlertDescription>
-          </Alert>
-        ) : null}
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label htmlFor="rule-name">Name</Label>
-          <Input
-            id="rule-name"
-            maxLength={200}
-            value={draft.name}
-            onChange={(event) => patch({ name: event.target.value })}
-          />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label htmlFor="rule-description">Description</Label>
-          <Textarea
-            id="rule-description"
-            maxLength={2000}
-            value={draft.description ?? ''}
-            onChange={(event) => patch({ description: event.target.value })}
-          />
-        </div>
-        <RadioGroup
-          className="flex flex-wrap gap-3"
-          value={draft.scope.level}
-          onValueChange={(level) => {
-            if (level === RuleScopeLevel.ORG) {
-              patch({ scope: { level: RuleScopeLevel.ORG } })
-              return
-            }
-            const nextId =
-              draft.scope.level === RuleScopeLevel.PROJECT
-                ? draft.scope.projectId
-                : (projects.data?.items[0]?.id ?? '')
-            patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: nextId } })
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value={RuleScopeLevel.ORG} id="scope-org" />
-            <Label htmlFor="scope-org" className="font-normal">
-              ORG
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value={RuleScopeLevel.PROJECT} id="scope-project" />
-            <Label htmlFor="scope-project" className="font-normal">
-              PROJECT
-            </Label>
-          </div>
-        </RadioGroup>
-        {draft.scope.level === RuleScopeLevel.PROJECT ? (
-          <Select
-            value={draft.scope.projectId}
-            onValueChange={(projectIdValue) =>
-              patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: projectIdValue } })
-            }
-          >
-            <SelectTrigger aria-label="Project" size="sm">
-              <SelectValue placeholder="Project" />
-            </SelectTrigger>
-            <SelectContent>
-              {(projects.data?.items ?? []).map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : null}
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label htmlFor="rule-priority">Priority</Label>
-          <Input
-            id="rule-priority"
-            value={draft.priority === undefined ? '' : String(draft.priority)}
-            onChange={(event) => patch({ priority: parseIntInput(event.target.value) })}
-          />
-        </div>
-        <TriggerPicker value={draft.trigger} onChange={(trigger) => patch({ trigger })} />
-        <ConditionBuilder
-          value={draft.when}
-          onChange={(when) => patch({ when })}
-          attributeKeys={attributes.data?.items ?? []}
-        />
-        <ActionList
-          then={draft.then}
-          onThenChange={(then) => patch({ then })}
-          elseActions={draft.else}
-          onElseChange={(elseActions) => patch({ else: elseActions })}
-          cardOptions={cardOptions}
-          hasProjectScope={draft.scope.level === RuleScopeLevel.PROJECT}
-        />
-        <div className="flex flex-wrap gap-2">
-          <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-            <Button
-              type="button"
-              disabled={!canSave || !allowed}
-              loading={createRule.isPending || updateRule.isPending}
-              onClick={() => void onSave()}
-            >
-              Save rule
-            </Button>
-          </PermissionGateView>
-          {!isNew ? (
-            <>
-              <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="rule-enabled"
-                    aria-label="Enabled"
-                    checked={enabled}
-                    disabled={!allowed}
-                    onCheckedChange={(next) => {
-                      setEnabledOverride(next)
-                      enableRule.mutate({ id, input: { enabled: next } })
-                    }}
-                  />
-                  <Label htmlFor="rule-enabled" className="font-normal">
-                    Enabled
-                  </Label>
-                </div>
-              </PermissionGateView>
-              <Link href={ruleSimulateHref(id)} className={buttonVariants({ variant: 'outline' })}>
-                Simulate
-              </Link>
-              <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  disabled={!allowed}
-                  onClick={() => setDeleteOpen(true)}
-                >
-                  Delete
-                </Button>
-              </PermissionGateView>
-            </>
+    <PageFlow>
+      <div className="flex min-w-0 flex-col gap-6 md:flex-row">
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
+          {alertMessage ? (
+            <Alert variant="destructive">
+              <AlertDescription>
+                <p>{alertMessage}</p>
+                {fieldErrors.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </AlertDescription>
+            </Alert>
           ) : null}
-        </div>
-      </div>
-      <div className="min-w-0 flex-1">
-        <h2 className="text-sm font-medium">Rule</h2>
-        <RuleSentence
-          rule={{ name: draft.name, when: draft.when, then: draft.then, else: draft.else }}
-        />
-        {validateErrors.length > 0 ? (
-          <ul className="mt-3 flex min-w-0 flex-col gap-1 text-sm text-destructive">
-            {validateErrors.map((error) => (
-              <li key={`${error.path}:${error.message}`}>
-                {error.path}: {error.message}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        <MatchPreview output={lastSimulate} />
-        <div className="mt-3 flex flex-wrap gap-2">
-          {attributeOptions(attributes.data?.items ?? []).map((option) => (
-            <Button
-              key={option.value}
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => insertAttributeKey(option.value)}
+          <div className="flex min-w-0 flex-col gap-1">
+            <Label htmlFor="rule-name">Name</Label>
+            <Input
+              id="rule-name"
+              maxLength={200}
+              value={draft.name}
+              onChange={(event) => patch({ name: event.target.value })}
+            />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
+            <Label htmlFor="rule-description">Description</Label>
+            <Textarea
+              id="rule-description"
+              maxLength={2000}
+              value={draft.description ?? ''}
+              onChange={(event) => patch({ description: event.target.value })}
+            />
+          </div>
+          <RadioGroup
+            className="flex flex-wrap gap-3"
+            value={draft.scope.level}
+            onValueChange={(level) => {
+              if (level === RuleScopeLevel.ORG) {
+                patch({ scope: { level: RuleScopeLevel.ORG } })
+                return
+              }
+              const nextId =
+                draft.scope.level === RuleScopeLevel.PROJECT
+                  ? draft.scope.projectId
+                  : (projects.data?.items[0]?.id ?? '')
+              patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: nextId } })
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value={RuleScopeLevel.ORG} id="scope-org" />
+              <Label htmlFor="scope-org" className="font-normal">
+                ORG
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value={RuleScopeLevel.PROJECT} id="scope-project" />
+              <Label htmlFor="scope-project" className="font-normal">
+                PROJECT
+              </Label>
+            </div>
+          </RadioGroup>
+          {draft.scope.level === RuleScopeLevel.PROJECT ? (
+            <Select
+              value={draft.scope.projectId}
+              onValueChange={(projectIdValue) =>
+                patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: projectIdValue } })
+              }
             >
-              {option.value}
-            </Button>
-          ))}
+              <SelectTrigger aria-label="Project" size="sm">
+                <SelectValue placeholder="Project" />
+              </SelectTrigger>
+              <SelectContent>
+                {(projects.data?.items ?? []).map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+          <div className="flex min-w-0 flex-col gap-1">
+            <Label htmlFor="rule-priority">Priority</Label>
+            <Input
+              id="rule-priority"
+              value={draft.priority === undefined ? '' : String(draft.priority)}
+              onChange={(event) => patch({ priority: parseIntInput(event.target.value) })}
+            />
+          </div>
+          <TriggerPicker value={draft.trigger} onChange={(trigger) => patch({ trigger })} />
+          <ConditionBuilder
+            value={draft.when}
+            onChange={(when) => patch({ when })}
+            attributeKeys={attributes.data?.items ?? []}
+          />
+          <ActionList
+            then={draft.then}
+            onThenChange={(then) => patch({ then })}
+            elseActions={draft.else}
+            onElseChange={(elseActions) => patch({ else: elseActions })}
+            cardOptions={cardOptions}
+            hasProjectScope={draft.scope.level === RuleScopeLevel.PROJECT}
+          />
+          <div className="flex flex-wrap gap-2">
+            <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+              <Button
+                type="button"
+                disabled={!canSave || !allowed}
+                loading={createRule.isPending || updateRule.isPending}
+                onClick={() => void onSave()}
+              >
+                Save rule
+              </Button>
+            </PermissionGateView>
+            {!isNew ? (
+              <>
+                <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="rule-enabled"
+                      aria-label="Enabled"
+                      checked={enabled}
+                      disabled={!allowed}
+                      onCheckedChange={(next) => {
+                        setEnabledOverride(next)
+                        enableRule.mutate({ id, input: { enabled: next } })
+                      }}
+                    />
+                    <Label htmlFor="rule-enabled" className="font-normal">
+                      Enabled
+                    </Label>
+                  </div>
+                </PermissionGateView>
+                <Link
+                  href={ruleSimulateHref(id)}
+                  className={buttonVariants({ variant: 'outline' })}
+                >
+                  Simulate
+                </Link>
+                <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={!allowed}
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGateView>
+              </>
+            ) : null}
+          </div>
         </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-sm font-medium">Rule</h2>
+          <RuleSentence
+            rule={{ name: draft.name, when: draft.when, then: draft.then, else: draft.else }}
+          />
+          {validateErrors.length > 0 ? (
+            <ul className="mt-3 flex min-w-0 flex-col gap-1 text-sm text-destructive">
+              {validateErrors.map((error) => (
+                <li key={`${error.path}:${error.message}`}>
+                  {error.path}: {error.message}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <MatchPreview output={lastSimulate} />
+          <div className="mt-3 flex flex-wrap gap-2">
+            {attributeOptions(attributes.data?.items ?? []).map((option) => (
+              <Button
+                key={option.value}
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => insertAttributeKey(option.value)}
+              >
+                {option.value}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <ConfirmDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete this rule?"
+          description="Cards keep their last applied controls."
+          confirmLabel="Delete"
+          variant="destructive"
+          loading={deleteRule.isPending}
+          onConfirm={() => {
+            setDeleteOpen(false)
+            void deleteRule
+              .mutateAsync({ id })
+              .then(() => router.push(orgRulesHref()))
+              .catch((error: unknown) => {
+                setAlertMessage(isApiError(error) ? error.message : 'Unable to delete rule')
+              })
+          }}
+        />
       </div>
-      <ConfirmDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title="Delete this rule?"
-        description="Cards keep their last applied controls."
-        confirmLabel="Delete"
-        variant="destructive"
-        loading={deleteRule.isPending}
-        onConfirm={() => {
-          setDeleteOpen(false)
-          void deleteRule
-            .mutateAsync({ id })
-            .then(() => router.push(orgRulesHref()))
-            .catch((error: unknown) => {
-              setAlertMessage(isApiError(error) ? error.message : 'Unable to delete rule')
-            })
-        }}
-      />
-    </div>
+    </PageFlow>
   )
 }
 

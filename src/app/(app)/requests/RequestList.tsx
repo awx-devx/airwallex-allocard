@@ -30,6 +30,7 @@ import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import { PermissionGateView } from '@/components/patterns/PermissionGate'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { SelectItem } from '@/components/ui/select'
@@ -118,10 +119,10 @@ export function RequestList() {
   if (filter.projectId === undefined) {
     const empty = selectProjectEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         <div className="flex flex-wrap gap-2">{projectSelect}</div>
         <EmptyState title={empty.title} description={empty.description} />
-      </div>
+      </PageFill>
     )
   }
 
@@ -176,48 +177,48 @@ function RequestListForProject({
 
   if (query.isPending) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         {archivedAlert}
         <LoadingState />
-      </div>
+      </PageFill>
     )
   }
 
   if (query.error) {
     if (isApiError(query.error) && query.error.code === ErrorCode.NOT_FOUND) {
       return (
-        <div className="flex min-w-0 flex-col gap-4">
+        <PageFill>
           {toolbar}
           {archivedAlert}
           <ErrorState message="This project is not available." />
-        </div>
+        </PageFill>
       )
     }
     if (isApiError(query.error) && query.error.code === ErrorCode.PERMISSION_DENIED) {
       return (
-        <div className="flex min-w-0 flex-col gap-4">
+        <PageFill>
           {toolbar}
           {archivedAlert}
           <ErrorState message={listRequestsDenialMessage()} />
-        </div>
+        </PageFill>
       )
     }
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         {archivedAlert}
         <ErrorState
           message={isApiError(query.error) ? query.error.message : 'Unable to load requests'}
         />
-      </div>
+      </PageFill>
     )
   }
 
   if (query.data.total === 0) {
     const empty = noRequestsEmpty()
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFill>
         {toolbar}
         {archivedAlert}
         <EmptyState
@@ -225,7 +226,7 @@ function RequestListForProject({
           description={empty.description}
           illustration={<FileTextIcon className="size-8 text-muted-foreground" aria-hidden />}
         />
-      </div>
+      </PageFill>
     )
   }
 
@@ -269,7 +270,7 @@ function RequestListForProject({
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFill>
       {toolbar}
       {archivedAlert}
       <DataTable
@@ -285,6 +286,6 @@ function RequestListForProject({
         }}
         empty={noRequestsEmpty()}
       />
-    </div>
+    </PageFill>
   )
 }

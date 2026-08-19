@@ -20,7 +20,7 @@ Collapse is done: aside is `hidden md:flex`; a `md:hidden` Menu button opens F3 
 
 On desktop the aside is an icon rail (`w-16` in layout). Hover, keyboard focus, or an open org menu expands a panel to `w-56` over the page — labels are hidden when collapsed. Do not reflow `main` on hover. Narrow widths still use the Menu `Sheet` (full labels, no icon rail).
 
-Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The page scrolls inside `main`. Brand + OrgSwitcher stay pinned; if nav items overflow, only the link list scrolls (`overflow-y-auto`, not `overflow-y-scroll`, not F3 `ScrollArea`). `min-h-0` on those flex children is the vertical analogue of pattern 2 — without it, overflow never activates. Do not use `position: sticky`.
+Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The page may scroll inside `main` (`overflow-y-auto`). List screens use `PageFill` (`min-h-full`) so a table/timeline can grow into leftover space and scroll **inside** instead of leaving a short strip and a blank page. If the page is already taller than the viewport, `main` scrolls — do not `overflow-hidden` the page body, or content with no inner scroller gets clipped. Brand + OrgSwitcher stay pinned; if nav items overflow, only the link list scrolls (`overflow-y-auto`, not `overflow-y-scroll`, not F3 `ScrollArea`). `min-h-0` on flex children that **do** scroll internally is the vertical analogue of pattern 2. Do not use `position: sticky` on **shell chrome**. A sticky table header inside the table scroller is fine.
 
 ```tsx
 <div className="flex h-dvh overflow-hidden">
@@ -37,7 +37,9 @@ Chrome stays put. The root is viewport-locked (`h-dvh overflow-hidden`). The pag
     <header className="relative z-1 shrink-0 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-xl">
       <div className="flex flex-wrap">…</div>
     </header>
-    <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</main>
+    <main className="relative z-1 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4">
+      {children}
+    </main>
   </div>
 </div>
 
@@ -60,17 +62,29 @@ This is the overflow bug. A flex item defaults to `min-width: auto`, so a table 
 <div className="flex min-w-0 flex-1 flex-col">
 ```
 
-### 3. Tables scroll inside, pages do not
+### 3. Tables fill leftover height and scroll inside
 
-Do not turn tables into card lists. Wrap them:
+Do not turn tables into card lists. Do not wrap `DataTable` in a second `overflow-x-auto` — the panel already scrolls (`overflow-auto`, sticky thead, `min-h-64` floor).
+
+List pages use `PageFill` (`min-h-full`, **not** `flex-1` or `overflow-hidden`). Chrome (`PageHeader`, filters, `SubNav`) is `shrink-0`. The table/timeline/queue is `flex-1 min-h-64` so that when the page is shorter than `main`, the table **grows into the leftover** and scrolls internally. When chrome + min heights exceed the viewport, `main` page-scrolls. Nested chrome (`ProjectWorkspace`, `BudgetChrome`) uses a `flex-1` slot **without** `min-h-0` — `min-h-0` lets the slot shrink under its content and overlap or clip.
 
 ```tsx
-<div className="overflow-x-auto">
+<PageFill>
+  <PageHeader title="Projects" />
   <DataTable … />
-</div>
+</PageFill>
 ```
 
-Prefer adding `overflow-x-auto` once on `DataTable`'s root the first time Track A uses it (A2 project list), so later screens inherit it. Toolbar buttons `flex-wrap`.
+Detail and form pages use `PageFlow` (stacked content). Long pages scroll in `main`.
+
+```tsx
+<PageFlow>
+  <PageHeader title="Request" />
+  {/* stacked cards / form */}
+</PageFlow>
+```
+
+Toolbar buttons `flex-wrap`. Activity / history use `TimelinePanel`: `fill` when it's the page's main block (`flex-1 min-h-64`, leftover + internal scroll); stacked under other content is `min-h-64 max-h-80` with internal scroll — never `flex-1` in that case or it will crush a sibling table.
 
 ### 4. Stack, don't hide
 

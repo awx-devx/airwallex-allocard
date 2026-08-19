@@ -185,14 +185,14 @@ export function RoleMatrix() {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <div className="flex min-h-64 min-w-0 flex-1 flex-col gap-4">
       {alertMessage ? (
         <Alert variant="destructive">
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]">
-        <div className="overflow-x-auto">
+      <div className="flex min-h-64 min-w-0 flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-elevated)]">
+        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -238,7 +238,7 @@ export function RoleMatrix() {
           </Table>
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex shrink-0 flex-col gap-3">
         {roles.map((role) => {
           const dirty = !samePermissions(permissionsFor(role), role.permissions)
           const count = countMembersHoldingRole(role.id, lists)

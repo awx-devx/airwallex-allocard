@@ -21,6 +21,7 @@ import { ErrorState } from '@/components/patterns/ErrorState'
 import { FilterSelect } from '@/components/patterns/FilterSelect'
 import { StatusBadge } from '@/components/patterns/StatusBadge'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFill } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -123,8 +124,8 @@ export function AutomationHistory() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
+    <PageFill>
+      <div className="flex shrink-0 flex-wrap gap-2">
         <FilterSelect
           label="Rule"
           value={filter.ruleId ?? ALL}
@@ -208,7 +209,7 @@ export function AutomationHistory() {
         }}
       />
       <RunDetailSheet id={openId} onOpenChange={(open) => !open && setOpenId(null)} />
-    </div>
+    </PageFill>
   )
 }
 

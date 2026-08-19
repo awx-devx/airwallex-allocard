@@ -23,6 +23,7 @@ import { LoadingState } from '@/components/patterns/LoadingState'
 import { PageHeader } from '@/components/patterns/PageHeader'
 import { MoneyDisplay } from '@/components/patterns/MoneyDisplay'
 import type { DataTableColumn } from '@/components/patterns/types'
+import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -63,7 +64,7 @@ export function OrganizationReport() {
 
   if (data.projects.length === 0) {
     return (
-      <div className="flex min-w-0 flex-col gap-4">
+      <PageFlow>
         <div className="flex min-w-0 flex-wrap gap-2">
           <Link href={reportsHref()} className={buttonVariants({ variant: 'ghost' })}>
             Back
@@ -73,7 +74,7 @@ export function OrganizationReport() {
           </Link>
         </div>
         <EmptyState title={empty.title} description={empty.description} />
-      </div>
+      </PageFlow>
     )
   }
 
@@ -147,7 +148,7 @@ export function OrganizationReport() {
   ]
 
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <PageFlow>
       <div className="flex min-w-0 flex-wrap gap-2">
         <Link href={reportsHref()} className={buttonVariants({ variant: 'ghost' })}>
           Back
@@ -212,6 +213,6 @@ export function OrganizationReport() {
         pagination={TABLE_PAGE}
         empty={empty}
       />
-    </div>
+    </PageFlow>
   )
 }
