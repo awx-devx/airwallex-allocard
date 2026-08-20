@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-20 (add-member layout; 1856 tests)
+**Last green `pnpm verify`:** 2026-08-20 (Powered by Airwallex side tab; 1860 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Powered by Airwallex side tab (2026-08-20).** Right-edge peek tab (`PoweredByAirwallex`) in AppShell and CenteredBrandFrame. Light/dark lockups from `public/images/`; click opens `https://www.airwallex.com` in a new tab. `pnpm verify` green (1860 tests). Next: wait for the user to name the next phase.
 
 **Add-member layout (2026-08-20).** Person, Role, and Active between sit in `grid-cols-1 md:grid-cols-3`. Scope radios wrap on one row. Permissions preview is a second card only after role + scope are complete. Combobox options can grow past the trigger and wrap. `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
 

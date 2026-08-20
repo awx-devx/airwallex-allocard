@@ -12,4 +12,6 @@ export const publicAsset = {
   wordmark: '/brand/wordmark.svg',
   icon: '/brand/icon.png',
   appleTouchIcon: '/brand/apple-touch-icon.png',
+  airwallexLight: '/images/airwallex-light.png',
+  airwallexDark: '/images/airwallex-dark.png',
 } as const

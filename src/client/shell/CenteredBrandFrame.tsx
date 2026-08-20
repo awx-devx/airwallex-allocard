@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { BrandLogo } from '@/client/shell/BrandLogo'
+import { PoweredByAirwallex } from '@/client/shell/PoweredByAirwallex'
 import { WalkCrowd } from '@/client/shell/WalkCrowd'
 
 export function CenteredBrandFrame({
@@ -14,6 +15,7 @@ export function CenteredBrandFrame({
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <WalkCrowd />
+      <PoweredByAirwallex />
       <div className="relative z-1 flex w-full max-w-md flex-col gap-6 px-4">
         <BrandLogo className="justify-center" priority={priority} size={size} />
         {children}
