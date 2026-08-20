@@ -92,7 +92,7 @@ export function CreateOrganizationForm() {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full min-w-0">
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
@@ -101,42 +101,44 @@ export function CreateOrganizationForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      options={countries}
-                      value={field.value || null}
-                      onChange={(value) => field.onChange(value ?? '')}
-                      placeholder="Select country"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="baseCurrency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Base currency</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      options={currencies}
-                      value={field.value || null}
-                      onChange={(value) => field.onChange(value ?? '')}
-                      placeholder="Select currency"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem className="w-full min-w-0">
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        options={countries}
+                        value={field.value || null}
+                        onChange={(value) => field.onChange(value ?? '')}
+                        placeholder="Select country"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="baseCurrency"
+                render={({ field }) => (
+                  <FormItem className="w-full min-w-0">
+                    <FormLabel>Base currency</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        options={currencies}
+                        value={field.value || null}
+                        onChange={(value) => field.onChange(value ?? '')}
+                        placeholder="Select currency"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="space-y-2">
               <FormLabel>Cost centres</FormLabel>
               <div className="flex flex-col gap-2">
