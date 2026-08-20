@@ -346,6 +346,7 @@ describe('WORKSPACE_TAB_HREFS', () => {
     ])
     expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -379,12 +380,13 @@ describe('A5.10 workspace tabs unchanged', () => {
 })
 
 describe('A6.11 workspace tabs unchanged', () => {
-  it('still includes /controls, has length 6, and SETTINGS_NAV is the four hrefs', () => {
+  it('still includes /controls, has length 6, and SETTINGS_NAV is the five hrefs', () => {
     const id = 'proj_1'
     expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id))).toContain('/projects/proj_1/controls')
     expect(WORKSPACE_TAB_HREFS).toHaveLength(6)
     expect(WORKSPACE_TAB_HREFS.map((tab) => tab.href(id)).join(' ')).not.toContain('settings')
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',

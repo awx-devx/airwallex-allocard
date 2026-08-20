@@ -54,7 +54,8 @@ export function CreateOrganizationForm() {
         costCentres: values.costCentres ?? [],
       })
       await update()
-      router.push('/dashboard')
+      router.refresh()
+      router.replace('/dashboard')
     } catch (error) {
       if (isApiError(error) && error.code === ErrorCode.VALIDATION_FAILED) {
         applyServerErrorsFromApiError(form as unknown as UseFormReturn<FieldValues>, error)

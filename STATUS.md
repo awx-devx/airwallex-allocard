@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-20 (Powered by Airwallex side tab; 1860 tests)
+**Last green `pnpm verify`:** 2026-08-20 (permission preview tags; 1865 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,12 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Permission preview tags (2026-08-20).** Allowed permissions sort to the top as quiet success chips with a check; denied are quiet danger chips with an X. No “Can/Cannot” or “Granted by …” copy. `pnpm verify` green (1865 tests). Next: wait for the user to name the next phase.
+
+**Invite-accept onboarded loop (2026-08-20).** After sign-up the JWT cached `onboarded: false` and did not re-read memberships on the next request. Accept wrote the membership; `/api/onboarding/status` said onboarded and sent you to `/dashboard`; `requireApp` still saw the stale JWT and sent you back. `shouldRefreshOrgClaims` now rechecks while `onboarded !== true` (still caches once true). Accept / create-org also `router.refresh()` + `replace`. `pnpm verify` green (1864 tests). Next: wait for the user to name the next phase.
+
+**Org Members tab (2026-08-20).** `/settings/members` is first in SETTINGS_NAV. Roster is visible to every org member. Invite / pending invites / role / suspend / remove are OWNER/ADMIN (`org.manage`). Create invite shows `/invite/<token>` once (copy; no email). Last ACTIVE OWNER cannot be demoted, suspended, or removed. `pnpm verify` green (1863 tests). Next: wait for the user to name the next phase.
 
 **Powered by Airwallex tab (2026-08-20).** Horizontal lockup hanging off AppHeader and the pre-shell form column (`PoweredByAirwallex`). Light/dark images from `public/images/`; click opens `https://www.airwallex.com` in a new tab. Next: wait for the user to name the next phase.
 

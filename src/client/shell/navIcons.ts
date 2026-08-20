@@ -36,6 +36,7 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/automation': ZapIcon,
   '/reports': ChartColumnIcon,
   '/audit': ScrollTextIcon,
+  '/settings/members': UsersIcon,
   '/settings/roles': ShieldIcon,
   '/settings/access-reviews': UserCheckIcon,
   '/settings/rules': ListChecksIcon,

@@ -251,12 +251,49 @@ describe('auth/config', () => {
       })
     })
 
-    it('shouldRefreshOrgClaims is true on sign-in, update, or a token missing onboarded', () => {
+    it('shouldRefreshOrgClaims is true on sign-in, update, or while not onboarded', () => {
       expect(shouldRefreshOrgClaims({ onboarded: true }, 'signIn', true)).toBe(true)
       expect(shouldRefreshOrgClaims({ onboarded: true }, 'update', false)).toBe(true)
       expect(shouldRefreshOrgClaims({}, undefined, false)).toBe(true)
       expect(shouldRefreshOrgClaims({ onboarded: true }, undefined, false)).toBe(false)
-      expect(shouldRefreshOrgClaims({ onboarded: false }, undefined, false)).toBe(false)
+      expect(shouldRefreshOrgClaims({ onboarded: false }, undefined, false)).toBe(true)
+    })
+
+    it('recomputes when cached onboarded is false and the user now has a membership', async () => {
+      const passwordHash = await hashPassword('password123')
+      const user = await users.createUser({
+        email: `jwt-stale-false-${Date.now()}@example.com`,
+        name: 'Jwt Stale False',
+        passwordHash,
+      })
+      const org = await organizations.createOrganization({
+        name: 'Jwt Stale False Org',
+        slug: `jwt-stale-false-${Date.now()}`,
+        country: 'US',
+        baseCurrency: 'USD',
+        createdBy: user.id,
+      })
+      await memberships.createMembership(
+        { orgId: org.id, userId: user.id, orgRole: OrgRole.OWNER },
+        { userId: user.id, orgRole: OrgRole.OWNER },
+      )
+
+      const config = createAuthConfig(baseEnv)
+      const token = await config.callbacks!.jwt!({
+        token: {
+          userId: user.id,
+          orgId: null,
+          orgRole: null,
+          onboarded: false,
+        },
+      } as never)
+
+      expect(token).toMatchObject({
+        userId: user.id,
+        orgId: org.id,
+        orgRole: OrgRole.OWNER,
+        onboarded: true,
+      })
     })
 
     it('keeps cached org claims on a session poll and does not hit memberships', async () => {

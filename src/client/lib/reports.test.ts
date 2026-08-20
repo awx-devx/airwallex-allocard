@@ -325,7 +325,7 @@ describe('A9.9 invariant proofs', () => {
     }
   })
 
-  it('keeps requireApp, AppShell collapse, Reports then Audit then Roles, and A3 access-reviews', () => {
+  it('keeps requireApp, AppShell collapse, Reports then Audit then Members, and A3 access-reviews', () => {
     const layout = readFileSync(join(process.cwd(), 'src/app/(app)/layout.tsx'), 'utf8')
     expect(layout).toContain('requireApp()')
     expect(layout).toContain('AppShellFrame')
@@ -334,7 +334,7 @@ describe('A9.9 invariant proofs', () => {
     expect(shell).toMatch(/aside className="[^"]*\bmd:flex\b/)
     expect(
       shell.includes(
-        "{ href: '/reports', label: 'Reports' },\n  { href: '/audit', label: 'Audit' },\n  { href: '/settings/roles', label: 'Roles' }",
+        "{ href: '/reports', label: 'Reports' },\n  { href: '/audit', label: 'Audit' },\n  { href: '/settings/members', label: 'Members' }",
       ),
     ).toBe(true)
     expect(

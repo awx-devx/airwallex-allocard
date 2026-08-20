@@ -22,6 +22,7 @@ const DEFAULT_NAV: SideNavItem[] = [
   { href: '/automation', label: 'Automation' },
   { href: '/reports', label: 'Reports' },
   { href: '/audit', label: 'Audit' },
+  { href: '/settings/members', label: 'Members' },
   { href: '/settings/roles', label: 'Roles' },
   { href: '/settings/access-reviews', label: 'Access reviews' },
   { href: '/settings/rules', label: 'Rules' },

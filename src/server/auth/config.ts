@@ -49,9 +49,11 @@ export async function authorizeCredentials(
 }
 
 /**
- * B1 caches org claims on the JWT and recomputes on org create / invite accept
- * (`update()`), not on every SessionProvider poll. A Mongo blip in jwt() becomes
- * JWTSessionError and the next mutation (e.g. create project) is 401.
+ * Cache org claims only once the user is onboarded. Recompute on sign-in,
+ * `update()`, or while `onboarded` is not true — otherwise invite accept / org
+ * create is invisible if `update()` races a session poll, and the app layout
+ * (`requireApp`) and onboarding fork (DB-backed `/api/onboarding/status`) fight.
+ * A Mongo blip in jwt() is swallowed below so it cannot wipe the session.
  */
 export function shouldRefreshOrgClaims(
   token: { onboarded?: boolean },
@@ -59,7 +61,7 @@ export function shouldRefreshOrgClaims(
   hasUser: boolean,
 ): boolean {
   if (hasUser || trigger === 'update') return true
-  return typeof token.onboarded !== 'boolean'
+  return token.onboarded !== true
 }
 
 export function createAuthConfig(env: AuthEnv = loadServerEnv()): NextAuthConfig {

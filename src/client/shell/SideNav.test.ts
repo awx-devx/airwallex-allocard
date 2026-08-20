@@ -13,6 +13,7 @@ const NAV = [
   '/automation',
   '/reports',
   '/audit',
+  '/settings/members',
   '/settings/roles',
   '/settings/access-reviews',
   '/settings/rules',

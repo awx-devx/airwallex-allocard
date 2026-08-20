@@ -16,6 +16,7 @@ const SIDE_NAV_HREFS = [
   '/automation',
   '/reports',
   '/audit',
+  '/settings/members',
   '/settings/roles',
   '/settings/access-reviews',
   '/settings/rules',

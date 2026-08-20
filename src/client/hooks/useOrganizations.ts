@@ -25,10 +25,11 @@ export function orgMembersQueryOptions(id: string, callWithOrg: ContractCaller) 
   }
 }
 
-export function invitesQueryOptions(callWithOrg: ContractCaller) {
+export function invitesQueryOptions(callWithOrg: ContractCaller, enabled = true) {
   return {
     queryKey: qk.invites(),
     queryFn: () => callWithOrg(inviteContracts.list),
+    enabled,
   }
 }
 
@@ -114,9 +115,9 @@ export function useRemoveOrgMember() {
   })
 }
 
-export function useInvites() {
+export function useInvites(enabled = true) {
   const callWithOrg = useCall()
-  return useQuery(invitesQueryOptions(callWithOrg))
+  return useQuery(invitesQueryOptions(callWithOrg, enabled))
 }
 
 export function useCreateInvite() {

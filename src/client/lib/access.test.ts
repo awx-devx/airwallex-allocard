@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { ActorType } from '@/shared/enums/audit'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
+import { MembershipStatus } from '@/shared/enums/membershipStatus'
+import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
 import type { AccessScope } from '@/shared/types/accessScope'
 import {
@@ -17,6 +19,13 @@ import {
   buildAccessScope,
   countMembersHoldingRole,
   eligibleOrgMembersToAdd,
+  holdsOrgManage,
+  inviteOrgDenialMessage,
+  inviteShareUrl,
+  isLastOrgOwner,
+  lastOrgOwnerDenialMessage,
+  manageOrgMemberDenialMessage,
+  membersHref,
   noEligibleMembersToAddMessage,
   permissionGateAllowed,
   formatPermissionReason,
@@ -32,6 +41,7 @@ import {
   previewWouldDeny,
   scopeSummary,
   scopeWindowReason,
+  sortPermissionReasons,
   sortRolesForMatrix,
   toAccessHistoryTimelineItem,
 } from '@/client/lib/access'
@@ -90,6 +100,23 @@ describe('formatPermissionReason', () => {
         message: 'Not granted by Viewer role',
       }),
     ).toBe('Cannot manage cards — Not granted by Viewer role')
+  })
+})
+
+describe('sortPermissionReasons', () => {
+  it('puts allowed permissions first, then sorts by label', () => {
+    const sorted = sortPermissionReasons([
+      { permission: Permission.CARD_MANAGE, allowed: false, message: 'x' },
+      { permission: Permission.BUDGET_VIEW, allowed: true, message: 'y' },
+      { permission: Permission.PROJECT_VIEW, allowed: true, message: 'z' },
+      { permission: Permission.CARD_CREATE, allowed: false, message: 'w' },
+    ])
+    expect(sorted.map((row) => row.permission)).toEqual([
+      Permission.BUDGET_VIEW,
+      Permission.PROJECT_VIEW,
+      Permission.CARD_CREATE,
+      Permission.CARD_MANAGE,
+    ])
   })
 })
 
@@ -293,13 +320,15 @@ describe('hrefs', () => {
   it('builds people and add-member paths and throws on empty id', () => {
     expect(addMemberHref('proj_1')).toBe('/projects/proj_1/people/add')
     expect(peopleHref('proj_1')).toBe('/projects/proj_1/people')
+    expect(membersHref()).toBe('/settings/members')
     expect(() => addMemberHref('')).toThrow('projectId is required')
   })
 })
 
 describe('SETTINGS_NAV', () => {
-  it('is the four settings hrefs and has no project settings tab', () => {
+  it('is the five settings hrefs and has no project settings tab', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -308,6 +337,52 @@ describe('SETTINGS_NAV', () => {
     expect(SETTINGS_NAV.map((item) => `${item.href} ${item.label}`).join(' ')).not.toMatch(
       /\/projects\/[^/]*settings/,
     )
+  })
+})
+
+describe('holdsOrgManage', () => {
+  it('is true for OWNER and ADMIN only', () => {
+    expect(holdsOrgManage(OrgRole.OWNER)).toBe(true)
+    expect(holdsOrgManage(OrgRole.ADMIN)).toBe(true)
+    expect(holdsOrgManage(OrgRole.MEMBER)).toBe(false)
+    expect(holdsOrgManage(undefined)).toBe(false)
+  })
+})
+
+describe('isLastOrgOwner', () => {
+  it('is true only for the sole ACTIVE OWNER', () => {
+    const owner = {
+      userId: 'u1',
+      orgRole: OrgRole.OWNER,
+      status: MembershipStatus.ACTIVE,
+    }
+    expect(isLastOrgOwner([owner], 'u1')).toBe(true)
+    expect(isLastOrgOwner([owner], 'u2')).toBe(false)
+    expect(
+      isLastOrgOwner(
+        [owner, { userId: 'u2', orgRole: OrgRole.OWNER, status: MembershipStatus.ACTIVE }],
+        'u1',
+      ),
+    ).toBe(false)
+    expect(
+      isLastOrgOwner(
+        [owner, { userId: 'u2', orgRole: OrgRole.ADMIN, status: MembershipStatus.ACTIVE }],
+        'u1',
+      ),
+    ).toBe(true)
+    expect(
+      isLastOrgOwner(
+        [owner, { userId: 'u2', orgRole: OrgRole.OWNER, status: MembershipStatus.SUSPENDED }],
+        'u1',
+      ),
+    ).toBe(true)
+  })
+})
+
+describe('inviteShareUrl', () => {
+  it('joins origin with /invite/{token}', () => {
+    const token = 'AbCdefGhIjkLmnOpQrsTuvWxyZ0123456789_-'
+    expect(inviteShareUrl('https://app.example', token)).toBe(`https://app.example/invite/${token}`)
   })
 })
 
@@ -388,6 +463,13 @@ describe('locked denial copy', () => {
     expect(lastAccessManagerDenialMessage()).toBe(
       'Cannot remove the last member who can manage access.',
     )
+    expect(inviteOrgDenialMessage()).toBe(
+      "You don't have permission to invite people to this organisation.",
+    )
+    expect(manageOrgMemberDenialMessage()).toBe(
+      "You don't have permission to manage organisation members.",
+    )
+    expect(lastOrgOwnerDenialMessage()).toBe('Cannot remove or demote the last owner')
   })
 })
 
@@ -440,8 +522,9 @@ describe('A3.9 preview vs 403', () => {
 })
 
 describe('A3.9 settings routes and no Settings workspace tab', () => {
-  it('SETTINGS_NAV is exactly the four org settings hrefs', () => {
+  it('SETTINGS_NAV is exactly the five org settings hrefs', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -451,8 +534,9 @@ describe('A3.9 settings routes and no Settings workspace tab', () => {
 })
 
 describe('A6.11 SETTINGS_NAV unchanged', () => {
-  it('SETTINGS_NAV is exactly the four org settings hrefs', () => {
+  it('SETTINGS_NAV is exactly the five org settings hrefs', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -462,8 +546,9 @@ describe('A6.11 SETTINGS_NAV unchanged', () => {
 })
 
 describe('A7.9 SETTINGS_NAV unchanged', () => {
-  it('SETTINGS_NAV is exactly the four org settings hrefs and has no Requests', () => {
+  it('SETTINGS_NAV is exactly the five org settings hrefs and has no Requests', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -475,8 +560,9 @@ describe('A7.9 SETTINGS_NAV unchanged', () => {
 })
 
 describe('A8.8 SETTINGS_NAV unchanged', () => {
-  it('SETTINGS_NAV is exactly the four org settings hrefs and has no Transactions or Receipts', () => {
+  it('SETTINGS_NAV is exactly the five org settings hrefs and has no Transactions or Receipts', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',
@@ -489,8 +575,9 @@ describe('A8.8 SETTINGS_NAV unchanged', () => {
 })
 
 describe('A9.9 SETTINGS_NAV unchanged', () => {
-  it('SETTINGS_NAV is exactly the four org settings hrefs and has no Audit, Reports, or Closure', () => {
+  it('SETTINGS_NAV is exactly the five org settings hrefs and has no Audit, Reports, or Closure', () => {
     expect(SETTINGS_NAV.map((item) => item.href)).toEqual([
+      '/settings/members',
       '/settings/roles',
       '/settings/access-reviews',
       '/settings/rules',

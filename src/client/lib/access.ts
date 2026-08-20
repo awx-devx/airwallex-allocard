@@ -4,12 +4,15 @@
  * Preview formatting and last-admin gating are UX only; server
  * `requirePermission` / `computeEffectivePermissions` are authoritative.
  */
+import { invitePath } from '@/client/lib/auth'
 import type { TimelineItem } from '@/components/patterns/types'
 import { isScopeActive } from '@/shared/access/scope'
 import { ROLE_TEMPLATES } from '@/shared/constants/roleTemplates'
 import { AccessReviewStatus } from '@/shared/enums/accessReviewStatus'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import type { ActorType } from '@/shared/enums/audit'
+import { MembershipStatus } from '@/shared/enums/membershipStatus'
+import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
 import type { AccessScope } from '@/shared/types/accessScope'
 
@@ -20,6 +23,9 @@ const ASSIGN_ROLE_DENIED = "You don't have permission to assign roles."
 const MANAGE_REVIEW_DENIED = "You don't have permission to manage access reviews."
 const LAST_ACCESS_MANAGER_DENIED = 'Cannot remove the last member who can manage access.'
 const NO_ELIGIBLE_MEMBERS = 'Everyone in this organisation is already a member of this project.'
+const INVITE_ORG_DENIED = "You don't have permission to invite people to this organisation."
+const MANAGE_ORG_MEMBER_DENIED = "You don't have permission to manage organisation members."
+const LAST_ORG_OWNER_DENIED = 'Cannot remove or demote the last owner'
 
 const NOT_YET_VALID = 'Access scope is not yet valid'
 const EXPIRED = 'Access scope has expired'
@@ -110,11 +116,18 @@ export const SCOPE_LEVEL_LABELS: Record<AccessScopeLevel, string> = {
 }
 
 export const SETTINGS_NAV = [
+  { href: '/settings/members', label: 'Members' },
   { href: '/settings/roles', label: 'Roles' },
   { href: '/settings/access-reviews', label: 'Access reviews' },
   { href: '/settings/rules', label: 'Rules' },
   { href: '/settings/attributes', label: 'Attributes' },
 ] as const
+
+export const ORG_ROLE_LABELS: Record<OrgRole, string> = {
+  [OrgRole.OWNER]: 'Owner',
+  [OrgRole.ADMIN]: 'Admin',
+  [OrgRole.MEMBER]: 'Member',
+}
 
 export type ScopeSummaryNames = {
   workstreams?: Record<string, string>
@@ -193,6 +206,17 @@ export function formatPermissionReason(reason: {
 }): string {
   const verb = reason.allowed ? 'Can' : 'Cannot'
   return `${verb} ${PERMISSION_LABELS[reason.permission]} — ${reason.message}`
+}
+
+export function sortPermissionReasons<T extends { allowed: boolean; permission: Permission }>(
+  reasons: T[],
+): T[] {
+  return [...reasons].sort((a, b) => {
+    if (a.allowed !== b.allowed) {
+      return a.allowed ? -1 : 1
+    }
+    return PERMISSION_LABELS[a.permission].localeCompare(PERMISSION_LABELS[b.permission])
+  })
 }
 
 export function scopeSummary(
@@ -379,6 +403,40 @@ export function memberHasCards(
     }
     return holderById.get(card.cardholderId)?.userId === userId
   })
+}
+
+export function holdsOrgManage(orgRole: OrgRole | undefined): boolean {
+  return orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN
+}
+
+export function isLastOrgOwner(
+  members: { userId: string; orgRole: OrgRole; status: MembershipStatus }[],
+  userId: string,
+): boolean {
+  const owners = members.filter(
+    (member) => member.orgRole === OrgRole.OWNER && member.status === MembershipStatus.ACTIVE,
+  )
+  return owners.length === 1 && owners[0]?.userId === userId
+}
+
+export function membersHref(): string {
+  return '/settings/members'
+}
+
+export function inviteShareUrl(origin: string, token: string): string {
+  return `${origin}${invitePath(token)}`
+}
+
+export function inviteOrgDenialMessage(): string {
+  return INVITE_ORG_DENIED
+}
+
+export function manageOrgMemberDenialMessage(): string {
+  return MANAGE_ORG_MEMBER_DENIED
+}
+
+export function lastOrgOwnerDenialMessage(): string {
+  return LAST_ORG_OWNER_DENIED
 }
 
 export function addMemberHref(projectId: string): string {

@@ -65,7 +65,8 @@ export function InviteAccept() {
     try {
       await accept.mutateAsync({ token })
       await update()
-      router.push('/dashboard')
+      router.refresh()
+      router.replace('/dashboard')
     } catch (error) {
       if (isApiError(error)) {
         const copy = inviteErrorCopy(error.code)
