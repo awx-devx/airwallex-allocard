@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { encode } from 'next-auth/jwt'
 import { useTestDb } from '../../../test/helpers/db'
 import { installTestSessionResolver } from '../../../test/helpers/request'
 import {
@@ -6,8 +7,10 @@ import {
   resolveAuthSession,
   resolveOrgContextForUser,
   resetAuthUserIdReader,
+  sessionTokenSecureCookie,
   setAuthUserIdReader,
 } from '@/server/auth/session'
+import { loadServerEnv } from '@/server/env'
 import { AppError } from '@/server/http/errors'
 import { withAuth } from '@/server/http/withAuth'
 import { ok } from '@/server/http/respond'
@@ -270,6 +273,62 @@ describe('auth/session', () => {
       const body = (await res.json()) as { onboarded: boolean }
       expect(res.status).toBe(200)
       expect(body.onboarded).toBe(false)
+    })
+  })
+
+  describe('Auth.js session cookie (HTTPS vs HTTP)', () => {
+    it('detects the __Secure- prefix used on HTTPS hosts', () => {
+      expect(sessionTokenSecureCookie(null)).toBeUndefined()
+      expect(sessionTokenSecureCookie('theme=dark')).toBeUndefined()
+      expect(sessionTokenSecureCookie('authjs.session-token=abc')).toBe(false)
+      expect(sessionTokenSecureCookie('__Secure-authjs.session-token=abc')).toBe(true)
+      expect(sessionTokenSecureCookie('other=1; __Secure-authjs.session-token.0=chunk')).toBe(true)
+    })
+
+    async function requestWithSessionCookie(userId: string, cookieName: string) {
+      const env = loadServerEnv()
+      const jwt = await encode({
+        token: { userId, sub: userId },
+        secret: env.AUTH_SECRET,
+        salt: cookieName,
+      })
+      return new Request('http://localhost/api/onboarding/status', {
+        headers: { cookie: `${cookieName}=${jwt}` },
+      })
+    }
+
+    it('reads a first-time Google session from the __Secure- cookie', async () => {
+      const user = await users.createUser({
+        email: `google-${Date.now()}@example.com`,
+        name: 'Google',
+      })
+
+      await expect(
+        resolveAuthSession(
+          await requestWithSessionCookie(user.id, '__Secure-authjs.session-token'),
+        ),
+      ).resolves.toEqual({
+        userId: user.id,
+        orgId: null,
+        orgRole: null,
+        onboarded: false,
+      })
+    })
+
+    it('still reads the unprefixed cookie used on http://localhost', async () => {
+      const user = await users.createUser({
+        email: `local-${Date.now()}@example.com`,
+        name: 'Local',
+      })
+
+      await expect(
+        resolveAuthSession(await requestWithSessionCookie(user.id, 'authjs.session-token')),
+      ).resolves.toEqual({
+        userId: user.id,
+        orgId: null,
+        orgRole: null,
+        onboarded: false,
+      })
     })
   })
 })

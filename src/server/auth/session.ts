@@ -7,7 +7,7 @@
  * except when the user is not onboarded — a leftover `x-org-id` from a previous
  * account is ignored so onboarding / me / create-org stay reachable after sign-up.
  */
-import { getToken } from 'next-auth/jwt'
+import { getToken, type JWT } from 'next-auth/jwt'
 import { connectDb } from '@/server/db/connect'
 import { loadServerEnv } from '@/server/env'
 import { AppError } from '@/server/http/errors'
@@ -101,20 +101,58 @@ export async function resolveOrgContextForUser(
 
 type UserIdReader = (req: Request) => Promise<string | null>
 
-async function readUserIdFromJwt(req: Request): Promise<string | null> {
-  const env = loadServerEnv()
-  const token = await getToken({
-    req: req as never,
-    secret: env.AUTH_SECRET,
-  })
-  if (!token) {
-    return null
+const AUTHJS_SESSION_COOKIE = 'authjs.session-token'
+const AUTHJS_SECURE_SESSION_COOKIE = `__Secure-${AUTHJS_SESSION_COOKIE}`
+
+/**
+ * Auth.js encrypts the JWT with the cookie name as salt. `getToken` defaults
+ * to the unprefixed name (`secureCookie: false`). Google sign-in via an HTTPS
+ * host (AUTH_URL tunnel) sets `__Secure-authjs.session-token`, so the layout's
+ * `auth()` succeeds while API `withAuth` would 401.
+ */
+export function sessionTokenSecureCookie(cookieHeader: string | null): boolean | undefined {
+  if (!cookieHeader) return undefined
+  if (cookieHeader.includes(AUTHJS_SECURE_SESSION_COOKIE)) return true
+  if (new RegExp(`(?:^|;\\s*)${AUTHJS_SESSION_COOKIE}(?:[.=]|$)`).test(cookieHeader)) {
+    return false
   }
+  return undefined
+}
+
+function secureCookieAttempts(req: Request, authUrl: string): boolean[] {
+  const hinted = sessionTokenSecureCookie(req.headers.get('cookie'))
+  const preferSecure = hinted ?? new URL(authUrl).protocol === 'https:'
+  return preferSecure ? [true, false] : [false, true]
+}
+
+async function decodeSessionToken(
+  req: Request,
+  secret: string,
+  secureCookie: boolean,
+): Promise<JWT | null> {
+  return getToken({
+    req: req as never,
+    secret,
+    secureCookie,
+  })
+}
+
+function userIdFromToken(token: JWT | null): string | null {
+  if (!token) return null
   if (typeof token.userId === 'string' && token.userId.length > 0) {
     return token.userId
   }
   if (typeof token.sub === 'string' && token.sub.length > 0) {
     return token.sub
+  }
+  return null
+}
+
+async function readUserIdFromJwt(req: Request): Promise<string | null> {
+  const env = loadServerEnv()
+  for (const secureCookie of secureCookieAttempts(req, env.AUTH_URL)) {
+    const userId = userIdFromToken(await decodeSessionToken(req, env.AUTH_SECRET, secureCookie))
+    if (userId) return userId
   }
   return null
 }
