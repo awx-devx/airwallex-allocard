@@ -6,7 +6,6 @@ import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { AppHeader } from '@/client/shell/AppHeader'
 import { BrandLogo } from '@/client/shell/BrandLogo'
 import { OrgSwitcher, type ShellMembership } from '@/client/shell/OrgSwitcher'
-import { PoweredByAirwallex } from '@/client/shell/PoweredByAirwallex'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
 import { WalkCrowd } from '@/client/shell/WalkCrowd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -122,7 +121,6 @@ export function AppShell({
           {children}
         </main>
       </div>
-      <PoweredByAirwallex />
       <Sheet open={open} onOpenChange={(next) => setMenu({ open: next, at: pathname })}>
         <SheetContent side="left" className="bg-sidebar text-sidebar-foreground">
           <SheetHeader>

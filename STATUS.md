@@ -68,7 +68,7 @@ _None yet._
 
 ## Notes for the next session
 
-**Powered by Airwallex side tab (2026-08-20).** Right-edge peek tab (`PoweredByAirwallex`) in AppShell and CenteredBrandFrame. Light/dark lockups from `public/images/`; click opens `https://www.airwallex.com` in a new tab. `pnpm verify` green (1860 tests). Next: wait for the user to name the next phase.
+**Powered by Airwallex tab (2026-08-20).** Horizontal lockup hanging off AppHeader and the pre-shell form column (`PoweredByAirwallex`). Light/dark images from `public/images/`; click opens `https://www.airwallex.com` in a new tab. Next: wait for the user to name the next phase.
 
 **Add-member layout (2026-08-20).** Person, Role, and Active between sit in `grid-cols-1 md:grid-cols-3`. Scope radios wrap on one row. Permissions preview is a second card only after role + scope are complete. Combobox options can grow past the trigger and wrap. `pnpm verify` green (1856 tests). Next: wait for the user to name the next phase.
 

@@ -5,13 +5,13 @@ export const AIRWALLEX_SITE_URL = 'https://www.airwallex.com'
 
 function AirwallexLockup() {
   return (
-    <span className="relative inline-block h-20 w-4 shrink-0">
+    <>
       <Image
         src={publicAsset.airwallexLight}
         alt=""
         width={1405}
         height={281}
-        className="absolute left-1/2 top-1/2 h-4 w-auto max-w-none -translate-x-1/2 -translate-y-1/2 rotate-90 dark:hidden"
+        className="h-4 w-auto dark:hidden"
         unoptimized
       />
       <Image
@@ -19,10 +19,10 @@ function AirwallexLockup() {
         alt=""
         width={1405}
         height={281}
-        className="absolute left-1/2 top-1/2 hidden h-4 w-auto max-w-none -translate-x-1/2 -translate-y-1/2 rotate-90 dark:inline"
+        className="hidden h-4 w-auto dark:inline"
         unoptimized
       />
-    </span>
+    </>
   )
 }
 
@@ -33,12 +33,10 @@ export function PoweredByAirwallex() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Powered by Airwallex (opens in a new tab)"
-      className="fixed right-0 top-1/2 z-30 -translate-y-1/2 translate-x-[calc(100%-0.75rem)] rounded-l-md border border-r-0 border-border bg-card shadow-[var(--shadow-glass)] transition-transform duration-200 hover:translate-x-0 focus-visible:translate-x-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="absolute top-full left-1/2 -mt-px flex -translate-x-1/2 items-center gap-2 rounded-b-md border border-t-0 border-border bg-card px-3 py-1.5 text-xs text-muted-foreground shadow-[var(--shadow-glass)]"
     >
-      <span className="flex items-center gap-2 px-2 py-3 text-xs text-muted-foreground [writing-mode:vertical-rl] [text-orientation:sideways]">
-        Powered by
-        <AirwallexLockup />
-      </span>
+      Powered by
+      <AirwallexLockup />
     </a>
   )
 }

@@ -24,30 +24,35 @@ describe('PoweredByAirwallex', () => {
     expect(src).toContain('publicAsset.airwallexDark')
     expect(src).toContain('dark:hidden')
     expect(src).toContain('dark:inline')
-    expect(src).toContain('rotate-90')
     expect(src).not.toContain('useTheme')
   })
 
-  it('peeks from the right edge with one breakpoint', () => {
-    expect(src).toContain('fixed right-0')
-    expect(src).toContain('z-30')
-    expect(src).toContain('hover:translate-x-0')
-    expect(src).toContain('focus-visible:translate-x-0')
-    expect(src).toContain('[writing-mode:vertical-rl]')
-    expect(src).toContain('[text-orientation:sideways]')
-    expect(src).not.toContain('rotate-180')
+  it('is a horizontal tab hanging off its parent, with one breakpoint', () => {
+    expect(src).toContain('absolute top-full')
+    expect(src).toContain('items-center')
+    expect(src).toContain('rounded-b-md')
+    expect(src).toContain('border-t-0')
+    expect(src).not.toContain('fixed')
+    expect(src).not.toContain('rotate-90')
+    expect(src).not.toContain('writing-mode')
     expect(src).not.toMatch(/\bsm:/)
     expect(src).not.toMatch(/\blg:/)
   })
 })
 
 describe('PoweredByAirwallex mount', () => {
-  it('renders in AppShell and CenteredBrandFrame', () => {
+  it('hangs off AppHeader and the pre-shell form column', () => {
+    const header = read('src/client/shell/AppHeader.tsx')
     const shell = read('src/client/shell/AppShell.tsx')
     const frame = read('src/client/shell/CenteredBrandFrame.tsx')
-    expect(shell).toContain("from '@/client/shell/PoweredByAirwallex'")
-    expect(shell).toContain('<PoweredByAirwallex />')
+    expect(header).toContain("from '@/client/shell/PoweredByAirwallex'")
+    expect(header).toContain('<PoweredByAirwallex />')
+    expect(header.indexOf('<PoweredByAirwallex />')).toBeLessThan(
+      header.indexOf('bg-background/95'),
+    )
+    expect(shell).not.toContain('PoweredByAirwallex')
     expect(frame).toContain("from '@/client/shell/PoweredByAirwallex'")
     expect(frame).toContain('<PoweredByAirwallex />')
+    expect(frame).toContain('{children}')
   })
 })

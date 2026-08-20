@@ -15,10 +15,12 @@ export function CenteredBrandFrame({
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <WalkCrowd />
-      <PoweredByAirwallex />
       <div className="relative z-1 flex w-full max-w-md flex-col gap-6 px-4">
         <BrandLogo className="justify-center" priority={priority} size={size} />
-        {children}
+        <div className="relative">
+          {children}
+          <PoweredByAirwallex />
+        </div>
       </div>
     </div>
   )
