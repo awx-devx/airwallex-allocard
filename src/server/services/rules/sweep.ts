@@ -6,6 +6,7 @@
  * In a healthy system this finds nothing to apply: the event path already
  * kept desired state current.
  */
+import { connectDb } from '@/server/db/connect'
 import type { ApplyDeps } from '@/server/services/rules/apply'
 import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
 import { SCHEDULED_SWEEP } from '@/server/services/rules/select'
@@ -30,6 +31,7 @@ export type SweepRulesResult = {
  * once per project so `listEnabledRulesForScope` can see them.
  */
 export async function sweepScheduledRules(deps: ApplyDeps = {}): Promise<SweepRulesResult> {
+  await connectDb()
   const orgs = await listAllOrganizations()
   let evaluations = 0
 

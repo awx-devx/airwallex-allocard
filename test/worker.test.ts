@@ -7,7 +7,9 @@ import {
   resetEventStream,
   setEventStream,
 } from '@/server/events/stream'
+import * as dbConnect from '@/server/db/connect'
 import { getRedis, redisKeys, resetRedis } from '@/server/redis'
+import * as organizationsRepo from '@/server/repositories/organizations'
 import { createDebouncer } from '@/worker/debounce'
 import { startWorker } from '@/worker/index'
 import { createScheduler } from '@/worker/scheduler'
@@ -315,6 +317,22 @@ describe('sweepScheduledRules', () => {
     })
     return { ctx, project }
   }
+
+  it('connects to mongo before listing organisations', async () => {
+    const order: string[] = []
+    vi.spyOn(dbConnect, 'connectDb').mockImplementation(async () => {
+      order.push('connect')
+      return (await import('mongoose')).default
+    })
+    vi.spyOn(organizationsRepo, 'listAllOrganizations').mockImplementation(async () => {
+      order.push('list')
+      return []
+    })
+
+    const result = await sweepScheduledRules()
+    expect(order).toEqual(['connect', 'list'])
+    expect(result).toEqual({ orgsVisited: 0, evaluations: 0 })
+  })
 
   it('evaluates scheduled rules and ignores event-only rules', async () => {
     const { ctx, project } = await seedOrgWithProject()
