@@ -10,7 +10,7 @@ Dense finance / procurement ops UI — sharp and intentional, not a consumer fin
 
 Chrome is the **frame**, not another card: charcoal sidebar (`--sidebar`, matches the logomark field) and a solid frosted header strip (`bg-background/95`, `border-b`, `backdrop-blur-xl`). Active nav uses a 1px left-edge laser on `--sidebar-primary` (hot mid, fade to the caps, no white core) — that is brand, not a rainbow. Content cards are opaque paper (`bg-card` + border + `--shadow-glass`). Tables sit in a bordered `bg-card` panel. Meaning colour still lives on money, status, and budget segments.
 
-Quiet walkers (`WalkCrowd`) sit behind scrolling content only — `z-0` under header/main — and do not render when `prefers-reduced-motion: reduce`.
+Doodle wallpaper (`DoodleBackdrop`) sits `z-0` under header/main. Auth uses a louder `--laser` tint; the app shell uses a quieter `--muted-foreground` wash. The SVG is a CSS mask so ink follows tokens, never the file’s baked orange.
 
 ## Rules
 

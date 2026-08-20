@@ -14,4 +14,5 @@ export const publicAsset = {
   appleTouchIcon: '/brand/apple-touch-icon.png',
   airwallexLight: '/images/airwallex-light.png',
   airwallexDark: '/images/airwallex-dark.png',
+  doodles: '/images/allocard-doodles.svg',
 } as const

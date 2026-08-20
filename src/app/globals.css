@@ -314,235 +314,35 @@
     right: 18%;
   }
 
-  .walk-crowd {
+  .doodle-backdrop {
     pointer-events: none;
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3.15rem;
+    inset: 0;
     z-index: 0;
-    overflow: hidden;
-    container-type: inline-size;
+    background-color: hsl(var(--laser) / var(--doodle-ink));
+    -webkit-mask-image: url('/images/allocard-doodles.svg');
+    mask-image: url('/images/allocard-doodles.svg');
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
 
-  .walk-person {
-    position: absolute;
-    bottom: var(--walk-floor, 0.08rem);
-    left: 0;
-    width: calc(1.35rem * var(--walk-scale, 1));
-    color: color-mix(
-      in srgb,
-      var(--muted-foreground) calc(var(--walk-ink, 0.42) * 100%),
-      transparent
-    );
-    animation: walk-cross-ltr var(--walk-cross, 36s) linear var(--walk-delay, 0s) infinite;
+  .doodle-backdrop[data-variant='auth'] {
+    --doodle-ink: 0.08;
   }
 
-  .walk-person.is-rtl {
-    animation-name: walk-cross-rtl;
+  .doodle-backdrop[data-variant='app'] {
+    background-color: color-mix(in srgb, var(--muted-foreground) 5%, transparent);
   }
 
-  .walk-face {
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
+  .dark .doodle-backdrop[data-variant='auth'] {
+    --doodle-ink: 0.11;
   }
 
-  .walk-orient {
-    transform-box: view-box;
-    transform-origin: 12px 20px;
-  }
-
-  .walk-person.is-rtl .walk-orient {
-    transform: scaleX(-1);
-  }
-
-  .walk-bob {
-    animation: walk-bob var(--walk-stride, 0.7s) cubic-bezier(0.45, 0.05, 0.55, 0.95)
-      var(--walk-stride-off, 0s) infinite;
-  }
-
-  .walk-thigh-l,
-  .walk-thigh-r,
-  .walk-shin-l,
-  .walk-shin-r,
-  .walk-arm-l,
-  .walk-arm-r,
-  .walk-fore-l,
-  .walk-fore-r {
-    transform-box: view-box;
-  }
-
-  .walk-arm-l,
-  .walk-arm-r {
-    transform-origin: 12px 12.6px;
-  }
-
-  .walk-fore-l,
-  .walk-fore-r {
-    transform-origin: 12px 18.2px;
-  }
-
-  .walk-thigh-l,
-  .walk-thigh-r {
-    transform-origin: 12px 21.6px;
-  }
-
-  .walk-shin-l,
-  .walk-shin-r {
-    transform-origin: 12px 28.5px;
-  }
-
-  .walk-thigh-r,
-  .walk-shin-r,
-  .walk-arm-l,
-  .walk-fore-l {
-    animation: walk-thigh var(--walk-stride, 0.7s) cubic-bezier(0.4, 0.15, 0.4, 0.85)
-      var(--walk-stride-off, 0s) infinite;
-  }
-
-  .walk-shin-r {
-    animation-name: walk-shin;
-  }
-
-  .walk-arm-l {
-    animation-name: walk-arm;
-  }
-
-  .walk-fore-l {
-    animation-name: walk-fore;
-  }
-
-  .walk-thigh-l,
-  .walk-shin-l,
-  .walk-arm-r,
-  .walk-fore-r {
-    animation: walk-thigh var(--walk-stride, 0.7s) cubic-bezier(0.4, 0.15, 0.4, 0.85) infinite;
-    animation-delay: calc(var(--walk-stride-off, 0s) - var(--walk-stride, 0.7s) / 2);
-  }
-
-  .walk-shin-l {
-    animation-name: walk-shin;
-  }
-
-  .walk-arm-r {
-    animation-name: walk-arm;
-  }
-
-  .walk-fore-r {
-    animation-name: walk-fore;
-  }
-}
-
-@keyframes walk-cross-ltr {
-  from {
-    transform: translate3d(-2.2rem, 0, 0);
-  }
-  to {
-    transform: translate3d(calc(100cqi + 2.2rem), 0, 0);
-  }
-}
-
-@keyframes walk-cross-rtl {
-  from {
-    transform: translate3d(calc(100cqi + 2.2rem), 0, 0);
-  }
-  to {
-    transform: translate3d(-2.2rem, 0, 0);
-  }
-}
-
-@keyframes walk-bob {
-  0%,
-  50%,
-  100% {
-    transform: translateY(0);
-  }
-  25%,
-  75% {
-    transform: translateY(1.15px);
-  }
-}
-
-@keyframes walk-thigh {
-  0% {
-    transform: rotate(-26deg);
-  }
-  18% {
-    transform: rotate(-10deg);
-  }
-  32% {
-    transform: rotate(6deg);
-  }
-  50% {
-    transform: rotate(24deg);
-  }
-  64% {
-    transform: rotate(12deg);
-  }
-  78% {
-    transform: rotate(-4deg);
-  }
-  100% {
-    transform: rotate(-26deg);
-  }
-}
-
-@keyframes walk-shin {
-  0% {
-    transform: rotate(8deg);
-  }
-  10% {
-    transform: rotate(20deg);
-  }
-  22% {
-    transform: rotate(10deg);
-  }
-  38% {
-    transform: rotate(16deg);
-  }
-  52% {
-    transform: rotate(22deg);
-  }
-  68% {
-    transform: rotate(62deg);
-  }
-  84% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(8deg);
-  }
-}
-
-@keyframes walk-arm {
-  0% {
-    transform: rotate(-22deg);
-  }
-  50% {
-    transform: rotate(24deg);
-  }
-  100% {
-    transform: rotate(-22deg);
-  }
-}
-
-@keyframes walk-fore {
-  0% {
-    transform: rotate(-12deg);
-  }
-  30% {
-    transform: rotate(-28deg);
-  }
-  55% {
-    transform: rotate(-8deg);
-  }
-  78% {
-    transform: rotate(-34deg);
-  }
-  100% {
-    transform: rotate(-12deg);
+  .dark .doodle-backdrop[data-variant='app'] {
+    background-color: color-mix(in srgb, var(--muted-foreground) 6%, transparent);
   }
 }

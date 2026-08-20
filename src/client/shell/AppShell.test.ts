@@ -75,8 +75,8 @@ describe('AppShell viewport lock', () => {
     expect(frame).not.toContain('project={null}')
   })
 
-  it('walkers sit behind the scrolling main column', () => {
-    expect(shell).toContain('<WalkCrowd />')
+  it('doodle backdrop sits behind the scrolling main column', () => {
+    expect(shell).toContain('<DoodleBackdrop variant="app" />')
     expect(shell).toContain('relative flex min-h-0 min-w-0 flex-1 flex-col')
     expect(shell).toMatch(/<main className="[^"]*\bz-1\b/)
   })

@@ -7,7 +7,7 @@ import { AppHeader } from '@/client/shell/AppHeader'
 import { BrandLogo } from '@/client/shell/BrandLogo'
 import { OrgSwitcher, type ShellMembership } from '@/client/shell/OrgSwitcher'
 import { SideNav, type SideNavItem } from '@/client/shell/SideNav'
-import { WalkCrowd } from '@/client/shell/WalkCrowd'
+import { DoodleBackdrop } from '@/client/shell/DoodleBackdrop'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 const DEFAULT_NAV: SideNavItem[] = [
@@ -110,7 +110,7 @@ export function AppShell({
         </div>
       </aside>
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-        <WalkCrowd />
+        <DoodleBackdrop variant="app" />
         <AppHeader
           user={user}
           approvalsCount={approvalsCount}

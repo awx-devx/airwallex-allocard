@@ -44,6 +44,7 @@ describe('CenteredBrandFrame', () => {
     expect(src).toContain('justify-center')
     expect(src).toContain('max-w-md')
     expect(src).toContain('px-4')
+    expect(src).toContain('<DoodleBackdrop variant="auth" />')
   })
 })
 

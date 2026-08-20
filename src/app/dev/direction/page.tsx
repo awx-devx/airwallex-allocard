@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { BrandWordmark } from '@/client/shell/BrandWordmark'
 import { ThemeToggle } from '@/client/shell/ThemeToggle'
-import { WalkCrowd } from '@/client/shell/WalkCrowd'
+import { DoodleBackdrop } from '@/client/shell/DoodleBackdrop'
 import { publicAsset } from '@/lib/assets'
 
 type WorkspaceTab = 'overview' | 'budget' | 'cards'
@@ -839,7 +839,7 @@ export default function DevDirectionPage() {
               {tab === 'cards' ? <Cards /> : null}
             </div>
           </main>
-          <WalkCrowd />
+          <DoodleBackdrop variant="app" />
         </div>
       </div>
 
