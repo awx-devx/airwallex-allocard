@@ -118,4 +118,15 @@ describe('cards/controls', () => {
     expect(aw).not.toHaveProperty('allowed_merchant_countries')
     expect(aw).not.toHaveProperty('allowed_merchant_brands')
   })
+
+  it('formats active_from / active_to as Airwallex +0000, not JS .000Z', () => {
+    const aw = toAirwallexControls(
+      baseControls({
+        activeFrom: '2026-08-01T00:00:00.000Z',
+        activeTo: '2026-09-30T00:00:00.000Z',
+      }),
+    )
+    expect(aw.active_from).toBe('2026-08-01T00:00:00+0000')
+    expect(aw.active_to).toBe('2026-09-30T00:00:00+0000')
+  })
 })

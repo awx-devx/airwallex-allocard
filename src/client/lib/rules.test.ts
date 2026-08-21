@@ -22,6 +22,7 @@ import {
   findRuleById,
   flattenRunPages,
   formatMatchPreview,
+  hasEnabledMemberIssuanceRule,
   holdsControlEdit,
   isNewRuleId,
   isProminentRunStatus,
@@ -50,7 +51,9 @@ import {
 } from '@/client/lib/rules'
 import { controlsHref, ruleHref } from '@/client/lib/cards'
 import { ConditionOperator } from '@/shared/enums/conditionOperator'
+import { RuleActionType } from '@/shared/enums/ruleActionType'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
+import { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
 
 const FULL_CONTROLS = {
   allowedTransactionCount: 'MULTIPLE',
@@ -229,6 +232,38 @@ describe('templates', () => {
     expect(JSON.stringify(RULE_TEMPLATES)).not.toContain('now()')
     expect(parseTemplateParam({ template: 'b' })).toBe('B')
     expect(parseTemplateParam({ template: 'Z' })).toBeNull()
+  })
+
+  it('enables templates on apply and widens template A roles', () => {
+    const projectScope = { level: RuleScopeLevel.PROJECT, projectId: 'p' } as const
+    const applied = applyTemplate('A', projectScope)
+    expect(applied.enabled).toBe(true)
+    expect(applied.trigger.events).toEqual(['project.launched', 'member.added'])
+    expect(applied.then[0]?.target.filter).toMatchObject({
+      roleKeys: ['project_spender', 'project_manager'],
+    })
+    expect(emptyDraftRule(projectScope)).not.toHaveProperty('enabled')
+  })
+
+  it('detects an enabled PROJECT_MEMBERS card.create rule', () => {
+    const projectScope = { level: RuleScopeLevel.PROJECT, projectId: 'p' } as const
+    const draft = applyTemplate('A', projectScope)
+    expect(hasEnabledMemberIssuanceRule([{ enabled: true, then: draft.then }])).toBe(true)
+    expect(hasEnabledMemberIssuanceRule([{ enabled: false, then: draft.then }])).toBe(false)
+    expect(
+      hasEnabledMemberIssuanceRule([
+        {
+          enabled: true,
+          then: [
+            {
+              action: RuleActionType.CARD_FREEZE,
+              target: { select: RuleTargetSelect.PROJECT_CARDS },
+              params: {},
+            },
+          ],
+        },
+      ]),
+    ).toBe(false)
   })
 })
 

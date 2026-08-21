@@ -32,8 +32,7 @@ const sampleCreateBody = (requestId: string): CreateCardBody => ({
   cardholder_id: 'ch_fixture_ready_001',
   created_by: 'Test User',
   form_factor: 'VIRTUAL',
-  is_personalized: true,
-  program: { purpose: 'COMMERCIAL', type: 'PREPAID' },
+  issue_to: 'INDIVIDUAL',
   nick_name: 'APAC Brand Launch — Priya',
   metadata: {
     orgId: 'org_fixture_a',
@@ -68,6 +67,7 @@ describe('airwallex/issuing', () => {
       request_id: requestId,
       type: 'INDIVIDUAL',
       email: 'priya@example.com',
+      mobile_number: '14155550100',
       individual: {
         name: { first_name: 'Priya', last_name: 'Sharma' },
         date_of_birth: '1990-04-12',

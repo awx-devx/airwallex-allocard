@@ -3,14 +3,19 @@ import { useTestDb } from '../../../../test/helpers/db'
 import { CardholderModel } from '@/server/models/Cardholder'
 import { UserModel } from '@/server/models/User'
 import { OrgRole } from '@/shared/enums/orgRole'
+import { CardholderStatus } from '@/shared/enums/cardholderStatus'
 import { CardholderType } from '@/shared/enums/cardholderType'
 import type { OrgContext } from '@/server/http/types'
 import * as users from '@/server/repositories/users'
 import { createCardholderForOrg } from '@/server/services/cardholders/create'
-import { ensureIndividualCardholder } from '@/server/services/cardholders/ensure'
-import { findCardholderByUserId } from '@/server/repositories/cardholders'
+import {
+  ensureIndividualCardholder,
+  SANDBOX_CARDHOLDER_MOBILE,
+} from '@/server/services/cardholders/ensure'
+import { createCardholder, findCardholderByUserId } from '@/server/repositories/cardholders'
 import { resetRedis } from '@/server/redis'
-import { createAirwallexClient } from '@/server/airwallex/client'
+import { createAirwallexClient, type AirwallexClient } from '@/server/airwallex/client'
+import type { CreateCardholderBody } from '@/server/airwallex/types'
 import { loadServerEnv } from '@/server/env'
 import { createMemoryRedis } from '@/server/redis'
 
@@ -78,5 +83,83 @@ describe('services/cardholders', () => {
     )
     expect(created.type).toBe(CardholderType.DELEGATE)
     expect(created.userId).toBeNull()
+  })
+
+  it('retries Airwallex create when the local id is still provisional', async () => {
+    const user = await users.createUser({
+      email: `ch-retry-${Date.now()}@example.com`,
+      name: 'Retry User',
+    })
+    const orgCtx = ctx('org_retry', user.id)
+    await createCardholder(orgCtx, {
+      userId: user.id,
+      airwallexCardholderId: 'pending:local-uuid',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.PENDING,
+    })
+    const redis = createMemoryRedis()
+    const aw = createAirwallexClient(null, {
+      env: testEnv,
+      redis,
+      useFixtures: true,
+      fetchImpl: vi.fn() as unknown as typeof fetch,
+    })
+
+    const refreshed = await ensureIndividualCardholder(orgCtx, user.id, { airwallex: aw })
+    expect(refreshed.status).toBe(CardholderStatus.READY)
+    expect(refreshed.airwallexCardholderId.startsWith('pending:')).toBe(false)
+  })
+
+  it('GETs Airwallex status when the local cardholder is PENDING with a real id', async () => {
+    const user = await users.createUser({
+      email: `ch-get-${Date.now()}@example.com`,
+      name: 'Get User',
+    })
+    const orgCtx = ctx('org_get', user.id)
+    await createCardholder(orgCtx, {
+      userId: user.id,
+      airwallexCardholderId: 'ch_fixture_ready_001',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.PENDING,
+    })
+    const redis = createMemoryRedis()
+    const aw = createAirwallexClient(null, {
+      env: testEnv,
+      redis,
+      useFixtures: true,
+      fetchImpl: vi.fn() as unknown as typeof fetch,
+    })
+
+    const refreshed = await ensureIndividualCardholder(orgCtx, user.id, { airwallex: aw })
+    expect(refreshed.status).toBe(CardholderStatus.READY)
+    expect(refreshed.airwallexCardholderId).toBe('ch_fixture_ready_001')
+  })
+
+  it('sends a sandbox placeholder mobile_number on INDIVIDUAL create', async () => {
+    const user = await users.createUser({
+      email: `ch-mobile-${Date.now()}@example.com`,
+      name: 'Mobile User',
+    })
+    const orgCtx = ctx('org_mobile', user.id)
+    const bodies: CreateCardholderBody[] = []
+    const aw = {
+      cardholders: {
+        create: async (body: CreateCardholderBody) => {
+          bodies.push(body)
+          return {
+            cardholder_id: 'ch_mobile_001',
+            type: 'INDIVIDUAL' as const,
+            status: 'READY' as const,
+          }
+        },
+      },
+    } as unknown as AirwallexClient
+
+    const created = await ensureIndividualCardholder(orgCtx, user.id, { airwallex: aw })
+
+    expect(bodies).toHaveLength(1)
+    expect(bodies[0]?.mobile_number).toBe(SANDBOX_CARDHOLDER_MOBILE)
+    expect(created.status).toBe(CardholderStatus.READY)
+    expect(created.airwallexCardholderId).toBe('ch_mobile_001')
   })
 })

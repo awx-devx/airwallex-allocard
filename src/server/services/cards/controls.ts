@@ -14,6 +14,17 @@ import type { CardControls } from '@/shared/types/cardControls'
 
 export { ZERO_DECIMAL_CURRENCIES, currencyExponent }
 
+/**
+ * Airwallex 2024-02-22 examples use `2018-10-31T00:00:00+0000`, not JS `.000Z`.
+ */
+export function toAirwallexDateTime(iso: string): string {
+  const parsed = new Date(iso)
+  if (Number.isNaN(parsed.getTime())) {
+    return iso
+  }
+  return parsed.toISOString().replace(/\.\d{3}Z$/, '+0000')
+}
+
 export function minorToMajor(amountMinor: number, currency: string): number {
   const exp = currencyExponent(currency)
   if (exp === 0) {
@@ -97,10 +108,10 @@ export function toAirwallexControls(domain: CardControls): AirwallexAuthorizatio
   }
 
   if (domain.activeFrom !== null) {
-    controls.active_from = domain.activeFrom
+    controls.active_from = toAirwallexDateTime(domain.activeFrom)
   }
   if (domain.activeTo !== null) {
-    controls.active_to = domain.activeTo
+    controls.active_to = toAirwallexDateTime(domain.activeTo)
   }
 
   if (domain.allowedCurrencies !== null) {

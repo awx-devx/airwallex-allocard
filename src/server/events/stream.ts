@@ -1,12 +1,25 @@
 /**
  * Redis Streams transport for domain events (ARCHITECTURE §8).
- * Memory implementation for tests; ioredis for production.
+ * Memory implementation for tests; ioredis when REDIS_URL is set.
  */
+import Redis from 'ioredis'
 import type { DomainEvent } from '@/server/events/types'
+import { loadServerEnv } from '@/server/env'
 
 export const EVENTS_STREAM = 'events'
 export const WEBHOOKS_STREAM = 'webhooks'
 export const WORKER_GROUP = 'allocard-workers'
+
+/** JSON field name on each stream entry. */
+const EVENT_FIELD = 'event'
+
+/** ioredis stream commands used by the production transport. */
+export type StreamRedis = {
+  xadd(...args: Array<string | number>): Promise<string | null>
+  xgroup(...args: Array<string | number>): Promise<unknown>
+  xreadgroup(...args: Array<string | number>): Promise<unknown>
+  xack(...args: Array<string | number>): Promise<number>
+}
 
 export type StreamEntry = {
   id: string
@@ -140,11 +153,153 @@ export function createMemoryEventStream(): EventStream {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function asString(value: unknown): string {
+  if (typeof value === 'string') {
+    return value
+  }
+  if (Buffer.isBuffer(value)) {
+    return value.toString('utf8')
+  }
+  return String(value)
+}
+
+function fieldValue(fields: unknown, name: string): string | null {
+  if (!Array.isArray(fields)) {
+    return null
+  }
+  for (let i = 0; i + 1 < fields.length; i += 2) {
+    if (asString(fields[i]) === name) {
+      return asString(fields[i + 1])
+    }
+  }
+  return null
+}
+
+export function deserializeDomainEvent(json: string): DomainEvent {
+  const parsed: unknown = JSON.parse(json)
+  if (!isRecord(parsed) || typeof parsed.type !== 'string') {
+    throw new Error('Invalid domain event on stream')
+  }
+  const emittedAt = parsed.emittedAt
+  return {
+    ...(parsed as Omit<DomainEvent, 'emittedAt'>),
+    emittedAt:
+      typeof emittedAt === 'string' || emittedAt instanceof Date ? new Date(emittedAt) : new Date(),
+  }
+}
+
+function parseReadGroupReply(stream: string, raw: unknown): StreamEntry[] {
+  if (!Array.isArray(raw)) {
+    return []
+  }
+  const out: StreamEntry[] = []
+  for (const block of raw) {
+    if (!Array.isArray(block) || block.length < 2) {
+      continue
+    }
+    const messages = block[1]
+    if (!Array.isArray(messages)) {
+      continue
+    }
+    for (const message of messages) {
+      if (!Array.isArray(message) || message.length < 2) {
+        continue
+      }
+      const json = fieldValue(message[1], EVENT_FIELD)
+      if (json === null) {
+        continue
+      }
+      out.push({
+        id: asString(message[0]),
+        stream,
+        event: deserializeDomainEvent(json),
+      })
+    }
+  }
+  return out
+}
+
+function isBusyGroup(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('BUSYGROUP')
+}
+
+/** Production transport: XADD / XGROUP / XREADGROUP / XACK on a shared Redis. */
+export function createRedisEventStream(redis: StreamRedis): EventStream {
+  return {
+    async publish(stream, event) {
+      const id = await redis.xadd(stream, '*', EVENT_FIELD, JSON.stringify(event))
+      if (id === null || id.length < 1) {
+        throw new Error(`XADD to ${stream} returned no id`)
+      }
+      return id
+    },
+
+    async ensureGroup(stream, group) {
+      try {
+        await redis.xgroup('CREATE', stream, group, '0', 'MKSTREAM')
+      } catch (error) {
+        if (isBusyGroup(error)) {
+          return
+        }
+        throw error
+      }
+    },
+
+    async readGroup({ stream, group, consumer, count = 10, blockMs = 0 }) {
+      if (blockMs < 0) {
+        return []
+      }
+      await this.ensureGroup(stream, group)
+      const raw = await redis.xreadgroup(
+        'GROUP',
+        group,
+        consumer,
+        'COUNT',
+        count,
+        'BLOCK',
+        blockMs,
+        'STREAMS',
+        stream,
+        '>',
+      )
+      return parseReadGroupReply(stream, raw)
+    },
+
+    async ack(stream, group, ids) {
+      if (ids.length === 0) {
+        return 0
+      }
+      return redis.xack(stream, group, ...ids)
+    },
+  }
+}
+
+function createDefaultEventStream(): EventStream {
+  if (process.env.VITEST === 'true') {
+    return createMemoryEventStream()
+  }
+  const url = loadServerEnv().REDIS_URL
+  if (!url) {
+    return createMemoryEventStream()
+  }
+  // ioredis overloads for xadd/xreadgroup are not assignable to a rest-args surface.
+  return createRedisEventStream(
+    new Redis(url, {
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+    }) as unknown as StreamRedis,
+  )
+}
+
 let singleton: EventStream | undefined
 
 export function getEventStream(): EventStream {
   if (!singleton) {
-    singleton = createMemoryEventStream()
+    singleton = createDefaultEventStream()
   }
   return singleton
 }

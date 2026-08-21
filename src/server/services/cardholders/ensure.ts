@@ -7,7 +7,8 @@
 import { randomUUID } from 'node:crypto'
 import { connectDb } from '@/server/db/connect'
 import { getAirwallexClient, type AirwallexClient } from '@/server/airwallex/client'
-import { cardholderRequestId } from '@/server/airwallex/types'
+import { cardholderRequestId, isIssuableCardholderId } from '@/server/airwallex/types'
+import { loadServerEnv } from '@/server/env'
 import type { OrgContext } from '@/server/http/types'
 import {
   createCardholder,
@@ -23,7 +24,18 @@ import type { Cardholder } from '@/shared/types/cardholder'
 
 export type EnsureCardholderDeps = {
   airwallex?: AirwallexClient
+  useFixtures?: boolean
 }
+
+function resolveUseFixtures(deps: EnsureCardholderDeps): boolean {
+  return deps.useFixtures ?? loadServerEnv().AIRWALLEX_USE_FIXTURES
+}
+
+/**
+ * Sandbox placeholder KYC. This Issuing account rejects INDIVIDUAL create
+ * without `mobile_number` (`400 mobile_number is mandatory`). 555 is reserved.
+ */
+export const SANDBOX_CARDHOLDER_MOBILE = '14155550100'
 
 function splitName(name: string): { first_name: string; last_name: string } {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -52,37 +64,32 @@ function mapAwStatus(status: string): CardholderStatus {
   }
 }
 
-export async function ensureIndividualCardholder(
+function isProvisionalAirwallexId(id: string): boolean {
+  return id.startsWith('pending:')
+}
+
+function warnCardholder(action: string, error: unknown, extra: Record<string, string>): void {
+  const message = error instanceof Error ? error.message : 'unknown error'
+  console.warn('[cardholders]', action, { ...extra, message })
+}
+
+async function submitIndividualCreate(
   ctx: OrgContext,
+  cardholder: Cardholder,
   userId: string,
-  deps: EnsureCardholderDeps = {},
+  deps: EnsureCardholderDeps,
 ): Promise<Cardholder> {
-  await connectDb()
-
-  const existing = await findCardholderByUserId(ctx, userId)
-  if (existing) {
-    return existing
-  }
-
   const user = await findUserById(userId)
   const email = user?.email ?? `${userId}@example.com`
   const name = splitName(user?.name ?? 'Cardholder User')
-
-  // Provisional unique id until Airwallex returns the real one.
-  const provisionalId = `pending:${randomUUID()}`
-  let cardholder = await createCardholder(ctx, {
-    userId,
-    airwallexCardholderId: provisionalId,
-    type: CardholderType.INDIVIDUAL,
-    status: CardholderStatus.PENDING,
-  })
-
   const client = deps.airwallex ?? getAirwallexClient()
+
   try {
     const aw = await client.cardholders.create({
       request_id: cardholderRequestId(cardholder.id),
       type: 'INDIVIDUAL',
       email,
+      mobile_number: SANDBOX_CARDHOLDER_MOBILE,
       individual: {
         name,
         // Sandbox placeholder KYC — real identity collection is out of B5 scope.
@@ -99,7 +106,6 @@ export async function ensureIndividualCardholder(
       metadata: { orgId: ctx.orgId, cardDocId: cardholder.id },
     })
 
-    // Fixture mode returns a static cardholder_id; uniquify on collision within the org.
     let awId = aw.cardholder_id
     const clash = await findCardholderByAirwallexId(ctx, awId)
     if (clash && clash.id !== cardholder.id) {
@@ -108,10 +114,78 @@ export async function ensureIndividualCardholder(
 
     const withAwId = await updateCardholderAirwallexId(ctx, cardholder.id, awId)
     const withStatus = await updateCardholderStatus(ctx, cardholder.id, mapAwStatus(aw.status))
-    cardholder = withStatus ?? withAwId ?? cardholder
-  } catch {
-    // Keep local PENDING mirror — member-add must not fail on screening delay / AW errors.
+    return withStatus ?? withAwId ?? cardholder
+  } catch (error) {
+    warnCardholder('create', error, { cardholderId: cardholder.id, userId })
+    return (await findCardholderByUserId(ctx, userId)) ?? cardholder
+  }
+}
+
+/** Refresh a PENDING/INCOMPLETE cardholder from Airwallex (retry create or GET). */
+export async function refreshCardholder(
+  ctx: OrgContext,
+  cardholder: Cardholder,
+  deps: EnsureCardholderDeps = {},
+): Promise<Cardholder> {
+  if (
+    isProvisionalAirwallexId(cardholder.airwallexCardholderId) ||
+    !isIssuableCardholderId(cardholder.airwallexCardholderId, resolveUseFixtures(deps))
+  ) {
+    if (!cardholder.userId) {
+      return cardholder
+    }
+    return submitIndividualCreate(ctx, cardholder, cardholder.userId, deps)
   }
 
-  return (await findCardholderByUserId(ctx, userId)) ?? cardholder
+  if (cardholder.status === CardholderStatus.READY) {
+    return cardholder
+  }
+
+  const client = deps.airwallex ?? getAirwallexClient()
+  try {
+    const aw = await client.cardholders.get(cardholder.airwallexCardholderId)
+    const status = mapAwStatus(aw.status)
+    if (status === cardholder.status) {
+      return cardholder
+    }
+    return (await updateCardholderStatus(ctx, cardholder.id, status)) ?? cardholder
+  } catch (error) {
+    warnCardholder('get', error, {
+      cardholderId: cardholder.id,
+      airwallexCardholderId: cardholder.airwallexCardholderId,
+    })
+    return cardholder
+  }
+}
+
+export async function ensureIndividualCardholder(
+  ctx: OrgContext,
+  userId: string,
+  deps: EnsureCardholderDeps = {},
+): Promise<Cardholder> {
+  await connectDb()
+
+  const existing = await findCardholderByUserId(ctx, userId)
+  if (existing) {
+    if (!isIssuableCardholderId(existing.airwallexCardholderId, resolveUseFixtures(deps))) {
+      if (isProvisionalAirwallexId(existing.airwallexCardholderId) || existing.userId) {
+        return refreshCardholder(ctx, existing, deps)
+      }
+      return existing
+    }
+    if (existing.status === CardholderStatus.READY) {
+      return existing
+    }
+    return refreshCardholder(ctx, existing, deps)
+  }
+
+  const provisionalId = `pending:${randomUUID()}`
+  const cardholder = await createCardholder(ctx, {
+    userId,
+    airwallexCardholderId: provisionalId,
+    type: CardholderType.INDIVIDUAL,
+    status: CardholderStatus.PENDING,
+  })
+
+  return submitIndividualCreate(ctx, cardholder, userId, deps)
 }

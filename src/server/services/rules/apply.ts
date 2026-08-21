@@ -16,15 +16,24 @@ import type { AirwallexClient } from '@/server/airwallex/client'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import { getRedis, redisKeys } from '@/server/redis'
-import { findCardById, updateDesiredControls } from '@/server/repositories/cards'
+import { findCardById, listCards, updateDesiredControls } from '@/server/repositories/cards'
+import { ensureIndividualCardholder } from '@/server/services/cardholders/ensure'
+import {
+  completePendingCard,
+  createCardForProject,
+  isProvisionalAirwallexId,
+} from '@/server/services/cards/create'
 import { closeCard, freezeCard, unfreezeCard } from '@/server/services/cards/lifecycle'
 import { reconcileCard } from '@/server/services/cards/reconciler'
+import type { ContributedControls } from '@/server/services/rules/merge'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ActionResultStatus } from '@/shared/enums/actionResultStatus'
+import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
+import { CardholderStatus } from '@/shared/enums/cardholderStatus'
 import { DesiredCardStatus } from '@/shared/enums/desiredCardStatus'
 import type { AttributeLiteral } from '@/shared/types/attribute'
-import type { CardControls } from '@/shared/types/cardControls'
+import type { CardControls, CreateCardControlsInput } from '@/shared/types/cardControls'
 import type { DesiredCardState } from '@/shared/types/ruleRun'
 
 export type ApplyDeps = {
@@ -38,6 +47,33 @@ export type ApplyCardOutcome = {
   /** True when the Airwallex push should be retried on a later pass. */
   retryable: boolean
   snapshotWritten: boolean
+}
+
+export type ApplyCardCreateOutcome = {
+  status: ActionResultStatus
+  message: string | null
+  retryable: boolean
+}
+
+function toCreateControls(
+  controls: ContributedControls | undefined,
+): CreateCardControlsInput | null {
+  if (!controls?.transactionLimits) {
+    return null
+  }
+  return {
+    ...(controls.allowedTransactionCount
+      ? { allowedTransactionCount: controls.allowedTransactionCount }
+      : {}),
+    transactionLimits: controls.transactionLimits,
+    activeFrom: controls.activeFrom ?? null,
+    activeTo: controls.activeTo ?? null,
+    allowedCurrencies: controls.allowedCurrencies ?? null,
+    allowedMerchantCategories: controls.allowedMerchantCategories ?? null,
+    allowedMerchantCountries: controls.allowedMerchantCountries ?? null,
+    allowedMerchantBrands: controls.allowedMerchantBrands ?? null,
+    blockedTransactionUsages: controls.blockedTransactionUsages ?? [],
+  }
 }
 
 /**
@@ -252,4 +288,149 @@ export async function applyCard(
     status: ActionResultStatus.APPLIED,
     message: null,
   }
+}
+
+export function purposeFromCreateDetails(
+  details: Record<string, unknown> | undefined,
+): CardPurpose | null {
+  const purpose = details?.purpose
+  if (
+    purpose === CardPurpose.MEMBER ||
+    purpose === CardPurpose.SHARED ||
+    purpose === CardPurpose.VENDOR ||
+    purpose === CardPurpose.ONE_TIME
+  ) {
+    return purpose
+  }
+  return null
+}
+
+function controlsFromCreateDetails(
+  details: Record<string, unknown> | undefined,
+): ContributedControls | undefined {
+  const raw = details?.controls
+  if (raw === undefined || raw === null || typeof raw !== 'object') {
+    return undefined
+  }
+  return raw as ContributedControls
+}
+
+/**
+ * Pipeline step 7 for `card.create` — provision a MEMBER card for a named member.
+ * SHARED / VENDOR / ONE_TIME are not provisioned here (need DELEGATE cardholders).
+ */
+export async function applyCardCreate(
+  ctx: OrgContext,
+  input: {
+    projectId: string | null
+    memberId: string
+    details: Record<string, unknown> | undefined
+  },
+  deps: ApplyDeps = {},
+): Promise<ApplyCardCreateOutcome> {
+  if (!input.projectId) {
+    return {
+      status: ActionResultStatus.SKIPPED,
+      message: 'card.create requires a project',
+      retryable: false,
+    }
+  }
+
+  const purpose = purposeFromCreateDetails(input.details)
+  if (purpose !== CardPurpose.MEMBER) {
+    return {
+      status: ActionResultStatus.WOULD_APPLY,
+      message: null,
+      retryable: false,
+    }
+  }
+
+  const desiredControls = toCreateControls(controlsFromCreateDetails(input.details))
+  if (!desiredControls) {
+    return {
+      status: ActionResultStatus.FAILED,
+      message: 'card.create is missing transactionLimits',
+      retryable: false,
+    }
+  }
+
+  const cardholder = await ensureIndividualCardholder(ctx, input.memberId, deps)
+  if (cardholder.status !== CardholderStatus.READY) {
+    return {
+      status: ActionResultStatus.SKIPPED,
+      message: `Cardholder is ${cardholder.status}; wait until READY before issuing a card`,
+      retryable: true,
+    }
+  }
+
+  const existing = await listCards(ctx, {
+    projectId: input.projectId,
+    cardholderId: cardholder.id,
+    purpose: CardPurpose.MEMBER,
+    page: 1,
+    pageSize: 1,
+  })
+  if (existing.total > 0) {
+    const stub = existing.items[0]
+    if (!stub || !isProvisionalAirwallexId(stub.airwallexCardId)) {
+      return {
+        status: ActionResultStatus.SKIPPED,
+        message: 'already issued',
+        retryable: false,
+      }
+    }
+
+    const completed = await completePendingCard(ctx, stub, deps)
+    if (!isProvisionalAirwallexId(completed.airwallexCardId)) {
+      return { status: ActionResultStatus.APPLIED, message: null, retryable: false }
+    }
+    return {
+      status: ActionResultStatus.SKIPPED,
+      message: 'Airwallex card create pending; will retry',
+      retryable: true,
+    }
+  }
+
+  const memberCtx: OrgContext = { ...ctx, userId: input.memberId }
+  try {
+    await createCardForProject(
+      memberCtx,
+      input.projectId,
+      {
+        purpose: CardPurpose.MEMBER,
+        cardholderId: cardholder.id,
+        accessList: [input.memberId],
+        desiredControls,
+      },
+      deps,
+    )
+  } catch (error) {
+    if (error instanceof AppError && error.code === ErrorCode.CONFLICT) {
+      const details = error.details as { retryable?: boolean } | undefined
+      return {
+        status: ActionResultStatus.SKIPPED,
+        message: error.message,
+        retryable: details?.retryable === true,
+      }
+    }
+    if (error instanceof AppError && error.code === ErrorCode.VALIDATION_FAILED) {
+      return {
+        status: ActionResultStatus.FAILED,
+        message: error.message,
+        retryable: false,
+      }
+    }
+    const retryable = isRetryable(error)
+    return {
+      status: ActionResultStatus.FAILED,
+      message: retryable
+        ? 'Airwallex unavailable; card create will retry on the next pass'
+        : error instanceof Error
+          ? error.message
+          : 'Card create failed',
+      retryable,
+    }
+  }
+
+  return { status: ActionResultStatus.APPLIED, message: null, retryable: false }
 }

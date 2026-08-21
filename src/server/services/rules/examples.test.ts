@@ -3,9 +3,10 @@
  * Amounts are integer minor units (invariant 2); the doc's illustrative
  * major-unit figures are scaled ×100 for USD.
  */
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useTestDb } from '../../../../test/helpers/db'
 import type { AirwallexClient } from '@/server/airwallex/client'
+import * as airwallexClient from '@/server/airwallex/client'
 import { handleDomainEventForRules } from '@/server/events/handlers/rules'
 import { DomainEventType } from '@/server/events/types'
 import type { OrgContext } from '@/server/http/types'
@@ -20,8 +21,8 @@ import { createAttributeDefinition } from '@/server/repositories/attributeDefini
 import { putAttributeValue } from '@/server/repositories/attributeValues'
 import { appendEntry } from '@/server/repositories/budgetEntries'
 import { upsertBudgetFields } from '@/server/repositories/budgets'
-import { createCard, findCardById } from '@/server/repositories/cards'
-import { createCardholder } from '@/server/repositories/cardholders'
+import { createCard, findCardById, listCards } from '@/server/repositories/cards'
+import { createCardholder, updateCardholderStatus } from '@/server/repositories/cardholders'
 import { createOrganization } from '@/server/repositories/organizations'
 import { addProjectMember } from '@/server/repositories/projectMembers'
 import { createProject, updateStatus } from '@/server/repositories/projects'
@@ -29,6 +30,7 @@ import { createRole } from '@/server/repositories/roles'
 import { createRule, setRuleEnabled } from '@/server/repositories/rules'
 import { createRuleRun } from '@/server/repositories/ruleRuns'
 import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
+import { enableRuleForOrg } from '@/server/services/rules/mutate'
 import { AccessScopeLevel } from '@/shared/enums/accessScopeLevel'
 import { ActionResultStatus } from '@/shared/enums/actionResultStatus'
 import { AllowedTransactionCount } from '@/shared/enums/allowedTransactionCount'
@@ -74,16 +76,32 @@ function controls(overrides: Partial<CardControls> = {}): CardControls {
   }
 }
 
-function mockClient(): AirwallexClient {
+function mockClient(cardholderStatus: 'READY' | 'PENDING' = 'READY'): AirwallexClient {
   return {
     accountId: null,
-    forAccount: () => mockClient(),
+    forAccount: () => mockClient(cardholderStatus),
     request: vi.fn(),
-    cardholders: {} as AirwallexClient['cardholders'],
+    cardholders: {
+      create: vi.fn().mockResolvedValue({
+        cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        type: 'INDIVIDUAL',
+        status: cardholderStatus,
+      }),
+      get: vi.fn().mockResolvedValue({
+        cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        type: 'INDIVIDUAL',
+        status: cardholderStatus,
+      }),
+      update: vi.fn(),
+    },
     cards: {
-      create: vi.fn(),
+      create: vi.fn().mockImplementation(async () => ({
+        card_id: `aw_card_${Math.random().toString(36).slice(2, 10)}`,
+        card_status: 'ACTIVE',
+        card_number: '************4242',
+      })),
       get: vi.fn(),
-      list: vi.fn(),
+      list: vi.fn().mockResolvedValue({ has_more: false, items: [] }),
       listAllTenantsUnsafe: vi.fn(),
       update: vi.fn().mockResolvedValue({}),
       limits: vi.fn(),
@@ -92,6 +110,46 @@ function mockClient(): AirwallexClient {
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],
     panTokens: {} as AirwallexClient['panTokens'],
+  }
+}
+
+function issuanceRuleFields(projectId: string) {
+  return {
+    scope: { level: RuleScopeLevel.PROJECT, projectId },
+    name: 'Issue member cards on project launch',
+    trigger: { events: [DomainEventType.PROJECT_LAUNCHED] },
+    when: {
+      all: [
+        { attr: 'project.status', op: ConditionOperator.EQ, value: 'ACTIVE' },
+        { attr: 'project.budget.approved', op: ConditionOperator.GT, value: 0 },
+      ],
+    },
+    then: [
+      {
+        action: RuleActionType.CARD_CREATE,
+        target: {
+          select: RuleTargetSelect.PROJECT_MEMBERS,
+          filter: { roleKeys: ['project_spender'] },
+        },
+        params: {
+          formFactor: 'VIRTUAL' as const,
+          purpose: CardPurpose.MEMBER,
+          allowedTransactionCount: AllowedTransactionCount.MULTIPLE,
+          transactionLimits: {
+            currency: 'USD',
+            limits: [
+              {
+                interval: TransactionLimitInterval.MONTHLY,
+                amount: 'project.budget.approved / max(project.headcount, 1) * 0.25',
+              },
+            ],
+          },
+          activeFrom: 'project.startDate',
+          activeTo: 'project.endDate',
+        },
+      },
+    ],
+    createdBy: 'user_1',
   }
 }
 
@@ -143,9 +201,14 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
     resetRedis()
     resetEventPublisher()
     vi.spyOn(console, 'info').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
-  it('A — card.create resolves member targets on project.launched', async () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('A — card.create provisions a MEMBER card on project.launched', async () => {
     const { ctx, project } = await seedBase()
     const role = await createRole(ctx, {
       key: 'project_spender',
@@ -161,44 +224,14 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       effectivePermissions: [],
       addedBy: 'user_1',
     })
-
-    const rule = await createRule(ctx, {
-      scope: { level: RuleScopeLevel.PROJECT, projectId: project.id },
-      name: 'Issue member cards on project launch',
-      trigger: { events: [DomainEventType.PROJECT_LAUNCHED] },
-      when: {
-        all: [
-          { attr: 'project.status', op: ConditionOperator.EQ, value: 'ACTIVE' },
-          { attr: 'project.budget.approved', op: ConditionOperator.GT, value: 0 },
-        ],
-      },
-      then: [
-        {
-          action: RuleActionType.CARD_CREATE,
-          target: {
-            select: RuleTargetSelect.PROJECT_MEMBERS,
-            filter: { roleKeys: ['project_spender'] },
-          },
-          params: {
-            formFactor: 'VIRTUAL',
-            purpose: CardPurpose.MEMBER,
-            allowedTransactionCount: AllowedTransactionCount.MULTIPLE,
-            transactionLimits: {
-              currency: 'USD',
-              limits: [
-                {
-                  interval: TransactionLimitInterval.MONTHLY,
-                  amount: 'project.budget.approved / max(project.headcount, 1) * 0.25',
-                },
-              ],
-            },
-            activeFrom: 'project.startDate',
-            activeTo: 'project.endDate',
-          },
-        },
-      ],
-      createdBy: 'user_1',
+    await createCardholder(ctx, {
+      userId: 'user_spender',
+      airwallexCardholderId: 'aw_ch_spender',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.READY,
     })
+
+    const rule = await createRule(ctx, issuanceRuleFields(project.id))
     await setRuleEnabled(ctx, rule.id, true)
 
     const result = await evaluateAndApply(
@@ -212,7 +245,7 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
     const createAction = result.runs[0]?.actions.find(
       (a) => a.action === RuleActionType.CARD_CREATE,
     )
-    expect(createAction?.status).toBe(ActionResultStatus.WOULD_APPLY)
+    expect(createAction?.status).toBe(ActionResultStatus.APPLIED)
     expect(createAction?.targetId).toBe('user_spender')
     expect(createAction?.details).toMatchObject({
       controls: {
@@ -221,6 +254,141 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
         },
       },
     })
+    const cards = await listCards(ctx, { projectId: project.id, purpose: CardPurpose.MEMBER })
+    expect(cards.total).toBe(1)
+    expect(cards.items[0]?.purpose).toBe(CardPurpose.MEMBER)
+  })
+
+  it('A — PENDING cardholder is SKIPPED then issues on the next READY pass', async () => {
+    const { ctx, project } = await seedBase()
+    const role = await createRole(ctx, {
+      key: 'project_spender',
+      name: 'Project Spender',
+      permissions: [],
+      isTemplate: false,
+    })
+    await addProjectMember(ctx, {
+      projectId: project.id,
+      userId: 'user_spender',
+      roleId: role.id,
+      scope: { level: AccessScopeLevel.OWN },
+      effectivePermissions: [],
+      addedBy: 'user_1',
+    })
+    const cardholder = await createCardholder(ctx, {
+      userId: 'user_spender',
+      airwallexCardholderId: 'ch_pending_live',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.PENDING,
+    })
+
+    const rule = await createRule(ctx, issuanceRuleFields(project.id))
+    await setRuleEnabled(ctx, rule.id, true)
+
+    const first = await evaluateAndApply(
+      ctx,
+      { triggerEvent: DomainEventType.PROJECT_LAUNCHED, projectId: project.id, now: NOW },
+      { airwallex: mockClient('PENDING') },
+    )
+    expect(first.runs[0]?.actions[0]?.status).toBe(ActionResultStatus.SKIPPED)
+    expect(first.runs[0]?.actions[0]?.message).toMatch(/PENDING/)
+    expect((await listCards(ctx, { projectId: project.id })).total).toBe(0)
+
+    await updateCardholderStatus(ctx, cardholder.id, CardholderStatus.READY)
+
+    const second = await evaluateAndApply(
+      ctx,
+      { triggerEvent: DomainEventType.PROJECT_LAUNCHED, projectId: project.id, now: NOW },
+      { airwallex: mockClient('READY') },
+    )
+    expect(second.runs[0]?.actions[0]?.status).toBe(ActionResultStatus.APPLIED)
+    expect(
+      (await listCards(ctx, { projectId: project.id, purpose: CardPurpose.MEMBER })).total,
+    ).toBe(1)
+  })
+
+  it('A — PENDING local card stub is completed on the next pass, not skipped as already issued', async () => {
+    const { ctx, project } = await seedBase()
+    const role = await createRole(ctx, {
+      key: 'project_spender',
+      name: 'Project Spender',
+      permissions: [],
+      isTemplate: false,
+    })
+    await addProjectMember(ctx, {
+      projectId: project.id,
+      userId: 'user_spender',
+      roleId: role.id,
+      scope: { level: AccessScopeLevel.OWN },
+      effectivePermissions: [],
+      addedBy: 'user_1',
+    })
+    const cardholder = await createCardholder(ctx, {
+      userId: 'user_spender',
+      airwallexCardholderId: 'aw_ch_stub',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.READY,
+    })
+    await createCard(ctx, {
+      projectId: project.id,
+      cardholderId: cardholder.id,
+      airwallexCardId: 'pending:launch-stub',
+      maskedNumber: '************0000',
+      nickName: 'APAC — member',
+      purpose: CardPurpose.MEMBER,
+      status: CardStatus.PENDING,
+      desiredControls: controls(),
+      appliedControls: controls(),
+    })
+
+    const rule = await createRule(ctx, issuanceRuleFields(project.id))
+    await setRuleEnabled(ctx, rule.id, true)
+
+    const result = await evaluateAndApply(
+      ctx,
+      { triggerEvent: DomainEventType.PROJECT_LAUNCHED, projectId: project.id, now: NOW },
+      { airwallex: mockClient('READY') },
+    )
+    expect(result.runs[0]?.actions[0]?.status).toBe(ActionResultStatus.APPLIED)
+    const cards = await listCards(ctx, { projectId: project.id, purpose: CardPurpose.MEMBER })
+    expect(cards.total).toBe(1)
+    expect(cards.items[0]?.airwallexCardId.startsWith('pending:')).toBe(false)
+  })
+
+  it('enabling a project.launched rule on an ACTIVE project evaluates once', async () => {
+    const { ctx, project } = await seedBase()
+    const role = await createRole(ctx, {
+      key: 'project_spender',
+      name: 'Project Spender',
+      permissions: [],
+      isTemplate: false,
+    })
+    await addProjectMember(ctx, {
+      projectId: project.id,
+      userId: 'user_spender',
+      roleId: role.id,
+      scope: { level: AccessScopeLevel.OWN },
+      effectivePermissions: [],
+      addedBy: 'user_1',
+    })
+    await createCardholder(ctx, {
+      userId: 'user_spender',
+      airwallexCardholderId: 'aw_ch_enable',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.READY,
+    })
+
+    const rule = await createRule(ctx, issuanceRuleFields(project.id))
+    expect(rule.enabled).toBe(false)
+
+    const aw = mockClient()
+    vi.spyOn(airwallexClient, 'getAirwallexClient').mockReturnValue(aw)
+
+    const enabled = await enableRuleForOrg(ctx, rule.id, { enabled: true })
+    expect(enabled.enabled).toBe(true)
+    expect(
+      (await listCards(ctx, { projectId: project.id, purpose: CardPurpose.MEMBER })).total,
+    ).toBe(1)
   })
 
   it('B — crossedAbove utilisation freezes MEMBER cards', async () => {

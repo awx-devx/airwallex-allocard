@@ -25,7 +25,13 @@ import { listAttributesQuery } from '@/shared/schemas/attribute'
 import { listRulesQuery } from '@/shared/schemas/rule'
 import { listRuleRunsQuery } from '@/shared/schemas/ruleRun'
 import type { ListAttributesQuery } from '@/shared/types/attribute'
-import type { Condition, CreateRuleInput, ListRulesQuery, RuleScope } from '@/shared/types/rule'
+import type {
+  Condition,
+  CreateRuleInput,
+  ListRulesQuery,
+  Rule,
+  RuleScope,
+} from '@/shared/types/rule'
 import type { ListRuleRunsQuery } from '@/shared/types/ruleRun'
 
 export { controlsHref, ruleHref }
@@ -422,7 +428,7 @@ export const RULE_TEMPLATES: Record<RuleTemplateKey, CreateRuleInput> = {
   A: {
     scope: PROJECT_TEMPLATE_SCOPE,
     name: 'Issue member cards on project launch',
-    trigger: { events: ['project.launched'] },
+    trigger: { events: ['project.launched', 'member.added'] },
     when: {
       all: [
         { attr: 'project.status', op: ConditionOperator.EQ, value: 'ACTIVE' },
@@ -434,7 +440,7 @@ export const RULE_TEMPLATES: Record<RuleTemplateKey, CreateRuleInput> = {
         action: RuleActionType.CARD_CREATE,
         target: {
           select: RuleTargetSelect.PROJECT_MEMBERS,
-          filter: { roleKeys: ['project_spender'] },
+          filter: { roleKeys: ['project_spender', 'project_manager'] },
         },
         params: {
           formFactor: 'VIRTUAL',
@@ -597,12 +603,27 @@ export function applyTemplate(
   scope: CreateRuleInput['scope'],
 ): CreateRuleInput {
   const clone = structuredClone(RULE_TEMPLATES[key])
+  clone.enabled = true
   if (key === 'D') {
     clone.scope = { level: RuleScopeLevel.ORG }
     return clone
   }
   clone.scope = scope
   return clone
+}
+
+export function hasEnabledMemberIssuanceRule(
+  rules: ReadonlyArray<Pick<Rule, 'enabled' | 'then'>>,
+): boolean {
+  return rules.some(
+    (rule) =>
+      rule.enabled &&
+      rule.then.some(
+        (action) =>
+          action.action === RuleActionType.CARD_CREATE &&
+          action.target.select === RuleTargetSelect.PROJECT_MEMBERS,
+      ),
+  )
 }
 
 export function parseTemplateParam(input: {

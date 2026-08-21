@@ -4,7 +4,7 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-20 (permission preview tags; 1865 tests)
+**Last green `pnpm verify`:** 2026-08-21 (live individual card create 202; 1894 tests)
 **Blocked on:** _nothing_
 
 ---
@@ -67,6 +67,14 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Live card create (2026-08-21).** After Airwallex account issuance was enabled, `POST /issuing/cards/create` returned **202** and we published `card.created`. Pinned API `2024-02-22` sends `issue_to: INDIVIDUAL` for MEMBER (no `program` / `is_personalized` / INDIVIDUAL `purpose`), `+0000` datetimes, and re-provisions fixture `ch_fixture_*` ids to real UUIDs. Diagnostic request-body logs removed.
+
+**Pending card hookup (2026-08-21).** Local PENDING stubs (`pending:…`) are no longer treated as already issued. `completePendingCard` attaches by `metadata.cardDocId` or retries create with the same `request_id`. `created_by` is the user's display name (fallback `Allocard Operator`), never a user id. Worker `refresh-attributes` finishes PENDING cards every 60s even when cardholders are already READY.
+
+**Sandbox cardholder mobile (2026-08-21).** Live Issuing is `https://api-demo.airwallex.com` (sandbox), not production. INDIVIDUAL create now sends placeholder `mobile_number: 14155550100` — this sandbox account returns `400 mobile_number is mandatory` without it. Worker `refresh-attributes` will retry existing `pending:` cardholders. Restart `pnpm dev:worker` after this change. `pnpm verify` green (1883 tests).
+
+**Live card issuance (2026-08-21).** Launch actually issues MEMBER cards. Redis Streams (`XADD`/`XREADGROUP`) carry `project.launched` from Next.js to the worker when `REDIS_URL` is set. `evaluateAndApply` provisions `card.create` (READY cardholder → `APPLIED`; PENDING → retryable `SKIPPED`). Worker `refresh-attributes` polls PENDING cardholders and re-evaluates ACTIVE projects once they are READY. Enabling a `project.launched` rule on an already-ACTIVE project replays evaluation. Template A covers spender + manager, listens for `member.added`, and enables on apply. Wizard copy no longer claims structure switches issue cards. `pnpm verify` green (1882 tests). Next: wait for the user to name the next phase. Restart `pnpm dev` **and** `pnpm dev:worker` so already-ACTIVE projects pick this up (enable the issuance rule if it was off).
 
 **Permission preview tags (2026-08-20).** Allowed permissions sort to the top as quiet success chips with a check; denied are quiet danger chips with an X. No “Can/Cannot” or “Granted by …” copy. `pnpm verify` green (1865 tests). Next: wait for the user to name the next phase.
 

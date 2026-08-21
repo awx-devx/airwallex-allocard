@@ -10,6 +10,7 @@ import { DomainEventType } from '@/server/events/types'
 import { EVENTS_STREAM, getEventStream, type EventStream } from '@/server/events/stream'
 import { escalateApprovals } from '@/server/services/approvals/escalate'
 import { sweepAccessReviews } from '@/server/services/accessReviews/sweep'
+import { refreshPendingCardholders } from '@/server/services/cardholders/refreshPending'
 import { sweepScheduledRules } from '@/server/services/rules/sweep'
 import { sweepMissingReceiptsAll } from '@/server/services/transactions/receiptSweep'
 import { syncTransactions } from '@/server/services/transactions/sync'
@@ -123,7 +124,7 @@ export async function startWorker(options: StartWorkerOptions = {}): Promise<Wor
   scheduler.schedule({
     name: 'refresh-attributes',
     everyMs: 60_000,
-    run: () => noopJob('refresh-attributes'),
+    run: () => refreshPendingCardholders().then(() => undefined),
   })
   scheduler.schedule({
     name: 'escalate-approvals',

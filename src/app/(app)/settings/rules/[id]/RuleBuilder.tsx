@@ -147,7 +147,7 @@ export function RuleBuilder() {
     setEnabledOverride(null)
   }
   const draft = override ?? baseDraft
-  const enabled = enabledOverride ?? existing?.enabled ?? false
+  const enabled = enabledOverride ?? existing?.enabled ?? draft?.enabled ?? false
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const form = useZodForm(createRuleInput, {
@@ -327,25 +327,29 @@ export function RuleBuilder() {
                   Save rule
                 </Button>
               </PermissionGateView>
+              <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="rule-enabled"
+                    aria-label="Enabled"
+                    checked={enabled}
+                    disabled={!allowed}
+                    onCheckedChange={(next) => {
+                      setEnabledOverride(next)
+                      if (isNew) {
+                        patch({ enabled: next })
+                        return
+                      }
+                      enableRule.mutate({ id, input: { enabled: next } })
+                    }}
+                  />
+                  <Label htmlFor="rule-enabled" className="font-normal">
+                    Enabled
+                  </Label>
+                </div>
+              </PermissionGateView>
               {!isNew ? (
                 <>
-                  <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        id="rule-enabled"
-                        aria-label="Enabled"
-                        checked={enabled}
-                        disabled={!allowed}
-                        onCheckedChange={(next) => {
-                          setEnabledOverride(next)
-                          enableRule.mutate({ id, input: { enabled: next } })
-                        }}
-                      />
-                      <Label htmlFor="rule-enabled" className="font-normal">
-                        Enabled
-                      </Label>
-                    </div>
-                  </PermissionGateView>
                   <Link
                     href={ruleSimulateHref(id)}
                     className={buttonVariants({ variant: 'outline' })}

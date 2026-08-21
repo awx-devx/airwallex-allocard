@@ -51,9 +51,12 @@ export type AirwallexCardholderType = 'INDIVIDUAL' | 'DELEGATE'
 
 export type AirwallexCardholder = {
   cardholder_id: string
-  type: AirwallexCardholderType
+  /** Absent on API versions before 2024-03-31. */
+  type?: AirwallexCardholderType
   status: AirwallexCardholderStatus
   email?: string
+  /** E.164-style digits; some sandbox accounts require this on create. */
+  mobile_number?: string
   individual?: {
     name?: { first_name?: string; last_name?: string }
     date_of_birth?: string
@@ -67,6 +70,7 @@ export type CreateCardholderBody = {
   request_id: string
   type: AirwallexCardholderType
   email?: string
+  mobile_number?: string
   individual?: {
     name: { first_name: string; last_name: string }
     date_of_birth: string
@@ -88,6 +92,8 @@ export type UpdateCardholderBody = {
 export type AirwallexCardStatus =
   'PENDING' | 'ACTIVE' | 'INACTIVE' | 'CLOSED' | 'BLOCKED' | 'LOST' | 'STOLEN' | 'FAILED'
 
+export type AirwallexIssueTo = 'INDIVIDUAL' | 'ORGANISATION'
+
 export type AirwallexCard = {
   card_id: string
   cardholder_id: string
@@ -97,24 +103,46 @@ export type AirwallexCard = {
   nick_name?: string
   form_factor?: string
   is_personalized?: boolean
+  /** Required on API versions before 2024-03-31. */
+  issue_to?: AirwallexIssueTo
   metadata?: AirwallexCardMetadata
   authorization_controls?: AirwallexAuthorizationControls
   created_at?: string
   updated_at?: string
 }
 
+export type AirwallexCardUsagePurpose =
+  | 'BUSINESS_EXPENSES'
+  | 'CLIENT_EXPENSES'
+  | 'MARKETING_EXPENSES'
+  | 'OFFICE_SUPPLIES'
+  | 'ONLINE_PURCHASING'
+  | 'OTHER'
+  | 'SUBSCRIPTIONS'
+  | 'TEAM_EXPENSES'
+  | 'TRAVEL_EXPENSES'
+
+/**
+ * Create-card body for pinned API `2024-02-22` (before `2024-03-31`).
+ * Do not send `program` or `is_personalized` — those exist only on later
+ * versions. `purpose` is ORGANISATION-only on this version.
+ */
 export type CreateCardBody = {
   request_id: string
   cardholder_id: string
   created_by: string
   form_factor: 'VIRTUAL'
-  is_personalized: boolean
-  additional_cardholder_ids?: string[]
-  program: { purpose: string; type: string }
-  purpose?: string
+  issue_to: AirwallexIssueTo
   nick_name?: string
   metadata: AirwallexCardMetadata
   authorization_controls: AirwallexAuthorizationControls
+  /** Only when `issue_to` is `ORGANISATION`. */
+  purpose?: AirwallexCardUsagePurpose
+  primary_contact_details?: {
+    email: string
+    full_name: string
+    mobile_number: string
+  }
   alert_settings?: {
     low_remaining_transaction_limit?: { enabled: boolean; percent: number }
   }
@@ -179,4 +207,18 @@ export function cardRequestId(localCardDocId: string): string {
 
 export function cardholderRequestId(localCardholderDocId: string): string {
   return `allocard-cardholder-${localCardholderDocId}`
+}
+
+/** Live Issuing cardholder ids are UUIDs. Fixture leftovers (`ch_fixture_…`) are not. */
+export function isAirwallexCardholderUuid(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+}
+
+/** Recorded fixture ids are valid only when `AIRWALLEX_USE_FIXTURES` is on. */
+export function isFixtureCardholderId(id: string): boolean {
+  return id.startsWith('ch_fixture_')
+}
+
+export function isIssuableCardholderId(id: string, useFixtures: boolean): boolean {
+  return isAirwallexCardholderUuid(id) || (useFixtures && isFixtureCardholderId(id))
 }

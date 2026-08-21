@@ -1,15 +1,19 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useBudget } from '@/client/hooks/useBudget'
 import { useProject, useTransitionProject } from '@/client/hooks/useProjects'
+import { useRules } from '@/client/hooks/useRules'
 import {
   hasBudgetFrom,
   isReadyForApprovalInput,
   launchExplainerMessage,
+  missingIssuanceRuleMessage,
 } from '@/client/lib/projects'
+import { hasEnabledMemberIssuanceRule, projectControlsHref } from '@/client/lib/rules'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
@@ -30,12 +34,17 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
   const router = useRouter()
   const projectQuery = useProject(draftId)
   const budgetQuery = useBudget(draftId)
+  const rulesQuery = useRules({ projectId: draftId, enabled: undefined, page: 1, pageSize: 100 })
   const transition = useTransitionProject()
   const [info, setInfo] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const project = projectQuery.data
   const approved = budgetQuery.data?.budget?.approvedAmount ?? null
+  const showIssuanceWarning =
+    project?.cardStructure.perMember === true &&
+    rulesQuery.data !== undefined &&
+    !hasEnabledMemberIssuanceRule(rulesQuery.data.items)
   const ready =
     project !== undefined &&
     (project.status === ProjectStatus.PENDING_APPROVAL ||
@@ -87,6 +96,16 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <p className="text-sm">{launchExplainerMessage()}</p>
+      {showIssuanceWarning ? (
+        <Alert variant="info">
+          <AlertDescription className="flex min-w-0 flex-wrap items-center gap-2">
+            <span>{missingIssuanceRuleMessage()}</span>
+            <Link href={projectControlsHref(draftId)} className="hover:underline">
+              Open Controls
+            </Link>
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {info ? (
         <Alert variant="info">
           <AlertDescription>{info}</AlertDescription>

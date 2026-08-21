@@ -9,13 +9,14 @@ import { connectDb } from '@/server/db/connect'
 import type { OrgContext } from '@/server/http/types'
 import { listEnabledRulesForScope } from '@/server/repositories/rules'
 import { buildAttributeContext } from '@/server/services/attributes/resolve'
-import { applyCard, type ApplyDeps } from '@/server/services/rules/apply'
+import { applyCard, applyCardCreate, type ApplyDeps } from '@/server/services/rules/apply'
 import { loadMembers, loadPipelineCards, loadPreviousValues } from '@/server/services/rules/load'
 import { recordRuleRun } from '@/server/services/rules/record'
 import { runPipeline, type PipelineResult } from '@/server/services/rules/pipeline'
 import type { EventSubject } from '@/server/services/rules/targets'
 import { ActionResultStatus } from '@/shared/enums/actionResultStatus'
 import { ActorType } from '@/shared/enums/audit'
+import { RuleActionType } from '@/shared/enums/ruleActionType'
 import { RuleRunStatus } from '@/shared/enums/ruleRunStatus'
 import type { AttributeLiteral } from '@/shared/types/attribute'
 import type { ActionResult, RuleRun } from '@/shared/types/ruleRun'
@@ -109,16 +110,48 @@ export async function evaluateAndApply(
 
   const runs: RuleRun[] = []
   for (const outcome of pipeline.outcomes) {
-    const actions: ActionResult[] = outcome.actions.map((action) => {
+    const actions: ActionResult[] = []
+    for (const action of outcome.actions) {
+      if (
+        action.action === RuleActionType.CARD_CREATE &&
+        action.status === ActionResultStatus.WOULD_APPLY &&
+        action.targetId !== null
+      ) {
+        const created = await applyCardCreate(
+          ctx,
+          {
+            projectId,
+            memberId: action.targetId,
+            details: action.details,
+          },
+          deps,
+        )
+        if (created.status === ActionResultStatus.WOULD_APPLY) {
+          actions.push(action)
+          continue
+        }
+        actions.push({
+          ...action,
+          status: created.status,
+          message: created.message,
+        })
+        continue
+      }
       if (action.status !== ActionResultStatus.WOULD_APPLY || action.targetId === null) {
-        return action
+        actions.push(action)
+        continue
       }
       const status = applied.get(action.targetId)
       if (status === undefined) {
-        return action
+        actions.push(action)
+        continue
       }
-      return { ...action, status, message: appliedMessages.get(action.targetId) ?? null }
-    })
+      actions.push({
+        ...action,
+        status,
+        message: appliedMessages.get(action.targetId) ?? null,
+      })
+    }
 
     const cardIds = new Set(outcome.contributions.map((entry) => entry.cardId))
     const status =

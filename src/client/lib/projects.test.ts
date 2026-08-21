@@ -20,6 +20,7 @@ import {
   hasBudgetFrom,
   isReadyForApprovalInput,
   launchExplainerMessage,
+  missingIssuanceRuleMessage,
   nextWizardStepId,
   normalisedWorkstreamName,
   parseDraftId,
@@ -294,10 +295,10 @@ describe('cardStructureReviewLines', () => {
     })
     expect(lines).toHaveLength(4)
     expect(lines).toEqual([
-      'Will issue shared cards.',
-      'Not issuing per-member cards.',
-      'Will issue vendor cards.',
-      'Not issuing one-time cards.',
+      'This project intends a shared card (issued by an enabled rule, not this switch).',
+      'This project does not intend per-member cards.',
+      'This project intends vendor cards (issued by an enabled rule, not this switch).',
+      'This project does not intend one-time cards.',
     ])
   })
 
@@ -320,8 +321,15 @@ describe('launchExplainerMessage', () => {
     const copy = launchExplainerMessage()
     expect(copy.toLowerCase()).toContain('launch')
     expect(copy.toLowerCase()).toContain('card')
+    expect(copy.toLowerCase()).toContain('rule')
     expect(copy).not.toContain('project.launched')
     expect(copy).not.toContain('ACTIVE')
+    expect(copy.toLowerCase()).not.toContain('structure you chose')
+  })
+
+  it('points per-member launch at an issuance rule, not structure flags', () => {
+    expect(missingIssuanceRuleMessage().toLowerCase()).toContain('issuance rule')
+    expect(missingIssuanceRuleMessage()).not.toContain('project.launched')
   })
 })
 

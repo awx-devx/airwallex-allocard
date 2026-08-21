@@ -5,6 +5,7 @@
 import { connectDb } from '@/server/db/connect'
 import { FormulaError } from '@/server/lib/formula'
 import { parseRuleFormula } from '@/server/lib/formula/rules'
+import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import {
@@ -15,8 +16,12 @@ import {
   setRuleEnabled,
   updateRule,
 } from '@/server/repositories/rules'
+import { findProjectById } from '@/server/repositories/projects'
 import { audit } from '@/server/services/audit/log'
 import { isDateLiteral } from '@/server/services/rules/context'
+import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
+import { ActorType } from '@/shared/enums/audit'
+import { ProjectStatus } from '@/shared/enums/projectStatus'
 import type {
   Condition,
   CreateRuleInput,
@@ -155,7 +160,32 @@ export async function enableRuleForOrg(
     after: { enabled: updated.enabled, version: updated.version },
   })
 
+  if (input.enabled && existing.enabled === false) {
+    await replayLaunchedRuleIfActive(ctx, updated)
+  }
+
   return updated
+}
+
+async function replayLaunchedRuleIfActive(ctx: OrgContext, rule: Rule): Promise<void> {
+  const projectId = rule.scope.projectId
+  if (!projectId) {
+    return
+  }
+  if (!rule.trigger.events?.includes(DomainEventType.PROJECT_LAUNCHED)) {
+    return
+  }
+  const project = await findProjectById(ctx, projectId)
+  if (project?.status !== ProjectStatus.ACTIVE) {
+    return
+  }
+  await evaluateAndApply(ctx, {
+    triggerEvent: DomainEventType.PROJECT_LAUNCHED,
+    projectId,
+    ruleIds: [rule.id],
+    triggeredBy: ctx.userId,
+    triggeredByType: ActorType.USER,
+  })
 }
 
 type FormulaIssue = { path: string; message: string }

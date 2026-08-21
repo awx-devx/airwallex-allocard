@@ -287,10 +287,18 @@ export function cardStructureReviewLines(cs: {
   oneTime: boolean
 }): string[] {
   return [
-    cs.shared ? 'Will issue shared cards.' : 'Not issuing shared cards.',
-    cs.perMember ? 'Will issue per-member cards.' : 'Not issuing per-member cards.',
-    cs.vendor ? 'Will issue vendor cards.' : 'Not issuing vendor cards.',
-    cs.oneTime ? 'Will issue one-time cards.' : 'Not issuing one-time cards.',
+    cs.shared
+      ? 'This project intends a shared card (issued by an enabled rule, not this switch).'
+      : 'This project does not intend a shared card.',
+    cs.perMember
+      ? 'This project intends per-member cards (issued by an enabled rule, not this switch).'
+      : 'This project does not intend per-member cards.',
+    cs.vendor
+      ? 'This project intends vendor cards (issued by an enabled rule, not this switch).'
+      : 'This project does not intend vendor cards.',
+    cs.oneTime
+      ? 'This project intends one-time cards (issued by an enabled rule, not this switch).'
+      : 'This project does not intend one-time cards.',
   ]
 }
 
@@ -298,27 +306,31 @@ export const CARD_STRUCTURE_FLAGS = [
   {
     key: 'shared' as const,
     label: 'Shared',
-    description: 'One card the whole project can spend from.',
+    description: 'One card the whole project can spend from, if an enabled rule issues it.',
   },
   {
     key: 'perMember' as const,
     label: 'Per-member',
-    description: 'A personal card for each person, with their own limit.',
+    description: 'A personal card per person, if an enabled issuance rule covers their role.',
   },
   {
     key: 'vendor' as const,
     label: 'Vendor',
-    description: 'Cards for paying a specific supplier.',
+    description: 'Cards for paying a specific supplier, if an enabled rule issues them.',
   },
   {
     key: 'oneTime' as const,
     label: 'One-time',
-    description: 'A single-use card that closes after one payment.',
+    description: 'A single-use card that closes after one payment, if an enabled rule issues it.',
   },
 ]
 
 export function launchExplainerMessage(): string {
-  return 'When you launch, the project goes live and cards are issued from the structure you chose.'
+  return 'When you launch, the project goes live. Member cards come from an enabled issuance rule, not from the structure switches.'
+}
+
+export function missingIssuanceRuleMessage(): string {
+  return 'Per-member cards need an enabled issuance rule. Open Controls to use the member-card template and turn it on.'
 }
 
 /** Workspace route tabs — exactly these six; no Settings. */

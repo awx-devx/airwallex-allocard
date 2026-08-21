@@ -22,6 +22,10 @@ Cache the token in Redis under `aw:token` with a TTL of `expires_at − 60s`, an
 
 **API version.** Pin `AIRWALLEX_API_VERSION=2024-02-22`. The v1 Issuing Cards API is documented as incompatible with Airwallex Business Account products (Borderless Cards, Expense Management); if the sandbox account uses those, this version is required.
 
+[`llms.txt`](https://www.airwallex.com/docs/llms.txt) lists product tutorials, not the versioned API reference. The [Create cards](https://www.airwallex.com/docs/issuing/get-started/create-cards.md) page (`program` + `is_personalized`, no `issue_to`) applies only to **`2024-03-31` and later**. For this pin, use [Create individual cards (older API versions)](<https://www.airwallex.com/docs/issuing/legacy-issuing-apis/create-a-card-(older-api-versions)/create-individual-cards-(older-api-versions).md>) and [Create a card (older API versions)](<https://www.airwallex.com/docs/issuing/legacy-issuing-apis/create-a-card-(older-api-versions).md>) (business cards). The current [Create a Card](https://www.airwallex.com/docs/api/issuing/cards/create.md) reference is the latest schema — do not copy `program` / `is_personalized` from it onto `2024-02-22`.
+
+`issue_to` is a **card type**, not tenancy. The demo still uses one Airwallex sandbox account (§2); Allocard orgs are isolated with `metadata.orgId`. Per-member cards are `issue_to: INDIVIDUAL` (named person). Shared / vendor / one-time cards are `issue_to: ORGANISATION` (business card). Do not send `purpose` on INDIVIDUAL — it is ORGANISATION-only and returns `400 Purpose can only be set when card issue_to is set to "ORGANISATION"`.
+
 ---
 
 ## 2. Tenancy model
@@ -30,16 +34,16 @@ Cache the token in Redis under `aw:token` with a TTL of `expires_at − 60s`, an
 
 ### The two models
 
-| | **Single account** *(chosen)* | **Connected account per org** |
-| --- | --- | --- |
-| API calls | Identical, no header | Identical, plus `x-on-behalf-of: {accountId}` |
-| Tenant isolation | **Enforced by Allocard's code** | Enforced by Airwallex |
-| `GET /issuing/cards` | Returns *every org's* cards | Returns only that org's cards |
-| Org onboarding | Create a document | Create account + KYB + RFI handling |
-| Card issuing eligibility | Account-level | Requires a **Full Connected Account** |
-| Funding | One wallet, funded once | Per-org wallet, via CA Transfers or PLP |
-| `issuing/config` | One config | One per account |
-| Cardholders | One record per person | One record per person **per account** |
+|                          | **Single account** _(chosen)_   | **Connected account per org**                 |
+| ------------------------ | ------------------------------- | --------------------------------------------- |
+| API calls                | Identical, no header            | Identical, plus `x-on-behalf-of: {accountId}` |
+| Tenant isolation         | **Enforced by Allocard's code** | Enforced by Airwallex                         |
+| `GET /issuing/cards`     | Returns _every org's_ cards     | Returns only that org's cards                 |
+| Org onboarding           | Create a document               | Create account + KYB + RFI handling           |
+| Card issuing eligibility | Account-level                   | Requires a **Full Connected Account**         |
+| Funding                  | One wallet, funded once         | Per-org wallet, via CA Transfers or PLP       |
+| `issuing/config`         | One config                      | One per account                               |
+| Cardholders              | One record per person           | One record per person **per account**         |
 
 Note that sandbox versus production is a separate axis. Connected accounts work in sandbox too; choosing a single account is a tenancy decision, not an environment one.
 
@@ -88,18 +92,18 @@ POST /api/v1/issuing/cardholders/{id}/update
 
 Two types:
 
-- **`INDIVIDUAL`** — a named person. Requires name, date of birth, address, email, and `express_consent_obtained: "yes"` confirming you have their consent for name and sanction screening. Can hold personalized or non-personalized cards.
+- **`INDIVIDUAL`** — a named person. Requires name, date of birth, address, email, `mobile_number`, and `express_consent_obtained: "yes"` confirming you have their consent for name and sanction screening. Can hold personalized or non-personalized cards. Sandbox create uses placeholder KYC (DOB `1990-01-01`, SF address, `mobile_number: "14155550100"`); real identity collection is out of B5 scope.
 - **`DELEGATE`** — an authorized user on non-personalized cards only; cards carry the business name. Ideal for **shared project cards** and **vendor cards**, since no personal KYC data is needed.
 
 Status flow: `PENDING → READY` (or `INCOMPLETE` if more data is needed, `DISABLED`, `DELETED`).
 
 ### How Allocard should use this
 
-| Allocard concept | Cardholder type |
-| --- | --- |
-| Per-member card | `INDIVIDUAL`, created when the member is added to a project with a card-eligible role |
-| Shared project card | `DELEGATE`, with project members as `additional_cardholder_ids` |
-| Vendor / one-time card | `DELEGATE` |
+| Allocard concept       | Cardholder type                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| Per-member card        | `INDIVIDUAL`, created when the member is added to a project with a card-eligible role |
+| Shared project card    | `DELEGATE`, with project members as `additional_cardholder_ids`                       |
+| Vendor / one-time card | `DELEGATE`                                                                            |
 
 Create the cardholder **at member-add time, not card-create time**. Screening is asynchronous, so doing it lazily means the "issue cards on project launch" rule stalls waiting on `READY`. Mirror the record in the `cardholders` collection, and have the rules engine treat `cardholder.status != READY` as a `SKIPPED` reason rather than a failure — it will succeed on the next pass.
 
@@ -121,45 +125,45 @@ GET  /api/v1/issuing/cards/{id}/details    sensitive — requires PCI scope, see
 
 ```jsonc
 {
-  "request_id": "allocard-card-{cardDocId}",     // stable → safe to retry
+  "request_id": "allocard-card-{cardDocId}", // stable → safe to retry
   "cardholder_id": "...",
-  "created_by": "Jane Doe",                       // full legal name of requester
+  "created_by": "Jane Doe", // full legal name of requester
   "form_factor": "VIRTUAL",
-  "is_personalized": true,                        // false for shared/vendor cards
-  "additional_cardholder_ids": [],                // only when is_personalized = false
-  "program": { "purpose": "COMMERCIAL", "type": "PREPAID" },
-  "purpose": "TEAM_EXPENSES",
+  "issue_to": "INDIVIDUAL", // MEMBER; ORGANISATION for shared/vendor (then purpose is allowed)
   "nick_name": "APAC Brand Launch — Priya",
   "metadata": {
-    "orgId": "...", "projectId": "...", "cardDocId": "...", "ruleId": "..."
+    "orgId": "...",
+    "projectId": "...",
+    "cardDocId": "...",
+    "ruleId": "...",
   },
   "authorization_controls": {
-    "allowed_transaction_count": "MULTIPLE",      // REQUIRED, immutable after creation
-    "transaction_limits": {                       // REQUIRED
+    "allowed_transaction_count": "MULTIPLE", // REQUIRED, immutable after creation
+    "transaction_limits": {
+      // REQUIRED
       "currency": "USD",
       "limits": [
-        { "interval": "MONTHLY",         "amount": 4000 },
-        { "interval": "PER_TRANSACTION", "amount": 800 }
-      ]
+        { "interval": "MONTHLY", "amount": 4000 },
+        { "interval": "PER_TRANSACTION", "amount": 800 },
+      ],
     },
     "active_from": "2026-08-01T00:00:00+0000",
-    "active_to":   "2026-12-31T23:59:59+0000",
+    "active_to": "2026-12-31T23:59:59+0000",
     "allowed_currencies": ["USD", "SGD"],
     "allowed_merchant_categories": ["5734", "7372"],
     "allowed_merchant_countries": ["US", "SG"],
     "blocked_transaction_usages": [
-      { "transaction_scope": "CASH_WITHDRAWAL", "usage_scope": "ALL" }
-    ]
+      { "transaction_scope": "CASH_WITHDRAWAL", "usage_scope": "ALL" },
+    ],
   },
-  "alert_settings": {
-    "low_remaining_transaction_limit": { "enabled": true, "percent": 20 }
-  }
 }
 ```
 
+ORGANISATION create (shared / vendor) additionally sends `purpose` (`TEAM_EXPENSES` etc.) and, in Airwallex's example, `primary_contact_details`. Do not send `program` or `is_personalized` on this API version.
+
 Two things to internalise:
 
-- **`allowed_transaction_count` cannot be changed after creation.** A `SINGLE` card is a one-time card forever. This means the rules engine must decide single vs multiple at *creation* time — it can never convert one into the other. `SINGLE` cards are used for vendor and one-time purposes only.
+- **`allowed_transaction_count` cannot be changed after creation.** A `SINGLE` card is a one-time card forever. This means the rules engine must decide single vs multiple at _creation_ time — it can never convert one into the other. `SINGLE` cards are used for vendor and one-time purposes only.
 - **`transaction_limits` and `allowed_transaction_count` are mandatory.** There is no "unlimited" card. Good — it aligns with the product thesis.
 
 **Use `metadata` aggressively.** It's 20 keys, 20-char names, 150-char values. Putting `orgId` and `projectId` there makes every webhook self-routing: you can resolve a transaction to a project without a database lookup, and it's a recovery path if local state and Airwallex ever diverge.
@@ -168,17 +172,17 @@ Two things to internalise:
 
 This is the table that connects [`RULES-ENGINE.md`](./RULES-ENGINE.md) to the API.
 
-| Allocard control | Airwallex field | Notes |
-| --- | --- | --- |
-| Spend limit per interval | `authorization_controls.transaction_limits.limits[]` | `PER_TRANSACTION`, `DAILY`, `WEEKLY`, `MONTHLY`, `QUARTERLY`, `YEARLY`, `ALL_TIME`. All limits share one control currency; transactions are FX-converted into it in real time. |
-| Project date window | `active_from` / `active_to` | Authorizations outside the window are rejected. Maps cleanly to project start/end. |
-| Merchant restrictions | `allowed_merchant_categories` (MCC), `allowed_merchant_brands` | Absent / null / `[]` means *all allowed* — an empty array is not a lockdown. |
-| Currency restrictions | `allowed_currencies` | Same empty-array semantics. |
-| Location restrictions | `allowed_merchant_countries` | |
-| Channel restrictions | `blocked_transaction_usages[]` | `transaction_scope` × `usage_scope`; most restrictive overlap applies. |
-| Single-use vendor card | `allowed_transaction_count: "SINGLE"` | One successful debit, then dead. |
-| Low-balance alerting | `alert_settings.low_remaining_transaction_limit` | Fires a webhook once per interval when remaining drops below `percent`. Feed it into the rules engine as a trigger. |
-| Freeze / unfreeze / close | `card_status` on update: `INACTIVE` / `ACTIVE` / `CLOSED` | |
+| Allocard control          | Airwallex field                                                | Notes                                                                                                                                                                          |
+| ------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spend limit per interval  | `authorization_controls.transaction_limits.limits[]`           | `PER_TRANSACTION`, `DAILY`, `WEEKLY`, `MONTHLY`, `QUARTERLY`, `YEARLY`, `ALL_TIME`. All limits share one control currency; transactions are FX-converted into it in real time. |
+| Project date window       | `active_from` / `active_to`                                    | Authorizations outside the window are rejected. Maps cleanly to project start/end.                                                                                             |
+| Merchant restrictions     | `allowed_merchant_categories` (MCC), `allowed_merchant_brands` | Absent / null / `[]` means _all allowed_ — an empty array is not a lockdown.                                                                                                   |
+| Currency restrictions     | `allowed_currencies`                                           | Same empty-array semantics.                                                                                                                                                    |
+| Location restrictions     | `allowed_merchant_countries`                                   |                                                                                                                                                                                |
+| Channel restrictions      | `blocked_transaction_usages[]`                                 | `transaction_scope` × `usage_scope`; most restrictive overlap applies.                                                                                                         |
+| Single-use vendor card    | `allowed_transaction_count: "SINGLE"`                          | One successful debit, then dead.                                                                                                                                               |
+| Low-balance alerting      | `alert_settings.low_remaining_transaction_limit`               | Fires a webhook once per interval when remaining drops below `percent`. Feed it into the rules engine as a trigger.                                                            |
+| Freeze / unfreeze / close | `card_status` on update: `INACTIVE` / `ACTIVE` / `CLOSED`      |                                                                                                                                                                                |
 
 > **The empty-array trap.** For every allowlist field, `null`, absent, and `[]` all mean "allow everything." If a rule computes an empty intersection and you push `[]`, you get the opposite of what you intended — a wide-open card. The merge step in the rules engine must treat an empty intersection as a **conflict**, not as a value to push. This is the single most likely security bug in the build.
 
@@ -223,13 +227,13 @@ Webhook payloads carry a `card_transaction_data` object with `card_transaction_l
 
 This is where dual-message processing bites. An authorization is not a spend, and a clearing amount may differ from its authorization.
 
-| Event | Ledger entry |
-| --- | --- |
-| `AUTHORIZATION` | `COMMITMENT` for the authorized amount |
-| `CLEARING` | `RELEASE` of the matching commitment, then `ACTUAL` for the cleared amount |
-| `PARTIAL_CLEARING` | Partial `RELEASE` + `ACTUAL`; keep the remainder committed |
-| `REVERSAL_AUTH` / `EXPIRED_AUTHORIZATION` | `RELEASE` of the commitment |
-| `CLEARING_REVERSAL` / refund | Negative `ACTUAL` |
+| Event                                     | Ledger entry                                                               |
+| ----------------------------------------- | -------------------------------------------------------------------------- |
+| `AUTHORIZATION`                           | `COMMITMENT` for the authorized amount                                     |
+| `CLEARING`                                | `RELEASE` of the matching commitment, then `ACTUAL` for the cleared amount |
+| `PARTIAL_CLEARING`                        | Partial `RELEASE` + `ACTUAL`; keep the remainder committed                 |
+| `REVERSAL_AUTH` / `EXPIRED_AUTHORIZATION` | `RELEASE` of the commitment                                                |
+| `CLEARING_REVERSAL` / refund              | Negative `ACTUAL`                                                          |
 
 Store `card_transaction_lifecycle_id` on every ledger entry so releases can find their commitments. Without it, an expired authorization silently holds budget hostage forever.
 
@@ -254,12 +258,12 @@ Wire each to a domain event: card status events reconcile the local `cards` mirr
 ```ts
 // app/api/webhooks/airwallex/route.ts
 export async function POST(req: Request) {
-  const raw = await req.text()                      // RAW body — never req.json()
-  const ts  = req.headers.get('x-timestamp')!
+  const raw = await req.text() // RAW body — never req.json()
+  const ts = req.headers.get('x-timestamp')!
   const sig = req.headers.get('x-signature')!
 
   const expected = createHmac('sha256', process.env.AIRWALLEX_WEBHOOK_SECRET!)
-    .update(`${ts}${raw}`)                          // timestamp THEN body
+    .update(`${ts}${raw}`) // timestamp THEN body
     .digest('hex')
 
   if (!timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
@@ -269,9 +273,9 @@ export async function POST(req: Request) {
     return new Response('stale', { status: 400 })
   }
 
-  const event = JSON.parse(raw)                     // parse only after verifying
-  await enqueue(event)                              // persist + queue, do not process inline
-  return new Response('ok', { status: 200 })        // acknowledge IMMEDIATELY
+  const event = JSON.parse(raw) // parse only after verifying
+  await enqueue(event) // persist + queue, do not process inline
+  return new Response('ok', { status: 200 }) // acknowledge IMMEDIATELY
 }
 ```
 
@@ -292,7 +296,7 @@ The most compelling part of the demo, and the part with the most operational ris
 
 When enabled on the account, Airwallex forwards every authorization request to your endpoint and waits for an approve/decline decision. **The window is 2.5 seconds.** On timeout or error, Airwallex applies the account's default action. After your decision, Airwallex still runs its own risk and regulatory checks and may decline something you approved.
 
-This gives Allocard something static controls cannot: a decision that accounts for the *project's* live budget, the member's month-to-date spend, and whether an approved purchase request exists — none of which fit into `authorization_controls`.
+This gives Allocard something static controls cannot: a decision that accounts for the _project's_ live budget, the member's month-to-date spend, and whether an approved purchase request exists — none of which fit into `authorization_controls`.
 
 ### Implementation
 
@@ -304,14 +308,14 @@ export async function POST(req: Request) {
   verifySignature(raw, req.headers)
 
   const auth = JSON.parse(raw)
-  const policy = await redis.get(`policy:card:${auth.card_id}`)   // single read
+  const policy = await redis.get(`policy:card:${auth.card_id}`) // single read
 
   if (!policy || isStale(policy)) {
-    return decide('APPROVE', 'policy_snapshot_unavailable')       // fail-open + flag
+    return decide('APPROVE', 'policy_snapshot_unavailable') // fail-open + flag
   }
 
-  const decision = evaluateHardStops(policy, auth)                // pure, in-memory
-  void recordDecision(auth, decision, Date.now() - t0)            // fire and forget
+  const decision = evaluateHardStops(policy, auth) // pure, in-memory
+  void recordDecision(auth, decision, Date.now() - t0) // fire and forget
   return decide(decision.outcome, decision.reason)
 }
 ```
@@ -383,13 +387,13 @@ Call `GET /issuing/config` at startup and cache it. It returns, per currency, th
 ```ts
 // server/airwallex/client.ts
 interface AirwallexClient {
-  forAccount(accountId: string | null): AirwallexClient   // null = single-account mode
+  forAccount(accountId: string | null): AirwallexClient // null = single-account mode
 
-  cardholders: { create, get, update }
-  cards:       { create, get, list, update, limits, activate }
-  transactions:{ list, get, events }
-  config:      { get }
-  panTokens:   { create }
+  cardholders: { create; get; update }
+  cards: { create; get; list; update; limits; activate }
+  transactions: { list; get; events }
+  config: { get }
+  panTokens: { create }
 }
 ```
 
