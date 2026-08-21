@@ -4,8 +4,8 @@ Single source of truth for _where the build is_. Update at the end of every task
 
 **Active phase:** Visual language and layout (post–Track A)
 **Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-21 (live individual card create 202; 1894 tests)
-**Blocked on:** _nothing_
+**Last green `pnpm verify`:** 2026-08-21 (PAN token 403 mapped to 502; 1895 tests)
+**Blocked on:** Airwallex PAN delegation (`POST /issuing/pantokens/create` → `403 access_denied`)
 
 ---
 
@@ -67,6 +67,8 @@ _None yet._
 ---
 
 ## Notes for the next session
+
+**Reveal / PAN token (2026-08-21).** Live card `a59390b7-…` is ACTIVE; GET card and limits succeed. `POST /issuing/pantokens/create` with `{ card_id }` returns `403 access_denied` / "Access is denied to this resource". Same 403 with `x-api-version` `2024-02-22`, `2024-03-31`, `2024-06-14`, `2024-09-27`, `2026-07-17`, and with the header omitted — **not a pin bug.** Not SCA (`sca_token_missing`). Demo API key already has PAN Tokens **Write**. `x-on-behalf-of` is 401; keep `forAccount(null)`. Do not call `GET .../details`. Allocard maps that 403 to `UPSTREAM_ERROR` (502).
 
 **Live card create (2026-08-21).** After Airwallex account issuance was enabled, `POST /issuing/cards/create` returned **202** and we published `card.created`. Pinned API `2024-02-22` sends `issue_to: INDIVIDUAL` for MEMBER (no `program` / `is_personalized` / INDIVIDUAL `purpose`), `+0000` datetimes, and re-provisions fixture `ch_fixture_*` ids to real UUIDs. Diagnostic request-body logs removed.
 

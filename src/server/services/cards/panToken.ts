@@ -1,5 +1,6 @@
 import { connectDb } from '@/server/db/connect'
 import { getAirwallexClient, type AirwallexClient } from '@/server/airwallex/client'
+import { AirwallexError } from '@/server/airwallex/errors'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import { findCardById } from '@/server/repositories/cards'
@@ -23,7 +24,19 @@ export async function createPanTokenForCard(
   }
 
   const client = deps.airwallex ?? getAirwallexClient()
-  const aw = await client.panTokens.create({ card_id: card.airwallexCardId })
+  let aw
+  try {
+    aw = await client.panTokens.create({ card_id: card.airwallexCardId })
+  } catch (error) {
+    if (error instanceof AirwallexError) {
+      throw AppError.upstreamError(error.message, {
+        retryable: error.retryable,
+        status: error.status,
+        code: error.code,
+      })
+    }
+    throw error
+  }
 
   const output: PanTokenOutput = {
     token: aw.token,
