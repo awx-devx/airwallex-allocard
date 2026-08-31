@@ -83,6 +83,10 @@ const POST_CLOSE_CLEARING = 'Pending transactions will still clear after cards a
 const ARCHIVED_PROJECT = 'This project is archived. It is read-only.'
 const START_CLOSURE = 'Start closure'
 const CLOSE_CARDS_AND_ARCHIVE = 'Close cards and archive'
+const CLOSURE_START_HINT =
+  'Start will freeze remaining cards. You will confirm close and archive next.'
+const CLOSURE_FINISH_HINT =
+  'Cards are frozen. This revokes remaining access, closes cards, and archives the project.'
 const CLOSE_PROJECT = 'Close project'
 const RESUME_CLOSURE = 'Resume closure'
 const FINAL_REPORT = 'Final report'
@@ -488,6 +492,14 @@ export function archivedProjectMessage(): string {
 
 export function startClosureLabel(): string {
   return START_CLOSURE
+}
+
+export function closureStartHint(): string {
+  return CLOSURE_START_HINT
+}
+
+export function closureFinishHint(): string {
+  return CLOSURE_FINISH_HINT
 }
 
 export function closeCardsAndArchiveLabel(): string {

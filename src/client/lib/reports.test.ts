@@ -14,6 +14,8 @@ import {
   canClickStart,
   closeCardsConfirm,
   closureActiveStep,
+  closureFinishHint,
+  closureStartHint,
   closureHref,
   completeClosureInput,
   exportBody,
@@ -218,6 +220,15 @@ describe('display and complete input', () => {
     expect(completeClosureInput()).toEqual({ confirmCloseCards: true, confirmArchive: true })
   })
 
+  it('start and finish hints describe the two user actions', () => {
+    expect(closureStartHint()).toBe(
+      'Start will freeze remaining cards. You will confirm close and archive next.',
+    )
+    expect(closureFinishHint()).toBe(
+      'Cards are frozen. This revokes remaining access, closes cards, and archives the project.',
+    )
+  })
+
   it('confirm copy includes post-close clearing on CLOSE', () => {
     expect(closeCardsConfirm().phrase).toBe('CLOSE')
     expect(closeCardsConfirm().description).toBe(
@@ -340,5 +351,21 @@ describe('A9.9 invariant proofs', () => {
     expect(
       existsSync(join(process.cwd(), 'src/app/(app)/settings/access-reviews/AccessReviewList.tsx')),
     ).toBe(true)
+  })
+
+  it('closure is two user actions, not a backend-step rail', () => {
+    const src = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/[id]/closure/ClosureFlow.tsx'),
+      'utf8',
+    )
+    expect(src).toContain('useClosurePreflight')
+    expect(src).toContain('FormPanel')
+    expect(src).toContain('blockerHref')
+    expect(src).not.toContain('StepWizard')
+    expect(src).not.toContain('CLOSURE_STEPS')
+    expect(src).not.toContain('closureResumeMessage')
+    expect(src).not.toContain('useTransitionProject')
+    expect(src).not.toContain('useCloseCard')
+    expect(src).not.toContain('usePanToken')
   })
 })
