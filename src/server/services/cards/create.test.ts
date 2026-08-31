@@ -143,7 +143,7 @@ describe('services/cards/create', () => {
     })
     const cardholder = await createCardholder(ctx, {
       userId: null,
-      airwallexCardholderId: '555b9d6b-0966-4190-9864-fc75ff4e0eb6',
+      airwallexCardholderId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
       type: CardholderType.DELEGATE,
       status: CardholderStatus.READY,
     })

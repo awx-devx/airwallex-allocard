@@ -74,7 +74,7 @@ _None yet._
 
 **Organisation card create (2026-08-31).** Live `POST /issuing/cards/create` returned `400 cardholder_id must be null when issue_to is set to ORGANISATION.` Create body omits `cardholder_id`. Same `request_id` retries. Restart `pnpm dev:worker`.
 
-**Reveal / PAN token (2026-08-21).** Live card `a59390b7-…` is ACTIVE INDIVIDUAL; GET card and limits succeed. `POST /issuing/pantokens/create` with `{ card_id }` returns `403 access_denied` — expected for personalized cards (PCI; sandbox matches prod). Same 403 across API versions; not a pin bug; not SCA. Demo API key already has PAN Tokens **Write**. Allocard maps that 403 to `UPSTREAM_ERROR` (502).
+**Reveal / PAN token (2026-08-21).** A sandbox INDIVIDUAL (personalized) card: GET card and limits succeed. `POST /issuing/pantokens/create` with `{ card_id }` returns `403 access_denied` — expected for personalized cards (PCI; sandbox matches prod). Same 403 across API versions; not a pin bug; not SCA. Allocard maps that 403 to `UPSTREAM_ERROR` (502).
 
 **Live card create (2026-08-21).** After Airwallex account issuance was enabled, `POST /issuing/cards/create` returned **202** and we published `card.created`. Pinned API `2024-02-22` sends `issue_to: INDIVIDUAL` for MEMBER (no `program` / `is_personalized` / INDIVIDUAL `purpose`), `+0000` datetimes, and re-provisions fixture `ch_fixture_*` ids to real UUIDs. Diagnostic request-body logs removed.
 

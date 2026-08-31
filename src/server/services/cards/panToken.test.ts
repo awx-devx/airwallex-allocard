@@ -81,14 +81,14 @@ describe('services/cards/panToken', () => {
     })
     const cardholder = await createCardholder(ctx, {
       userId: user.id,
-      airwallexCardholderId: '555b9d6b-0966-4190-9864-fc75ff4e0eb6',
+      airwallexCardholderId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
       type: CardholderType.INDIVIDUAL,
       status: CardholderStatus.READY,
     })
     const card = await createCard(ctx, {
       projectId: project.id,
       cardholderId: cardholder.id,
-      airwallexCardId: 'a59390b7-2ebb-45f1-89a6-7a5ae1816ebf',
+      airwallexCardId: 'dddddddd-eeee-4fff-8aaa-bbbbbbbbbbbb',
       maskedNumber: '************4242',
       nickName: 'reveal',
       purpose: CardPurpose.MEMBER,
@@ -105,7 +105,7 @@ describe('services/cards/panToken', () => {
       cards: {
         get: vi.fn().mockResolvedValue({
           card_id: card.airwallexCardId,
-          cardholder_id: '555b9d6b-0966-4190-9864-fc75ff4e0eb6',
+          cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
           card_status: 'ACTIVE',
           issue_to: 'INDIVIDUAL',
         }),

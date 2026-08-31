@@ -21,8 +21,15 @@
 # misc
 .DS_Store
 *.pem
+*.p12
+*.pfx
+*.key
 dump.rdb
 *.rdb
+credentials.json
+*-credentials.json
+service-account*.json
+.envrc
 
 # debug
 npm-debug.log*

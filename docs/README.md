@@ -18,9 +18,9 @@ Airwallex supplies the card infrastructure and enforcement. Allocard supplies th
 | [`WORKFLOW.md`](./WORKFLOW.md)                           | How to run the build: per-phase model tiers, the prompt library, where to pay attention |
 | [`RESPONSIVENESS.md`](./RESPONSIVENESS.md)               | Desktop-first layout: one breakpoint, four patterns, Track A don't-break check          |
 
-## How the build runs
+## How the build ran
 
-Three sequential tracks, so review never spans a half-built API and a half-built screen:
+Three sequential tracks, so review never spanned a half-built API and a half-built screen. **All three tracks are complete.**
 
 ```
 Track B — Backend            B0 → … → B9    complete API surface, tests green, no UI
@@ -28,21 +28,16 @@ Track F — Client foundation  F0 → … → F3    API client, query hooks, uti
 Track A — Application        A1 → … → A9    screens, assembled from F
 ```
 
-Each phase is a review unit with its own checklist. See [`phases/README.md`](./phases/README.md) for the review protocol and [`WORKFLOW.md`](./WORKFLOW.md) for the session-by-session operating procedure.
+Each phase was a review unit with its own checklist. See [`phases/README.md`](./phases/README.md) for the review protocol and [`WORKFLOW.md`](./WORKFLOW.md) for the session-by-session operating procedure that produced the repo.
 
-Repo state lives in [`../STATUS.md`](../STATUS.md); the invariants an agent may never violate live in [`../AGENTS.md`](../AGENTS.md), which Cursor loads into every session automatically.
+Repo state lives in [`../STATUS.md`](../STATUS.md); the invariants an agent may never violate live in [`../AGENTS.md`](../AGENTS.md), which Cursor loads into every session automatically. For a public landing page (disclaimers, happy paths, secrets), start at [`../README.md`](../README.md) and [`../SECURITY.md`](../SECURITY.md).
 
 ## Decisions already made
 
 - **One shared Airwallex sandbox account, not one connected account per organisation.** Tenant separation is Allocard's job — `metadata.orgId` on every card, an `orgId` filter on every read. Rationale, risks, and the seven measures that keep a future migration mechanical are in [`AIRWALLEX-INTEGRATION.md`](./AIRWALLEX-INTEGRATION.md) §2.
 - **Remote authorization ships as a simulator**, with live mode behind a config flag.
 - **Auth is Auth.js with Credentials + Google**, not Clerk and not GitHub. Google because the personas are finance and procurement staff on Google Workspace. Credentials stay because demo personas must be seedable and sign-innable without real Google accounts. Clerk was rejected because its hosted organisations duplicate the `Organization` / `Membership` models that drive `computeEffectivePermissions` in B3 — it would replace two of B1's fifteen tasks while adding a webhook sync path directly beneath the tenancy invariant.
-- **Layout is desktop-first and must not break narrower.** One breakpoint (`md`, 768px). No mobile app, no second IA. Recipe in [`RESPONSIVENESS.md`](./RESPONSIVENESS.md). F0/F3 already shipped; shell collapse (sidebar → existing `Sheet`) is A2.
-
-## Source material
-
-- `SpendPilot - Current.csv` — the original function-by-actor scoping sheet. Treated as **input, not contract**; the PRD reorganises and extends it.
-- `../demo/projectos_b3os_style_mock.html` — an early visual sketch. Useful for information architecture (tab layout, project workspace shape) only. Its extra surfaces are not in scope.
+- **Layout is desktop-first and must not break narrower.** One breakpoint (`md`, 768px). No mobile app, no second IA. Recipe in [`RESPONSIVENESS.md`](./RESPONSIVENESS.md). Shell collapse (sidebar → existing `Sheet`) shipped in A2.
 
 ## The one-paragraph version
 
