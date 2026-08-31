@@ -4,13 +4,21 @@ import { satoshiBlack } from '@/app/fonts'
 import { loadServerEnv } from '@/server/env'
 import './globals.css'
 
-const description = 'Dynamic attribute-based budget cards on Airwallex'
+const title = 'Allocard | Powered by Airwallex'
+const description =
+  'Demo of Allocard on Airwallex Issuing: launch projects, derive card limits from budget, roles, and rules, issue and freeze cards, run approvals, and reconcile spend. Airwallex enforces; Allocard decides. Powered by Airwallex.'
+const ogImage = {
+  url: '/images/og-image.png',
+  width: 1920,
+  height: 1008,
+  alt: 'Allocard',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(loadServerEnv().AUTH_URL),
   applicationName: 'Allocard',
   title: {
-    default: 'Allocard',
+    default: title,
     template: '%s · Allocard',
   },
   description,
@@ -18,13 +26,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en',
     siteName: 'Allocard',
-    title: 'Allocard',
+    title,
     description,
+    images: [ogImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Allocard',
+    title,
     description,
+    images: [ogImage.url],
   },
   appleWebApp: {
     capable: true,
