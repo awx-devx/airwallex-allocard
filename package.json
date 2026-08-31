@@ -14,7 +14,7 @@
     "seed": "tsx scripts/seed.ts",
     "budget:verify": "tsx scripts/budget-verify.ts",
     "dev:worker": "ROLE=worker tsx watch --env-file=.env src/worker/index.ts",
-    "worker": "ROLE=worker tsx src/worker/index.ts",
+    "worker": "ROLE=worker tsx --env-file=.env src/worker/index.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "prepare": "husky"
   },
