@@ -69,9 +69,12 @@ export type AirwallexCardholder = {
 export type CreateCardholderBody = {
   request_id: string
   type: AirwallexCardholderType
-  email?: string
-  mobile_number?: string
-  individual?: {
+  /** Required on API `2024-02-22` for every cardholder, including DELEGATE. */
+  email: string
+  mobile_number: string
+  /** Top-level on `2024-02-22`; later versions nest this under `individual`. */
+  address: Record<string, string>
+  individual: {
     name: { first_name: string; last_name: string }
     date_of_birth: string
     address: Record<string, string>
@@ -96,8 +99,9 @@ export type AirwallexIssueTo = 'INDIVIDUAL' | 'ORGANISATION'
 
 export type AirwallexCard = {
   card_id: string
-  cardholder_id: string
-  /** Masked only — never full PAN. */
+  /** Null on `issue_to: ORGANISATION` cards. */
+  cardholder_id: string | null
+  /** Masked only on GET card — never full PAN here. */
   card_number?: string
   card_status: AirwallexCardStatus
   nick_name?: string
@@ -109,6 +113,18 @@ export type AirwallexCard = {
   authorization_controls?: AirwallexAuthorizationControls
   created_at?: string
   updated_at?: string
+}
+
+/**
+ * GET /issuing/cards/{id}/details — organisation / non-personalized cards only.
+ * Never persist, log, or audit these fields.
+ */
+export type AirwallexCardDetails = {
+  card_number: string
+  cvv: string
+  expiry_month: string | number
+  expiry_year: string | number
+  name_on_card?: string
 }
 
 export type AirwallexCardUsagePurpose =
@@ -129,7 +145,8 @@ export type AirwallexCardUsagePurpose =
  */
 export type CreateCardBody = {
   request_id: string
-  cardholder_id: string
+  /** Required when `issue_to` is `INDIVIDUAL`. Must be absent for `ORGANISATION`. */
+  cardholder_id?: string
   created_by: string
   form_factor: 'VIRTUAL'
   issue_to: AirwallexIssueTo

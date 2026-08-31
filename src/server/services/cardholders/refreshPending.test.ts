@@ -48,7 +48,11 @@ function mockClient(): AirwallexClient {
     forAccount: () => mockClient(),
     request: vi.fn(),
     cardholders: {
-      create: vi.fn(),
+      create: vi.fn().mockResolvedValue({
+        cardholder_id: 'bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        type: 'DELEGATE',
+        status: 'READY',
+      }),
       get: vi.fn(),
       update: vi.fn(),
     },
@@ -64,6 +68,7 @@ function mockClient(): AirwallexClient {
       update: vi.fn(),
       limits: vi.fn(),
       activate: vi.fn(),
+      details: vi.fn(),
     },
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],

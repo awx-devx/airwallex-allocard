@@ -1,14 +1,17 @@
 /**
- * PCI boundary: sensitive details render in the Airwallex iframe only.
+ * Organisation cards: number / expiry / security code from GET details (never persisted).
+ * Leftover individual cards: sensitive details render in the Airwallex iframe only.
  */
 'use client'
 
+import { CopyIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { isApiError } from '@/client/api/errors'
 import { useCard, usePanToken } from '@/client/hooks/useCards'
 import { useProject } from '@/client/hooks/useProjects'
+import { copyToClipboard } from '@/client/lib/clipboard'
 import {
   airwallexRevealIframeSrc,
   canRevealCard,
@@ -22,12 +25,60 @@ import {
   revealAuditedMessage,
 } from '@/client/lib/cards'
 import { archivedProjectMessage, isProjectArchived } from '@/client/lib/reports'
+import { CardVisual } from '@/components/patterns/CardVisual'
 import { ErrorState } from '@/components/patterns/ErrorState'
 import { LoadingState } from '@/components/patterns/LoadingState'
 import { PageFlow } from '@/components/patterns/PageBody'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
+
+type DirectReveal = {
+  number: string
+  cvv: string
+  expiryMonth: string
+  expiryYear: string
+}
+
+function expiryLabel(month: string, year: string): string {
+  const mm = month.padStart(2, '0')
+  const yy = year.length === 4 ? year.slice(2) : year
+  return `${mm}/${yy}`
+}
+
+function groupDigits(value: string): string {
+  return value
+    .replace(/\s+/g, '')
+    .replace(/(.{4})(?=.)/g, '$1 ')
+    .trim()
+}
+
+function CopyRow({ label, value, display }: { label: string; value: string; display?: string }) {
+  const shown = display ?? value
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.625rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="truncate font-mono text-sm tabular-nums" title={shown}>
+          {shown}
+        </p>
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        aria-label={`Copy ${label}`}
+        onClick={() => {
+          void copyToClipboard(value)
+        }}
+      >
+        <CopyIcon aria-hidden />
+      </Button>
+    </div>
+  )
+}
 
 export function RevealCard() {
   const raw = useParams().id
@@ -39,6 +90,7 @@ export function RevealCard() {
   const expiryRetried = useRef(false)
   const [retry, setRetry] = useState(0)
   const [token, setToken] = useState<string | null>(null)
+  const [direct, setDirect] = useState<DirectReveal | null>(null)
   const [frameReady, setFrameReady] = useState(false)
   const [frameError, setFrameError] = useState(false)
   const [tokenError, setTokenError] = useState<string | null>(null)
@@ -68,7 +120,18 @@ export function RevealCard() {
         }
         if (gen !== generation.current) return
         if (decision.kind === 'ok') {
+          setDirect(null)
           setToken(decision.token)
+          return
+        }
+        if (decision.kind === 'direct') {
+          setToken(null)
+          setDirect({
+            number: decision.number,
+            cvv: decision.cvv,
+            expiryMonth: decision.expiryMonth,
+            expiryYear: decision.expiryYear,
+          })
           return
         }
         setTokenError(iframeErrorMessage())
@@ -161,6 +224,7 @@ export function RevealCard() {
             setFrameError(false)
             setFrameReady(false)
             setToken(null)
+            setDirect(null)
             setTokenError(null)
             setRetry((n) => n + 1)
           }}
@@ -169,6 +233,7 @@ export function RevealCard() {
     )
   }
 
+  const expiry = direct !== null ? expiryLabel(direct.expiryMonth, direct.expiryYear) : undefined
   const iframeSrc =
     token !== null && token.length >= 1
       ? airwallexRevealIframeSrc(card.airwallexCardId, token)
@@ -180,23 +245,38 @@ export function RevealCard() {
       <Alert>
         <AlertDescription>{revealAuditedMessage()}</AlertDescription>
       </Alert>
-      <div className="relative min-w-0">
-        {iframeSrc ? (
-          <iframe
-            className="min-h-96 w-full border-0"
-            title="Card details"
-            referrerPolicy="no-referrer"
-            src={iframeSrc}
-            onLoad={() => setFrameReady(true)}
-          />
+      <div className="flex w-full min-w-0 max-w-sm flex-col gap-4">
+        <CardVisual
+          nickName={card.nickName}
+          maskedNumber={direct?.number ?? card.maskedNumber}
+          status={card.status}
+          purpose={card.purpose}
+          validThru={expiry}
+        />
+        {direct !== null ? (
+          <div className="flex min-w-0 flex-col gap-3">
+            <CopyRow label="Number" value={direct.number} display={groupDigits(direct.number)} />
+            <CopyRow label="Expiry" value={expiry ?? ''} />
+            <CopyRow label="Security code" value={direct.cvv} />
+          </div>
+        ) : iframeSrc ? (
+          <div className="relative min-w-0">
+            <iframe
+              className="min-h-96 w-full border-0"
+              title="Card details"
+              referrerPolicy="no-referrer"
+              src={iframeSrc}
+              onLoad={() => setFrameReady(true)}
+            />
+            {!frameReady ? (
+              <div className="absolute inset-0 bg-background/80">
+                <LoadingState />
+              </div>
+            ) : null}
+          </div>
         ) : (
           <LoadingState />
         )}
-        {iframeSrc && !frameReady ? (
-          <div className="absolute inset-0 bg-background/80">
-            <LoadingState />
-          </div>
-        ) : null}
       </div>
     </PageFlow>
   )

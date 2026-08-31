@@ -3,9 +3,9 @@
  *
  * Totals from ledger projection (`projectBudget`). Category/member actuals join
  * ACTUAL ledger entries → transactions (lifecycleId) → card → categoryId /
- * cardholder.userId. Prefer ledger+transactions over summing transactions alone
- * so refunds (negative ACTUAL) and out-of-order clears stay consistent with
- * `budget:verify`.
+ * accessList[0] (fallback: cardholder.userId). Prefer ledger+transactions over
+ * summing transactions alone so refunds (negative ACTUAL) and out-of-order
+ * clears stay consistent with `budget:verify`.
  */
 import { connectDb } from '@/server/db/connect'
 import { AppError } from '@/server/http/errors'
@@ -18,6 +18,7 @@ import { findOrganizationById } from '@/server/repositories/organizations'
 import { findProjectById } from '@/server/repositories/projects'
 import { iterateTransactions } from '@/server/repositories/transactions'
 import { projectBudget } from '@/server/services/budget/projectProjection'
+import { cardHolderUserId } from '@/shared/cardHolder'
 import { BudgetEntryType } from '@/shared/enums/budgetEntryType'
 import type { BudgetEntry } from '@/shared/types/budget'
 import type { ProjectReport } from '@/shared/types/report'
@@ -85,7 +86,7 @@ export async function getProjectReport(ctx: OrgContext, projectId: string): Prom
         if (categoryId == null && card.categoryId) {
           categoryId = card.categoryId
         }
-        userId = userIdByCardholderId.get(card.cardholderId)
+        userId = cardHolderUserId(card) ?? userIdByCardholderId.get(card.cardholderId)
       }
     }
 

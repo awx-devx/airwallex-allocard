@@ -77,6 +77,8 @@ export type CardVisualProps = {
   status: CardStatus
   purpose?: CardPurpose
   onReveal?: () => void
+  /** Optional MM/YY on the face — Reveal page only. */
+  validThru?: string
 }
 
 export type TimelineItem = {

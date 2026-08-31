@@ -2,7 +2,7 @@
 
 A **demo** of dynamic, attribute-based budget cards on [Airwallex Issuing](https://www.airwallex.com). Card limits are **derived** from business attributes (budget, headcount, approval status, campaign performance) — never typed by a human. Airwallex enforces; Allocard decides.
 
-This is a working product demo, not a production card program. Sensitive card details (PAN, CVV, expiry) never enter application code, logs, or the database; they render only in Airwallex-hosted iframes.
+This is a working product demo, not a production card program. Organisation cards reveal number, expiry, and CVV from Airwallex `GET .../details` in-app — those values are never stored, logged, or written to audit. Leftover individual cards still render only in Airwallex-hosted iframes.
 
 ## What it does
 

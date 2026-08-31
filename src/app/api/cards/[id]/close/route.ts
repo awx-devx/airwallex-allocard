@@ -7,6 +7,7 @@ import { withAuth } from '@/server/http/withAuth'
 import { withValidation } from '@/server/http/withValidation'
 import { findCardById } from '@/server/repositories/cards'
 import { closeCard } from '@/server/services/cards/lifecycle'
+import { permissionSubjectForCard } from '@/server/services/cards/subject'
 import { Permission } from '@/shared/enums/permissions'
 
 function requireCardId(req: Request): string {
@@ -21,10 +22,7 @@ export const POST = withRouteParams(
       const cardId = requireCardId(req)
       const card = await findCardById(ctx, cardId)
       if (!card) throw AppError.notFound()
-      await requirePermission(ctx, Permission.CARD_MANAGE, {
-        projectId: card.projectId ?? undefined,
-        cardId: card.id,
-      })
+      await requirePermission(ctx, Permission.CARD_MANAGE, permissionSubjectForCard(ctx, card))
       return ok(await closeCard(ctx, cardId, input))
     }),
   ),

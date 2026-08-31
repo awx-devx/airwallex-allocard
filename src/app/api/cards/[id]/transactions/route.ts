@@ -8,6 +8,7 @@ import { withValidation } from '@/server/http/withValidation'
 import { findCardById } from '@/server/repositories/cards'
 import { listTransactions } from '@/server/repositories/transactions'
 import { connectDb } from '@/server/db/connect'
+import { permissionSubjectForCard } from '@/server/services/cards/subject'
 import { Permission } from '@/shared/enums/permissions'
 
 function requireCardId(req: Request): string {
@@ -28,10 +29,7 @@ export const GET = withRouteParams(
       if (!card) {
         throw AppError.notFound()
       }
-      await requirePermission(ctx, Permission.TRANSACTION_VIEW, {
-        projectId: card.projectId ?? undefined,
-        cardId,
-      })
+      await requirePermission(ctx, Permission.TRANSACTION_VIEW, permissionSubjectForCard(ctx, card))
       const result = await listTransactions(ctx, {
         cardId,
         status: query.status,

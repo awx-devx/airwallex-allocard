@@ -82,6 +82,19 @@ export async function findCardholderByUserId(
   return doc ? toCardholder(doc) : null
 }
 
+/** Oldest org-level DELEGATE (`userId` null). One per Allocard org. */
+export async function findOrgDelegateCardholder(ctx: OrgContext): Promise<Cardholder | null> {
+  const doc = await CardholderModel.findOne({
+    orgId: ctx.orgId,
+    type: 'DELEGATE',
+    userId: null,
+  })
+    .sort({ createdAt: 1, _id: 1 })
+    .lean()
+    .exec()
+  return doc ? toCardholder(doc) : null
+}
+
 export async function listCardholders(
   ctx: OrgContext,
   filter: ListCardholdersFilter = {},

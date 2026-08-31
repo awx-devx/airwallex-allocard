@@ -24,7 +24,7 @@ Cache the token in Redis under `aw:token` with a TTL of `expires_at − 60s`, an
 
 [`llms.txt`](https://www.airwallex.com/docs/llms.txt) lists product tutorials, not the versioned API reference. The [Create cards](https://www.airwallex.com/docs/issuing/get-started/create-cards.md) page (`program` + `is_personalized`, no `issue_to`) applies only to **`2024-03-31` and later**. For this pin, use [Create individual cards (older API versions)](<https://www.airwallex.com/docs/issuing/legacy-issuing-apis/create-a-card-(older-api-versions)/create-individual-cards-(older-api-versions).md>) and [Create a card (older API versions)](<https://www.airwallex.com/docs/issuing/legacy-issuing-apis/create-a-card-(older-api-versions).md>) (business cards). The current [Create a Card](https://www.airwallex.com/docs/api/issuing/cards/create.md) reference is the latest schema — do not copy `program` / `is_personalized` from it onto `2024-02-22`.
 
-`issue_to` is a **card type**, not tenancy. The demo still uses one Airwallex sandbox account (§2); Allocard orgs are isolated with `metadata.orgId`. Per-member cards are `issue_to: INDIVIDUAL` (named person). Shared / vendor / one-time cards are `issue_to: ORGANISATION` (business card). Do not send `purpose` on INDIVIDUAL — it is ORGANISATION-only and returns `400 Purpose can only be set when card issue_to is set to "ORGANISATION"`.
+`issue_to` is a **card type**, not tenancy. The demo still uses one Airwallex sandbox account (§2); Allocard orgs are isolated with `metadata.orgId`. **Every demo card is `issue_to: ORGANISATION`** (non-personalized / company card) plus `purpose: TEAM_EXPENSES`. Organisation cards reveal via `GET /issuing/cards/{id}/details` (Airwallex allows this without PCI). PCI forbids PAN tokens **and** GET details on personalized employee cards (`issue_to: INDIVIDUAL`); leftover individual cards use the iframe path. MEMBER cards must not be issued to an individual. Allocard `CardPurpose` (MEMBER / SHARED / VENDOR / ONE_TIME) stays local — “Priya’s card” is `accessList`, not an Airwallex INDIVIDUAL cardholder. Do not send `program`, `is_personalized`, or `cardholder_id` on this API version (`cardholder_id` must be null when `issue_to` is `ORGANISATION`).
 
 ---
 
@@ -34,16 +34,16 @@ Cache the token in Redis under `aw:token` with a TTL of `expires_at − 60s`, an
 
 ### The two models
 
-|                          | **Single account** _(chosen)_   | **Connected account per org**                 |
-| ------------------------ | ------------------------------- | --------------------------------------------- |
-| API calls                | Identical, no header            | Identical, plus `x-on-behalf-of: {accountId}` |
-| Tenant isolation         | **Enforced by Allocard's code** | Enforced by Airwallex                         |
-| `GET /issuing/cards`     | Returns _every org's_ cards     | Returns only that org's cards                 |
-| Org onboarding           | Create a document               | Create account + KYB + RFI handling           |
-| Card issuing eligibility | Account-level                   | Requires a **Full Connected Account**         |
-| Funding                  | One wallet, funded once         | Per-org wallet, via CA Transfers or PLP       |
-| `issuing/config`         | One config                      | One per account                               |
-| Cardholders              | One record per person           | One record per person **per account**         |
+|                          | **Single account** _(chosen)_     | **Connected account per org**                 |
+| ------------------------ | --------------------------------- | --------------------------------------------- |
+| API calls                | Identical, no header              | Identical, plus `x-on-behalf-of: {accountId}` |
+| Tenant isolation         | **Enforced by Allocard's code**   | Enforced by Airwallex                         |
+| `GET /issuing/cards`     | Returns _every org's_ cards       | Returns only that org's cards                 |
+| Org onboarding           | Create a document                 | Create account + KYB + RFI handling           |
+| Card issuing eligibility | Account-level                     | Requires a **Full Connected Account**         |
+| Funding                  | One wallet, funded once           | Per-org wallet, via CA Transfers or PLP       |
+| `issuing/config`         | One config                        | One per account                               |
+| Cardholders              | One **DELEGATE** per Allocard org | One record per person **per account**         |
 
 Note that sandbox versus production is a separate axis. Connected accounts work in sandbox too; choosing a single account is a tenancy decision, not an environment one.
 
@@ -68,11 +68,11 @@ Build these seven things now so the migration is mechanical rather than architec
 
 1. **Account context is a required client parameter from day one.** `airwallex.forAccount(accountId | null)` — the demo passes `null` everywhere, but no call site changes later.
 2. **`organizations.airwallexAccountId`** exists now, nullable, unused in single-account mode.
-3. **Always write `metadata.orgId` and `metadata.projectId` on every card, and always filter reads by them** — even though it becomes redundant under connected accounts. Read paths then never change.
+3. **Always write `metadata.orgId` and `metadata.projectId` on every card, and always filter reads by them** — even though it becomes redundant under connected accounts. Read paths then never change. Member assignment is `accessList` on the local card (Airwallex does not know which employee a company card is for).
 4. **Route webhooks by resolving card → org through the local mirror**, with `account_id` as a secondary lookup. Works identically in both models.
 5. **Put funding behind a `FundingSource` interface** with a single-wallet implementation, so CA Transfers or PLP can slot in without touching card provisioning.
 6. **Cache `issuing/config` keyed by account ID**, not as a global singleton — the per-currency maximum that the rules engine clamps against becomes per-org later.
-7. **Key cardholder records on `(orgId, userId)`**, not `userId` alone, since the same person in two orgs is two cardholder records under connected accounts.
+7. **Key INDIVIDUAL cardholder records on `(orgId, userId)`**, not `userId` alone, if a later connected-account path issues personalized cards. The demo uses one org-level DELEGATE (`userId` null) and does not create INDIVIDUAL cardholders.
 
 ### Before committing to connected accounts in production
 
@@ -82,7 +82,7 @@ The secure-iframe documentation describes cards issued to connected accounts as 
 
 ## 3. Cardholders
 
-A card must belong to a cardholder, and a cardholder must reach `READY` before an individual card can be issued.
+A card must belong to a cardholder. Organisation (non-personalized) cards use a **DELEGATE** cardholder; that record must reach `READY` before create.
 
 ```
 POST /api/v1/issuing/cardholders/create   → 202 { cardholder_id, status }
@@ -92,20 +92,48 @@ POST /api/v1/issuing/cardholders/{id}/update
 
 Two types:
 
-- **`INDIVIDUAL`** — a named person. Requires name, date of birth, address, email, `mobile_number`, and `express_consent_obtained: "yes"` confirming you have their consent for name and sanction screening. Can hold personalized or non-personalized cards. Sandbox create uses placeholder KYC (DOB `1990-01-01`, SF address, `mobile_number: "14155550100"`); real identity collection is out of B5 scope.
-- **`DELEGATE`** — an authorized user on non-personalized cards only; cards carry the business name. Ideal for **shared project cards** and **vendor cards**, since no personal KYC data is needed.
+- **`INDIVIDUAL`** — a named person. Required for personalized employee cards. The demo **does not create these**: PAN tokens are denied on personalized cards (PCI; sandbox matches prod). Keep the type in the contract for a future connected-account / employee-card path.
+- **`DELEGATE`** — authorized user on non-personalized cards only; cards carry the business name. No personal KYC. **This is the only type the demo issues against.**
 
 Status flow: `PENDING → READY` (or `INCOMPLETE` if more data is needed, `DISABLED`, `DELETED`).
 
 ### How Allocard should use this
 
-| Allocard concept       | Cardholder type                                                                       |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| Per-member card        | `INDIVIDUAL`, created when the member is added to a project with a card-eligible role |
-| Shared project card    | `DELEGATE`, with project members as `additional_cardholder_ids`                       |
-| Vendor / one-time card | `DELEGATE`                                                                            |
+| Allocard concept                        | Cardholder type                                                                    |
+| --------------------------------------- | ---------------------------------------------------------------------------------- |
+| Every issued card (MEMBER / SHARED / …) | One org-level `DELEGATE`, created at org-create (and ensured again at card-create) |
+| “Priya’s MEMBER card”                   | Same DELEGATE at Airwallex; `accessList: [priyaUserId]` on the local card          |
 
-Create the cardholder **at member-add time, not card-create time**. Screening is asynchronous, so doing it lazily means the "issue cards on project launch" rule stalls waiting on `READY`. Mirror the record in the `cardholders` collection, and have the rules engine treat `cardholder.status != READY` as a `SKIPPED` reason rather than a failure — it will succeed on the next pass.
+Do **not** provision an INDIVIDUAL cardholder at member-add. Treat `status != READY` on the org DELEGATE at card-issue time as a retryable skip, never a failure.
+
+### Create — required body (`2024-02-22`)
+
+This pin has **no `type` field** in the published schema; every create is screened as an individual. The sandbox still accepts `type: DELEGATE` as extra, but it **does** require the KYC fields. Missing `email` is `400 email is mandatory`; missing `mobile_number` is `400 mobile_number is mandatory`.
+
+```jsonc
+{
+  "request_id": "allocard-cardholder-{cardholderDocId}",
+  "type": "DELEGATE", // Allocard local type; ignored or extra on this pin
+  "email": "allocard-delegate-{orgId}@example.com", // unique per org on the shared sandbox account
+  "mobile_number": "14155550100",
+  "address": {
+    "line1": "1 Market Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "postcode": "94105",
+    "country": "US",
+  },
+  "individual": {
+    "name": { "first_name": "Allocard", "last_name": "Delegate" },
+    "date_of_birth": "1990-01-01",
+    "address": {/* same as top-level — later API versions nest it here */},
+    "express_consent_obtained": "yes",
+  },
+  "metadata": { "orgId": "...", "cardDocId": "..." },
+}
+```
+
+Demo values are sandbox placeholders, not real KYC.
 
 ---
 
@@ -118,7 +146,7 @@ GET  /api/v1/issuing/cards/{id}            details
 POST /api/v1/issuing/cards/{id}/update     controls + status
 GET  /api/v1/issuing/cards/{id}/limits     remaining limits per interval
 POST /api/v1/issuing/cards/{id}/activate
-GET  /api/v1/issuing/cards/{id}/details    sensitive — requires PCI scope, see §8
+GET  /api/v1/issuing/cards/{id}/details    organisation reveal only — see §8
 ```
 
 ### Create — the fields that matter
@@ -126,10 +154,10 @@ GET  /api/v1/issuing/cards/{id}/details    sensitive — requires PCI scope, see
 ```jsonc
 {
   "request_id": "allocard-card-{cardDocId}", // stable → safe to retry
-  "cardholder_id": "...",
   "created_by": "Jane Doe", // full legal name of requester
   "form_factor": "VIRTUAL",
-  "issue_to": "INDIVIDUAL", // MEMBER; ORGANISATION for shared/vendor (then purpose is allowed)
+  "issue_to": "ORGANISATION", // always — GET details is allowed; pantokens are denied on INDIVIDUAL
+  "purpose": "TEAM_EXPENSES",
   "nick_name": "APAC Brand Launch — Priya",
   "metadata": {
     "orgId": "...",
@@ -159,7 +187,7 @@ GET  /api/v1/issuing/cards/{id}/details    sensitive — requires PCI scope, see
 }
 ```
 
-ORGANISATION create (shared / vendor) additionally sends `purpose` (`TEAM_EXPENSES` etc.) and, in Airwallex's example, `primary_contact_details`. Do not send `program` or `is_personalized` on this API version.
+Every create sends `issue_to: ORGANISATION` and `purpose: TEAM_EXPENSES`. **Do not send `cardholder_id`** — this pin returns `400 cardholder_id must be null when issue_to is set to ORGANISATION`. The org DELEGATE stays Allocard-side. Do not send `program` or `is_personalized`. Already-issued INDIVIDUAL cards cannot be converted; close and re-create to Reveal.
 
 Two things to internalise:
 
@@ -341,18 +369,21 @@ In simulate mode, expose an internal "attempt a purchase" action in the demo UI 
 
 ## 8. Displaying card details (PCI)
 
-Allocard must **never** touch a PAN. `GET /issuing/cards/{id}/details` returns sensitive data and requires PCI compliance on your side — do not call it.
+Airwallex allows `GET /issuing/cards/{id}/details` **without PCI certification** for **non-personalized organisation cards** (`issue_to: ORGANISATION`, `cardholder_id` null). That is the dashboard Reveal path, and Allocard uses it for demo org cards. The application **must never persist, log, or write PAN / CVV / expiry to audit metadata**. The values exist only in the HTTP response and the in-memory Reveal UI.
 
-Use Airwallex secure iframes (PAN delegation) instead:
+Do **not** call GET details for `issue_to: INDIVIDUAL` (personalized / employee) cards — that path requires PCI. Leftover individual cards still use a short-lived PAN token and the Airwallex iframe.
 
 ```
-POST /api/v1/issuing/pantokens/create      → short-lived token
+GET  /api/v1/issuing/cards/{id}/details    organisation cards → number, cvv, expiry
+POST /api/v1/issuing/pantokens/create      individual cards → short-lived token
 iframe src: https://airwallex.com/issuing/pci/v2/{cardId}/details#{hash}
 ```
 
-Three iframes are available: card details (number, expiry, CVV), PIN display, and PIN change. They're styleable via a documented set of CSS classes (`.details__row--card-number`, `.details__value`, and so on) so they can match the product's design, and they emit `postMessage` lifecycle events for load and error states.
+`POST /issuing/pantokens/create` returns `403 access_denied` for personalized cards. That is regulatory, not a sandbox bug. Issue every demo card `issue_to: ORGANISATION` so Reveal uses GET details.
 
-Server-side, the token endpoint must be behind a `card.viewDetails` permission check plus an access-scope check, and every reveal is an audit event. The iframe is the PCI boundary; permission to reach it is entirely yours to enforce.
+Three iframes remain available for individual cards: card details (number, expiry, CVV), PIN display, and PIN change. They're styleable via a documented set of CSS classes (`.details__row--card-number`, `.details__value`, and so on) so they can match the product's design, and they emit `postMessage` lifecycle events for load and error states.
+
+Server-side, both reveal methods share `POST /api/cards/:id/pan-token`, gated on `card.viewDetails` plus an access-scope check (OWN uses `accessList[0]` as `userId`). Every reveal is an audit event (`card.pan_token_created`) that must not include PAN / CVV / expiry.
 
 ---
 
@@ -413,6 +444,6 @@ Build in from the start:
 
 - Sandbox has [simulation APIs](https://www.airwallex.com/docs/developer-tools/sandbox-environment.md) for triggering transactions without moving real money — this is how you demo the budget-updates-and-limits-move loop.
 - Virtual cards transition `PENDING → ACTIVE` automatically, so they're immediately usable.
-- Cardholder screening still applies in sandbox; build the UI to tolerate a `PENDING` cardholder gracefully.
+- DELEGATE cardholders usually skip personal KYC; still tolerate `PENDING` and retry create. Do not create INDIVIDUAL cardholders in the demo.
 - Webhooks can be viewed and re-triggered from the web app, which is invaluable when debugging ledger reconciliation.
 - Test-event signatures use the secret in the payload's `client-secret-key` header rather than the configured webhook secret — handle both paths or test events will appear to fail verification.

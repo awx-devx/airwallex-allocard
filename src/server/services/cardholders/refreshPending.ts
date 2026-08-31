@@ -10,7 +10,7 @@ import { listAllOrganizations } from '@/server/repositories/organizations'
 import { listCardholders } from '@/server/repositories/cardholders'
 import { listCards } from '@/server/repositories/cards'
 import { listActiveProjectMembersForUser } from '@/server/repositories/projectMembers'
-import { findProjectById } from '@/server/repositories/projects'
+import { findProjectById, listProjects } from '@/server/repositories/projects'
 import { refreshCardholder, type EnsureCardholderDeps } from '@/server/services/cardholders/ensure'
 import { completePendingCard, isProvisionalAirwallexId } from '@/server/services/cards/create'
 import { evaluateAndApply } from '@/server/services/rules/evaluateAndApply'
@@ -94,13 +94,24 @@ export async function refreshPendingCardholders(
     for (const cardholder of pending) {
       const updated = await refreshCardholder(ctx, cardholder, deps)
       refreshed += 1
-      if (updated.status !== CardholderStatus.READY || !updated.userId) {
+      if (updated.status !== CardholderStatus.READY) {
         continue
       }
       becameReady += 1
-      const memberships = await listActiveProjectMembersForUser(ctx, updated.userId)
-      for (const membership of memberships) {
-        readyProjectIds.add(membership.projectId)
+      if (updated.userId) {
+        const memberships = await listActiveProjectMembersForUser(ctx, updated.userId)
+        for (const membership of memberships) {
+          readyProjectIds.add(membership.projectId)
+        }
+      } else {
+        const active = await listProjects(ctx, {
+          status: ProjectStatus.ACTIVE,
+          page: 1,
+          pageSize: 100,
+        })
+        for (const project of active.items) {
+          readyProjectIds.add(project.id)
+        }
       }
     }
 

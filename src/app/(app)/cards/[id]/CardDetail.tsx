@@ -30,6 +30,7 @@ import {
   canFreezeCard,
   canRevealCard,
   canUnfreezeCard,
+  cardHolderUserId,
   cardLimitsToMeters,
   cardRevealHref,
   cardholderScreeningMessage,
@@ -418,12 +419,17 @@ export function CardDetail() {
   }
 
   const holder = cardholderQuery.data
+  const holderUserId = cardHolderUserId(card)
   const userName =
-    holder?.userId !== undefined && holder.userId !== null
+    holderUserId !== null
       ? membersQuery.data?.find(
-          (row) => row.userId === holder.userId || row.user.id === holder.userId,
+          (row) => row.userId === holderUserId || row.user.id === holderUserId,
         )?.user.name
-      : undefined
+      : holder?.userId !== undefined && holder.userId !== null
+        ? membersQuery.data?.find(
+            (row) => row.userId === holder.userId || row.user.id === holder.userId,
+          )?.user.name
+        : undefined
   const accessNames = accessListNames(card.accessList, membersQuery.data ?? [])
   const meters = limitsQuery.data ? cardLimitsToMeters(limitsQuery.data) : []
   const diverge = controlsDiverge(card.desiredControls, card.appliedControls)
@@ -571,7 +577,9 @@ export function CardDetail() {
           ) : (
             <div className="flex min-w-0 flex-col gap-1">
               <p className="min-w-0 break-all">
-                {holder ? holderLabel(holder, userName) : card.cardholderId}
+                {userName ??
+                  holderUserId ??
+                  (holder ? holderLabel(holder, undefined) : card.cardholderId)}
               </p>
               {holder ? (
                 <div className="flex flex-wrap gap-1">

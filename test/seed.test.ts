@@ -128,12 +128,12 @@ describe('pnpm seed idempotency', () => {
     })
 
     const cardholders = await mongoose.connection.collection('cardholders').countDocuments({})
-    expect(cardholders).toBeGreaterThanOrEqual(2)
-    const individual = await mongoose.connection.collection('cardholders').countDocuments({
-      type: 'INDIVIDUAL',
+    expect(cardholders).toBeGreaterThanOrEqual(1)
+    const delegate = await mongoose.connection.collection('cardholders').countDocuments({
+      type: 'DELEGATE',
       status: 'READY',
     })
-    expect(individual).toBeGreaterThanOrEqual(1)
+    expect(delegate).toBeGreaterThanOrEqual(1)
     const cards = await mongoose.connection.collection('cards').find({}).toArray()
     expect(cards).toHaveLength(1)
     expect(cards[0]?.purpose).toBe('MEMBER')

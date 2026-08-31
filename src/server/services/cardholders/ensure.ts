@@ -14,9 +14,11 @@ import {
   createCardholder,
   findCardholderByAirwallexId,
   findCardholderByUserId,
+  findOrgDelegateCardholder,
   updateCardholderAirwallexId,
   updateCardholderStatus,
 } from '@/server/repositories/cardholders'
+import { findOrganizationById } from '@/server/repositories/organizations'
 import { findUserById } from '@/server/repositories/users'
 import { CardholderStatus } from '@/shared/enums/cardholderStatus'
 import { CardholderType } from '@/shared/enums/cardholderType'
@@ -32,10 +34,34 @@ function resolveUseFixtures(deps: EnsureCardholderDeps): boolean {
 }
 
 /**
- * Sandbox placeholder KYC. This Issuing account rejects INDIVIDUAL create
- * without `mobile_number` (`400 mobile_number is mandatory`). 555 is reserved.
+ * Sandbox placeholder KYC. API `2024-02-22` requires email, mobile_number,
+ * top-level address, and `individual` on every cardholder create — including
+ * DELEGATE. This sandbox also returns `400 mobile_number is mandatory` without
+ * a number. 555 is reserved.
  */
 export const SANDBOX_CARDHOLDER_MOBILE = '14155550100'
+export const SANDBOX_CARDHOLDER_DOB = '1990-01-01'
+export const SANDBOX_CARDHOLDER_ADDRESS = {
+  line1: '1 Market Street',
+  city: 'San Francisco',
+  state: 'CA',
+  postcode: '94105',
+  country: 'US',
+}
+
+/** Unique per org — Airwallex emails must be unique on the account. */
+export function delegateCardholderEmail(orgId: string): string {
+  return `allocard-delegate-${orgId}@example.com`
+}
+
+function sandboxIndividual(name: { first_name: string; last_name: string }) {
+  return {
+    name,
+    date_of_birth: SANDBOX_CARDHOLDER_DOB,
+    address: { ...SANDBOX_CARDHOLDER_ADDRESS },
+    express_consent_obtained: 'yes' as const,
+  }
+}
 
 function splitName(name: string): { first_name: string; last_name: string } {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -90,19 +116,8 @@ async function submitIndividualCreate(
       type: 'INDIVIDUAL',
       email,
       mobile_number: SANDBOX_CARDHOLDER_MOBILE,
-      individual: {
-        name,
-        // Sandbox placeholder KYC — real identity collection is out of B5 scope.
-        date_of_birth: '1990-01-01',
-        address: {
-          line1: '1 Market Street',
-          city: 'San Francisco',
-          state: 'CA',
-          postcode: '94105',
-          country: 'US',
-        },
-        express_consent_obtained: 'yes',
-      },
+      address: { ...SANDBOX_CARDHOLDER_ADDRESS },
+      individual: sandboxIndividual(name),
       metadata: { orgId: ctx.orgId, cardDocId: cardholder.id },
     })
 
@@ -121,6 +136,40 @@ async function submitIndividualCreate(
   }
 }
 
+async function submitDelegateCreate(
+  ctx: OrgContext,
+  cardholder: Cardholder,
+  deps: EnsureCardholderDeps,
+): Promise<Cardholder> {
+  const client = deps.airwallex ?? getAirwallexClient()
+  const org = await findOrganizationById(ctx.orgId)
+  const name = splitName(org?.name ?? 'Allocard Delegate')
+  try {
+    const aw = await client.cardholders.create({
+      request_id: cardholderRequestId(cardholder.id),
+      type: 'DELEGATE',
+      email: delegateCardholderEmail(ctx.orgId),
+      mobile_number: SANDBOX_CARDHOLDER_MOBILE,
+      address: { ...SANDBOX_CARDHOLDER_ADDRESS },
+      individual: sandboxIndividual(name),
+      metadata: { orgId: ctx.orgId, cardDocId: cardholder.id },
+    })
+
+    let awId = aw.cardholder_id
+    const clash = await findCardholderByAirwallexId(ctx, awId)
+    if (clash && clash.id !== cardholder.id) {
+      awId = `${aw.cardholder_id}:${cardholder.id}`
+    }
+
+    const withAwId = await updateCardholderAirwallexId(ctx, cardholder.id, awId)
+    const withStatus = await updateCardholderStatus(ctx, cardholder.id, mapAwStatus(aw.status))
+    return withStatus ?? withAwId ?? cardholder
+  } catch (error) {
+    warnCardholder('create', error, { cardholderId: cardholder.id, type: 'DELEGATE' })
+    return (await findOrgDelegateCardholder(ctx)) ?? cardholder
+  }
+}
+
 /** Refresh a PENDING/INCOMPLETE cardholder from Airwallex (retry create or GET). */
 export async function refreshCardholder(
   ctx: OrgContext,
@@ -131,6 +180,9 @@ export async function refreshCardholder(
     isProvisionalAirwallexId(cardholder.airwallexCardholderId) ||
     !isIssuableCardholderId(cardholder.airwallexCardholderId, resolveUseFixtures(deps))
   ) {
+    if (cardholder.type === CardholderType.DELEGATE) {
+      return submitDelegateCreate(ctx, cardholder, deps)
+    }
     if (!cardholder.userId) {
       return cardholder
     }
@@ -188,4 +240,36 @@ export async function ensureIndividualCardholder(
   })
 
   return submitIndividualCreate(ctx, cardholder, userId, deps)
+}
+
+/**
+ * One DELEGATE cardholder per Allocard org (idempotent). Demo cards are all
+ * issued `issue_to: ORGANISATION`; Airwallex never sees an employee cardholder.
+ */
+export async function ensureOrgDelegateCardholder(
+  ctx: OrgContext,
+  deps: EnsureCardholderDeps = {},
+): Promise<Cardholder> {
+  await connectDb()
+
+  const existing = await findOrgDelegateCardholder(ctx)
+  if (existing) {
+    if (!isIssuableCardholderId(existing.airwallexCardholderId, resolveUseFixtures(deps))) {
+      return refreshCardholder(ctx, existing, deps)
+    }
+    if (existing.status === CardholderStatus.READY) {
+      return existing
+    }
+    return refreshCardholder(ctx, existing, deps)
+  }
+
+  const provisionalId = `pending:${randomUUID()}`
+  const cardholder = await createCardholder(ctx, {
+    userId: null,
+    airwallexCardholderId: provisionalId,
+    type: CardholderType.DELEGATE,
+    status: CardholderStatus.PENDING,
+  })
+
+  return submitDelegateCreate(ctx, cardholder, deps)
 }

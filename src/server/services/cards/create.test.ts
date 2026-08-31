@@ -12,7 +12,11 @@ import type { OrgContext } from '@/server/http/types'
 import { resetEventPublisher } from '@/server/events/bus'
 import { resetRedis } from '@/server/redis'
 import { createCard, listCards } from '@/server/repositories/cards'
-import { createCardholder, updateCardholderAirwallexId } from '@/server/repositories/cardholders'
+import {
+  createCardholder,
+  updateCardholderAirwallexId,
+  updateCardholderStatus,
+} from '@/server/repositories/cardholders'
 import { createOrganization } from '@/server/repositories/organizations'
 import { createProject } from '@/server/repositories/projects'
 import * as users from '@/server/repositories/users'
@@ -29,6 +33,7 @@ import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { CardholderStatus } from '@/shared/enums/cardholderStatus'
 import { CardholderType } from '@/shared/enums/cardholderType'
+import { ErrorCode } from '@/shared/enums/errors'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 import type { CardControls } from '@/shared/types/cardControls'
@@ -75,7 +80,11 @@ function mockClient(opts: {
     forAccount: () => mockClient(opts),
     request: vi.fn(),
     cardholders: {
-      create: vi.fn(),
+      create: vi.fn().mockResolvedValue({
+        cardholder_id: 'bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        type: 'DELEGATE',
+        status: 'READY',
+      }),
       get: vi.fn(),
       update: vi.fn(),
     },
@@ -87,6 +96,7 @@ function mockClient(opts: {
       update: vi.fn(),
       limits: vi.fn(),
       activate: vi.fn(),
+      details: vi.fn(),
     },
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],
@@ -132,9 +142,9 @@ describe('services/cards/create', () => {
       code: `I-${Date.now().toString(16).slice(-6)}`,
     })
     const cardholder = await createCardholder(ctx, {
-      userId: user.id,
+      userId: null,
       airwallexCardholderId: '555b9d6b-0966-4190-9864-fc75ff4e0eb6',
-      type: CardholderType.INDIVIDUAL,
+      type: CardholderType.DELEGATE,
       status: CardholderStatus.READY,
     })
     return { ctx, user, project, cardholder }
@@ -159,13 +169,14 @@ describe('services/cards/create', () => {
     const body = vi.mocked(aw.cards.create).mock.calls[0]?.[0]
     expect(body?.created_by).toBe('Priya Sharma')
     expect(body?.created_by).not.toBe(user.id)
-    expect(body?.issue_to).toBe('INDIVIDUAL')
+    expect(body?.issue_to).toBe('ORGANISATION')
+    expect(body?.purpose).toBe('TEAM_EXPENSES')
+    expect(body).not.toHaveProperty('cardholder_id')
     expect(body).not.toHaveProperty('is_personalized')
     expect(body).not.toHaveProperty('program')
-    expect(body).not.toHaveProperty('purpose')
   })
 
-  it('sends issue_to ORGANISATION and purpose only for shared cards', async () => {
+  it('sends issue_to ORGANISATION and purpose for shared cards too', async () => {
     const { ctx, project, cardholder } = await seed()
     const aw = mockClient({})
 
@@ -183,6 +194,7 @@ describe('services/cards/create', () => {
     const body = vi.mocked(aw.cards.create).mock.calls[0]?.[0]
     expect(body?.issue_to).toBe('ORGANISATION')
     expect(body?.purpose).toBe('TEAM_EXPENSES')
+    expect(body).not.toHaveProperty('cardholder_id')
     expect(body).not.toHaveProperty('is_personalized')
     expect(body).not.toHaveProperty('program')
   })
@@ -203,7 +215,7 @@ describe('services/cards/create', () => {
     })
     const createHolder = vi.fn().mockResolvedValue({
       cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-      type: 'INDIVIDUAL',
+      type: 'DELEGATE',
       status: 'READY',
     })
     const aw = mockClient({})
@@ -213,8 +225,7 @@ describe('services/cards/create', () => {
 
     expect(createHolder).toHaveBeenCalled()
     const body = vi.mocked(aw.cards.create).mock.calls[0]?.[0]
-    expect(body?.cardholder_id).toBe('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee')
-    expect(body?.cardholder_id).not.toBe('ch_fixture_ready_001')
+    expect(body).not.toHaveProperty('cardholder_id')
     expect(body?.nick_name).toBe('volt - member')
     expect(hooked.airwallexCardId).toBe('aw_created_001')
   })
@@ -312,6 +323,7 @@ describe('services/cards/create', () => {
       status: CardStatus.PENDING,
       desiredControls: controls(),
       appliedControls: controls(),
+      accessList: [user.id],
     })
     const aw = mockClient({})
 
@@ -350,6 +362,7 @@ describe('services/cards/create', () => {
       status: CardStatus.ACTIVE,
       desiredControls: controls(),
       appliedControls: controls(),
+      accessList: [user.id],
     })
     const aw = mockClient({})
 
@@ -368,6 +381,31 @@ describe('services/cards/create', () => {
 
     expect(outcome.status).toBe(ActionResultStatus.SKIPPED)
     expect(outcome.message).toBe('already issued')
+    expect(aw.cards.create).not.toHaveBeenCalled()
+  })
+
+  it('throws CONFLICT when the org DELEGATE stays PENDING', async () => {
+    const { ctx, project, cardholder } = await seed()
+    await updateCardholderStatus(ctx, cardholder.id, CardholderStatus.PENDING)
+    const aw = mockClient({})
+    aw.cardholders.get = vi.fn().mockResolvedValue({
+      cardholder_id: cardholder.airwallexCardholderId,
+      type: 'DELEGATE',
+      status: 'PENDING',
+    })
+
+    await expect(
+      createCardForProject(
+        ctx,
+        project.id,
+        {
+          purpose: CardPurpose.MEMBER,
+          cardholderId: cardholder.id,
+          desiredControls: controls(),
+        },
+        { airwallex: aw, useFixtures: false },
+      ),
+    ).rejects.toMatchObject({ code: ErrorCode.CONFLICT })
     expect(aw.cards.create).not.toHaveBeenCalled()
   })
 })

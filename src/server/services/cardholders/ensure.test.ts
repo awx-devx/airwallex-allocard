@@ -9,7 +9,11 @@ import type { OrgContext } from '@/server/http/types'
 import * as users from '@/server/repositories/users'
 import { createCardholderForOrg } from '@/server/services/cardholders/create'
 import {
+  delegateCardholderEmail,
   ensureIndividualCardholder,
+  ensureOrgDelegateCardholder,
+  SANDBOX_CARDHOLDER_ADDRESS,
+  SANDBOX_CARDHOLDER_DOB,
   SANDBOX_CARDHOLDER_MOBILE,
 } from '@/server/services/cardholders/ensure'
 import { createCardholder, findCardholderByUserId } from '@/server/repositories/cardholders'
@@ -159,7 +163,59 @@ describe('services/cardholders', () => {
 
     expect(bodies).toHaveLength(1)
     expect(bodies[0]?.mobile_number).toBe(SANDBOX_CARDHOLDER_MOBILE)
+    expect(bodies[0]?.email).toBe(user.email)
+    expect(bodies[0]?.address).toEqual(SANDBOX_CARDHOLDER_ADDRESS)
+    expect(bodies[0]?.individual.express_consent_obtained).toBe('yes')
     expect(created.status).toBe(CardholderStatus.READY)
     expect(created.airwallexCardholderId).toBe('ch_mobile_001')
+  })
+
+  it('sends email, mobile, address, and individual on DELEGATE create', async () => {
+    const orgCtx = ctx('org_delegate_kyc', 'admin_1')
+    const bodies: CreateCardholderBody[] = []
+    const aw = {
+      cardholders: {
+        create: async (body: CreateCardholderBody) => {
+          bodies.push(body)
+          return {
+            cardholder_id: 'ch_delegate_001',
+            type: 'DELEGATE' as const,
+            status: 'READY' as const,
+          }
+        },
+      },
+    } as unknown as AirwallexClient
+
+    const created = await ensureOrgDelegateCardholder(orgCtx, { airwallex: aw })
+
+    expect(bodies).toHaveLength(1)
+    expect(bodies[0]?.type).toBe('DELEGATE')
+    expect(bodies[0]?.email).toBe(delegateCardholderEmail(orgCtx.orgId))
+    expect(bodies[0]?.mobile_number).toBe(SANDBOX_CARDHOLDER_MOBILE)
+    expect(bodies[0]?.address).toEqual(SANDBOX_CARDHOLDER_ADDRESS)
+    expect(bodies[0]?.individual.name.first_name).toBe('Allocard')
+    expect(bodies[0]?.individual.name.last_name).toBe('Delegate')
+    expect(bodies[0]?.individual.date_of_birth).toBe(SANDBOX_CARDHOLDER_DOB)
+    expect(bodies[0]?.individual.express_consent_obtained).toBe('yes')
+    expect(created.status).toBe(CardholderStatus.READY)
+    expect(created.airwallexCardholderId).toBe('ch_delegate_001')
+  })
+
+  it('ensureOrgDelegateCardholder is idempotent per org', async () => {
+    const orgCtx = ctx('org_delegate_ensure', 'admin_1')
+    const redis = createMemoryRedis()
+    const aw = createAirwallexClient(null, {
+      env: testEnv,
+      redis,
+      useFixtures: true,
+      fetchImpl: vi.fn() as unknown as typeof fetch,
+    })
+
+    const first = await ensureOrgDelegateCardholder(orgCtx, { airwallex: aw })
+    const second = await ensureOrgDelegateCardholder(orgCtx, { airwallex: aw })
+
+    expect(second.id).toBe(first.id)
+    expect(first.type).toBe(CardholderType.DELEGATE)
+    expect(first.userId).toBeNull()
   })
 })

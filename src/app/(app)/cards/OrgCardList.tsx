@@ -7,6 +7,7 @@ import { useCardholders, useCards } from '@/client/hooks/useCards'
 import { useOrgMembers } from '@/client/hooks/useOrganizations'
 import { useProjects } from '@/client/hooks/useProjects'
 import {
+  cardHolderUserId,
   cardHref,
   cardListHref,
   holderLabel,
@@ -95,6 +96,14 @@ export function OrgCardList() {
       id: 'holder',
       header: 'Holder',
       cell: (row) => {
+        const holderUserId = cardHolderUserId(row)
+        const fromAccess = memberNameByUserId(holderUserId, orgMembers)
+        if (fromAccess !== undefined) {
+          return fromAccess
+        }
+        if (holderUserId !== null) {
+          return holderUserId
+        }
         const holder = holdersById.get(row.cardholderId)
         if (holder === undefined) {
           return row.cardholderId

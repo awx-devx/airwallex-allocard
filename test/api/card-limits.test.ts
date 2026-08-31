@@ -136,7 +136,11 @@ describe('/api/cards/:id limits + pan-token + reconcile', () => {
     )
     expect(okRes.status).toBe(200)
     const token = await expectMatchesContract(okRes, cardContracts.panToken.output)
-    expect(token.token).toBeTruthy()
+    expect(token.kind).toBe('iframe')
+    if (token.kind === 'iframe') {
+      expect(token.token).toBeTruthy()
+    }
+    expect(token).not.toHaveProperty('number')
     expect(token).not.toHaveProperty('card_number')
 
     const audits = await AuditLogModel.find({

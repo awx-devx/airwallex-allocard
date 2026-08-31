@@ -5,10 +5,13 @@
  * Remaining limits come from `useCardLimits`; this file does not compute spend.
  */
 import { cardsTabHref } from '@/client/lib/budget'
+import { cardHolderUserId } from '@/shared/cardHolder'
 import type { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { listCardsQuery, listProjectCardsQuery } from '@/shared/schemas/card'
-import type { ListCardsQuery, ListProjectCardsQuery } from '@/shared/types/card'
+import type { ListCardsQuery, ListProjectCardsQuery, PanTokenOutput } from '@/shared/types/card'
+
+export { cardHolderUserId }
 
 const MANAGE_DENIED = "You don't have permission to manage this card."
 const REVEAL_DENIED = "You don't have permission to reveal card details. Reveals are audited."
@@ -448,14 +451,41 @@ export function tokenIsExpired(expiresAt: string, nowMs: number): boolean {
   return parsed <= nowMs
 }
 
-export type PanTokenDecision = { kind: 'ok'; token: string } | { kind: 'retry' } | { kind: 'fail' }
+export type PanTokenDecision =
+  | { kind: 'ok'; token: string }
+  | {
+      kind: 'direct'
+      number: string
+      cvv: string
+      expiryMonth: string
+      expiryYear: string
+    }
+  | { kind: 'retry' }
+  | { kind: 'fail' }
 
-/** Valid token → use it. Expired once → retry. Else fail (do not hang on LoadingState). */
+/** Valid iframe token → use it. Direct details → show in-app. Expired once → retry. Else fail. */
 export function classifyPanTokenResult(
-  data: { token: string; expiresAt: string },
+  data: PanTokenOutput,
   nowMs: number,
   alreadyRetried: boolean,
 ): PanTokenDecision {
+  if (data.kind === 'direct') {
+    if (
+      data.number.length >= 1 &&
+      data.cvv.length >= 1 &&
+      data.expiryMonth.length >= 1 &&
+      data.expiryYear.length >= 1
+    ) {
+      return {
+        kind: 'direct',
+        number: data.number,
+        cvv: data.cvv,
+        expiryMonth: data.expiryMonth,
+        expiryYear: data.expiryYear,
+      }
+    }
+    return { kind: 'fail' }
+  }
   if (!tokenIsExpired(data.expiresAt, nowMs) && data.token.length >= 1) {
     return { kind: 'ok', token: data.token }
   }

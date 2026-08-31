@@ -62,11 +62,29 @@ export const closeCardInput = z.object({
   confirm: z.literal(true),
 })
 
-/** Short-lived Airwallex pantoken for the secure iframe — never includes PAN/CVV/expiry. */
-export const panTokenOutput = z.object({
+/** Leftover INDIVIDUAL cards: short-lived pantoken for the Airwallex iframe. */
+export const panTokenIframeOutput = z.object({
+  kind: z.literal('iframe'),
   token: z.string().min(1),
   expiresAt: isoDateSchema,
 })
+
+/**
+ * Organisation cards: GET /issuing/cards/{id}/details.
+ * Never persist these fields. Response only — never a database or audit value.
+ */
+export const panTokenDirectOutput = z.object({
+  kind: z.literal('direct'),
+  number: z.string().min(1),
+  cvv: z.string().min(1),
+  expiryMonth: z.string().min(1),
+  expiryYear: z.string().min(1),
+})
+
+export const panTokenOutput = z.discriminatedUnion('kind', [
+  panTokenIframeOutput,
+  panTokenDirectOutput,
+])
 
 export const cardLimitEntrySchema = z.object({
   interval: z.enum(TransactionLimitInterval),

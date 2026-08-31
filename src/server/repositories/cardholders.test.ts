@@ -84,4 +84,23 @@ describe('repositories/cardholders', () => {
     )
     expect(updated?.status).toBe(CardholderStatus.READY)
   })
+
+  it('finds the oldest org DELEGATE with null userId', async () => {
+    const orgCtx = ctx('org_delegate_find')
+    const first = await cardholders.createCardholder(orgCtx, {
+      userId: null,
+      airwallexCardholderId: 'aw_del_1',
+      type: CardholderType.DELEGATE,
+      status: CardholderStatus.READY,
+    })
+    await cardholders.createCardholder(orgCtx, {
+      userId: null,
+      airwallexCardholderId: 'aw_del_2',
+      type: CardholderType.DELEGATE,
+      status: CardholderStatus.PENDING,
+    })
+    const found = await cardholders.findOrgDelegateCardholder(orgCtx)
+    expect(found?.id).toBe(first.id)
+    expect(await cardholders.findOrgDelegateCardholder(ctx('org_other'))).toBeNull()
+  })
 })

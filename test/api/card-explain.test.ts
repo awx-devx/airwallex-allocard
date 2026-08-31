@@ -78,6 +78,7 @@ function mockClient(): AirwallexClient {
       update: vi.fn().mockResolvedValue({}),
       limits: vi.fn(),
       activate: vi.fn(),
+      details: vi.fn(),
     },
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],

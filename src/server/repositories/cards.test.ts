@@ -101,6 +101,10 @@ describe('repositories/cards', () => {
     const access = await cards.updateCardAccessList(orgCtx, a.id, ['user_x'])
     expect(access?.accessList).toEqual(['user_x'])
 
+    const byHolder = await cards.listCards(orgCtx, { accessListUserId: 'user_x' })
+    expect(byHolder.total).toBe(1)
+    expect(byHolder.items[0]?.id).toBe(a.id)
+
     const nextControls = controls({
       transactionLimits: {
         currency: 'USD',

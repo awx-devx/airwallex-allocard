@@ -57,6 +57,7 @@ function mockClient(updateImpl: AirwallexClient['cards']['update']): AirwallexCl
       update: updateImpl,
       limits: vi.fn(),
       activate: vi.fn(),
+      details: vi.fn(),
     },
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],

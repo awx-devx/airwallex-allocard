@@ -13,6 +13,7 @@ import {
   canFreezeCard,
   canRevealCard,
   canUnfreezeCard,
+  cardHolderUserId,
   cardHref,
   cardLimitsToMeters,
   cardListHref,
@@ -274,14 +275,41 @@ describe('reveal iframe', () => {
 
   it('retries an expired pantoken once, then fails instead of hanging', () => {
     const now = Date.parse('2026-08-16T12:00:00.000Z')
-    const expired = { token: 'tok', expiresAt: '2026-08-11T00:00:00.000Z' }
-    const fresh = { token: 'tok', expiresAt: '2026-08-17T00:00:00.000Z' }
+    const expired = { kind: 'iframe' as const, token: 'tok', expiresAt: '2026-08-11T00:00:00.000Z' }
+    const fresh = { kind: 'iframe' as const, token: 'tok', expiresAt: '2026-08-17T00:00:00.000Z' }
     expect(classifyPanTokenResult(expired, now, false)).toEqual({ kind: 'retry' })
     expect(classifyPanTokenResult(expired, now, true)).toEqual({ kind: 'fail' })
     expect(classifyPanTokenResult(fresh, now, false)).toEqual({ kind: 'ok', token: 'tok' })
     expect(
-      classifyPanTokenResult({ token: '', expiresAt: '2026-08-17T00:00:00.000Z' }, now, false),
+      classifyPanTokenResult(
+        { kind: 'iframe', token: '', expiresAt: '2026-08-17T00:00:00.000Z' },
+        now,
+        false,
+      ),
     ).toEqual({ kind: 'fail' })
+  })
+
+  it('returns direct details without expiry retry', () => {
+    const now = Date.parse('2026-08-16T12:00:00.000Z')
+    expect(
+      classifyPanTokenResult(
+        {
+          kind: 'direct',
+          number: '4111111111111111',
+          cvv: 'FAKESECRET_i2j3k4l5m6n7o8p9q0r1',
+          expiryMonth: '12',
+          expiryYear: '2028',
+        },
+        now,
+        false,
+      ),
+    ).toEqual({
+      kind: 'direct',
+      number: '4111111111111111',
+      cvv: 'FAKESECRET_i2j3k4l5m6n7o8p9q0r1',
+      expiryMonth: '12',
+      expiryYear: '2028',
+    })
   })
 })
 
@@ -310,6 +338,11 @@ describe('labels and lists', () => {
       { userId: 'b', name: 'Bea' },
     ])
     expect(accessListNames(['missing'], [])).toEqual([{ userId: 'missing', name: 'missing' }])
+  })
+
+  it('reads the Allocard holder from accessList[0]', () => {
+    expect(cardHolderUserId({ accessList: ['user_a', 'user_b'] })).toBe('user_a')
+    expect(cardHolderUserId({ accessList: [] })).toBeNull()
   })
 
   it('flattens transaction pages and passes remaining through unclamped', () => {
@@ -414,6 +447,9 @@ describe('A5.10 invariant proofs', () => {
     ]
     expect(files.length).toBeGreaterThan(1)
     for (const file of files) {
+      if (file.endsWith('/reveal/RevealCard.tsx')) {
+        continue
+      }
       let src = readFileSync(file, 'utf8')
       for (const header of PAN_HEADER_ALLOWLIST) {
         src = src.replaceAll(header, '')
@@ -460,7 +496,11 @@ describe('A5.10 invariant proofs', () => {
     expect(reveal).toContain('usePanToken')
     expect(reveal).toContain('airwallexRevealIframeSrc')
     expect(reveal).toContain('classifyPanTokenResult')
+    expect(reveal).toContain("kind === 'direct'")
+    expect(reveal).toContain('CardVisual')
+    expect(reveal).toContain('copyToClipboard')
     expect(reveal).not.toContain('console.log')
+    expect(reveal).not.toContain('card_number')
     expect(reveal).toMatch(/className="[^"]*\bw-full\b/)
     expect(reveal).not.toMatch(/w-\[/)
     expect(reveal).not.toMatch(/min-w-\[/)

@@ -14,7 +14,6 @@ import { findRoleById } from '@/server/repositories/roles'
 import { findUserById } from '@/server/repositories/users'
 import { computeEffectivePermissions } from '@/server/services/access/computeEffectivePermissions'
 import { audit } from '@/server/services/audit/log'
-import { ensureIndividualCardholder } from '@/server/services/cardholders/ensure'
 import { assertProjectInOrg, toProjectMemberDetail } from '@/server/services/projectMembers/list'
 import { ActorType } from '@/shared/enums/audit'
 import { OrgRole } from '@/shared/enums/orgRole'
@@ -115,14 +114,6 @@ export async function addProjectMemberForProject(
       addedBy: ctx.userId,
     },
   })
-
-  // Provision INDIVIDUAL cardholder at member-add (screening is async).
-  // Never fail member-add if Airwallex is PENDING / unavailable.
-  try {
-    await ensureIndividualCardholder(ctx, input.userId)
-  } catch {
-    // Swallow — member is already added; cardholder can be ensured later.
-  }
 
   return detail
 }

@@ -4,6 +4,7 @@ import { publishEvent } from '@/server/events/bus'
 import { DomainEventType } from '@/server/events/types'
 import { AppError } from '@/server/http/errors'
 import { audit } from '@/server/services/audit/log'
+import { ensureOrgDelegateCardholder } from '@/server/services/cardholders/ensure'
 import { seedRoleTemplates } from '@/server/services/organizations/seedRoleTemplates'
 import { createMembership } from '@/server/repositories/memberships'
 import { createOrganization, findOrganizationBySlug } from '@/server/repositories/organizations'
@@ -94,6 +95,12 @@ export async function createOrganizationForUser(
   }
 
   await seedRoleTemplates(org.id)
+
+  try {
+    await ensureOrgDelegateCardholder(ctx)
+  } catch {
+    // Swallow — card create will ensure the org DELEGATE later.
+  }
 
   await audit(ctx, {
     action: 'organization.created',

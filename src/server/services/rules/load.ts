@@ -13,6 +13,7 @@ import { findLastRuleRun } from '@/server/repositories/ruleRuns'
 import { previousValuesFrom } from '@/server/services/rules/record'
 import type { PipelineCard } from '@/server/services/rules/pipeline'
 import type { TargetMember } from '@/server/services/rules/targets'
+import { cardHolderUserId } from '@/shared/cardHolder'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { DesiredCardStatus } from '@/shared/enums/desiredCardStatus'
 import type { AttributeLiteral } from '@/shared/types/attribute'
@@ -51,7 +52,7 @@ export async function loadPipelineCards(
     cardId: card.id,
     projectId: card.projectId,
     purpose: card.purpose,
-    userId: userIdByCardholder.get(card.cardholderId) ?? null,
+    userId: cardHolderUserId(card) ?? userIdByCardholder.get(card.cardholderId) ?? null,
     controls: card.appliedControls,
     cardStatus: desiredStatusOf(card.status),
   }))

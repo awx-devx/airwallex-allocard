@@ -264,9 +264,7 @@ describe('/api/projects/:id/members', () => {
       expect(events[0]?.projectId).toBe(setup.project.id)
 
       const cardholder = await cardholdersRepo.findCardholderByUserId(setup.ctx, assignee.id)
-      expect(cardholder).not.toBeNull()
-      expect(cardholder?.type).toBe('INDIVIDUAL')
-      expect(cardholder?.userId).toBe(assignee.id)
+      expect(cardholder).toBeNull()
     })
 
     it('rejects adding a user who is not an org member', async () => {

@@ -13,7 +13,7 @@ export type TargetCard = {
   cardId: string
   projectId: string | null
   purpose: CardPurpose
-  /** User the card's cardholder belongs to; null for delegate cardholders. */
+  /** User assigned via accessList (MEMBER) or the INDIVIDUAL cardholder; null for unassigned DELEGATE. */
   userId: string | null
 }
 

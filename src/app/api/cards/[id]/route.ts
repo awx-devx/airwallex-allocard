@@ -8,6 +8,7 @@ import { withValidation } from '@/server/http/withValidation'
 import { getCardForOrg } from '@/server/services/cards/list'
 import { updateCardForOrg } from '@/server/services/cards/update'
 import { findCardById } from '@/server/repositories/cards'
+import { permissionSubjectForCard } from '@/server/services/cards/subject'
 import { Permission } from '@/shared/enums/permissions'
 
 function requireCardId(req: Request): string {
@@ -25,10 +26,7 @@ async function subjectForCard(ctx: Parameters<typeof findCardById>[0], cardId: s
   }
   return {
     card,
-    subject: {
-      projectId: card.projectId ?? undefined,
-      cardId: card.id,
-    },
+    subject: permissionSubjectForCard(ctx, card),
   }
 }
 

@@ -32,6 +32,8 @@ export type ListCardsFilter = {
   status?: CardStatus
   purpose?: CardPurpose
   cardholderId?: string
+  /** Mongo array-contains: MEMBER cards assigned to this user. */
+  accessListUserId?: string
   page?: number
   pageSize?: number
 }
@@ -172,6 +174,7 @@ export async function listCards(ctx: OrgContext, filter: ListCardsFilter = {}): 
   if (filter.status !== undefined) query.status = filter.status
   if (filter.purpose !== undefined) query.purpose = filter.purpose
   if (filter.cardholderId !== undefined) query.cardholderId = filter.cardholderId
+  if (filter.accessListUserId !== undefined) query.accessList = filter.accessListUserId
 
   const [total, docs] = await Promise.all([
     CardModel.countDocuments(query).exec(),
@@ -262,6 +265,24 @@ export async function updateCardNickname(
   const doc = await CardModel.findOneAndUpdate(
     { _id: id, orgId: ctx.orgId },
     { $set: { nickName } },
+    { returnDocument: 'after' },
+  )
+    .lean()
+    .exec()
+  return doc ? toCard(doc) : null
+}
+
+export async function updateCardCardholderId(
+  ctx: OrgContext,
+  id: string,
+  cardholderId: string,
+): Promise<Card | null> {
+  if (!isValidObjectId(id)) {
+    return null
+  }
+  const doc = await CardModel.findOneAndUpdate(
+    { _id: id, orgId: ctx.orgId },
+    { $set: { cardholderId } },
     { returnDocument: 'after' },
   )
     .lean()

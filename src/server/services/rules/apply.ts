@@ -17,7 +17,7 @@ import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import { getRedis, redisKeys } from '@/server/redis'
 import { findCardById, listCards, updateDesiredControls } from '@/server/repositories/cards'
-import { ensureIndividualCardholder } from '@/server/services/cardholders/ensure'
+import { ensureOrgDelegateCardholder } from '@/server/services/cardholders/ensure'
 import {
   completePendingCard,
   createCardForProject,
@@ -317,7 +317,7 @@ function controlsFromCreateDetails(
 
 /**
  * Pipeline step 7 for `card.create` — provision a MEMBER card for a named member.
- * SHARED / VENDOR / ONE_TIME are not provisioned here (need DELEGATE cardholders).
+ * Airwallex cardholder is the org DELEGATE; the member is `accessList`.
  */
 export async function applyCardCreate(
   ctx: OrgContext,
@@ -354,7 +354,7 @@ export async function applyCardCreate(
     }
   }
 
-  const cardholder = await ensureIndividualCardholder(ctx, input.memberId, deps)
+  const cardholder = await ensureOrgDelegateCardholder(ctx, deps)
   if (cardholder.status !== CardholderStatus.READY) {
     return {
       status: ActionResultStatus.SKIPPED,
@@ -365,8 +365,8 @@ export async function applyCardCreate(
 
   const existing = await listCards(ctx, {
     projectId: input.projectId,
-    cardholderId: cardholder.id,
     purpose: CardPurpose.MEMBER,
+    accessListUserId: input.memberId,
     page: 1,
     pageSize: 1,
   })

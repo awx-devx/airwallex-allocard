@@ -84,12 +84,12 @@ function mockClient(cardholderStatus: 'READY' | 'PENDING' = 'READY'): AirwallexC
     cardholders: {
       create: vi.fn().mockResolvedValue({
         cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-        type: 'INDIVIDUAL',
+        type: 'DELEGATE',
         status: cardholderStatus,
       }),
       get: vi.fn().mockResolvedValue({
         cardholder_id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-        type: 'INDIVIDUAL',
+        type: 'DELEGATE',
         status: cardholderStatus,
       }),
       update: vi.fn(),
@@ -106,6 +106,7 @@ function mockClient(cardholderStatus: 'READY' | 'PENDING' = 'READY'): AirwallexC
       update: vi.fn().mockResolvedValue({}),
       limits: vi.fn(),
       activate: vi.fn(),
+      details: vi.fn(),
     },
     transactions: {} as AirwallexClient['transactions'],
     config: {} as AirwallexClient['config'],
@@ -225,9 +226,9 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       addedBy: 'user_1',
     })
     await createCardholder(ctx, {
-      userId: 'user_spender',
+      userId: null,
       airwallexCardholderId: 'aw_ch_spender',
-      type: CardholderType.INDIVIDUAL,
+      type: CardholderType.DELEGATE,
       status: CardholderStatus.READY,
     })
 
@@ -276,9 +277,9 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       addedBy: 'user_1',
     })
     const cardholder = await createCardholder(ctx, {
-      userId: 'user_spender',
+      userId: null,
       airwallexCardholderId: 'ch_pending_live',
-      type: CardholderType.INDIVIDUAL,
+      type: CardholderType.DELEGATE,
       status: CardholderStatus.PENDING,
     })
 
@@ -324,9 +325,9 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       addedBy: 'user_1',
     })
     const cardholder = await createCardholder(ctx, {
-      userId: 'user_spender',
+      userId: null,
       airwallexCardholderId: 'aw_ch_stub',
-      type: CardholderType.INDIVIDUAL,
+      type: CardholderType.DELEGATE,
       status: CardholderStatus.READY,
     })
     await createCard(ctx, {
@@ -339,6 +340,7 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       status: CardStatus.PENDING,
       desiredControls: controls(),
       appliedControls: controls(),
+      accessList: ['user_spender'],
     })
 
     const rule = await createRule(ctx, issuanceRuleFields(project.id))
@@ -372,9 +374,9 @@ describe('rules/examples (RULES-ENGINE §6)', () => {
       addedBy: 'user_1',
     })
     await createCardholder(ctx, {
-      userId: 'user_spender',
+      userId: null,
       airwallexCardholderId: 'aw_ch_enable',
-      type: CardholderType.INDIVIDUAL,
+      type: CardholderType.DELEGATE,
       status: CardholderStatus.READY,
     })
 

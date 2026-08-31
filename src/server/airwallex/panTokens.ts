@@ -5,7 +5,8 @@ import type {
 } from '@/server/airwallex/types'
 
 /**
- * PAN token for Airwallex secure iframe. Never call GET .../details.
+ * PAN token for the Airwallex iframe — leftover INDIVIDUAL cards only.
+ * Organisation cards use `cards.details` instead.
  * Response must never include PAN/CVV/expiry.
  */
 export type PanTokensApi = {

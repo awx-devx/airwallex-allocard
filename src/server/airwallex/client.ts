@@ -22,7 +22,8 @@ export type AirwallexClientDeps = HttpDeps & {
  * Account-scoped Airwallex client. Demo always uses `forAccount(null)`
  * (single-account tenancy).
  *
- * Never exposes GET /issuing/cards/{id}/details (PCI).
+ * GET /issuing/cards/{id}/details is organisation-card reveal only.
+ * Never persist, log, or audit PAN/CVV/expiry.
  */
 export type AirwallexClient = AirwallexRequester & {
   forAccount(accountId: string | null): AirwallexClient

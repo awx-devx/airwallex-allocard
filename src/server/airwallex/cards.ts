@@ -1,6 +1,7 @@
 import type { OrgContext } from '@/server/http/types'
 import type {
   AirwallexCard,
+  AirwallexCardDetails,
   AirwallexCardLimits,
   AirwallexCardListResponse,
   AirwallexRequester,
@@ -28,6 +29,11 @@ export type CardsApi = {
   update(cardId: string, body: UpdateCardBody): Promise<AirwallexCard>
   limits(cardId: string): Promise<AirwallexCardLimits>
   activate(cardId: string): Promise<AirwallexCard>
+  /**
+   * Sensitive details for organisation cards only. Never persist the result.
+   * Do not call for `issue_to: INDIVIDUAL` (PCI).
+   */
+  details(cardId: string): Promise<AirwallexCardDetails>
 }
 
 function buildListQuery(filter?: ListCardsFilter): Record<string, string | undefined> {
@@ -116,6 +122,13 @@ export function createCardsApi(client: AirwallexRequester): CardsApi {
         method: 'POST',
         path: `/api/v1/issuing/cards/${cardId}/activate`,
         body: {},
+      })
+    },
+
+    details(cardId) {
+      return client.request<AirwallexCardDetails>({
+        method: 'GET',
+        path: `/api/v1/issuing/cards/${cardId}/details`,
       })
     },
   }

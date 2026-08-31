@@ -68,6 +68,13 @@ describe('airwallex/issuing', () => {
       type: 'INDIVIDUAL',
       email: 'priya@example.com',
       mobile_number: '14155550100',
+      address: {
+        line1: '1 Market St',
+        city: 'San Francisco',
+        state: 'CA',
+        postcode: '94105',
+        country: 'US',
+      },
       individual: {
         name: { first_name: 'Priya', last_name: 'Sharma' },
         date_of_birth: '1990-04-12',
@@ -167,6 +174,12 @@ describe('airwallex/issuing', () => {
     expect(Date.parse(pan.expires_at)).toBeGreaterThan(Date.now())
     expect(pan).not.toHaveProperty('card_number')
     expect(pan).not.toHaveProperty('cvv')
+
+    const details = await client.cards.details('card_fixture_001')
+    expect(details.card_number).toMatch(/^\d{13,19}$/)
+    expect(String(details.cvv).length).toBeGreaterThan(0)
+    expect(String(details.expiry_month).length).toBeGreaterThan(0)
+    expect(String(details.expiry_year).length).toBeGreaterThan(0)
   })
 
   it('transactions stubs throw TODO(B8)', async () => {
@@ -176,8 +189,8 @@ describe('airwallex/issuing', () => {
     await expect(client.transactions.events(orgA, 'tx_1')).rejects.toThrow(/TODO\(B8\)/)
   })
 
-  it('does not expose a details method on cards', () => {
+  it('exposes a details method on cards for organisation reveal', () => {
     const client = makeClient()
-    expect('details' in client.cards).toBe(false)
+    expect('details' in client.cards).toBe(true)
   })
 })

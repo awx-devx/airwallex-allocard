@@ -102,6 +102,15 @@ describe('services/cards/panToken', () => {
   it('maps Airwallex access_denied to UPSTREAM_ERROR without auditing', async () => {
     const { ctx, card } = await seedCard()
     const aw = {
+      cards: {
+        get: vi.fn().mockResolvedValue({
+          card_id: card.airwallexCardId,
+          cardholder_id: '555b9d6b-0966-4190-9864-fc75ff4e0eb6',
+          card_status: 'ACTIVE',
+          issue_to: 'INDIVIDUAL',
+        }),
+        details: vi.fn(),
+      },
       panTokens: {
         create: vi.fn().mockRejectedValue(
           new AirwallexError({
@@ -120,6 +129,8 @@ describe('services/cards/panToken', () => {
     expect((err as AppError).code).toBe(ErrorCode.UPSTREAM_ERROR)
     expect((err as AppError).message).toBe('Access is denied to this resource')
 
+    expect(aw.cards.get).toHaveBeenCalledWith(card.airwallexCardId)
+    expect(aw.cards.details).not.toHaveBeenCalled()
     expect(aw.panTokens.create).toHaveBeenCalledWith({ card_id: card.airwallexCardId })
     const audits = await AuditLogModel.find({
       orgId: ctx.orgId,
@@ -127,5 +138,50 @@ describe('services/cards/panToken', () => {
       subjectId: card.id,
     }).exec()
     expect(audits).toHaveLength(0)
+  })
+
+  it('uses GET details for ORGANISATION cards and does not call pantokens', async () => {
+    const { ctx, card } = await seedCard()
+    const aw = {
+      cards: {
+        get: vi.fn().mockResolvedValue({
+          card_id: card.airwallexCardId,
+          cardholder_id: null,
+          card_status: 'ACTIVE',
+          issue_to: 'ORGANISATION',
+        }),
+        details: vi.fn().mockResolvedValue({
+          card_number: '4111111111111111',
+          cvv: 'FAKESECRET_i2j3k4l5m6n7o8p9q0r1',
+          expiry_month: 12,
+          expiry_year: 2028,
+        }),
+      },
+      panTokens: {
+        create: vi.fn(),
+      },
+    } as unknown as AirwallexClient
+
+    const output = await createPanTokenForCard(ctx, card.id, { airwallex: aw })
+    expect(output).toEqual({
+      kind: 'direct',
+      number: '4111111111111111',
+      cvv: 'FAKESECRET_i2j3k4l5m6n7o8p9q0r1',
+      expiryMonth: '12',
+      expiryYear: '2028',
+    })
+    expect(aw.cards.details).toHaveBeenCalledWith(card.airwallexCardId)
+    expect(aw.panTokens.create).not.toHaveBeenCalled()
+
+    const audits = await AuditLogModel.find({
+      orgId: ctx.orgId,
+      action: 'card.pan_token_created',
+      subjectId: card.id,
+    }).exec()
+    expect(audits).toHaveLength(1)
+    const meta = JSON.stringify(audits[0]?.toObject())
+    expect(meta).not.toContain('4111111111111111')
+    expect(meta.toLowerCase()).not.toContain('card_number')
+    expect(meta.toLowerCase()).not.toMatch(/"cvv"/)
   })
 })

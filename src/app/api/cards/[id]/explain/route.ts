@@ -4,6 +4,7 @@ import { requirePermission } from '@/server/http/requirePermission'
 import { getRouteParams, withRouteParams } from '@/server/http/routeParams'
 import { withAuth } from '@/server/http/withAuth'
 import { findCardById } from '@/server/repositories/cards'
+import { permissionSubjectForCard } from '@/server/services/cards/subject'
 import { explainCard } from '@/server/services/rules/explain'
 import { Permission } from '@/shared/enums/permissions'
 
@@ -23,10 +24,7 @@ export const GET = withRouteParams(
     if (!card) {
       throw AppError.notFound()
     }
-    await requirePermission(ctx, Permission.CARD_VIEW, {
-      projectId: card.projectId ?? undefined,
-      cardId: card.id,
-    })
+    await requirePermission(ctx, Permission.CARD_VIEW, permissionSubjectForCard(ctx, card))
     return ok(await explainCard(ctx, cardId))
   }),
 )

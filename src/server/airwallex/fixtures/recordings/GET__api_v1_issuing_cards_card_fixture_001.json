@@ -6,6 +6,7 @@
   "nick_name": "APAC Brand Launch — Priya",
   "form_factor": "VIRTUAL",
   "is_personalized": true,
+  "issue_to": "INDIVIDUAL",
   "metadata": {
     "orgId": "org_fixture_a",
     "projectId": "proj_fixture_1",

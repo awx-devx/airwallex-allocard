@@ -19,13 +19,12 @@ import { cardContracts } from '@/shared/contracts/card'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardholderStatus } from '@/shared/enums/cardholderStatus'
 import { CardholderType } from '@/shared/enums/cardholderType'
-import { ErrorCode } from '@/shared/enums/errors'
 import { OrgRole } from '@/shared/enums/orgRole'
 import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 import { makeCardControls } from '../helpers/factories'
 import { expectMatchesContract } from '../helpers/contract'
 import { useTestDb } from '../helpers/db'
-import { buildRequest, installTestSessionResolver, readBody } from '../helpers/request'
+import { buildRequest, installTestSessionResolver } from '../helpers/request'
 import * as cardholdersRepo from '@/server/repositories/cardholders'
 
 describe('/api/cards', () => {
@@ -131,13 +130,14 @@ describe('/api/cards', () => {
     expect(audits).toHaveLength(1)
   })
 
-  it('returns 409 CONFLICT when cardholder is not READY', async () => {
+  it('returns 201 using the org DELEGATE even if the request names a PENDING cardholder', async () => {
     const setup = await seedOwnerWithProject()
-    await cardholdersRepo.updateCardholderStatus(
-      setup.ctx,
-      setup.cardholder.id,
-      CardholderStatus.PENDING,
-    )
+    const pending = await cardholdersRepo.createCardholder(setup.ctx, {
+      userId: setup.user.id,
+      airwallexCardholderId: 'pending:ignored-individual',
+      type: CardholderType.INDIVIDUAL,
+      status: CardholderStatus.PENDING,
+    })
 
     const res = await POST(
       buildRequest({
@@ -147,18 +147,14 @@ describe('/api/cards', () => {
         params: { id: setup.project.id },
         body: {
           purpose: CardPurpose.SHARED,
-          cardholderId: setup.cardholder.id,
+          cardholderId: pending.id,
           desiredControls: makeCardControls(),
         },
       }),
     )
-    expect(res.status).toBe(409)
-    const body = await readBody<{ error: { code: string; details?: { retryable?: boolean } } }>(res)
-    expect(body.error.code).toBe(ErrorCode.CONFLICT)
-    expect(body.error.details?.retryable).toBe(true)
-
-    const cards = await CardModel.find({ orgId: setup.org.id }).exec()
-    expect(cards).toHaveLength(0)
+    expect(res.status).toBe(201)
+    const body = await expectMatchesContract(res, cardContracts.create.output)
+    expect(body.cardholderId).toBe(setup.cardholder.id)
   })
 
   it('returns 422 for empty allowlist and never creates a card', async () => {

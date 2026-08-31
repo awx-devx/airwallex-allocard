@@ -53,7 +53,14 @@ function ContactlessMark({ className }: { className?: string }) {
   )
 }
 
-export function CardVisual({ nickName, maskedNumber, status, purpose, onReveal }: CardVisualProps) {
+export function CardVisual({
+  nickName,
+  maskedNumber,
+  status,
+  purpose,
+  onReveal,
+  validThru,
+}: CardVisualProps) {
   return (
     <div
       className={cn(
@@ -104,7 +111,14 @@ export function CardVisual({ nickName, maskedNumber, status, purpose, onReveal }
             </p>
             <p className="truncate text-sm font-medium tracking-wide uppercase">{nickName}</p>
           </div>
-          {onReveal ? (
+          {validThru ? (
+            <div className="shrink-0 text-right">
+              <p className="text-[0.6rem] tracking-wider uppercase text-primary-foreground/55">
+                Valid thru
+              </p>
+              <p className="font-mono text-sm tabular-nums">{validThru}</p>
+            </div>
+          ) : onReveal ? (
             <Button
               type="button"
               variant="ghost"

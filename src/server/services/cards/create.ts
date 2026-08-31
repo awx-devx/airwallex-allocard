@@ -24,12 +24,13 @@ import {
   findCardById,
   updateAppliedControls,
   updateCardAirwallexFields,
+  updateCardCardholderId,
 } from '@/server/repositories/cards'
 import { findProjectById } from '@/server/repositories/projects'
 import { findUserById } from '@/server/repositories/users'
 import { audit } from '@/server/services/audit/log'
 import { purposeToTransactionCount, toAirwallexControls } from '@/server/services/cards/controls'
-import { ensureIndividualCardholder } from '@/server/services/cardholders/ensure'
+import { ensureOrgDelegateCardholder } from '@/server/services/cardholders/ensure'
 import { ActorType } from '@/shared/enums/audit'
 import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { CardStatus } from '@/shared/enums/cardStatus'
@@ -98,13 +99,14 @@ function assertNoEmptyAllowlists(controls: CardControls): void {
 
 /**
  * Pinned API `2024-02-22` create body.
- * MEMBER → `issue_to: INDIVIDUAL` (named person). SHARED/VENDOR/ONE_TIME →
- * `ORGANISATION` (business card). Do not send `program`, `is_personalized`,
- * or `purpose` on INDIVIDUAL — the last of those is the live 400.
+ * Always `issue_to: ORGANISATION` + `purpose: TEAM_EXPENSES` so Reveal can
+ * use GET .../details (PCI denies pantokens on personalized / INDIVIDUAL
+ * cards). Do not send `program`, `is_personalized`, or `cardholder_id` —
+ * organisation cards are issued to the account (`400 cardholder_id must be
+ * null when issue_to is set to ORGANISATION`).
  */
 export function buildCreateCardBody(input: {
   localCardId: string
-  airwallexCardholderId: string
   createdBy: string
   purpose: CardPurpose
   nickName: string
@@ -112,13 +114,12 @@ export function buildCreateCardBody(input: {
   projectId: string | null
   controls: CardControls
 }): CreateCardBody {
-  const issueTo = input.purpose === CardPurpose.MEMBER ? 'INDIVIDUAL' : 'ORGANISATION'
   return {
     request_id: cardRequestId(input.localCardId),
-    cardholder_id: input.airwallexCardholderId,
     created_by: input.createdBy,
     form_factor: 'VIRTUAL',
-    issue_to: issueTo,
+    issue_to: 'ORGANISATION',
+    purpose: 'TEAM_EXPENSES',
     nick_name: input.nickName.replace(/[—–]/g, '-').slice(0, 100),
     metadata: {
       orgId: input.orgId,
@@ -126,7 +127,6 @@ export function buildCreateCardBody(input: {
       cardDocId: input.localCardId,
     },
     authorization_controls: toAirwallexControls(input.controls),
-    ...(issueTo === 'ORGANISATION' ? { purpose: 'TEAM_EXPENSES' as const } : {}),
   }
 }
 
@@ -234,36 +234,29 @@ export async function completePendingCard(
     return card
   }
 
-  let cardholder = await findCardholderById(ctx, card.cardholderId)
-  if (!cardholder || cardholder.status !== CardholderStatus.READY) {
+  const cardholder = await ensureOrgDelegateCardholder(ctx, deps)
+  if (card.cardholderId !== cardholder.id) {
+    const patched = await updateCardCardholderId(ctx, card.id, cardholder.id)
+    if (patched) {
+      card = patched
+    }
+  }
+  if (cardholder.status !== CardholderStatus.READY) {
+    warnCard('create', new Error(`cardholder is ${cardholder.status}; wait until READY`), {
+      cardId: card.id,
+      airwallexCardholderId: cardholder.airwallexCardholderId,
+      status: cardholder.status,
+    })
     return card
   }
 
   const useFixtures = resolveUseFixtures(deps)
   if (!isIssuableCardholderId(cardholder.airwallexCardholderId, useFixtures)) {
-    if (!cardholder.userId) {
-      warnCard('create', new Error('cardholder id is not a live Airwallex UUID'), {
-        cardId: card.id,
-        airwallexCardholderId: cardholder.airwallexCardholderId,
-      })
-      return card
-    }
-    cardholder = await ensureIndividualCardholder(ctx, cardholder.userId, deps)
-    if (cardholder.status !== CardholderStatus.READY) {
-      warnCard('create', new Error(`cardholder is ${cardholder.status}; wait until READY`), {
-        cardId: card.id,
-        airwallexCardholderId: cardholder.airwallexCardholderId,
-        status: cardholder.status,
-      })
-      return card
-    }
-    if (!isIssuableCardholderId(cardholder.airwallexCardholderId, useFixtures)) {
-      warnCard('create', new Error('cardholder still has a non-UUID Airwallex id; not creating'), {
-        cardId: card.id,
-        airwallexCardholderId: cardholder.airwallexCardholderId,
-      })
-      return card
-    }
+    warnCard('create', new Error('cardholder still has a non-UUID Airwallex id; not creating'), {
+      cardId: card.id,
+      airwallexCardholderId: cardholder.airwallexCardholderId,
+    })
+    return card
   }
 
   const client = deps.airwallex ?? getAirwallexClient()
@@ -282,7 +275,6 @@ export async function completePendingCard(
   try {
     const body = buildCreateCardBody({
       localCardId: card.id,
-      airwallexCardholderId: cardholder.airwallexCardholderId,
       createdBy: await resolveCreatedByName(ctx.userId),
       purpose: card.purpose,
       nickName: card.nickName,
@@ -313,11 +305,12 @@ export async function createCardForProject(
     throw AppError.notFound()
   }
 
-  const cardholder = await findCardholderById(ctx, input.cardholderId)
-  if (!cardholder) {
+  const requested = await findCardholderById(ctx, input.cardholderId)
+  if (!requested) {
     throw AppError.notFound()
   }
 
+  const cardholder = await ensureOrgDelegateCardholder(ctx, deps)
   if (cardholder.status !== CardholderStatus.READY) {
     throw new AppError(
       ErrorCode.CONFLICT,

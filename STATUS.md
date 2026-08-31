@@ -2,10 +2,10 @@
 
 Single source of truth for _where the build is_. Update at the end of every task.
 
-**Active phase:** Visual language and layout (post–Track A)
-**Active task:** _wait for the user to name the next phase_
-**Last green `pnpm verify`:** 2026-08-21 (PAN token 403 mapped to 502; 1895 tests)
-**Blocked on:** Airwallex PAN delegation (`POST /issuing/pantokens/create` → `403 access_denied`)
+**Active phase:** Org-issued cards (PAN reveal)
+**Active task:** _done — wait for the user to name the next phase_
+**Last green `pnpm verify`:** 2026-08-31 (organisation Reveal via GET details; 1914 tests)
+**Blocked on:** _none_
 
 ---
 
@@ -68,7 +68,13 @@ _None yet._
 
 ## Notes for the next session
 
-**Reveal / PAN token (2026-08-21).** Live card `a59390b7-…` is ACTIVE; GET card and limits succeed. `POST /issuing/pantokens/create` with `{ card_id }` returns `403 access_denied` / "Access is denied to this resource". Same 403 with `x-api-version` `2024-02-22`, `2024-03-31`, `2024-06-14`, `2024-09-27`, `2026-07-17`, and with the header omitted — **not a pin bug.** Not SCA (`sca_token_missing`). Demo API key already has PAN Tokens **Write**. `x-on-behalf-of` is 401; keep `forAccount(null)`. Do not call `GET .../details`. Allocard maps that 403 to `UPSTREAM_ERROR` (502).
+**Org-issued cards / PAN (2026-08-31).** Organisation / non-personalized cards reveal via `GET /issuing/cards/{id}/details` (Airwallex allows this without PCI). Allocard never persists, logs, or audits PAN/CVV/expiry. `POST /issuing/pantokens/create` + iframe remains for leftover `issue_to: INDIVIDUAL` cards only. Demo always sends `issue_to: ORGANISATION` + `purpose: TEAM_EXPENSES` and omits `cardholder_id`. MEMBER vs SHARED stays Allocard-side (`accessList`). `x-on-behalf-of` is 401; keep `forAccount(null)`. Restart `pnpm dev`.
+
+**DELEGATE cardholder create (2026-08-31).** Live `POST /issuing/cardholders/create` returned `400 email is mandatory` because the DELEGATE body sent only `type` + `metadata`. Pinned API `2024-02-22` requires `email`, `mobile_number`, top-level `address`, and `individual` (name, DOB, consent) on every create. Retry uses the same `request_id`; restart `pnpm dev:worker` so `refresh-attributes` resubmits pending DELEGATEs.
+
+**Organisation card create (2026-08-31).** Live `POST /issuing/cards/create` returned `400 cardholder_id must be null when issue_to is set to ORGANISATION.` Create body omits `cardholder_id`. Same `request_id` retries. Restart `pnpm dev:worker`.
+
+**Reveal / PAN token (2026-08-21).** Live card `a59390b7-…` is ACTIVE INDIVIDUAL; GET card and limits succeed. `POST /issuing/pantokens/create` with `{ card_id }` returns `403 access_denied` — expected for personalized cards (PCI; sandbox matches prod). Same 403 across API versions; not a pin bug; not SCA. Demo API key already has PAN Tokens **Write**. Allocard maps that 403 to `UPSTREAM_ERROR` (502).
 
 **Live card create (2026-08-21).** After Airwallex account issuance was enabled, `POST /issuing/cards/create` returned **202** and we published `card.created`. Pinned API `2024-02-22` sends `issue_to: INDIVIDUAL` for MEMBER (no `program` / `is_personalized` / INDIVIDUAL `purpose`), `+0000` datetimes, and re-provisions fixture `ch_fixture_*` ids to real UUIDs. Diagnostic request-body logs removed.
 

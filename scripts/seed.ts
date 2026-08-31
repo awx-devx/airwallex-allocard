@@ -657,9 +657,9 @@ export async function seedB4(input: {
 }
 
 /**
- * B5 — idempotent cardholder + card on SEED-ACTIVE under fixture mode.
- * READY INDIVIDUAL for spender; one DELEGATE; one ACTIVE MEMBER card with
- * desiredControls === appliedControls.
+ * B5 — idempotent org DELEGATE + MEMBER card on SEED-ACTIVE under fixture mode.
+ * One READY DELEGATE; one ACTIVE MEMBER card with desiredControls === appliedControls.
+ * Holder is accessList (spender), not an INDIVIDUAL Airwallex cardholder.
  */
 export async function seedB5(input: {
   orgId: string
@@ -671,12 +671,10 @@ export async function seedB5(input: {
   cardId: string
   created: boolean
 }> {
-  const { ensureIndividualCardholder } = await import('../src/server/services/cardholders/ensure')
-  const { createCardholderForOrg } = await import('../src/server/services/cardholders/create')
+  const { ensureOrgDelegateCardholder } = await import('../src/server/services/cardholders/ensure')
   const { createCardForProject } = await import('../src/server/services/cards/create')
   const cardholdersRepo = await import('../src/server/repositories/cardholders')
   const cardsRepo = await import('../src/server/repositories/cards')
-  const { CardholderType } = await import('../src/shared/enums/cardholderType')
   const { CardholderStatus } = await import('../src/shared/enums/cardholderStatus')
   const { CardPurpose } = await import('../src/shared/enums/cardPurpose')
   const { AllowedTransactionCount } = await import('../src/shared/enums/allowedTransactionCount')
@@ -696,15 +694,11 @@ export async function seedB5(input: {
   })
   if (existingCards.total > 0) {
     const card = existingCards.items[0]!
-    const individual =
-      (await cardholdersRepo.findCardholderById(ctx, card.cardholderId)) ??
-      (await cardholdersRepo.listCardholders(ctx, { type: CardholderType.INDIVIDUAL, pageSize: 1 }))
-        .items[0]
-    const delegate = (
-      await cardholdersRepo.listCardholders(ctx, { type: CardholderType.DELEGATE, pageSize: 1 })
-    ).items[0]
+    const delegate =
+      (await cardholdersRepo.findOrgDelegateCardholder(ctx)) ??
+      (await cardholdersRepo.findCardholderById(ctx, card.cardholderId))
     return {
-      individualCardholderId: individual?.id ?? card.cardholderId,
+      individualCardholderId: delegate?.id ?? card.cardholderId,
       delegateCardholderId: delegate?.id ?? card.cardholderId,
       cardId: card.id,
       created: false,
@@ -719,21 +713,10 @@ export async function seedB5(input: {
   }
   const spenderId = String(spender._id)
 
-  let individual = await ensureIndividualCardholder(ctx, spenderId)
-  if (individual.status !== CardholderStatus.READY) {
-    await cardholdersRepo.updateCardholderStatus(ctx, individual.id, CardholderStatus.READY)
-    individual = (await cardholdersRepo.findCardholderById(ctx, individual.id))!
-  }
-
-  let delegate = (
-    await cardholdersRepo.listCardholders(ctx, { type: CardholderType.DELEGATE, pageSize: 1 })
-  ).items[0]
-  if (!delegate) {
-    delegate = await createCardholderForOrg(ctx, { type: CardholderType.DELEGATE })
-    if (delegate.status !== CardholderStatus.READY) {
-      await cardholdersRepo.updateCardholderStatus(ctx, delegate.id, CardholderStatus.READY)
-      delegate = (await cardholdersRepo.findCardholderById(ctx, delegate.id))!
-    }
+  let delegate = await ensureOrgDelegateCardholder(ctx)
+  if (delegate.status !== CardholderStatus.READY) {
+    await cardholdersRepo.updateCardholderStatus(ctx, delegate.id, CardholderStatus.READY)
+    delegate = (await cardholdersRepo.findCardholderById(ctx, delegate.id))!
   }
 
   const controls = {
@@ -753,14 +736,14 @@ export async function seedB5(input: {
 
   const card = await createCardForProject(ctx, input.activeProjectId, {
     purpose: CardPurpose.MEMBER,
-    cardholderId: individual.id,
+    cardholderId: delegate.id,
     nickName: 'SEED-ACTIVE — Spender',
     accessList: [spenderId],
     desiredControls: controls,
   })
 
   return {
-    individualCardholderId: individual.id,
+    individualCardholderId: delegate.id,
     delegateCardholderId: delegate.id,
     cardId: card.id,
     created: true,
