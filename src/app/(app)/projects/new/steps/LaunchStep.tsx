@@ -12,9 +12,12 @@ import {
   isReadyForApprovalInput,
   launchExplainerMessage,
   missingIssuanceRuleMessage,
+  openControlsLabel,
+  shouldWarnNoCardsOnLaunch,
 } from '@/client/lib/projects'
 import { hasEnabledMemberIssuanceRule, projectControlsHref } from '@/client/lib/rules'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { ErrorCode } from '@/shared/enums/errors'
 import { ProjectStatus } from '@/shared/enums/projectStatus'
 
@@ -41,10 +44,10 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
 
   const project = projectQuery.data
   const approved = budgetQuery.data?.budget?.approvedAmount ?? null
-  const showIssuanceWarning =
-    project?.cardStructure.perMember === true &&
-    rulesQuery.data !== undefined &&
-    !hasEnabledMemberIssuanceRule(rulesQuery.data.items)
+  const showIssuanceWarning = shouldWarnNoCardsOnLaunch({
+    rulesLoaded: rulesQuery.data !== undefined,
+    hasEnabledIssuanceRule: hasEnabledMemberIssuanceRule(rulesQuery.data?.items ?? []),
+  })
   const ready =
     project !== undefined &&
     (project.status === ProjectStatus.PENDING_APPROVAL ||
@@ -98,11 +101,11 @@ export const LaunchStep = forwardRef<LaunchStepHandle, LaunchStepProps>(function
       <p className="text-sm">{launchExplainerMessage()}</p>
       {showIssuanceWarning ? (
         <Alert variant="info">
-          <AlertDescription className="flex min-w-0 flex-wrap items-center gap-2">
-            <span>{missingIssuanceRuleMessage()}</span>
-            <Link href={projectControlsHref(draftId)} className="hover:underline">
-              Open Controls
-            </Link>
+          <AlertDescription className="flex min-w-0 flex-col items-start gap-3">
+            <p>{missingIssuanceRuleMessage()}</p>
+            <Button asChild variant="outline">
+              <Link href={projectControlsHref(draftId)}>{openControlsLabel()}</Link>
+            </Button>
           </AlertDescription>
         </Alert>
       ) : null}

@@ -21,29 +21,17 @@ export const CardStructureStep = forwardRef<
   const projectQuery = useProject(draftId)
   const update = useUpdateProject()
   const project = projectQuery.data
-  const [shared, setShared] = useState(false)
   const [perMember, setPerMember] = useState(false)
-  const [vendor, setVendor] = useState(false)
-  const [oneTime, setOneTime] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     if (!project || hydrated) return
-    setShared(project.cardStructure.shared)
     setPerMember(project.cardStructure.perMember)
-    setVendor(project.cardStructure.vendor)
-    setOneTime(project.cardStructure.oneTime)
     setHydrated(true)
   }, [hydrated, project])
 
-  const values = { shared, perMember, vendor, oneTime }
-  const setters = {
-    shared: setShared,
-    perMember: setPerMember,
-    vendor: setVendor,
-    oneTime: setOneTime,
-  }
+  const values = { shared: false, perMember, vendor: false, oneTime: false }
 
   useEffect(() => {
     if (!project) {
@@ -51,13 +39,8 @@ export const CardStructureStep = forwardRef<
       return
     }
     const cs = project.cardStructure
-    onDirtyChange(
-      shared !== cs.shared ||
-        perMember !== cs.perMember ||
-        vendor !== cs.vendor ||
-        oneTime !== cs.oneTime,
-    )
-  }, [onDirtyChange, perMember, project, shared, oneTime, vendor])
+    onDirtyChange(perMember !== cs.perMember || cs.shared || cs.vendor || cs.oneTime)
+  }, [onDirtyChange, perMember, project])
 
   async function submit(): Promise<boolean> {
     setErrorMessage(null)
@@ -84,8 +67,8 @@ export const CardStructureStep = forwardRef<
           <Switch
             id={flag.key}
             className="mt-0.5"
-            checked={values[flag.key]}
-            onCheckedChange={setters[flag.key]}
+            checked={perMember}
+            onCheckedChange={setPerMember}
           />
           <div className="flex min-w-0 flex-col gap-1">
             <Label htmlFor={flag.key}>{flag.label}</Label>

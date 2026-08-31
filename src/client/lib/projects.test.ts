@@ -21,6 +21,8 @@ import {
   isReadyForApprovalInput,
   launchExplainerMessage,
   missingIssuanceRuleMessage,
+  openControlsLabel,
+  shouldWarnNoCardsOnLaunch,
   nextWizardStepId,
   normalisedWorkstreamName,
   parseDraftId,
@@ -286,29 +288,28 @@ describe('toTimelineItem', () => {
 })
 
 describe('cardStructureReviewLines', () => {
-  it('returns four locked sentences', () => {
+  it('only describes per-member intent', () => {
     const lines = cardStructureReviewLines({
       shared: true,
       perMember: false,
       vendor: true,
       oneTime: false,
     })
-    expect(lines).toHaveLength(4)
-    expect(lines).toEqual([
-      'This project intends a shared card (issued by an enabled rule, not this switch).',
-      'This project does not intend per-member cards.',
-      'This project intends vendor cards (issued by an enabled rule, not this switch).',
-      'This project does not intend one-time cards.',
+    expect(lines).toEqual(['This project does not intend per-member cards.'])
+    expect(
+      cardStructureReviewLines({
+        shared: false,
+        perMember: true,
+        vendor: false,
+        oneTime: false,
+      }),
+    ).toEqual([
+      'This project intends per-member cards (issued by an enabled rule, not this switch).',
     ])
   })
 
-  it('explains each card-structure toggle in plain language', () => {
-    expect(CARD_STRUCTURE_FLAGS.map((flag) => flag.key)).toEqual([
-      'shared',
-      'perMember',
-      'vendor',
-      'oneTime',
-    ])
+  it('explains the per-member toggle in plain language', () => {
+    expect(CARD_STRUCTURE_FLAGS.map((flag) => flag.key)).toEqual(['perMember'])
     for (const flag of CARD_STRUCTURE_FLAGS) {
       expect(flag.description.length).toBeGreaterThan(10)
       expect(flag.description.toLowerCase()).not.toContain('pan')
@@ -329,7 +330,28 @@ describe('launchExplainerMessage', () => {
 
   it('points per-member launch at an issuance rule, not structure flags', () => {
     expect(missingIssuanceRuleMessage().toLowerCase()).toContain('issuance rule')
+    expect(missingIssuanceRuleMessage().toLowerCase()).toContain('no cards')
     expect(missingIssuanceRuleMessage()).not.toContain('project.launched')
+    expect(openControlsLabel()).toBe('Open Controls')
+  })
+
+  it('warns on launch only after rules load and none issue cards', () => {
+    expect(shouldWarnNoCardsOnLaunch({ rulesLoaded: true, hasEnabledIssuanceRule: false })).toBe(
+      true,
+    )
+    expect(shouldWarnNoCardsOnLaunch({ rulesLoaded: true, hasEnabledIssuanceRule: true })).toBe(
+      false,
+    )
+    expect(shouldWarnNoCardsOnLaunch({ rulesLoaded: false, hasEnabledIssuanceRule: false })).toBe(
+      false,
+    )
+    const src = readFileSync(
+      join(process.cwd(), 'src/app/(app)/projects/new/steps/LaunchStep.tsx'),
+      'utf8',
+    )
+    expect(src).toContain('Button asChild')
+    expect(src).toContain('shouldWarnNoCardsOnLaunch')
+    expect(src).not.toContain('cardStructure.perMember')
   })
 })
 
