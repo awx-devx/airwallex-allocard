@@ -382,6 +382,45 @@ describe('B9.6 closure preflight', () => {
     })
   })
 
+  it('does not treat org OWNER/ADMIN project access as ACTIVE_ACCESS', async () => {
+    const owner = await seedActiveProject()
+    const adminUser = await (
+      await import('@/server/repositories/users')
+    ).createUser({
+      email: `adm-${Date.now()}@example.com`,
+      name: 'Admin',
+    })
+    await memberships.createMembership(
+      { orgId: owner.org.id, userId: adminUser.id, orgRole: OrgRole.ADMIN },
+      { userId: adminUser.id, orgRole: OrgRole.ADMIN },
+    )
+    const role = await rolesRepo.findRoleByKey(owner.ctx, 'finance_administrator')
+    expect(role).not.toBeNull()
+    await projectMembers.addProjectMember(owner.ctx, {
+      projectId: owner.project.id,
+      userId: owner.user.id,
+      roleId: role!.id,
+      scope: { level: AccessScopeLevel.PROJECT },
+      effectivePermissions: role!.permissions,
+      addedBy: owner.user.id,
+    })
+    await projectMembers.addProjectMember(owner.ctx, {
+      projectId: owner.project.id,
+      userId: adminUser.id,
+      roleId: role!.id,
+      scope: { level: AccessScopeLevel.PROJECT },
+      effectivePermissions: role!.permissions,
+      addedBy: owner.user.id,
+    })
+
+    const body = await expectMatchesContract(
+      await callPreflight(owner.session, owner.project.id),
+      closureContracts.preflight.output,
+    )
+    expect(body.canStart).toBe(true)
+    expect(body.blockers).toEqual([])
+  })
+
   it('ACTIVE_ACCESS blocker (spend permission)', async () => {
     const owner = await seedActiveProject()
     const spender = await (

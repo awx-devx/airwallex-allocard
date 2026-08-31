@@ -6,12 +6,14 @@ import { connectDb } from '@/server/db/connect'
 import { AppError } from '@/server/http/errors'
 import type { OrgContext } from '@/server/http/types'
 import { listCards } from '@/server/repositories/cards'
+import { listMemberships } from '@/server/repositories/memberships'
 import { listActiveProjectMembers } from '@/server/repositories/projectMembers'
 import { findProjectById } from '@/server/repositories/projects'
 import { listPurchaseRequests } from '@/server/repositories/purchaseRequests'
 import { listTransactions } from '@/server/repositories/transactions'
 import { CardStatus } from '@/shared/enums/cardStatus'
 import { ClosureBlockingKind } from '@/shared/enums/closureBlockingKind'
+import { OrgRole } from '@/shared/enums/orgRole'
 import { Permission } from '@/shared/enums/permissions'
 import { PurchaseRequestStatus } from '@/shared/enums/purchaseRequestStatus'
 import { TransactionStatus } from '@/shared/enums/transactionStatus'
@@ -104,7 +106,16 @@ export async function closurePreflight(
   }
 
   const members = await listActiveProjectMembers(ctx, projectId)
+  const orgRoleByUserId = new Map(
+    (await listMemberships(ctx)).map((m) => [m.userId, m.orgRole] as const),
+  )
   for (const member of members) {
+    // OWNER/ADMIN always materialise payment.make (org widen). People cannot strip
+    // it, and REVOKE expires their project scope after start — so they are not
+    // preflight blockers. Other members with spend / a future validTo still are.
+    const orgRole = orgRoleByUserId.get(member.userId)
+    if (orgRole === OrgRole.OWNER || orgRole === OrgRole.ADMIN) continue
+
     const validTo = member.scope.validTo
     const validToMs = validTo !== undefined ? Date.parse(validTo) : undefined
     const expired = validToMs !== undefined && validToMs < now
