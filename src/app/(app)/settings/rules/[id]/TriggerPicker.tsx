@@ -1,6 +1,16 @@
 'use client'
 
-import { RULE_TRIGGER_EVENTS, parseIntInput } from '@/client/lib/rules'
+import {
+  groupedTriggerEvents,
+  optionalTimingSummary,
+  parseIntInput,
+  triggerDebounceHint,
+  triggerEventLabel,
+  triggerGroupSummary,
+  triggerScheduleHint,
+  triggerSectionHint,
+} from '@/client/lib/rules'
+import { FieldLabel, FormSection, OptionalBlock } from '@/app/(app)/settings/rules/[id]/FieldMeta'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,66 +35,86 @@ export function TriggerPicker({ value, onChange }: TriggerPickerProps) {
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
-      <p className="text-sm font-medium">Trigger</p>
-      <div className="flex flex-col gap-2">
-        {RULE_TRIGGER_EVENTS.map((event) => {
-          const inputId = `trigger-event-${event}`
+    <FormSection title="2. When it runs" hint={triggerSectionHint()}>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {groupedTriggerEvents().map((group) => {
+          const selectedCount = group.events.filter((event) => events.includes(event)).length
           return (
-            <div key={event} className="flex items-center gap-2">
-              <Checkbox
-                id={inputId}
-                checked={events.includes(event)}
-                onCheckedChange={(checked) => {
-                  if (checked === true) {
-                    setEvents([...events, event])
-                    return
-                  }
-                  setEvents(events.filter((item) => item !== event))
-                }}
-              />
-              <Label htmlFor={inputId} className="font-normal">
-                {event}
-              </Label>
-            </div>
+            <OptionalBlock
+              key={group.heading}
+              summary={triggerGroupSummary(group.heading, selectedCount)}
+              defaultOpen
+            >
+              <div className="flex min-w-0 flex-col gap-1.5">
+                {group.events.map((event) => {
+                  const inputId = `trigger-event-${event}`
+                  return (
+                    <div key={event} className="flex items-center gap-2">
+                      <Checkbox
+                        id={inputId}
+                        checked={events.includes(event)}
+                        onCheckedChange={(checked) => {
+                          if (checked === true) {
+                            setEvents([...events, event])
+                            return
+                          }
+                          setEvents(events.filter((item) => item !== event))
+                        }}
+                      />
+                      <Label htmlFor={inputId} className="font-normal">
+                        {triggerEventLabel(event)}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
+            </OptionalBlock>
           )
         })}
+        <OptionalBlock summary={optionalTimingSummary()} defaultOpen className="md:col-span-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-1">
+              <FieldLabel htmlFor="trigger-schedule" hint={triggerScheduleHint()}>
+                Schedule
+              </FieldLabel>
+              <Input
+                id="trigger-schedule"
+                value={value.schedule ?? ''}
+                maxLength={120}
+                onChange={(event) => {
+                  const schedule = event.target.value
+                  const next: CreateRuleInput['trigger'] = { ...value }
+                  if (schedule.length > 0) {
+                    next.schedule = schedule
+                  } else {
+                    delete next.schedule
+                  }
+                  onChange(next)
+                }}
+              />
+            </div>
+            <div className="flex min-w-0 flex-col gap-1">
+              <FieldLabel htmlFor="trigger-debounce" hint={triggerDebounceHint()}>
+                Debounce seconds
+              </FieldLabel>
+              <Input
+                id="trigger-debounce"
+                value={value.debounceSec === undefined ? '' : String(value.debounceSec)}
+                onChange={(event) => {
+                  const debounceSec = parseIntInput(event.target.value)
+                  const next: CreateRuleInput['trigger'] = { ...value }
+                  if (debounceSec === undefined) {
+                    delete next.debounceSec
+                  } else {
+                    next.debounceSec = debounceSec
+                  }
+                  onChange(next)
+                }}
+              />
+            </div>
+          </div>
+        </OptionalBlock>
       </div>
-      <div className="flex min-w-0 flex-col gap-1">
-        <Label htmlFor="trigger-schedule">Schedule</Label>
-        <Input
-          id="trigger-schedule"
-          value={value.schedule ?? ''}
-          maxLength={120}
-          onChange={(event) => {
-            const schedule = event.target.value
-            const next: CreateRuleInput['trigger'] = { ...value }
-            if (schedule.length > 0) {
-              next.schedule = schedule
-            } else {
-              delete next.schedule
-            }
-            onChange(next)
-          }}
-        />
-      </div>
-      <div className="flex min-w-0 flex-col gap-1">
-        <Label htmlFor="trigger-debounce">Debounce seconds</Label>
-        <Input
-          id="trigger-debounce"
-          value={value.debounceSec === undefined ? '' : String(value.debounceSec)}
-          onChange={(event) => {
-            const debounceSec = parseIntInput(event.target.value)
-            const next: CreateRuleInput['trigger'] = { ...value }
-            if (debounceSec === undefined) {
-              delete next.debounceSec
-            } else {
-              next.debounceSec = debounceSec
-            }
-            onChange(next)
-          }}
-        />
-      </div>
-    </div>
+    </FormSection>
   )
 }

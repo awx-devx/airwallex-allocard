@@ -17,7 +17,7 @@ import {
   RULE_TEMPLATES,
   ruleBuilderHref,
   ruleListHref,
-  type RuleTemplateKey,
+  USABLE_TEMPLATE_KEYS,
 } from '@/client/lib/rules'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { DataTable } from '@/components/patterns/DataTable'
@@ -36,7 +36,6 @@ import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import type { Rule } from '@/shared/types/rule'
 
 const ALL = '__all__'
-const TEMPLATE_KEYS: RuleTemplateKey[] = ['A', 'B', 'C', 'D', 'E']
 
 function enabledSelectValue(enabled: boolean | undefined): string {
   if (enabled === true) return 'true'
@@ -122,7 +121,7 @@ export function OrgRuleList() {
 
   const templateLinks = (
     <div className="flex flex-wrap gap-2">
-      {TEMPLATE_KEYS.map((key) => (
+      {USABLE_TEMPLATE_KEYS.map((key) => (
         <Link key={key} href={newRuleHref(key)} className={buttonVariants({ variant: 'outline' })}>
           Use template {key} {RULE_TEMPLATES[key].name}
         </Link>

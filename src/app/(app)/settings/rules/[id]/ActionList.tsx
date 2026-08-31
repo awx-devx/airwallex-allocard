@@ -1,11 +1,46 @@
 'use client'
 
 import {
+  actionAuthoringHint,
+  actionFormLabel,
   allowDestructiveCloseMessage,
+  allowDestructiveLabel,
+  allowlistsHint,
+  amountHint,
+  appendAttributeToLimitAmount,
+  cardPurposeLabel,
+  cardTargetHint,
+  currencyHint,
+  defaultParamsForAction,
+  defaultTargetSelect,
+  optionalAllowlistsSummary,
+  optionalOtherwiseSummary,
+  optionalWindowSummary,
+  optionsIncludingCurrent,
+  otherwiseSectionHint,
   parseCommaList,
   parseFormulaOrInt,
   parseIntInput,
+  purposeFilterHint,
+  reasonHint,
+  roleKeysHint,
+  ruleTargetSelectLabel,
+  thenSectionHint,
+  transactionIntervalLabel,
+  USABLE_CREATE_PURPOSES,
+  USABLE_FORM_FACTORS,
+  USABLE_RULE_ACTIONS,
+  usableTargetsForAction,
+  windowHint,
 } from '@/client/lib/rules'
+import { Fragment, useId, type ReactNode } from 'react'
+import {
+  AttributeInsertPicker,
+  FieldLabel,
+  FormSection,
+  InfoTip,
+  OptionalBlock,
+} from '@/app/(app)/settings/rules/[id]/FieldMeta'
 import { FormulaHighlight } from '@/components/patterns/FormulaHighlight'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -33,6 +68,10 @@ const DEFAULT_ACTION: RuleAction = {
   params: {},
 }
 
+function FieldCell({ children }: { children: ReactNode }) {
+  return <div className="flex min-w-0 flex-col gap-1">{children}</div>
+}
+
 function allowlistText(value: RuleControlsParams['allowedCurrencies']): string {
   if (value == null) return ''
   if (typeof value === 'string') return value
@@ -51,12 +90,94 @@ function amountText(amount: string | number | undefined): string {
   return String(amount)
 }
 
+function CreateIssuanceParams({
+  params,
+  onChange,
+}: {
+  params: RuleControlsParams
+  onChange: (patch: Partial<RuleControlsParams>) => void
+}) {
+  const formFactors = optionsIncludingCurrent(USABLE_FORM_FACTORS, params.formFactor)
+  const purposes = optionsIncludingCurrent(USABLE_CREATE_PURPOSES, params.purpose)
+  const counts = optionsIncludingCurrent(
+    [AllowedTransactionCount.MULTIPLE],
+    params.allowedTransactionCount,
+  )
+  return (
+    <>
+      {formFactors.length > 1 ? (
+        <FieldCell>
+          <FieldLabel>Form factor</FieldLabel>
+          <Select
+            value={params.formFactor ?? USABLE_FORM_FACTORS[0]}
+            onValueChange={(value) => onChange({ formFactor: value as 'VIRTUAL' | 'PHYSICAL' })}
+          >
+            <SelectTrigger aria-label="Form factor" size="sm" className="w-full min-w-0">
+              <SelectValue placeholder="Form factor" />
+            </SelectTrigger>
+            <SelectContent>
+              {formFactors.map((item) => (
+                <SelectItem key={item} value={item}>
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FieldCell>
+      ) : null}
+      {purposes.length > 1 ? (
+        <FieldCell>
+          <FieldLabel>Purpose</FieldLabel>
+          <Select
+            value={params.purpose ?? USABLE_CREATE_PURPOSES[0]}
+            onValueChange={(value) => onChange({ purpose: value as CardPurpose })}
+          >
+            <SelectTrigger aria-label="Purpose" size="sm" className="w-full min-w-0">
+              <SelectValue placeholder="Purpose" />
+            </SelectTrigger>
+            <SelectContent>
+              {purposes.map((purpose) => (
+                <SelectItem key={purpose} value={purpose}>
+                  {cardPurposeLabel(purpose)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FieldCell>
+      ) : null}
+      {counts.length > 1 ? (
+        <FieldCell>
+          <FieldLabel>Transaction count</FieldLabel>
+          <Select
+            value={params.allowedTransactionCount ?? AllowedTransactionCount.MULTIPLE}
+            onValueChange={(value) =>
+              onChange({ allowedTransactionCount: value as AllowedTransactionCount })
+            }
+          >
+            <SelectTrigger aria-label="Transaction count" size="sm" className="w-full min-w-0">
+              <SelectValue placeholder="Transaction count" />
+            </SelectTrigger>
+            <SelectContent>
+              {counts.map((item) => (
+                <SelectItem key={item} value={item}>
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FieldCell>
+      ) : null}
+    </>
+  )
+}
+
 export type ActionListProps = {
   then: RuleAction[]
   onThenChange: (next: RuleAction[]) => void
   elseActions: RuleAction[] | undefined
   onElseChange: (next: RuleAction[] | undefined) => void
   cardOptions: { value: string; label: string }[]
+  attributeOptions: { value: string; label: string }[]
   hasProjectScope: boolean
 }
 
@@ -66,30 +187,25 @@ export function ActionList({
   elseActions,
   onElseChange,
   cardOptions,
+  attributeOptions,
   hasProjectScope,
 }: ActionListProps) {
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <FormSection title="4. Then" hint={thenSectionHint()}>
       <ActionGroup
-        heading="Then"
+        heading=""
         actions={then}
         onChange={onThenChange}
         minCount={1}
         cardOptions={cardOptions}
+        attributeOptions={attributeOptions}
         hasProjectScope={hasProjectScope}
       />
-      <div className="flex min-w-0 flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-medium">Otherwise</p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onElseChange([...(elseActions ?? []), DEFAULT_ACTION])}
-          >
-            Add
-          </Button>
-        </div>
+      <OptionalBlock
+        summary={optionalOtherwiseSummary()}
+        hint={otherwiseSectionHint()}
+        defaultOpen={elseActions !== undefined && elseActions.length > 0}
+      >
         {elseActions !== undefined && elseActions.length > 0 ? (
           <ActionGroup
             heading=""
@@ -97,11 +213,21 @@ export function ActionList({
             onChange={(next) => onElseChange(next.length > 0 ? next : undefined)}
             minCount={0}
             cardOptions={cardOptions}
+            attributeOptions={attributeOptions}
             hasProjectScope={hasProjectScope}
           />
-        ) : null}
-      </div>
-    </div>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onElseChange([...(elseActions ?? []), DEFAULT_ACTION])}
+          >
+            Add fallback action
+          </Button>
+        )}
+      </OptionalBlock>
+    </FormSection>
   )
 }
 
@@ -111,6 +237,7 @@ function ActionGroup({
   onChange,
   minCount,
   cardOptions,
+  attributeOptions,
   hasProjectScope,
 }: {
   heading: string
@@ -118,16 +245,18 @@ function ActionGroup({
   onChange: (next: RuleAction[]) => void
   minCount: number
   cardOptions: { value: string; label: string }[]
+  attributeOptions: { value: string; label: string }[]
   hasProjectScope: boolean
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      {heading ? <p className="text-sm font-medium">{heading}</p> : null}
+      {heading ? <FieldLabel>{heading}</FieldLabel> : null}
       {actions.map((action, index) => (
         <ActionRow
           key={`${action.action}-${index}`}
           action={action}
           cardOptions={cardOptions}
+          attributeOptions={attributeOptions}
           hasProjectScope={hasProjectScope}
           onChange={(next) => {
             const copy = actions.slice()
@@ -158,12 +287,14 @@ function ActionRow({
   onChange,
   onRemove,
   cardOptions,
+  attributeOptions,
   hasProjectScope,
 }: {
   action: RuleAction
   onChange: (next: RuleAction) => void
   onRemove?: () => void
   cardOptions: { value: string; label: string }[]
+  attributeOptions: { value: string; label: string }[]
   hasProjectScope: boolean
 }) {
   const params = action.params ?? {}
@@ -177,115 +308,195 @@ function ActionRow({
     onChange({ ...action, target: { ...action.target, ...patch } })
   }
 
+  const authoringHint = actionAuthoringHint(action.action)
+  const targetOptions = optionsIncludingCurrent(usableTargetsForAction(action.action), select)
+
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border/80 p-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <Select
-          value={action.action}
-          onValueChange={(next) =>
-            onChange({ ...action, action: next as RuleActionType, params: {} })
-          }
-        >
-          <SelectTrigger aria-label="Action" size="sm" className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(RuleActionType).map((item) => (
-              <SelectItem key={item} value={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={select}
-          onValueChange={(next) =>
-            patchTarget({ select: next as RuleTargetSelect, filter: undefined, cardId: undefined })
-          }
-        >
-          <SelectTrigger aria-label="Target" size="sm" className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(RuleTargetSelect).map((item) => (
-              <SelectItem key={item} value={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {onRemove ? (
-          <Button type="button" variant="outline" size="sm" onClick={onRemove}>
-            Remove
-          </Button>
-        ) : null}
-      </div>
-      {select === RuleTargetSelect.CARD ? (
-        hasProjectScope ? (
-          <Combobox
-            options={cardOptions}
-            value={action.target.cardId ?? null}
-            onChange={(cardId) => patchTarget({ cardId: cardId ?? undefined })}
-            placeholder="Card"
-          />
-        ) : (
-          <Input
-            value={action.target.cardId ?? ''}
-            onChange={(event) => patchTarget({ cardId: event.target.value || undefined })}
-            placeholder="Card id"
-          />
-        )
-      ) : null}
-      {select === RuleTargetSelect.PROJECT_CARDS ? (
-        <Select
-          value={
-            action.target.filter &&
-            'purpose' in action.target.filter &&
-            action.target.filter.purpose
-              ? action.target.filter.purpose
-              : '__none__'
-          }
-          onValueChange={(value) =>
-            patchTarget({
-              filter: value === '__none__' ? undefined : { purpose: value as CardPurpose },
-            })
-          }
-        >
-          <SelectTrigger aria-label="Purpose" size="sm">
-            <SelectValue placeholder="Any purpose" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__none__">Any purpose</SelectItem>
-            {Object.values(CardPurpose).map((purpose) => (
-              <SelectItem key={purpose} value={purpose}>
-                {purpose}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : null}
-      {select === RuleTargetSelect.PROJECT_MEMBERS || select === RuleTargetSelect.MEMBER_CARDS ? (
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label>Role keys</Label>
-          <Input
-            value={
-              (action.target.filter && 'roleKeys' in action.target.filter
-                ? action.target.filter.roleKeys
-                : action.target.roleKeys
-              )?.join(', ') ?? ''
-            }
-            onChange={(event) => {
-              const roleKeys = parseCommaList(event.target.value) ?? undefined
-              patchTarget({
-                filter: roleKeys ? { roleKeys } : undefined,
-                roleKeys,
+    <div className="min-w-0 rounded-md border border-border/80 p-3">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-3 md:grid-cols-2">
+        <FieldCell>
+          <FieldLabel hint={authoringHint}>Action</FieldLabel>
+          <Select
+            value={action.action}
+            onValueChange={(next) => {
+              const actionType = next as RuleActionType
+              onChange({
+                ...action,
+                action: actionType,
+                target: { select: defaultTargetSelect(actionType) },
+                params: defaultParamsForAction(actionType),
               })
             }}
-          />
-        </div>
-      ) : null}
-      <ActionParams actionType={action.action} params={params} onChange={patchParams} />
+          >
+            <SelectTrigger aria-label="Action" size="sm" className="w-full min-w-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {optionsIncludingCurrent(USABLE_RULE_ACTIONS, action.action).map((item) => (
+                <SelectItem key={item} value={item}>
+                  {actionFormLabel(item)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FieldCell>
+        {targetOptions.length > 1 ? (
+          <FieldCell>
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <FieldLabel>Applies to</FieldLabel>
+              {onRemove ? (
+                <Button type="button" variant="outline" size="sm" onClick={onRemove}>
+                  Remove
+                </Button>
+              ) : null}
+            </div>
+            <Select
+              value={select}
+              onValueChange={(next) =>
+                patchTarget({
+                  select: next as RuleTargetSelect,
+                  filter: undefined,
+                  cardId: undefined,
+                })
+              }
+            >
+              <SelectTrigger aria-label="Target" size="sm" className="w-full min-w-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {targetOptions.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {ruleTargetSelectLabel(item)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldCell>
+        ) : onRemove ? (
+          <div className="flex min-w-0 justify-end md:self-end">
+            <Button type="button" variant="outline" size="sm" onClick={onRemove}>
+              Remove
+            </Button>
+          </div>
+        ) : null}
+        {select === RuleTargetSelect.CARD ? (
+          <FieldCell>
+            <FieldLabel hint={cardTargetHint()}>Card</FieldLabel>
+            {hasProjectScope ? (
+              <Combobox
+                options={cardOptions}
+                value={action.target.cardId ?? null}
+                onChange={(cardId) => patchTarget({ cardId: cardId ?? undefined })}
+                placeholder="Card"
+              />
+            ) : (
+              <Input
+                value={action.target.cardId ?? ''}
+                onChange={(event) => patchTarget({ cardId: event.target.value || undefined })}
+                placeholder="Card id"
+              />
+            )}
+          </FieldCell>
+        ) : null}
+        {select === RuleTargetSelect.PROJECT_CARDS ? (
+          <FieldCell>
+            <FieldLabel hint={purposeFilterHint()}>Purpose filter</FieldLabel>
+            <Select
+              value={
+                action.target.filter &&
+                'purpose' in action.target.filter &&
+                action.target.filter.purpose
+                  ? action.target.filter.purpose
+                  : '__none__'
+              }
+              onValueChange={(value) =>
+                patchTarget({
+                  filter: value === '__none__' ? undefined : { purpose: value as CardPurpose },
+                })
+              }
+            >
+              <SelectTrigger aria-label="Purpose" size="sm" className="w-full min-w-0">
+                <SelectValue placeholder="Any purpose" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Any purpose</SelectItem>
+                {Object.values(CardPurpose).map((purpose) => (
+                  <SelectItem key={purpose} value={purpose}>
+                    {cardPurposeLabel(purpose)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldCell>
+        ) : null}
+        {select === RuleTargetSelect.PROJECT_MEMBERS || select === RuleTargetSelect.MEMBER_CARDS ? (
+          <FieldCell>
+            <FieldLabel hint={roleKeysHint()}>Role keys</FieldLabel>
+            <Input
+              value={
+                (action.target.filter && 'roleKeys' in action.target.filter
+                  ? action.target.filter.roleKeys
+                  : action.target.roleKeys
+                )?.join(', ') ?? ''
+              }
+              onChange={(event) => {
+                const roleKeys = parseCommaList(event.target.value) ?? undefined
+                patchTarget({
+                  filter: roleKeys ? { roleKeys } : undefined,
+                  roleKeys,
+                })
+              }}
+            />
+          </FieldCell>
+        ) : null}
+        <ActionParams
+          actionType={action.action}
+          params={params}
+          onChange={patchParams}
+          attributeOptions={attributeOptions}
+        />
+      </div>
     </div>
+  )
+}
+
+function hasActiveWindow(params: RuleControlsParams): boolean {
+  return (
+    Boolean(params.activeFrom) ||
+    Boolean(params.activeTo) ||
+    params.activeToOffsetDays !== undefined ||
+    params.activeFromOffsetDays !== undefined
+  )
+}
+
+function hasAllowlists(params: RuleControlsParams): boolean {
+  return (
+    params.allowedCurrencies != null ||
+    params.allowedMerchantCategories != null ||
+    params.allowedMerchantCountries != null ||
+    params.allowedMerchantBrands != null
+  )
+}
+
+function ReasonField({
+  value,
+  onChange,
+}: {
+  value: string | undefined
+  onChange: (reason: string | undefined) => void
+}) {
+  const id = useId()
+  return (
+    <FieldCell>
+      <FieldLabel htmlFor={id} hint={reasonHint()}>
+        Reason
+      </FieldLabel>
+      <Input
+        id={id}
+        value={value ?? ''}
+        onChange={(event) => onChange(event.target.value || undefined)}
+      />
+    </FieldCell>
   )
 }
 
@@ -293,11 +504,14 @@ function ActionParams({
   actionType,
   params,
   onChange,
+  attributeOptions,
 }: {
   actionType: RuleActionType
   params: RuleControlsParams
   onChange: (patch: Partial<RuleControlsParams>) => void
+  attributeOptions: { value: string; label: string }[]
 }) {
+  const fieldId = useId()
   const limits = params.transactionLimits
   const showCreate = actionType === RuleActionType.CARD_CREATE
   const showControls = actionType === RuleActionType.CARD_SET_CONTROLS
@@ -315,255 +529,249 @@ function ActionParams({
     actionType === RuleActionType.BUDGET_ALLOCATE || actionType === RuleActionType.APPROVAL_REQUIRE
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
-      {showCreate ? (
-        <>
-          <Select
-            value={params.formFactor ?? '__none__'}
-            onValueChange={(value) =>
-              onChange({
-                formFactor: value === '__none__' ? undefined : (value as 'VIRTUAL' | 'PHYSICAL'),
-              })
-            }
-          >
-            <SelectTrigger aria-label="Form factor" size="sm">
-              <SelectValue placeholder="Form factor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Form factor</SelectItem>
-              <SelectItem value="VIRTUAL">VIRTUAL</SelectItem>
-              <SelectItem value="PHYSICAL">PHYSICAL</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select
-            value={params.purpose ?? '__none__'}
-            onValueChange={(value) =>
-              onChange({ purpose: value === '__none__' ? undefined : (value as CardPurpose) })
-            }
-          >
-            <SelectTrigger aria-label="Purpose" size="sm">
-              <SelectValue placeholder="Purpose" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Purpose</SelectItem>
-              {Object.values(CardPurpose).map((purpose) => (
-                <SelectItem key={purpose} value={purpose}>
-                  {purpose}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={params.allowedTransactionCount ?? '__none__'}
-            onValueChange={(value) =>
-              onChange({
-                allowedTransactionCount:
-                  value === '__none__' ? undefined : (value as AllowedTransactionCount),
-              })
-            }
-          >
-            <SelectTrigger aria-label="Transaction count" size="sm">
-              <SelectValue placeholder="Transaction count" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Transaction count</SelectItem>
-              <SelectItem value={AllowedTransactionCount.SINGLE}>SINGLE</SelectItem>
-              <SelectItem value={AllowedTransactionCount.MULTIPLE}>MULTIPLE</SelectItem>
-            </SelectContent>
-          </Select>
-        </>
-      ) : null}
+    <>
+      {showCreate ? <CreateIssuanceParams params={params} onChange={onChange} /> : null}
       {showLimits ? (
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label>Currency</Label>
-          <Input
-            value={limits?.currency ?? ''}
-            onChange={(event) =>
-              onChange({
-                transactionLimits: {
-                  currency: event.target.value,
-                  limits: limits?.limits ?? [
-                    { interval: TransactionLimitInterval.MONTHLY, amount: '' },
-                  ],
-                },
-              })
-            }
-          />
+        <>
+          <FieldCell>
+            <FieldLabel hint={currencyHint()}>Currency</FieldLabel>
+            <Input
+              value={limits?.currency ?? ''}
+              onChange={(event) =>
+                onChange({
+                  transactionLimits: {
+                    currency: event.target.value,
+                    limits: limits?.limits ?? [
+                      { interval: TransactionLimitInterval.MONTHLY, amount: '' },
+                    ],
+                  },
+                })
+              }
+            />
+          </FieldCell>
           {(limits?.limits ?? [{ interval: TransactionLimitInterval.MONTHLY, amount: '' }]).map(
             (entry, index) => (
-              <div key={index} className="flex min-w-0 flex-col gap-2">
-                <Select
-                  value={entry.interval}
-                  onValueChange={(interval) => {
-                    const next = [...(limits?.limits ?? [])]
-                    if (next.length === 0) {
-                      next.push({
-                        interval: interval as TransactionLimitInterval,
-                        amount: entry.amount,
+              <Fragment key={index}>
+                <FieldCell>
+                  <FieldLabel>Interval</FieldLabel>
+                  <Select
+                    value={entry.interval}
+                    onValueChange={(interval) => {
+                      const next = [...(limits?.limits ?? [])]
+                      if (next.length === 0) {
+                        next.push({
+                          interval: interval as TransactionLimitInterval,
+                          amount: entry.amount,
+                        })
+                      } else {
+                        next[index] = {
+                          ...entry,
+                          interval: interval as TransactionLimitInterval,
+                        }
+                      }
+                      onChange({
+                        transactionLimits: {
+                          currency: limits?.currency ?? '',
+                          limits: next,
+                        },
                       })
-                    } else {
+                    }}
+                  >
+                    <SelectTrigger aria-label="Interval" size="sm" className="w-full min-w-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(TransactionLimitInterval).map((interval) => (
+                        <SelectItem key={interval} value={interval}>
+                          {transactionIntervalLabel(interval)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldCell>
+                <FieldCell>
+                  <FieldLabel hint={amountHint()}>Amount</FieldLabel>
+                  <Input
+                    value={amountText(entry.amount)}
+                    onChange={(event) => {
+                      const amount = parseFormulaOrInt(event.target.value)
+                      const next = [...(limits?.limits ?? [entry])]
                       next[index] = {
                         ...entry,
-                        interval: interval as TransactionLimitInterval,
+                        amount: amount === '' ? event.target.value : amount,
                       }
-                    }
-                    onChange({
-                      transactionLimits: {
-                        currency: limits?.currency ?? '',
-                        limits: next,
-                      },
-                    })
-                  }}
-                >
-                  <SelectTrigger aria-label="Interval" size="sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(TransactionLimitInterval).map((interval) => (
-                      <SelectItem key={interval} value={interval}>
-                        {interval}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  value={amountText(entry.amount)}
-                  onChange={(event) => {
-                    const amount = parseFormulaOrInt(event.target.value)
-                    const next = [...(limits?.limits ?? [entry])]
-                    next[index] = { ...entry, amount: amount === '' ? event.target.value : amount }
-                    onChange({
-                      transactionLimits: { currency: limits?.currency ?? '', limits: next },
-                    })
-                  }}
-                />
-                <FormulaHighlight expression={amountText(entry.amount)} />
-              </div>
+                      onChange({
+                        transactionLimits: { currency: limits?.currency ?? '', limits: next },
+                      })
+                    }}
+                  />
+                  <FormulaHighlight expression={amountText(entry.amount)} />
+                  <AttributeInsertPicker
+                    options={attributeOptions}
+                    onInsert={(key) => onChange(appendAttributeToLimitAmount(params, key, index))}
+                  />
+                </FieldCell>
+              </Fragment>
             ),
           )}
-          <Label>Active from</Label>
-          <Input
-            value={params.activeFrom ?? ''}
-            onChange={(event) => onChange({ activeFrom: event.target.value || null })}
-          />
-          <Label>Active to</Label>
-          <Input
-            value={params.activeTo ?? ''}
-            onChange={(event) => onChange({ activeTo: event.target.value || null })}
-          />
-          <Label>Active to offset days</Label>
-          <Input
-            value={params.activeToOffsetDays === undefined ? '' : String(params.activeToOffsetDays)}
-            onChange={(event) =>
-              onChange({ activeToOffsetDays: parseIntInput(event.target.value) })
-            }
-          />
-          {showCreate ? (
-            <>
-              <Label>Active from offset days</Label>
-              <Input
-                value={
-                  params.activeFromOffsetDays === undefined
-                    ? ''
-                    : String(params.activeFromOffsetDays)
-                }
-                onChange={(event) =>
-                  onChange({ activeFromOffsetDays: parseIntInput(event.target.value) })
-                }
-              />
-            </>
-          ) : null}
-        </div>
+          <OptionalBlock
+            summary={optionalWindowSummary()}
+            hint={windowHint()}
+            defaultOpen={hasActiveWindow(params)}
+            className="md:col-span-2"
+          >
+            <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
+              <FieldCell>
+                <FieldLabel htmlFor={`${fieldId}-active-from`}>Active from</FieldLabel>
+                <Input
+                  id={`${fieldId}-active-from`}
+                  value={params.activeFrom ?? ''}
+                  onChange={(event) => onChange({ activeFrom: event.target.value || null })}
+                />
+              </FieldCell>
+              <FieldCell>
+                <FieldLabel htmlFor={`${fieldId}-active-to`}>Active to</FieldLabel>
+                <Input
+                  id={`${fieldId}-active-to`}
+                  value={params.activeTo ?? ''}
+                  onChange={(event) => onChange({ activeTo: event.target.value || null })}
+                />
+              </FieldCell>
+              <FieldCell>
+                <FieldLabel htmlFor={`${fieldId}-active-to-offset`}>
+                  Active to offset days
+                </FieldLabel>
+                <Input
+                  id={`${fieldId}-active-to-offset`}
+                  value={
+                    params.activeToOffsetDays === undefined ? '' : String(params.activeToOffsetDays)
+                  }
+                  onChange={(event) =>
+                    onChange({ activeToOffsetDays: parseIntInput(event.target.value) })
+                  }
+                />
+              </FieldCell>
+              {showCreate ? (
+                <FieldCell>
+                  <FieldLabel htmlFor={`${fieldId}-active-from-offset`}>
+                    Active from offset days
+                  </FieldLabel>
+                  <Input
+                    id={`${fieldId}-active-from-offset`}
+                    value={
+                      params.activeFromOffsetDays === undefined
+                        ? ''
+                        : String(params.activeFromOffsetDays)
+                    }
+                    onChange={(event) =>
+                      onChange({ activeFromOffsetDays: parseIntInput(event.target.value) })
+                    }
+                  />
+                </FieldCell>
+              ) : null}
+            </div>
+          </OptionalBlock>
+        </>
       ) : null}
       {showControls ? (
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label>Allowed currencies</Label>
-          <Input
-            value={allowlistText(params.allowedCurrencies)}
-            onChange={(event) =>
-              onChange({ allowedCurrencies: parseAllowlist(event.target.value) })
-            }
-          />
-          <Label>Allowed merchant categories</Label>
-          <Input
-            value={allowlistText(params.allowedMerchantCategories)}
-            onChange={(event) =>
-              onChange({ allowedMerchantCategories: parseAllowlist(event.target.value) })
-            }
-          />
-          <Label>Allowed merchant countries</Label>
-          <Input
-            value={allowlistText(params.allowedMerchantCountries)}
-            onChange={(event) =>
-              onChange({ allowedMerchantCountries: parseAllowlist(event.target.value) })
-            }
-          />
-          <Label>Allowed merchant brands</Label>
-          <Input
-            value={allowlistText(params.allowedMerchantBrands)}
-            onChange={(event) =>
-              onChange({ allowedMerchantBrands: parseAllowlist(event.target.value) })
-            }
-          />
-        </div>
+        <OptionalBlock
+          summary={optionalAllowlistsSummary()}
+          hint={allowlistsHint()}
+          defaultOpen={hasAllowlists(params)}
+          className="md:col-span-2"
+        >
+          <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
+            <FieldCell>
+              <FieldLabel htmlFor={`${fieldId}-allowed-currencies`}>Allowed currencies</FieldLabel>
+              <Input
+                id={`${fieldId}-allowed-currencies`}
+                value={allowlistText(params.allowedCurrencies)}
+                onChange={(event) =>
+                  onChange({ allowedCurrencies: parseAllowlist(event.target.value) })
+                }
+              />
+            </FieldCell>
+            <FieldCell>
+              <FieldLabel htmlFor={`${fieldId}-allowed-categories`}>
+                Allowed merchant categories
+              </FieldLabel>
+              <Input
+                id={`${fieldId}-allowed-categories`}
+                value={allowlistText(params.allowedMerchantCategories)}
+                onChange={(event) =>
+                  onChange({ allowedMerchantCategories: parseAllowlist(event.target.value) })
+                }
+              />
+            </FieldCell>
+            <FieldCell>
+              <FieldLabel htmlFor={`${fieldId}-allowed-countries`}>
+                Allowed merchant countries
+              </FieldLabel>
+              <Input
+                id={`${fieldId}-allowed-countries`}
+                value={allowlistText(params.allowedMerchantCountries)}
+                onChange={(event) =>
+                  onChange({ allowedMerchantCountries: parseAllowlist(event.target.value) })
+                }
+              />
+            </FieldCell>
+            <FieldCell>
+              <FieldLabel htmlFor={`${fieldId}-allowed-brands`}>Allowed merchant brands</FieldLabel>
+              <Input
+                id={`${fieldId}-allowed-brands`}
+                value={allowlistText(params.allowedMerchantBrands)}
+                onChange={(event) =>
+                  onChange({ allowedMerchantBrands: parseAllowlist(event.target.value) })
+                }
+              />
+            </FieldCell>
+          </div>
+        </OptionalBlock>
       ) : null}
       {showFreeze || showReasonOnly || showFlag ? (
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label>Reason</Label>
-          <Input
-            value={params.reason ?? ''}
-            onChange={(event) => onChange({ reason: event.target.value || undefined })}
-          />
-        </div>
+        <ReasonField value={params.reason} onChange={(reason) => onChange({ reason })} />
       ) : null}
       {showClose ? (
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label>Reason</Label>
-          <Input
-            value={params.reason ?? ''}
-            onChange={(event) => onChange({ reason: event.target.value || undefined })}
-          />
-          <div className="flex flex-wrap items-center gap-2">
+        <>
+          <ReasonField value={params.reason} onChange={(reason) => onChange({ reason })} />
+          <div className="flex min-w-0 flex-wrap items-center gap-2 md:self-end">
             <Checkbox
-              id="allow-destructive"
+              id={`${fieldId}-allow-destructive`}
               checked={params.allowDestructive === true}
               onCheckedChange={(checked) => onChange({ allowDestructive: checked === true })}
             />
-            <Label htmlFor="allow-destructive" className="font-normal">
-              allowDestructive
+            <Label htmlFor={`${fieldId}-allow-destructive`} className="font-normal">
+              {allowDestructiveLabel()}
             </Label>
+            <InfoTip>{allowDestructiveCloseMessage()}</InfoTip>
           </div>
-          <p className="text-sm text-muted-foreground">{allowDestructiveCloseMessage()}</p>
-        </div>
+        </>
       ) : null}
       {showNotify ? (
-        <div className="flex min-w-0 flex-col gap-1">
-          <Label>Template</Label>
+        <FieldCell>
+          <FieldLabel htmlFor={`${fieldId}-notify-template`}>Template</FieldLabel>
           <Input
+            id={`${fieldId}-notify-template`}
             value={params.template ?? ''}
             onChange={(event) => onChange({ template: event.target.value || undefined })}
           />
-        </div>
+        </FieldCell>
       ) : null}
       {showAccess ? (
-        <div className="flex min-w-0 flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
+        <>
+          <div className="flex min-w-0 flex-wrap items-center gap-2 md:self-end">
             <Switch
-              id="recompute"
+              id={`${fieldId}-recompute`}
               checked={params.recompute === true}
               onCheckedChange={(checked) => onChange({ recompute: checked })}
             />
-            <Label htmlFor="recompute" className="font-normal">
-              recompute
+            <Label htmlFor={`${fieldId}-recompute`} className="font-normal">
+              Recompute from current attributes
             </Label>
           </div>
-          <Label>Reason</Label>
-          <Input
-            value={params.reason ?? ''}
-            onChange={(event) => onChange({ reason: event.target.value || undefined })}
-          />
-        </div>
+          <ReasonField value={params.reason} onChange={(reason) => onChange({ reason })} />
+        </>
       ) : null}
-    </div>
+    </>
   )
 }

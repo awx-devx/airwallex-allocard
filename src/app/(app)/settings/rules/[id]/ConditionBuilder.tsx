@@ -1,8 +1,26 @@
 'use client'
 
-import { attributeOptions, conditionMode, parseConditionValue, wrapNot } from '@/client/lib/rules'
+import {
+  appendAttributeToExpr,
+  compareAttributeHint,
+  conditionModeLabel,
+  conditionNegateHint,
+  attributeOptions,
+  conditionMode,
+  parseConditionValue,
+  whenSectionHint,
+  wrapNot,
+} from '@/client/lib/rules'
+import {
+  AttributeInsertPicker,
+  FieldLabel,
+  FormSection,
+  InfoTip,
+} from '@/app/(app)/settings/rules/[id]/FieldMeta'
 import { FormulaHighlight } from '@/components/patterns/FormulaHighlight'
+import { useId } from 'react'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,6 +34,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { operatorLabel } from '@/lib/rules/operators'
 import { ConditionOperator } from '@/shared/enums/conditionOperator'
 import type { Condition, ConditionValue } from '@/shared/types/rule'
 
@@ -128,8 +147,7 @@ export function ConditionBuilder({ value, onChange, attributeKeys }: ConditionBu
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
-      <p className="text-sm font-medium">When</p>
+    <FormSection title="3. When" hint={whenSectionHint()}>
       <RadioGroup
         className="flex flex-wrap gap-3"
         value={mode}
@@ -141,7 +159,7 @@ export function ConditionBuilder({ value, onChange, attributeKeys }: ConditionBu
             <div key={item} className="flex items-center gap-2">
               <RadioGroupItem value={item} id={inputId} />
               <Label htmlFor={inputId} className="font-normal">
-                {item}
+                {conditionModeLabel(item)}
               </Label>
             </div>
           )
@@ -154,15 +172,21 @@ export function ConditionBuilder({ value, onChange, attributeKeys }: ConditionBu
           onCheckedChange={(checked) => commit(inner, checked)}
         />
         <Label htmlFor="condition-negate" className="font-normal">
-          Negate entire condition
+          Negate
         </Label>
+        <InfoTip>{conditionNegateHint()}</InfoTip>
       </div>
       {mode === 'expr' ? (
-        <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border/80 p-3">
+          <FieldLabel>Formula</FieldLabel>
           <Textarea
             maxLength={500}
             value={inner.expr ?? ''}
             onChange={(event) => commit({ expr: event.target.value })}
+          />
+          <AttributeInsertPicker
+            options={options}
+            onInsert={(key) => commit({ expr: appendAttributeToExpr(inner.expr, key) })}
           />
           <FormulaHighlight expression={inner.expr ?? ''} />
         </div>
@@ -200,7 +224,7 @@ export function ConditionBuilder({ value, onChange, attributeKeys }: ConditionBu
           ) : null}
         </div>
       )}
-    </div>
+    </FormSection>
   )
 }
 
@@ -215,6 +239,7 @@ function LeafRow({
   onChange: (next: Leaf) => void
   onRemove?: () => void
 }) {
+  const compareId = useId()
   const compareAttr = isAttrRef(leaf.value)
   const fields = literalFields(leaf.value, leaf.op)
   const arrayOp = ARRAY_OPS.has(leaf.op)
@@ -239,100 +264,101 @@ function LeafRow({
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="min-w-0 flex-1">
+    <div className="flex min-w-0 flex-col gap-2 rounded-md border border-border/80 p-2 md:flex-row md:items-center">
+      <div className="min-w-0 flex-1">
+        <Combobox
+          options={options}
+          value={leaf.attr}
+          onChange={(value) => onChange({ ...leaf, attr: value ?? leaf.attr })}
+          placeholder="Attribute"
+        />
+      </div>
+      <Select
+        value={leaf.op}
+        onValueChange={(op) => {
+          const nextOp = op as ConditionOperator
+          const next: Leaf = { ...leaf, op: nextOp }
+          if (ARRAY_OPS.has(nextOp)) {
+            next.value =
+              nextOp === ConditionOperator.BETWEEN
+                ? [parseConditionValue(fields[0] ?? ''), parseConditionValue(fields[1] ?? '')]
+                : fields.map((item) => parseConditionValue(item))
+          } else if (compareAttr) {
+            next.value = leaf.value
+          } else {
+            next.value = parseConditionValue(fields[0] ?? '')
+          }
+          onChange(next)
+        }}
+      >
+        <SelectTrigger aria-label="Operator" className="w-full min-w-0 md:w-40">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {Object.values(ConditionOperator).map((op) => (
+            <SelectItem key={op} value={op}>
+              {operatorLabel(op)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        {compareAttr ? (
           <Combobox
             options={options}
-            value={leaf.attr}
-            onChange={(value) => onChange({ ...leaf, attr: value ?? leaf.attr })}
-            placeholder="Attribute"
+            value={isAttrRef(leaf.value) ? leaf.value.attr : null}
+            onChange={(attr) => onChange({ ...leaf, value: { attr: attr ?? '' } })}
+            placeholder="Other attribute"
           />
-        </div>
-        <Select
-          value={leaf.op}
-          onValueChange={(op) => {
-            const nextOp = op as ConditionOperator
-            const next: Leaf = { ...leaf, op: nextOp }
-            if (ARRAY_OPS.has(nextOp)) {
-              next.value =
-                nextOp === ConditionOperator.BETWEEN
-                  ? [parseConditionValue(fields[0] ?? ''), parseConditionValue(fields[1] ?? '')]
-                  : fields.map((item) => parseConditionValue(item))
-            } else if (compareAttr) {
-              next.value = leaf.value
-            } else {
-              next.value = parseConditionValue(fields[0] ?? '')
-            }
-            onChange(next)
-          }}
-        >
-          <SelectTrigger aria-label="Operator" className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(ConditionOperator).map((op) => (
-              <SelectItem key={op} value={op}>
-                {op}
-              </SelectItem>
+        ) : (
+          <>
+            {fields.map((field, index) => (
+              <Input
+                key={index}
+                className="min-w-0 flex-1"
+                aria-label={fields.length > 1 ? `Value ${index + 1}` : 'Value'}
+                value={field}
+                onChange={(event) => setLiteralAt(index, event.target.value)}
+              />
             ))}
-          </SelectContent>
-        </Select>
-        {onRemove ? (
-          <Button type="button" variant="outline" onClick={onRemove}>
-            Remove
-          </Button>
-        ) : null}
+            {leaf.op === ConditionOperator.IN || leaf.op === ConditionOperator.NIN ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  onChange({
+                    ...leaf,
+                    value: [...fields, ''].map((item) => parseConditionValue(item)),
+                  })
+                }
+              >
+                Add value
+              </Button>
+            ) : null}
+          </>
+        )}
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Switch
-          id={`compare-attr-${leaf.attr}-${leaf.op}`}
+      <div className="flex shrink-0 items-center gap-1">
+        <Checkbox
+          id={compareId}
           checked={compareAttr}
+          aria-label="Compare to attribute"
           onCheckedChange={(checked) => {
-            if (checked) {
+            if (checked === true) {
               onChange({ ...leaf, value: { attr: isAttrRef(leaf.value) ? leaf.value.attr : '' } })
               return
             }
             onChange({ ...leaf, value: parseConditionValue(fields[0] ?? '') })
           }}
         />
-        <Label htmlFor={`compare-attr-${leaf.attr}-${leaf.op}`} className="font-normal">
-          Compare to attribute
-        </Label>
+        <InfoTip>{compareAttributeHint()}</InfoTip>
       </div>
-      {compareAttr ? (
-        <Combobox
-          options={options}
-          value={isAttrRef(leaf.value) ? leaf.value.attr : null}
-          onChange={(attr) => onChange({ ...leaf, value: { attr: attr ?? '' } })}
-          placeholder="Attribute"
-        />
-      ) : (
-        <div className="flex flex-col gap-2">
-          {fields.map((field, index) => (
-            <Input
-              key={index}
-              value={field}
-              onChange={(event) => setLiteralAt(index, event.target.value)}
-            />
-          ))}
-          {leaf.op === ConditionOperator.IN || leaf.op === ConditionOperator.NIN ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                onChange({
-                  ...leaf,
-                  value: [...fields, ''].map((item) => parseConditionValue(item)),
-                })
-              }
-            >
-              Add value
-            </Button>
-          ) : null}
-        </div>
-      )}
+      {onRemove ? (
+        <Button type="button" variant="outline" size="sm" onClick={onRemove}>
+          Remove
+        </Button>
+      ) : null}
     </div>
   )
 }

@@ -30,19 +30,34 @@ import {
   holdsControlEdit,
   isNewRuleId,
   matchPreviewFromSimulate,
+  optionalDetailsSummary,
   orgRulesHref,
   parseIntInput,
   parseOptionalIdParam,
   parseTemplateParam,
   RULE_VALIDATE_DEBOUNCE_MS,
   ruleBuilderHref,
+  ruleBuilderIntro,
+  ruleDescriptionHint,
+  ruleEnabledHint,
+  ruleNameHint,
   ruleNotFoundMessage,
+  rulePreviewHint,
+  rulePriorityHint,
+  ruleScopeHint,
+  ruleScopeLabel,
   ruleSimulateHref,
   toCreateRuleInput,
 } from '@/client/lib/rules'
 import { useActiveOrg } from '@/client/providers/ActiveOrgProvider'
 import { ActionList } from '@/app/(app)/settings/rules/[id]/ActionList'
 import { ConditionBuilder } from '@/app/(app)/settings/rules/[id]/ConditionBuilder'
+import {
+  FieldLabel,
+  FormSection,
+  InfoTip,
+  OptionalBlock,
+} from '@/app/(app)/settings/rules/[id]/FieldMeta'
 import { TriggerPicker } from '@/app/(app)/settings/rules/[id]/TriggerPicker'
 import { ConfirmDialog } from '@/components/patterns/ConfirmDialog'
 import { ErrorState } from '@/components/patterns/ErrorState'
@@ -178,36 +193,6 @@ export function RuleBuilder() {
     })
   }
 
-  function insertAttributeKey(key: string) {
-    setOverride((prev) => {
-      const current = prev ?? baseDraft
-      if (current === null) return current
-      const negated = current.when.not !== undefined
-      const inner = negated ? current.when.not : current.when
-      if (inner !== undefined && inner.expr !== undefined) {
-        const nextInner = { expr: `${inner.expr}${key}` }
-        return { ...current, when: negated ? { not: nextInner } : nextInner }
-      }
-      const then = current.then.map((action, index) => {
-        if (index !== 0) return action
-        const limits = action.params?.transactionLimits
-        const first = limits?.limits[0]
-        if (limits === undefined || first === undefined) return action
-        return {
-          ...action,
-          params: {
-            ...action.params,
-            transactionLimits: {
-              ...limits,
-              limits: [{ ...first, amount: `${first.amount}${key}` }, ...limits.limits.slice(1)],
-            },
-          },
-        }
-      })
-      return { ...current, then }
-    })
-  }
-
   const serializedDraft = draft === null ? '' : JSON.stringify(toCreateRuleInput(draft))
   useEffect(() => {
     if (draft === null || serializedDraft.length < 1) {
@@ -304,6 +289,7 @@ export function RuleBuilder() {
     value: card.id,
     label: `${card.nickName} ${formatMaskedCard(card.maskedNumber)}`,
   }))
+  const attributeInsertOptions = attributeOptions(attributes.data?.items ?? [])
   const fieldErrors = Object.entries(form.formState.errors).flatMap(([path, error]) => {
     const message =
       error && typeof error === 'object' && 'message' in error ? String(error.message) : ''
@@ -312,9 +298,9 @@ export function RuleBuilder() {
 
   return (
     <PageFlow>
-      <div className="flex min-w-0 flex-col gap-6 md:flex-row">
+      <div className="flex min-w-0 flex-col gap-6 md:flex-row md:items-start">
         <FormPanel
-          className="flex-1"
+          className="min-w-0 flex-1"
           footer={
             <>
               <PermissionGateView allowed={allowed} denialMessage={editControlsDenialMessage()}>
@@ -346,6 +332,7 @@ export function RuleBuilder() {
                   <Label htmlFor="rule-enabled" className="font-normal">
                     Enabled
                   </Label>
+                  <InfoTip>{ruleEnabledHint()}</InfoTip>
                 </div>
               </PermissionGateView>
               {!isNew ? (
@@ -381,79 +368,108 @@ export function RuleBuilder() {
               </AlertDescription>
             </Alert>
           ) : null}
-          <div className="flex min-w-0 flex-col gap-1">
-            <Label htmlFor="rule-name">Name</Label>
-            <Input
-              id="rule-name"
-              maxLength={200}
-              value={draft.name}
-              onChange={(event) => patch({ name: event.target.value })}
-            />
-          </div>
-          <div className="flex min-w-0 flex-col gap-1">
-            <Label htmlFor="rule-description">Description</Label>
-            <Textarea
-              id="rule-description"
-              maxLength={2000}
-              value={draft.description ?? ''}
-              onChange={(event) => patch({ description: event.target.value })}
-            />
-          </div>
-          <RadioGroup
-            className="flex flex-wrap gap-3"
-            value={draft.scope.level}
-            onValueChange={(level) => {
-              if (level === RuleScopeLevel.ORG) {
-                patch({ scope: { level: RuleScopeLevel.ORG } })
-                return
-              }
-              const nextId =
-                draft.scope.level === RuleScopeLevel.PROJECT
-                  ? draft.scope.projectId
-                  : (projects.data?.items[0]?.id ?? '')
-              patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: nextId } })
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value={RuleScopeLevel.ORG} id="scope-org" />
-              <Label htmlFor="scope-org" className="font-normal">
-                ORG
-              </Label>
+          <FormSection title="1. Details" hint={ruleBuilderIntro()}>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="flex min-w-0 flex-col gap-1">
+                <FieldLabel htmlFor="rule-name" hint={ruleNameHint()}>
+                  Name
+                </FieldLabel>
+                <Input
+                  id="rule-name"
+                  maxLength={200}
+                  value={draft.name}
+                  aria-required
+                  onChange={(event) => patch({ name: event.target.value })}
+                />
+              </div>
+              <div className="flex min-w-0 flex-col gap-1">
+                <FieldLabel hint={ruleScopeHint()}>Scope</FieldLabel>
+                <RadioGroup
+                  className="flex flex-wrap gap-3"
+                  value={draft.scope.level}
+                  onValueChange={(level) => {
+                    if (level === RuleScopeLevel.ORG) {
+                      patch({ scope: { level: RuleScopeLevel.ORG } })
+                      return
+                    }
+                    const nextId =
+                      draft.scope.level === RuleScopeLevel.PROJECT
+                        ? draft.scope.projectId
+                        : (projects.data?.items[0]?.id ?? '')
+                    patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: nextId } })
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value={RuleScopeLevel.ORG} id="scope-org" />
+                    <Label htmlFor="scope-org" className="font-normal">
+                      {ruleScopeLabel(RuleScopeLevel.ORG)}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value={RuleScopeLevel.PROJECT} id="scope-project" />
+                    <Label htmlFor="scope-project" className="font-normal">
+                      {ruleScopeLabel(RuleScopeLevel.PROJECT)}
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              {draft.scope.level === RuleScopeLevel.PROJECT ? (
+                <div className="flex min-w-0 flex-col gap-1 md:col-span-2">
+                  <FieldLabel>Project</FieldLabel>
+                  <Select
+                    value={draft.scope.projectId}
+                    onValueChange={(projectIdValue) =>
+                      patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: projectIdValue } })
+                    }
+                  >
+                    <SelectTrigger aria-label="Project" size="sm">
+                      <SelectValue placeholder="Project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(projects.data?.items ?? []).map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
+              <div className="min-w-0 md:col-span-2">
+                <OptionalBlock
+                  summary={optionalDetailsSummary()}
+                  defaultOpen={
+                    Boolean(draft.description && draft.description.length > 0) ||
+                    draft.priority !== undefined
+                  }
+                >
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <FieldLabel htmlFor="rule-description" hint={ruleDescriptionHint()}>
+                        Description
+                      </FieldLabel>
+                      <Textarea
+                        id="rule-description"
+                        maxLength={2000}
+                        value={draft.description ?? ''}
+                        onChange={(event) => patch({ description: event.target.value })}
+                      />
+                    </div>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <FieldLabel htmlFor="rule-priority" hint={rulePriorityHint()}>
+                        Priority
+                      </FieldLabel>
+                      <Input
+                        id="rule-priority"
+                        value={draft.priority === undefined ? '' : String(draft.priority)}
+                        onChange={(event) => patch({ priority: parseIntInput(event.target.value) })}
+                      />
+                    </div>
+                  </div>
+                </OptionalBlock>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value={RuleScopeLevel.PROJECT} id="scope-project" />
-              <Label htmlFor="scope-project" className="font-normal">
-                PROJECT
-              </Label>
-            </div>
-          </RadioGroup>
-          {draft.scope.level === RuleScopeLevel.PROJECT ? (
-            <Select
-              value={draft.scope.projectId}
-              onValueChange={(projectIdValue) =>
-                patch({ scope: { level: RuleScopeLevel.PROJECT, projectId: projectIdValue } })
-              }
-            >
-              <SelectTrigger aria-label="Project" size="sm">
-                <SelectValue placeholder="Project" />
-              </SelectTrigger>
-              <SelectContent>
-                {(projects.data?.items ?? []).map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : null}
-          <div className="flex min-w-0 flex-col gap-1">
-            <Label htmlFor="rule-priority">Priority</Label>
-            <Input
-              id="rule-priority"
-              value={draft.priority === undefined ? '' : String(draft.priority)}
-              onChange={(event) => patch({ priority: parseIntInput(event.target.value) })}
-            />
-          </div>
+          </FormSection>
           <TriggerPicker value={draft.trigger} onChange={(trigger) => patch({ trigger })} />
           <ConditionBuilder
             value={draft.when}
@@ -466,12 +482,16 @@ export function RuleBuilder() {
             elseActions={draft.else}
             onElseChange={(elseActions) => patch({ else: elseActions })}
             cardOptions={cardOptions}
+            attributeOptions={attributeInsertOptions}
             hasProjectScope={draft.scope.level === RuleScopeLevel.PROJECT}
           />
         </FormPanel>
-        <Card className="min-w-0 flex-1">
+        <Card className="min-w-0 w-full md:sticky md:top-4 md:z-20 md:w-80 md:shrink-0">
           <CardHeader>
-            <CardTitle>Rule</CardTitle>
+            <div className="flex min-w-0 flex-wrap items-center gap-1">
+              <CardTitle>Rule</CardTitle>
+              <InfoTip>{rulePreviewHint()}</InfoTip>
+            </div>
           </CardHeader>
           <CardContent>
             <RuleSentence
@@ -487,40 +507,27 @@ export function RuleBuilder() {
               </ul>
             ) : null}
             <MatchPreview output={lastSimulate} />
-            <div className="mt-3 flex flex-wrap gap-2">
-              {attributeOptions(attributes.data?.items ?? []).map((option) => (
-                <Button
-                  key={option.value}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => insertAttributeKey(option.value)}
-                >
-                  {option.value}
-                </Button>
-              ))}
-            </div>
           </CardContent>
         </Card>
-        <ConfirmDialog
-          open={deleteOpen}
-          onOpenChange={setDeleteOpen}
-          title="Delete this rule?"
-          description="Cards keep their last applied controls."
-          confirmLabel="Delete"
-          variant="destructive"
-          loading={deleteRule.isPending}
-          onConfirm={() => {
-            setDeleteOpen(false)
-            void deleteRule
-              .mutateAsync({ id })
-              .then(() => router.push(orgRulesHref()))
-              .catch((error: unknown) => {
-                setAlertMessage(isApiError(error) ? error.message : 'Unable to delete rule')
-              })
-          }}
-        />
       </div>
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete this rule?"
+        description="Cards keep their last applied controls."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={deleteRule.isPending}
+        onConfirm={() => {
+          setDeleteOpen(false)
+          void deleteRule
+            .mutateAsync({ id })
+            .then(() => router.push(orgRulesHref()))
+            .catch((error: unknown) => {
+              setAlertMessage(isApiError(error) ? error.message : 'Unable to delete rule')
+            })
+        }}
+      />
     </PageFlow>
   )
 }

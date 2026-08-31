@@ -46,14 +46,40 @@ import {
   ruleListHref,
   ruleSimulateHref,
   toCreateRuleInput,
+  USABLE_CREATE_PURPOSES,
+  USABLE_FORM_FACTORS,
+  USABLE_RULE_ACTIONS,
+  USABLE_TEMPLATE_KEYS,
+  defaultParamsForAction,
+  defaultTargetSelect,
+  optionsIncludingCurrent,
+  usableTargetsForAction,
   wizardControlsLinkMessage,
   wrapNot,
+  groupedTriggerEvents,
+  triggerEventLabel,
+  triggerGroupSummary,
+  fieldRequiredLabel,
+  fieldOptionalLabel,
+  ruleBuilderIntro,
+  thenSectionHint,
+  otherwiseSectionHint,
+  amountHint,
+  currencyHint,
+  actionFormLabel,
+  transactionIntervalLabel,
+  cardPurposeLabel,
+  actionAuthoringHint,
+  appendAttributeToExpr,
+  appendAttributeToLimitAmount,
 } from '@/client/lib/rules'
 import { controlsHref, ruleHref } from '@/client/lib/cards'
+import { CardPurpose } from '@/shared/enums/cardPurpose'
 import { ConditionOperator } from '@/shared/enums/conditionOperator'
 import { RuleActionType } from '@/shared/enums/ruleActionType'
 import { RuleScopeLevel } from '@/shared/enums/ruleScopeLevel'
 import { RuleTargetSelect } from '@/shared/enums/ruleTargetSelect'
+import { TransactionLimitInterval } from '@/shared/enums/transactionLimitInterval'
 
 const FULL_CONTROLS = {
   allowedTransactionCount: 'MULTIPLE',
@@ -78,6 +104,58 @@ describe('constants', () => {
     expect(RULE_TRIGGER_EVENTS).toContain('project.launched')
     expect(RULE_TRIGGER_EVENTS).not.toContain('rule.evaluated')
     expect(BUILTIN_ATTRIBUTE_KEYS.map((row) => row.key)).toContain('project.budget.remaining')
+  })
+})
+
+describe('rule builder copy', () => {
+  it('groups every trigger event without dropping any', () => {
+    expect(groupedTriggerEvents().flatMap((group) => group.events)).toEqual([
+      ...RULE_TRIGGER_EVENTS,
+    ])
+  })
+
+  it('labels events, required fields, and actions in plain language', () => {
+    expect(triggerEventLabel('budget.threshold_crossed')).toBe('Budget threshold crossed')
+    expect(triggerGroupSummary('Budget', 0)).toBe('Budget')
+    expect(triggerGroupSummary('Budget', 2)).toBe('Budget (2)')
+    expect(fieldRequiredLabel()).toBe('Required')
+    expect(fieldOptionalLabel()).toBe('Optional')
+    expect(ruleBuilderIntro()).toContain('You need a name, a trigger, and at least one then-action')
+    expect(thenSectionHint()).toContain('At least one action')
+    expect(otherwiseSectionHint()).toContain('When check is false')
+    expect(actionFormLabel(RuleActionType.CARD_CREATE)).toBe('Create member cards')
+    expect(actionFormLabel(RuleActionType.CARD_SET_CONTROLS)).toBe('Set limits')
+    expect(transactionIntervalLabel(TransactionLimitInterval.PER_TRANSACTION)).toBe(
+      'Per transaction',
+    )
+    expect(cardPurposeLabel(CardPurpose.ONE_TIME)).toBe('One-time')
+    expect(actionAuthoringHint(RuleActionType.CARD_CREATE)).toContain('Currency')
+    expect(amountHint()).toContain('minor units')
+    expect(currencyHint()).toContain('USD')
+  })
+
+  it('inserts attribute keys into an empty or existing limit amount', () => {
+    expect(appendAttributeToExpr('a > 0 && ', 'project.status')).toBe('a > 0 && project.status')
+    expect(appendAttributeToExpr(undefined, 'project.status')).toBe('project.status')
+    const created = appendAttributeToLimitAmount({}, 'project.budget.approved')
+    expect(created.transactionLimits?.limits[0]?.amount).toBe('project.budget.approved')
+    const appended = appendAttributeToLimitAmount(created, ' / 4')
+    expect(appended.transactionLimits?.limits[0]?.amount).toBe('project.budget.approved / 4')
+  })
+
+  it('does not mention PAN or CVV in builder copy', () => {
+    const copy = [
+      ruleBuilderIntro(),
+      thenSectionHint(),
+      otherwiseSectionHint(),
+      amountHint(),
+      currencyHint(),
+      actionAuthoringHint(RuleActionType.CARD_CREATE),
+      actionAuthoringHint(RuleActionType.CARD_CLOSE),
+    ].join('\n')
+    expect(copy).not.toMatch(/\bPAN\b/)
+    expect(copy.toLowerCase()).not.toContain('cvv')
+    expect(copy.toLowerCase()).not.toContain('card_number')
   })
 })
 
@@ -232,6 +310,61 @@ describe('templates', () => {
     expect(JSON.stringify(RULE_TEMPLATES)).not.toContain('now()')
     expect(parseTemplateParam({ template: 'b' })).toBe('B')
     expect(parseTemplateParam({ template: 'Z' })).toBeNull()
+    expect(parseTemplateParam({ template: 'D' })).toBeNull()
+    expect(parseTemplateParam({ template: 'd' })).toBeNull()
+  })
+
+  it('offers only wired templates and strips unwired then-actions from B and E', () => {
+    expect([...USABLE_TEMPLATE_KEYS]).toEqual(['A', 'B', 'C', 'E'])
+    expect(RULE_TEMPLATES.B.then.map((row) => row.action)).toEqual([RuleActionType.CARD_FREEZE])
+    expect(RULE_TEMPLATES.E.then.map((row) => row.action)).toEqual([
+      RuleActionType.CARD_SET_CONTROLS,
+      RuleActionType.FLAG_REVIEW,
+    ])
+    expect(JSON.stringify(RULE_TEMPLATES.B)).not.toContain(RuleActionType.NOTIFY)
+    expect(JSON.stringify(RULE_TEMPLATES.E)).not.toContain(RuleActionType.ACCESS_GRANT)
+  })
+})
+
+describe('usable authoring allowlists', () => {
+  it('lists wired actions, MEMBER create, and VIRTUAL only', () => {
+    expect(USABLE_RULE_ACTIONS).toEqual([
+      RuleActionType.CARD_CREATE,
+      RuleActionType.CARD_SET_CONTROLS,
+      RuleActionType.CARD_FREEZE,
+      RuleActionType.CARD_UNFREEZE,
+      RuleActionType.CARD_CLOSE,
+      RuleActionType.FLAG_REVIEW,
+    ])
+    expect([...USABLE_CREATE_PURPOSES]).toEqual([CardPurpose.MEMBER])
+    expect([...USABLE_FORM_FACTORS]).toEqual(['VIRTUAL'])
+    expect(usableTargetsForAction(RuleActionType.CARD_CREATE)).toEqual([
+      RuleTargetSelect.PROJECT_MEMBERS,
+    ])
+    expect(usableTargetsForAction(RuleActionType.CARD_FREEZE)).toEqual([
+      RuleTargetSelect.PROJECT_CARDS,
+      RuleTargetSelect.MEMBER_CARDS,
+      RuleTargetSelect.CARD,
+    ])
+    expect(usableTargetsForAction(RuleActionType.FLAG_REVIEW)).toContain(
+      RuleTargetSelect.EVENT_SUBJECT,
+    )
+    expect(defaultTargetSelect(RuleActionType.CARD_CREATE)).toBe(RuleTargetSelect.PROJECT_MEMBERS)
+    expect(defaultParamsForAction(RuleActionType.CARD_CREATE)).toMatchObject({
+      formFactor: 'VIRTUAL',
+      purpose: CardPurpose.MEMBER,
+    })
+    expect(defaultParamsForAction(RuleActionType.CARD_FREEZE)).toEqual({})
+  })
+
+  it('keeps a saved orphan value on the picker list', () => {
+    expect(optionsIncludingCurrent(USABLE_RULE_ACTIONS, RuleActionType.NOTIFY)).toEqual([
+      ...USABLE_RULE_ACTIONS,
+      RuleActionType.NOTIFY,
+    ])
+    expect(optionsIncludingCurrent(USABLE_RULE_ACTIONS, RuleActionType.CARD_CREATE)).toEqual([
+      ...USABLE_RULE_ACTIONS,
+    ])
   })
 
   it('enables templates on apply and widens template A roles', () => {

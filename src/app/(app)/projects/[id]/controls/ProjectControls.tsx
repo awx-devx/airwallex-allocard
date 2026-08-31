@@ -19,7 +19,7 @@ import {
   projectControlsHref,
   RULE_TEMPLATES,
   ruleBuilderHref,
-  type RuleTemplateKey,
+  USABLE_TEMPLATE_KEYS,
 } from '@/client/lib/rules'
 import { ApprovalRuleEditor } from '@/app/(app)/projects/[id]/controls/ApprovalRuleEditor'
 import { DataTable } from '@/components/patterns/DataTable'
@@ -40,7 +40,6 @@ import { Permission } from '@/shared/enums/permissions'
 import type { Rule } from '@/shared/types/rule'
 
 const ALL = '__all__'
-const TEMPLATE_KEYS: RuleTemplateKey[] = ['A', 'B', 'C', 'D', 'E']
 
 function enabledSelectValue(enabled: boolean | undefined): string {
   if (enabled === true) return 'true'
@@ -179,7 +178,7 @@ export function ProjectControls() {
 
   const templateLinks = (
     <div className="flex flex-wrap gap-2">
-      {TEMPLATE_KEYS.map((key) => (
+      {USABLE_TEMPLATE_KEYS.map((key) => (
         <Link
           key={key}
           href={newProjectRuleHref(id, key)}

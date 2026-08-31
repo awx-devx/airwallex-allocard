@@ -30,6 +30,7 @@ import type {
   CreateRuleInput,
   ListRulesQuery,
   Rule,
+  RuleControlsParams,
   RuleScope,
 } from '@/shared/types/rule'
 import type { ListRuleRunsQuery } from '@/shared/types/ruleRun'
@@ -49,6 +50,50 @@ const ALLOW_DESTRUCTIVE_CLOSE =
   'Closing a card is terminal. Check allow destructive to include card.close.'
 const WIZARD_CONTROLS_LINK = 'Set project rules on the controls tab.'
 const MATCH_NONE = "With today's values, this rule matches no cards."
+const FIELD_REQUIRED = 'Required'
+const FIELD_OPTIONAL = 'Optional'
+const RULE_BUILDER_INTRO =
+  'When something happens, this rule checks a condition and then changes cards. You need a name, a trigger, and at least one then-action to save.'
+const RULE_NAME_HINT = 'Shown in the rules list and in the preview.'
+const RULE_DESCRIPTION_HINT = 'For your team. Does not change how the rule runs.'
+const RULE_SCOPE_HINT =
+  'Project rules stay on one project. Organisation rules can match every project.'
+const RULE_PRIORITY_HINT =
+  'Lower numbers merge first when two rules touch the same card. Leave blank for the default.'
+const RULE_ENABLED_HINT = 'Off means the rule is saved but will not run.'
+const TRIGGER_SECTION_HINT =
+  'Pick at least one event, or set a schedule. The rule evaluates when that happens.'
+const TRIGGER_SCHEDULE_HINT =
+  'Cron, such as 0 * * * * for once an hour. Leave blank if events are enough.'
+const TRIGGER_DEBOUNCE_HINT = 'Wait this many seconds after a burst of events, then evaluate once.'
+const WHEN_SECTION_HINT =
+  'The rule only acts when this is true. Start with one check; use All or Any to combine.'
+const THEN_SECTION_HINT =
+  'At least one action. Create issues a member card; the others change cards that already exist.'
+const OTHERWISE_SECTION_HINT =
+  'Runs only when the When check is false. Typical for a fallback limit.'
+const RULE_PREVIEW_HINT = 'Plain-language preview of the rule you are editing.'
+const INSERT_ATTRIBUTE_HINT = 'Inserts this key into the formula above.'
+const INSERT_ATTRIBUTE_PLACEHOLDER = 'Insert attribute key'
+const OPTIONAL_DETAILS_SUMMARY = 'Optional details'
+const OPTIONAL_TIMING_SUMMARY = 'Optional schedule'
+const OPTIONAL_WINDOW_SUMMARY = 'Optional active window'
+const OPTIONAL_ALLOWLISTS_SUMMARY = 'Optional merchant limits'
+const WINDOW_HINT = 'Leave blank unless the card should only work between dates.'
+const ALLOWLISTS_HINT =
+  'Comma-separated codes. Blank means no extra currency or merchant restriction.'
+const OPTIONAL_OTHERWISE_SUMMARY = 'Otherwise, if When is false'
+const CONDITION_NEGATE_HINT = 'Flip the whole When check.'
+const COMPARE_ATTRIBUTE_HINT = 'Compare two attributes instead of a fixed value.'
+const ROLE_KEYS_HINT =
+  'Optional. Comma-separated role keys, such as project_spender. Blank means everyone matching the target.'
+const PURPOSE_FILTER_HINT = 'Optional. Limit to one card purpose, or leave as any.'
+const CARD_TARGET_HINT = 'Required when the target is one specific card.'
+const AMOUNT_HINT =
+  'Integer minor units (100 is $1.00) or a formula such as project.budget.approved / 4.'
+const CURRENCY_HINT = 'ISO code, such as USD, or an attribute key.'
+const REASON_HINT = 'Optional. Stored on the audit trail.'
+const ALLOW_DESTRUCTIVE_LABEL = 'Allow permanent close'
 
 export const NEW_RULE_ID = 'new'
 export const DRAFT_RULE_ID = 'draft'
@@ -58,6 +103,91 @@ export const RULE_VALIDATE_DEBOUNCE_MS = 300
 export const TEMPLATE_PROJECT_ID = 'TEMPLATE_PROJECT'
 
 export type RuleTemplateKey = 'A' | 'B' | 'C' | 'D' | 'E'
+
+/** Templates the product offers. D is kept on `RULE_TEMPLATES` but not authorable. */
+export const USABLE_TEMPLATE_KEYS = [
+  'A',
+  'B',
+  'C',
+  'E',
+] as const satisfies readonly RuleTemplateKey[]
+
+export type UsableTemplateKey = (typeof USABLE_TEMPLATE_KEYS)[number]
+
+/** Actions the builder offers. Unwired verbs stay in the DSL for saved rules. */
+export const USABLE_RULE_ACTIONS: readonly RuleActionType[] = [
+  RuleActionType.CARD_CREATE,
+  RuleActionType.CARD_SET_CONTROLS,
+  RuleActionType.CARD_FREEZE,
+  RuleActionType.CARD_UNFREEZE,
+  RuleActionType.CARD_CLOSE,
+  RuleActionType.FLAG_REVIEW,
+]
+
+const CARD_MUTATE_TARGETS: readonly RuleTargetSelect[] = [
+  RuleTargetSelect.PROJECT_CARDS,
+  RuleTargetSelect.MEMBER_CARDS,
+  RuleTargetSelect.CARD,
+]
+
+const FLAG_REVIEW_TARGETS: readonly RuleTargetSelect[] = [
+  RuleTargetSelect.PROJECT_MEMBERS,
+  RuleTargetSelect.PROJECT_CARDS,
+  RuleTargetSelect.MEMBER_CARDS,
+  RuleTargetSelect.CARD,
+  RuleTargetSelect.EVENT_SUBJECT,
+]
+
+export const USABLE_CREATE_PURPOSES: readonly CardPurpose[] = [CardPurpose.MEMBER]
+
+export const USABLE_FORM_FACTORS = ['VIRTUAL'] as const
+
+export const CARD_CREATE_DEFAULT_PARAMS = {
+  formFactor: 'VIRTUAL' as const,
+  purpose: CardPurpose.MEMBER,
+  allowedTransactionCount: AllowedTransactionCount.MULTIPLE,
+}
+
+export function usableTargetsForAction(action: RuleActionType): readonly RuleTargetSelect[] {
+  switch (action) {
+    case RuleActionType.CARD_CREATE:
+      return [RuleTargetSelect.PROJECT_MEMBERS]
+    case RuleActionType.CARD_SET_CONTROLS:
+    case RuleActionType.CARD_FREEZE:
+    case RuleActionType.CARD_UNFREEZE:
+    case RuleActionType.CARD_CLOSE:
+      return CARD_MUTATE_TARGETS
+    case RuleActionType.FLAG_REVIEW:
+      return FLAG_REVIEW_TARGETS
+    default:
+      return Object.values(RuleTargetSelect)
+  }
+}
+
+export function defaultParamsForAction(
+  action: RuleActionType,
+): CreateRuleInput['then'][number]['params'] {
+  if (action === RuleActionType.CARD_CREATE) {
+    return { ...CARD_CREATE_DEFAULT_PARAMS }
+  }
+  return {}
+}
+
+export function defaultTargetSelect(action: RuleActionType): RuleTargetSelect {
+  return usableTargetsForAction(action)[0] ?? RuleTargetSelect.PROJECT_CARDS
+}
+
+/** Keep a saved orphan value in the picker so an existing rule does not blank out. */
+export function optionsIncludingCurrent<T extends string>(
+  usable: readonly T[],
+  current: string | undefined,
+): T[] {
+  const list: T[] = [...usable]
+  if (current !== undefined && current.length > 0 && !usable.includes(current as T)) {
+    list.push(current as T)
+  }
+  return list
+}
 
 export type BuiltinAttributeKey = {
   key: string
@@ -94,6 +224,179 @@ export const RULE_TRIGGER_EVENTS: readonly string[] = [
   'transaction.reversed',
   'attribute.updated',
 ]
+
+const TRIGGER_GROUP_HEADINGS: Record<string, string> = {
+  project: 'Project',
+  budget: 'Budget',
+  member: 'People',
+  card: 'Cards',
+  request: 'Requests',
+  transaction: 'Transactions',
+  attribute: 'Attributes',
+}
+
+export type TriggerEventGroup = { heading: string; events: string[] }
+
+export function groupedTriggerEvents(
+  events: readonly string[] = RULE_TRIGGER_EVENTS,
+): TriggerEventGroup[] {
+  const groups: TriggerEventGroup[] = []
+  for (const event of events) {
+    const prefix = event.split('.')[0] ?? event
+    const heading = TRIGGER_GROUP_HEADINGS[prefix] ?? prefix
+    const last = groups[groups.length - 1]
+    if (last !== undefined && last.heading === heading) {
+      last.events.push(event)
+    } else {
+      groups.push({ heading, events: [event] })
+    }
+  }
+  return groups
+}
+
+export function triggerEventLabel(event: string): string {
+  const [head, ...rest] = event.split('.')
+  if (head === undefined || rest.length < 1) {
+    return event
+  }
+  const tail = rest.join(' ').replaceAll('_', ' ')
+  return `${head.charAt(0).toUpperCase()}${head.slice(1)} ${tail}`
+}
+
+export function ruleTargetSelectLabel(select: RuleTargetSelect): string {
+  switch (select) {
+    case RuleTargetSelect.PROJECT_CARDS:
+      return 'All cards on the project'
+    case RuleTargetSelect.MEMBER_CARDS:
+      return 'Cards for matching members'
+    case RuleTargetSelect.CARD:
+      return 'One specific card'
+    case RuleTargetSelect.PROJECT_MEMBERS:
+      return 'People on the project'
+    case RuleTargetSelect.EVENT_SUBJECT:
+      return 'Whoever triggered this'
+    default: {
+      const _exhaustive: never = select
+      return String(_exhaustive)
+    }
+  }
+}
+
+export function conditionModeLabel(mode: 'all' | 'any' | 'attr' | 'expr'): string {
+  switch (mode) {
+    case 'all':
+      return 'All of these'
+    case 'any':
+      return 'Any of these'
+    case 'attr':
+      return 'One check'
+    case 'expr':
+      return 'Formula'
+  }
+}
+
+export function ruleScopeLabel(level: RuleScopeLevel): string {
+  return level === RuleScopeLevel.ORG ? 'Whole organisation' : 'One project'
+}
+
+export function actionAuthoringHint(action: RuleActionType): string {
+  switch (action) {
+    case RuleActionType.CARD_CREATE:
+      return 'Issues a virtual member card for each matching person. Currency and a limit amount are required.'
+    case RuleActionType.CARD_SET_CONTROLS:
+      return 'Changes limits on cards that already exist. Currency and a limit amount are required.'
+    case RuleActionType.CARD_FREEZE:
+      return 'Freezes matching cards so they cannot spend.'
+    case RuleActionType.CARD_UNFREEZE:
+      return 'Unfreezes matching cards.'
+    case RuleActionType.CARD_CLOSE:
+      return 'Permanently closes matching cards. Check allow permanent close.'
+    case RuleActionType.FLAG_REVIEW:
+      return 'Opens an access review for matching people or cards.'
+    default:
+      return ''
+  }
+}
+
+export function actionFormLabel(action: RuleActionType): string {
+  switch (action) {
+    case RuleActionType.CARD_CREATE:
+      return 'Create member cards'
+    case RuleActionType.CARD_SET_CONTROLS:
+      return 'Set limits'
+    case RuleActionType.CARD_FREEZE:
+      return 'Freeze cards'
+    case RuleActionType.CARD_UNFREEZE:
+      return 'Unfreeze cards'
+    case RuleActionType.CARD_CLOSE:
+      return 'Close cards'
+    case RuleActionType.ACCESS_GRANT:
+      return 'Grant access'
+    case RuleActionType.ACCESS_REVOKE:
+      return 'Revoke access'
+    case RuleActionType.ACCESS_EXPIRE:
+      return 'Expire access'
+    case RuleActionType.BUDGET_ALLOCATE:
+      return 'Allocate budget'
+    case RuleActionType.APPROVAL_REQUIRE:
+      return 'Require approval'
+    case RuleActionType.NOTIFY:
+      return 'Send a notification'
+    case RuleActionType.FLAG_REVIEW:
+      return 'Flag for review'
+    default: {
+      const _exhaustive: never = action
+      return String(_exhaustive)
+    }
+  }
+}
+
+export function transactionIntervalLabel(interval: TransactionLimitInterval): string {
+  switch (interval) {
+    case TransactionLimitInterval.PER_TRANSACTION:
+      return 'Per transaction'
+    case TransactionLimitInterval.DAILY:
+      return 'Daily'
+    case TransactionLimitInterval.WEEKLY:
+      return 'Weekly'
+    case TransactionLimitInterval.MONTHLY:
+      return 'Monthly'
+    case TransactionLimitInterval.QUARTERLY:
+      return 'Quarterly'
+    case TransactionLimitInterval.YEARLY:
+      return 'Yearly'
+    case TransactionLimitInterval.ALL_TIME:
+      return 'All time'
+    default: {
+      const _exhaustive: never = interval
+      return String(_exhaustive)
+    }
+  }
+}
+
+export function cardPurposeLabel(purpose: CardPurpose): string {
+  switch (purpose) {
+    case CardPurpose.MEMBER:
+      return 'Member'
+    case CardPurpose.SHARED:
+      return 'Shared'
+    case CardPurpose.VENDOR:
+      return 'Vendor'
+    case CardPurpose.ONE_TIME:
+      return 'One-time'
+    default: {
+      const _exhaustive: never = purpose
+      return String(_exhaustive)
+    }
+  }
+}
+
+export function triggerGroupSummary(heading: string, selectedCount: number): string {
+  if (selectedCount < 1) {
+    return heading
+  }
+  return `${heading} (${String(selectedCount)})`
+}
 
 export const BUILTIN_ATTRIBUTE_KEYS: readonly BuiltinAttributeKey[] = [
   { key: 'org.baseCurrency', label: 'Base currency', scope: 'ORG' },
@@ -480,14 +783,6 @@ export const RULE_TEMPLATES: Record<RuleTemplateKey, CreateRuleInput> = {
         },
         params: { reason: 'Project budget below 10% remaining' },
       },
-      {
-        action: RuleActionType.NOTIFY,
-        target: {
-          select: RuleTargetSelect.PROJECT_MEMBERS,
-          filter: { roleKeys: ['project_manager'] },
-        },
-        params: { template: 'budget_floor_breached' },
-      },
     ],
   },
   C: {
@@ -570,11 +865,6 @@ export const RULE_TEMPLATES: Record<RuleTemplateKey, CreateRuleInput> = {
     when: { attr: 'member.status', op: ConditionOperator.EQ, value: 'ACTIVE' },
     then: [
       {
-        action: RuleActionType.ACCESS_GRANT,
-        target: { select: RuleTargetSelect.EVENT_SUBJECT },
-        params: { recompute: true },
-      },
-      {
         action: RuleActionType.CARD_SET_CONTROLS,
         target: { select: RuleTargetSelect.MEMBER_CARDS },
         params: {
@@ -634,8 +924,8 @@ export function parseTemplateParam(input: {
     return null
   }
   const key = raw.toUpperCase()
-  if (key === 'A' || key === 'B' || key === 'C' || key === 'D' || key === 'E') {
-    return key
+  if ((USABLE_TEMPLATE_KEYS as readonly string[]).includes(key)) {
+    return key as UsableTemplateKey
   }
   return null
 }
@@ -672,6 +962,38 @@ export function parseFormulaOrInt(raw: string): string | number {
     return Number.parseInt(trimmed, 10)
   }
   return trimmed
+}
+
+export function appendAttributeToExpr(expr: string | undefined, key: string): string {
+  return `${expr ?? ''}${key}`
+}
+
+export function appendAttributeToLimitAmount(
+  params: RuleControlsParams,
+  key: string,
+  index = 0,
+): RuleControlsParams {
+  const limits = params.transactionLimits
+  const entries =
+    limits?.limits !== undefined && limits.limits.length > 0
+      ? limits.limits.slice()
+      : [{ interval: TransactionLimitInterval.MONTHLY, amount: '' }]
+  while (entries.length <= index) {
+    entries.push({ interval: TransactionLimitInterval.MONTHLY, amount: '' })
+  }
+  const entry = entries[index]
+  if (entry === undefined) {
+    return params
+  }
+  const current = entry.amount === undefined ? '' : String(entry.amount)
+  entries[index] = { ...entry, amount: `${current}${key}` }
+  return {
+    ...params,
+    transactionLimits: {
+      currency: limits?.currency ?? '',
+      limits: entries,
+    },
+  }
 }
 
 export function parseConditionValue(raw: string): string | number | boolean | null {
@@ -895,6 +1217,138 @@ export function allowDestructiveCloseMessage(): string {
 
 export function wizardControlsLinkMessage(): string {
   return WIZARD_CONTROLS_LINK
+}
+
+export function fieldRequiredLabel(): string {
+  return FIELD_REQUIRED
+}
+
+export function fieldOptionalLabel(): string {
+  return FIELD_OPTIONAL
+}
+
+export function ruleBuilderIntro(): string {
+  return RULE_BUILDER_INTRO
+}
+
+export function ruleNameHint(): string {
+  return RULE_NAME_HINT
+}
+
+export function ruleDescriptionHint(): string {
+  return RULE_DESCRIPTION_HINT
+}
+
+export function ruleScopeHint(): string {
+  return RULE_SCOPE_HINT
+}
+
+export function rulePriorityHint(): string {
+  return RULE_PRIORITY_HINT
+}
+
+export function ruleEnabledHint(): string {
+  return RULE_ENABLED_HINT
+}
+
+export function triggerSectionHint(): string {
+  return TRIGGER_SECTION_HINT
+}
+
+export function triggerScheduleHint(): string {
+  return TRIGGER_SCHEDULE_HINT
+}
+
+export function triggerDebounceHint(): string {
+  return TRIGGER_DEBOUNCE_HINT
+}
+
+export function whenSectionHint(): string {
+  return WHEN_SECTION_HINT
+}
+
+export function thenSectionHint(): string {
+  return THEN_SECTION_HINT
+}
+
+export function otherwiseSectionHint(): string {
+  return OTHERWISE_SECTION_HINT
+}
+
+export function rulePreviewHint(): string {
+  return RULE_PREVIEW_HINT
+}
+
+export function insertAttributeHint(): string {
+  return INSERT_ATTRIBUTE_HINT
+}
+
+export function insertAttributePlaceholder(): string {
+  return INSERT_ATTRIBUTE_PLACEHOLDER
+}
+
+export function optionalDetailsSummary(): string {
+  return OPTIONAL_DETAILS_SUMMARY
+}
+
+export function optionalTimingSummary(): string {
+  return OPTIONAL_TIMING_SUMMARY
+}
+
+export function optionalWindowSummary(): string {
+  return OPTIONAL_WINDOW_SUMMARY
+}
+
+export function optionalAllowlistsSummary(): string {
+  return OPTIONAL_ALLOWLISTS_SUMMARY
+}
+
+export function windowHint(): string {
+  return WINDOW_HINT
+}
+
+export function allowlistsHint(): string {
+  return ALLOWLISTS_HINT
+}
+
+export function optionalOtherwiseSummary(): string {
+  return OPTIONAL_OTHERWISE_SUMMARY
+}
+
+export function conditionNegateHint(): string {
+  return CONDITION_NEGATE_HINT
+}
+
+export function compareAttributeHint(): string {
+  return COMPARE_ATTRIBUTE_HINT
+}
+
+export function roleKeysHint(): string {
+  return ROLE_KEYS_HINT
+}
+
+export function purposeFilterHint(): string {
+  return PURPOSE_FILTER_HINT
+}
+
+export function cardTargetHint(): string {
+  return CARD_TARGET_HINT
+}
+
+export function amountHint(): string {
+  return AMOUNT_HINT
+}
+
+export function currencyHint(): string {
+  return CURRENCY_HINT
+}
+
+export function reasonHint(): string {
+  return REASON_HINT
+}
+
+export function allowDestructiveLabel(): string {
+  return ALLOW_DESTRUCTIVE_LABEL
 }
 
 export function noProjectRulesEmpty(): { title: string; description: string } {
